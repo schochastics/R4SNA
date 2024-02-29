@@ -1,0 +1,94 @@
+```{r}
+#| label: silent-libraries
+#| include: false
+library(tidygraph)
+library(networkdata)
+library(ggraph)
+library(graphlayouts)
+```
+
+```{r}
+#| label: load-flo
+#| include: false
+data("flo_marriage")
+flo_tidy <- as_tbl_graph(flo_marriage)
+flo_tidy
+```
+
+
+# Descriptive Network Analysis
+
+## Centrality
+The package includes all centrality indices implemented in `igraph` and additionally all 
+that are made available in the `netrankr` package. All indices can be found in the 
+function group `centrality_*()`.
+
+```{r}
+#| label: centrality-example
+flo_tidy %>%
+    activate("nodes") %>%
+    mutate(
+        degree = centrality_degree(),
+        betweenness = centrality_betweenness()
+    ) %>%
+    ggraph("stress", bbox = 10) +
+    geom_edge_link0(edge_color = "black") +
+    geom_node_point(shape = 21, aes(size = degree, fill = betweenness)) +
+    geom_node_text(aes(label = name)) +
+    scale_fill_gradient(low = "#104E8B", high = "#CD2626") +
+    scale_size(range = c(4, 10)) +
+    theme_graph()
+
+```
+
+
+## Clustering
+
+Similar to centrality, all clustering algorithms from `igraph` are available via `group_*()`
+
+```{r}
+#| label: clustering-example
+# create random graph with group structure (igraph equivalent is sample_islands())
+play_islands(4, 12, 0.8, 4) %>%
+    mutate(community = as.factor(group_louvain())) %>%
+    ggraph(layout = "stress") +
+    geom_edge_link0() +
+    geom_node_point(aes(fill = community), shape = 21, size = 6) +
+    theme_graph()
+```
+
+Coupling this with what we learned above, we can color the edges according to the cluster
+they belong to.
+```{r}
+#| label: clustering-example2
+
+play_islands(4, 12, 0.8, 4) %>%
+    mutate(community = as.factor(group_louvain())) %>%
+    activate("edges") %>%
+    mutate(community = as.factor(ifelse(.N()$community[from] == .N()$community[to], .N()$community[from], 5))) %>%
+    ggraph(layout = "stress") +
+    geom_edge_link0(aes(edge_colour = community), show.legend = FALSE) +
+    geom_node_point(aes(fill = community), shape = 21, size = 6) +
+    scale_fill_brewer(palette = "Set3") +
+    scale_edge_color_brewer(palette = "Set3") +
+    theme_graph(background = "grey88")
+```
+
+## Other node or edge level functions
+
+`tidygraphs` harmonizes many other available functions in igraph to make them easier accessible.
+The best way to check what is available is to look at the function groups `node_*()` and `edge_*()`.
+Some simple examples are shown below.
+```{r}
+#| label: distance2medici
+# the node id of the Medici is 9
+flo_tidy %>%
+    activate("nodes") %>%
+    mutate(dist2Medici = node_distance_to(nodes = 9)) %>%
+    activate("edges") %>%
+    mutate(edge2Medici = edge_is_incident(9)) %>%
+    ggraph("stress") +
+    geom_edge_link0(aes(edge_color = edge2Medici)) +
+    geom_node_point(aes(fill = dist2Medici), size = 9, shape = 21) +
+    theme_graph()
+```

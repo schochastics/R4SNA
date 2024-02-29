@@ -1,0 +1,90 @@
+```{r}
+#| label: silent-libraries
+#| include: false
+library(tidygraph)
+library(networkdata)
+library(ggraph)
+library(graphlayouts)
+```
+
+# Basics of tidygraph
+
+## Graph structures
+We'll use the famous Florentine Family marriage dataset as a running example. The
+dataset is in `igraph` format but can be converted to a `tbl_graph` object with 
+`as_tbl_graph()`. 
+```{r}
+#| label: load-flo
+data("flo_marriage")
+flo_tidy <- as_tbl_graph(flo_marriage)
+flo_tidy
+```
+
+This new graph class just subclasses `igraph` and simply represents the network in a tidy fashion, printing two data frames, one for nodes and one for edges.
+
+```{r}
+#| label: class-flo
+class(flo_tidy)
+```
+
+Any function in R that expects an `igraph` object as input will also accept a `tbl_graph`.
+
+The function `tbl_graph()` can be used to create a network from scratch with two data frames.
+It is basically equivalent to `graph_from_data_frame()`. 
+
+To create random graphs with the usual generators, check out the `create_*()` and `play_*()` families of functions.
+
+## Standard verbs
+
+The tidy framework, specifically thinking about `dplyr`, is about providing verbs which help to
+solve common data manipulation tasks, such as `mutate()`, `select()`, `filter()`, and
+`summarise()`. The challange for the `tbl_graph` objects is that these verbs somehow need to work with two 
+different data frames. The way `tidygraph` solves this is via a pointer to the data frame which is supposed to be manipulated. This pointer can be changed with the verb `activate()`. By default the nodes are activated, which can also be seen with the print function (see line 5 in the output of flo_tidy). To activate the edge data frame, simply use `activate("edges")`.
+```{r}
+#| label: activate-edges
+flo_tidy %>% activate("edges")
+```
+Any data manipulation would now be done on the edge data frame. 
+
+Having "activated" a data frame, many of the known dplyr verbs can be used to manipulate the 
+data frame. The activation process might indicate that edges and nodes can only be manipulated separately, which is certainly not desirable. It is, however, possible to gain access to the edge data frame when nodes are activated via the `.E()`. Similarly, nodes can be accessed via `.N()` when edges are activated.
+In the below example, we activate the edges and create a new edge attribute which indicates if a family
+is connected to the Medici or not.
+```{r}
+#| label: distance2medici
+flo_tidy <- flo_tidy %>% 
+  activate("edges") %>% 
+  mutate(to_medici=(.N()$name[from]=="Medici" | .N()$name[to]=="Medici"))
+```
+
+This particular use case is helpful for visualizations. 
+
+```{r}
+#| label: connect-medici-plot
+ggraph(flo_tidy, "stress") +
+    geom_edge_link0(aes(edge_color = to_medici)) +
+    geom_node_point(shape = 21, size = 10, fill = "grey66") +
+    geom_node_text(aes(label = name)) +
+    theme_graph()
+
+```
+
+The `dplyr` verb `filter()` can be used to obtain a subgraph that satisfies given conditions on the nodes.
+Note that in the case that you filter on nodes, also edges will be effected. If a node does not satisfy the
+condition, then all edges connected to that node disappear. This is not the case for edges though.
+
+```{r}
+#| label: filter-example
+flo_tidy %>%
+    activate("edges") %>%
+    filter(to_medici) %>%
+    ggraph("stress", bbox = 10) +
+    geom_edge_link0(edge_color = "black") +
+    geom_node_point(shape = 21, size = 10, fill = "grey66") +
+    geom_node_text(aes(label = name)) +
+    theme_graph()
+```
+
+## Joins
+
+## New Verbs

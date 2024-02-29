@@ -1,0 +1,393 @@
+# Grammar of Graphs
+
+```{r}
+#| label: libraries
+#| include: false
+library(igraph)
+library(ggraph)
+library(graphlayouts)
+library(ggforce)
+library(networkdata)
+library(patchwork)
+data("got")
+
+gotS1 <- got[[1]]
+
+```
+
+
+## Quick plots
+
+It is always a good idea to take a quick look at your network before starting any analysis. 
+This can be done with the function `autograph()` from the `ggraph` package.
+```{r}
+#| label: quickplot
+autograph(gotS1)
+```
+
+`autograph()` allows you to specify node/edge colours too but it really is only meant to 
+give you a quick overview without writing a massive amount of code. Think of it as the
+`plot()` function for `ggraph`
+
+Before we continue, we add some more node attributes to the GoT network that can be used during visualization.
+
+```{r}
+#| label: prep_got
+## define a custom color palette
+got_palette <- c(
+    "#1A5878", "#C44237", "#AD8941", "#E99093",
+    "#50594B", "#8968CD", "#9ACD32"
+)
+
+## compute a clustering for node colors
+V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
+
+## compute degree as node size
+V(gotS1)$size <- degree(gotS1)
+```
+
+
+Once you want to move beyond quick plots, you need to understand the basics of, or at least develop a feeling for, 
+the grammar of graphics to work with `ggraph`.
+
+Instead of explaining the grammar, let us directly jump into some code and work through it one line at a time.
+
+```{r}
+#| label: got-plot
+#| fig-width: 10
+#| fig-height: 6
+
+ggraph(gotS1, layout = "stress") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_manual(values = got_palette) +
+  scale_edge_width(range = c(0.2, 3)) +
+  scale_size(range = c(1, 6)) +
+  theme_graph() +
+  theme(legend.position = "none")
+```
+
+`ggraph` works with layers. Each layer adds a new feature to the plot and thus builds the figure
+step-by-step. We will work through each of the layers separately in the following sections.  
+
+## Layout
+
+```r
+ggraph(gotS1, layout = "stress")
+```
+
+The first step is to compute a layout. The layout parameter specifies the algorithm to use. 
+The "stress" layout is part of the `graphlayouts` package and is always a safe choice 
+since it is deterministic and produces nice layouts for almost any graph.
+I would recommend to use it as your default choice. Other algorithms for, e.g., concentric layouts and clustered networks
+are described further down in this tutorial. For the sake of completeness, here is a list of layout algorithms of 
+`igraph`.
+
+```r
+c(
+  "layout_with_dh", "layout_with_drl", "layout_with_fr",
+  "layout_with_gem", "layout_with_graphopt", "layout_with_kk",
+  "layout_with_lgl", "layout_with_mds", "layout_with_sugiyama",
+  "layout_as_bipartite", "layout_as_star", "layout_as_tree"
+)
+```
+
+To use them, you just need the last part of the name.
+```r
+ggraph(gotS1, layout = "dh") +
+  ...
+```
+
+Note that there technically is no right or wrong choice. All layout algorithms are in a sense arbitrary since 
+we can choose x and y coordinates freely (compare this to ordinary data!). It is all mostly about aesthetics.
+
+You can also precompute the layout with the `create_layout()` function. This makes sense in cases where the calculation
+of the layout takes very long and you want to play around with other visual aspects. 
+```r
+gotS1_layout <- create_layout(gotS1 = "stress")
+
+ggraph(gotS1_layout) +
+  ...
+```
+
+## Edges
+
+```r
+geom_edge_link0(aes(width = weight), edge_colour = "grey66")
+```
+
+The second layer specifies how to draw the edges. Edges can be drawn in many different ways as the list below shows.
+```r
+c(
+  "geom_edge_arc", "geom_edge_arc0", "geom_edge_arc2", "geom_edge_density",
+  "geom_edge_diagonal", "geom_edge_diagonal0", "geom_edge_diagonal2",
+  "geom_edge_elbow", "geom_edge_elbow0", "geom_edge_elbow2", "geom_edge_fan",
+  "geom_edge_fan0", "geom_edge_fan2", "geom_edge_hive", "geom_edge_hive0",
+  "geom_edge_hive2", "geom_edge_link", "geom_edge_link0", "geom_edge_link2",
+  "geom_edge_loop", "geom_edge_loop0"
+)
+```
+You can do a lot of fancy things with these `geoms` but for a standard network plot,
+you should always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it reduces readability. Always go with straight lines! If your network has multiple edges between two nodes, then you can switch to `geom_edge_parallel()`.
+
+In case you are wondering what the "0" stands for: The standard `geom_edge_link()` draws 100 dots on each edge compared to only two dots (the endpoints) in `geom_edge_link0()`.
+This is done to allow, e.g., gradients along the edge. 
+
+```{r}
+#| label: got-plot-grad
+#| fig-width: 10
+#| fig-height: 6
+#| echo: false
+ggraph(gotS1, layout = "stress") +
+  geom_edge_link(aes(alpha = ..index..), edge_colour = "black") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  scale_fill_manual(values = got_palette) +
+  scale_edge_width_continuous(range = c(0.2, 3)) +
+  scale_size_continuous(range = c(1, 6)) +
+  theme_graph() +
+  theme(legend.position = "none")
+```
+
+You can reproduce this figure by substituting  
+```r
+geom_edge_link(aes(edge_alpha = ..index..), edge_colour = "black")
+```
+in the code above. 
+
+The drawback of using `geom_edge_link()` is that the time to render the plot increases and so 
+does the size of the file if you export the plot ([example](https://twitter.com/schochastics/status/1091355396265201664))
+Typically, you do not need gradients along an edge. Hence, `geom_edge_link0()` should be your default choice
+to draw edges.
+
+Within `geom_edge_link0`, you can specify the appearance of the edge, either by mapping edge attributes to aesthetics
+or setting them globally for the graph. Mapping attributes to aesthetics is done within `aes()`.
+In the example, we map the edge width to the edge attribute "weight". `ggraph` then automatically scales the
+edge width according to the attribute. The colour of all edges is globally set to "grey66".
+
+The following aesthetics can be used within `geom_edge_link0` either within `aes()` or globally:
+
+- edge_colour (colour of the edge)
+- edge_linewidth  (width of the edge)
+- edge_linetype (linetype of the edge, defaults to "solid")
+- edge_alpha (opacity; a value between 0 and 1)
+
+`ggraph` does not automatically draw arrows if your graph is directed. You need to do this manually using 
+the arrow parameter.
+```r
+geom_edge_link0(aes(...), ...,
+  arrow = arrow(
+    angle = 30, length = unit(0.15, "inches"),
+    ends = "last", type = "closed"
+  )
+)
+```
+
+The default arrowhead type is "open", yet "closed" usually has a nicer appearance.
+
+## Nodes
+
+```r
+geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif")
+```
+
+On top of the edge layer, we draw the node layer. Always draw the node layer above 
+the edge layer. Otherwise, edges will be visible on top of nodes.
+There are slightly less geoms available for nodes.
+
+```r
+c(
+  "geom_node_arc_bar", "geom_node_circle", "geom_node_label",
+  "geom_node_point", "geom_node_text", "geom_node_tile", "geom_node_treemap"
+)
+```
+
+The most important ones here are `geom_node_point()` to draw nodes as simple geometric objects (circles, squares,...)
+and `geom_node_text()` to add node labels. You can also use `geom_node_label()`, but this draws labels within a box.
+
+The mapping of node attributes to aesthetics is similar to edge attributes. In the example code, we map the fill attribute of the node shape to the "clu" attribute, which holds the result of a clustering, and the size of the nodes to the attribute "size". The shape of the node is globally set to 21.
+
+The figure below shows all possible shapes that can be used for the nodes.
+
+![](assets/img/points-symbols.png)
+
+Personally, I prefer "21" since it draws a border around the nodes. If you prefer another
+shape, say "19", you have to be aware of several things. To change the color of shapes 1-20,
+you need to use the colour parameter. For shapes 21-25 you need to use fill. The colour parameter 
+only controls the border for these cases. 
+
+The following aesthetics can be used within `geom_node_point()` either within `aes()` or globally:
+
+- alpha  (opacity; a value between 0 and 1)
+- colour (colour of shapes 0-20 and border colour for 21-25)
+- fill  (fill colour for shape 21-25)
+- shape (node shape; a value between 0 and 25)
+- size (size of node)
+- stroke (size of node border)
+
+For `geom_node_text()`, there are a lot more options available, but the most important once are:
+
+- label (attribute to be displayed as node label)
+- colour (text colour)
+- family (font to be used)
+- size (font size)
+
+Note that we also used a filter within `aes()` of `geom_node_text()`. The filter 
+parameter allows you to specify a rule for when to apply the aesthetic mappings.
+The most frequent use case is for node labels (but can also be used for edges or nodes).
+In the example, we only display the node label if the size attribute is larger than 26.
+
+## Scales
+
+```r
+scale_fill_manual(values = got_palette) +
+  scale_edge_width_continuous(range = c(0.2, 3)) +
+  scale_size_continuous(range = c(1, 6))
+```
+
+The `scale_*` functions are used to control aesthetics that are mapped within `aes()`.
+You do not necessarily need to set them, since `ggraph` can take care of it automatically.
+```{r}
+#| label: no-scales
+#| fig-width: 10
+#| fig-height: 6
+
+ggraph(gotS1, layout = "stress") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  theme_graph() +
+  theme(legend.position = "none")
+```
+
+While the node fill and size seem reasonable, the edges are a little too thick.
+In general, it is always a good idea to add a `scale_*` for each aesthetic within `aes()`.
+
+What kind of `scale_*` function you need depends on the aesthetic and on the type of attribute you are mapping.
+Generally, scale functions are structured like this:  
+`scale_<aes>_<variable type>()`.  
+
+The "aes" part is easy. Just us the type you specified within `aes()`. For edges, however, you have to prepend `edge_`.
+The "variable type" part depends on which scale the attribute is on. Before we continue, it may be 
+a good idea to briefly discuss what aesthetics make sense for which variable type. 
+
+| aesthetic | variable type | notes |
+|--------|----------|--------------|
+| node size | continuous | |
+| edge width| continuous| |
+| node colour/fill | categorical/continuous | use a gradient for continuous variables|
+| edge colour | continuous | categorical only if there are different types of edges |
+| node shape | categorical| only if there are a few categories (1-5). Colour should be the preferred choice|
+| edge linetype| categorical | only if there are a few categories (1-5). Colour should be the preferred choice|
+| node/edge alpha| continuous | |
+
+The easiest to use scales are those for continuous variables mapped to edge width and node size (also the alpha value, which is not used here). While there are several parameters within `scale_edge_width_continuous()` and `scale_size_continuous()`, the
+most important one is "range" which fixes the minimum and maximum width/size. It usually suffices to
+adjust this parameter.
+
+For continuous variables that are mapped to node/edge colour, you can use `scale_colour_gradient()`
+`scale_colour_gradient2()` or `scale_colour_gradientn()` (add edge_ before colour for edge colours).
+The difference between these functions is in how the gradient is constructed. `gradient` creates a two
+colour gradient (low-high). Simply specify the the two colours to be used (e.g. low = "blue", high = "red").
+`gradient2` creates a diverging colour gradient (low-mid-high) (e.g. low = "blue", mid = "white", high = "red") 
+and `gradientn` a gradient consisting of more than three colours (specified with the colours parameter).
+
+For categorical variables that are mapped to node colours (or fill in our example), you can
+use `scale_fill_manual()`. This forces you to choose a color for each category yourself. 
+Simply create a vector of colors (see the got_palette) and pass it to the function with the parameter values.
+
+`ggraph` then assigns the colors in the order of the unique values of the categorical variable. This 
+are either the factor levels (if the variable is a factor) or the result of sorting the unique values (if the variable is a character).
+```{r}
+#| label: order-color
+sort(unique(V(gotS1)$clu))
+```
+If you want more control over which value is mapped to which colour, you can pass the vector of colours
+as a named vector.
+```{r}
+#| label: named_palette
+got_palette2 <- c(
+    "5" = "#1A5878", "3" = "#C44237", "2" = "#AD8941",
+    "1" = "#E99093", "4" = "#50594B", "7" = "#8968CD", "6" = "#9ACD32"
+)
+```
+
+```{r}
+#| label: got-plot-pal2
+#| fig-width: 13
+#| fig-height: 5
+#| echo: false
+ggraph(gotS1, layout = "stress") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_manual(values = got_palette2) +
+  scale_edge_width_continuous(range = c(0.2, 3)) +
+  scale_size_continuous(range = c(1, 6)) +
+  theme_graph() +
+  labs(title = "named palette") +
+  theme(legend.position = "none") -> p2
+
+ggraph(gotS1, layout = "stress") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_manual(values = got_palette) +
+  scale_edge_width_continuous(range = c(0.2, 3)) +
+  scale_size_continuous(range = c(1, 6)) +
+  theme_graph() +
+  labs(title = "unnamed palette") +
+  theme(legend.position = "none") -> p1
+
+p1 + p2
+```
+
+Using your own colour palette gives your network a unique touch. If you can't be bothered with 
+choosing colours, you may want to consider `scale_fill_brewer()` and `scale_colour_brewer()`.
+The function offers all palettes available at [colorbrewer2.org](http://colorbrewer2.org/). 
+
+```{r}
+#| label: got-plot-brewer
+#| fig-width: 10
+#| fig-height: 6
+ggraph(gotS1, layout = "stress") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_brewer(palette = "Dark2") +
+  scale_edge_width_continuous(range = c(0.2, 3)) +
+  scale_size_continuous(range = c(1, 6)) +
+  theme_graph() +
+  theme(legend.position = "none")
+```
+
+(*Check out this [github repo](https://github.com/EmilHvitfeldt/r-color-palettes) from Emil Hvitfeldt for a comprehensive list of color palettes available in R*)
+
+## Themes
+
+```r
+theme_graph() +
+  theme(legend.position = "none")
+```
+
+themes control the overall look of the plot. There are a lot of options within the `theme()`
+function of `ggplot2`. Luckily, we really don't need any of those. `theme_graph()` is used
+to erase all of the default ggplot theme (e.g. axis, background, grids, etc.) since they are irrelevant for networks. 
+The only option worthwhile in `theme()` is `legend.position`, which we set to "none", i.e. don't show the legend.
+
+The code below gives an example for a plot with a legend.
+```{r}
+#| label: got-plot-legend
+#| fig-width: 10
+#| fig-height: 6
+ggraph(gotS1, layout = "stress") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_manual(values = got_palette) +
+  scale_edge_width_continuous(range = c(0.2, 3)) +
+  scale_size_continuous(range = c(1, 6)) +
+  theme_graph() +
+  theme(legend.position = "bottom")
+```
