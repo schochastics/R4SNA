@@ -131,6 +131,17 @@ balance_score(tribes, method = "walk")
 balance_score(tribes, method = "frustration")
 ```
 
+## Triangles
+
+The function  `triad_census_signed()` calculates the
+signed triad census of a directed signed network. While the unsigned triad census has only 16 possible outcomes, there are 138 non-isomorphic signed triads, shown below.
+
+![](assets/img/signed_triads.png)
+
+The naming scheme is "xxx-yyyyyy" where "xxx" corresponds to the name of the respective unsigned triad and "yyyyyy" is 
+a string of "0", "N", "P", describing the type of ties present. So "300-NNNNNN" is a triad with all ties present and all ties are negative. 
+
+
 ## Traditional Blockmodeling 
 
 In signed blockmodeling, the goal is to determine `k` blocks of nodes such that all intra-block edges
@@ -202,9 +213,81 @@ traditional <- signed_blockmodel(g,k = 3,alpha = 0.5,annealing = TRUE)
 c(general$criterion,traditional$criterion)
 ```
 
-![](blockmodel_general.png)
+![](assets/img/blockmodel_general.png)
+
+## Centrality
+
+There exist dozens of indices for networks with positive ties, but for signed networks they are rather scarce.
+The package implements three indices so far. Versions of degree and eigenvector centrality, and PN centrality by Everett & Borgatti.
+
+Degree centrality can be calculated in four different ways with `degree_signed()`, specified by the `type` parameter:
+
+* `type="pos"` count only positive neighbors
+* `type="neg"` count only negative neighbors
+* `type="ratio"` positive neighbors/(positive neighbors+negative neighbors)
+* `type="net"` positive neighbors-negative neighbors
+
+The `mode` parameter can be used to get "in" and "out" versions for directed networks.
+
+The PN index is very similar to Katz status and Hubbell's measure for networks with only positive ties.
+The technical details can be found in the paper by Everett & Borgatti.
+
+The below example illustrates all indices with a network where signed degree can not distinguish vertices.
+```{r}
+#| label: deg_same
+A <- matrix(c(0,  1,  0,  1,  0,  0,  0, -1, -1,  0,  
+               1,  0,  1, -1,  1, -1, -1,  0,  0,  0,  
+               0,  1,  0,  1, -1,  0,  0,  0, -1,  0,  
+               1, -1,  1,  0,  1, -1, -1,  0,  0,  0,  
+               0,  1, -1,  1,  0,  1,  0, -1,  0, -1,  
+               0, -1,  0, -1,  1,  0,  1,  0,  1, -1,  
+               0, -1,  0, -1,  0,  1,  0,  1, -1,  1,  
+              -1,  0,  0,  0, -1,  0,  1,  0,  1,  0,  
+              -1,  0, -1,  0,  0,  1, -1,  1,  0,  1,  
+               0,  0,  0,  0, -1, -1,  1,  0,  1,  0),10,10)
+
+g <- graph_from_adjacency_matrix(A,"undirected",weighted = "sign")
+
+degree_signed(g,type="ratio")
+eigen_centrality_signed(g)
+pn_index(g)
+
+```
+
+Note that PN centrality and eigenvector centrality differ significantly for this network.
+```{r}
+#| label: cor
+cor(eigen_centrality_signed(g),pn_index(g),method = "kendall")
+```
+
+## A note on eigenvector centrality
+
+The adjacency matrix of a signed network may not have a dominant eigenvalue. This means it is not clear which eigenvector should be used. In addition it is possible for the adjacency matrix to have repeated eigenvalues and hence multiple linearly independent eigenvectors. In this case certain centralities can be arbitrarily assigned. The `eigen_centrality_signed()` function returns an error if this is the case.
+
+```{r}
+#| label: non_dominant
+#| error: true
+A <- matrix(c( 0,  1,  1, -1,  0,  0, -1,  0,  0, 
+               1,  0,  1,  0, -1,  0,  0, -1,  0, 
+               1,  1,  0,  0,  0, -1,  0,  0, -1, 
+              -1,  0,  0,  0,  1,  1, -1,  0,  0, 
+               0, -1,  0,  1,  0,  1,  0, -1,  0, 
+               0,  0, -1,  1,  1,  0,  0,  0, -1, 
+              -1,  0,  0, -1,  0,  0,  0,  1,  1, 
+               0, -1,  0,  0, -1,  0,  1,  0,  1, 
+               0,  0, -1,  0,  0, -1,  1,  1, 0), 9, 9)
+
+g <- igraph::graph_from_adjacency_matrix(A,"undirected",weighted = "sign")
+eigen_centrality_signed(g)
+
+```
+
 
 ## References
+
+Everett, Martin G., and Stephen P. Borgatti. 2014. "Networks Containing Negative Ties." Social Networks 38: 111–20. 
+
+Bonacich, Phillip, and Paulette Lloyd. 2004. "Calculating Status with Negative Relations." Social Networks 26 (4): 331–38. 
 
 Doreian, Patrick, and Andrej Mrvar. 1996. "A Partitioning Approach to Structural Balance." Social Networks 18 (2): 149–68. 
 
