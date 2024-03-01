@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>R4SNA - R for Social Network Analysis - 18&nbsp; Basics of tidygraph</title>
+<title>R4SNA - R for Social Network Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -64,8 +30,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./tidygraph-descriptive.html" rel="next">
-<link href="./tidygraph-intro.html" rel="prev">
+<link href="./descriptives-intro.html" rel="next">
+<link href="./intro.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -106,7 +72,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="nav-sidebar floating">
+<body class="nav-sidebar floating fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -115,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tidygraph-intro.html">Tidy Network Analysis</a></li><li class="breadcrumb-item"><a href="./tidygraph-basics.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Basics of tidygraph</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./network-data.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">network-data.html</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -154,7 +120,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./network-data.html" class="sidebar-item-text sidebar-link">
+  <a href="./network-data.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">network-data.html</span></span></a>
   </div>
 </li>
@@ -285,7 +251,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tidygraph-basics.html" class="sidebar-item-text sidebar-link active">
+  <a href="./tidygraph-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Basics of tidygraph</span></span></a>
   </div>
 </li>
@@ -320,193 +286,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#graph-structures" id="toc-graph-structures" class="nav-link active" data-scroll-target="#graph-structures"><span class="header-section-number">18.1</span> Graph structures</a></li>
-  <li><a href="#standard-verbs" id="toc-standard-verbs" class="nav-link" data-scroll-target="#standard-verbs"><span class="header-section-number">18.2</span> Standard verbs</a></li>
-  <li><a href="#joins" id="toc-joins" class="nav-link" data-scroll-target="#joins"><span class="header-section-number">18.3</span> Joins</a></li>
-  <li><a href="#new-verbs" id="toc-new-verbs" class="nav-link" data-scroll-target="#new-verbs"><span class="header-section-number">18.4</span> New Verbs</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tidygraph-intro.html">Tidy Network Analysis</a></li><li class="breadcrumb-item"><a href="./tidygraph-basics.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Basics of tidygraph</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Basics of tidygraph</span></h1>
-</div>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
-
-
-<section id="graph-structures" class="level2" data-number="18.1">
-<h2 data-number="18.1" class="anchored" data-anchor-id="graph-structures"><span class="header-section-number">18.1</span> Graph structures</h2>
-<p>We’ll use the famous Florentine Family marriage dataset as a running example. The dataset is in <code>igraph</code> format but can be converted to a <code>tbl_graph</code> object with <code>as_tbl_graph()</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="ot">&lt;-</span> <span class="fu">as_tbl_graph</span>(flo_marriage)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>flo_tidy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>This graph was created by an old(er) igraph version.
-  Call upgrade_graph() on it to use with the current igraph version
-  For now we convert it on the fly...</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 16 nodes and 20 edges
-#
-# An undirected simple graph with 2 components
-#
-# Node Data: 16 × 4 (active)
-   name         wealth `#priors` `#ties`
-   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
- 1 Acciaiuoli       10        53       2
- 2 Albizzi          36        65       3
- 3 Barbadori        55         0      14
- 4 Bischeri         44        12       9
- 5 Castellani       20        22      18
- 6 Ginori           32         0       9
- 7 Guadagni          8        21      14
- 8 Lamberteschi     42         0      14
- 9 Medici          103        53      54
-10 Pazzi            48         0       7
-11 Peruzzi          49        42      32
-12 Pucci             3         0       1
-13 Ridolfi          27        38       4
-14 Salviati         10        35       5
-15 Strozzi         146        74      29
-16 Tornabuoni       48         0       7
-#
-# Edge Data: 20 × 2
-   from    to
-  &lt;int&gt; &lt;int&gt;
-1     1     9
-2     2     6
-3     2     7
-# ℹ 17 more rows</code></pre>
-</div>
-</div>
-<p>This new graph class just subclasses <code>igraph</code> and simply represents the network in a tidy fashion, printing two data frames, one for nodes and one for edges.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(flo_tidy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "tbl_graph" "igraph"   </code></pre>
-</div>
-</div>
-<p>Any function in R that expects an <code>igraph</code> object as input will also accept a <code>tbl_graph</code>.</p>
-<p>The function <code>tbl_graph()</code> can be used to create a network from scratch with two data frames. It is basically equivalent to <code>graph_from_data_frame()</code>.</p>
-<p>To create random graphs with the usual generators, check out the <code>create_*()</code> and <code>play_*()</code> families of functions.</p>
-</section>
-<section id="standard-verbs" class="level2" data-number="18.2">
-<h2 data-number="18.2" class="anchored" data-anchor-id="standard-verbs"><span class="header-section-number">18.2</span> Standard verbs</h2>
-<p>The tidy framework, specifically thinking about <code>dplyr</code>, is about providing verbs which help to solve common data manipulation tasks, such as <code>mutate()</code>, <code>select()</code>, <code>filter()</code>, and <code>summarise()</code>. The challange for the <code>tbl_graph</code> objects is that these verbs somehow need to work with two different data frames. The way <code>tidygraph</code> solves this is via a pointer to the data frame which is supposed to be manipulated. This pointer can be changed with the verb <code>activate()</code>. By default the nodes are activated, which can also be seen with the print function (see line 5 in the output of flo_tidy). To activate the edge data frame, simply use <code>activate("edges")</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">%&gt;%</span> <span class="fu">activate</span>(<span class="st">"edges"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 16 nodes and 20 edges
-#
-# An undirected simple graph with 2 components
-#
-# Edge Data: 20 × 2 (active)
-    from    to
-   &lt;int&gt; &lt;int&gt;
- 1     1     9
- 2     2     6
- 3     2     7
- 4     2     9
- 5     3     5
- 6     3     9
- 7     4     7
- 8     4    11
- 9     4    15
-10     5    11
-11     5    15
-12     7     8
-13     7    16
-14     9    13
-15     9    14
-16     9    16
-17    10    14
-18    11    15
-19    13    15
-20    13    16
-#
-# Node Data: 16 × 4
-  name       wealth `#priors` `#ties`
-  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 Acciaiuoli     10        53       2
-2 Albizzi        36        65       3
-3 Barbadori      55         0      14
-# ℹ 13 more rows</code></pre>
-</div>
-</div>
-<p>Any data manipulation would now be done on the edge data frame.</p>
-<p>Having “activated” a data frame, many of the known dplyr verbs can be used to manipulate the data frame. The activation process might indicate that edges and nodes can only be manipulated separately, which is certainly not desirable. It is, however, possible to gain access to the edge data frame when nodes are activated via the <code>.E()</code>. Similarly, nodes can be accessed via <code>.N()</code> when edges are activated. In the below example, we activate the edges and create a new edge attribute which indicates if a family is connected to the Medici or not.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="ot">&lt;-</span> flo_tidy <span class="sc">%&gt;%</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">to_medici=</span>(<span class="fu">.N</span>()<span class="sc">$</span>name[from]<span class="sc">==</span><span class="st">"Medici"</span> <span class="sc">|</span> <span class="fu">.N</span>()<span class="sc">$</span>name[to]<span class="sc">==</span><span class="st">"Medici"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>This particular use case is helpful for visualizations.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(flo_tidy, <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_color =</span> to_medici)) <span class="sc">+</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using the `size` aesthetic in this geom was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` in the `default_aes` field and elsewhere instead.</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tidygraph-basics_files/figure-html/connect-medici-plot-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The <code>dplyr</code> verb <code>filter()</code> can be used to obtain a subgraph that satisfies given conditions on the nodes. Note that in the case that you filter on nodes, also edges will be effected. If a node does not satisfy the condition, then all edges connected to that node disappear. This is not the case for edges though.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">%&gt;%</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(to_medici) <span class="sc">%&gt;%</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>, <span class="at">bbox =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="at">edge_color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tidygraph-basics_files/figure-html/filter-example-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="joins" class="level2" data-number="18.3">
-<h2 data-number="18.3" class="anchored" data-anchor-id="joins"><span class="header-section-number">18.3</span> Joins</h2>
-</section>
-<section id="new-verbs" class="level2" data-number="18.4">
-<h2 data-number="18.4" class="anchored" data-anchor-id="new-verbs"><span class="header-section-number">18.4</span> New Verbs</h2>
-
-
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -898,13 +686,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./tidygraph-intro.html" class="pagination-link" aria-label="Introduction">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction</span></span>
+      <a href="./intro.html" class="pagination-link" aria-label="Introduction">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./tidygraph-descriptive.html" class="pagination-link" aria-label="Descriptive Network Analysis">
-        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Descriptive Network Analysis</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./descriptives-intro.html" class="pagination-link" aria-label="Introduction">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
