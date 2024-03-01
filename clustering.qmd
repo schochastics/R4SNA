@@ -1,1 +1,290 @@
-# Community Detection
+# Cohesive Subgroups
+
+```{r}
+#| label: libraries
+library(igraph)
+library(networkdata)
+```
+
+```{r}
+#| label: libraries_silent
+#| include: false
+library(ggraph)
+```
+
+
+## Cliques 
+
+A *clique* in a network is a set of nodes that form a complete subnetwork within a network (called a complete **subgraph**). A **maximal clique** is a clique that cannot be extended to a bigger clique by addding more nodes to it. 
+
+```{r}
+#| label: load-clique-graph
+data("clique_graph")
+```
+
+All maximal cliques can be calculated with `max_cliques()` (only feasible for fairly small networks). The min parameter can be used to set a minimum size. Here, we want to ignore all cliques of size $2$.
+
+```{r}
+#| label: calc_max_cliques
+# only return cliques with three or more nodes
+cl <- max_cliques(clique_graph, min = 3)
+cl
+```
+
+The figure below shows the network and the found maximal cliques.
+
+```{r}
+#| label: plot-clique-graph
+#| echo: FALSE
+
+xy <- graphlayouts::layout_with_stress(clique_graph)
+
+cl_df <- as.data.frame(do.call(
+    "rbind",
+    lapply(seq_along(cl), function(x) {
+        cbind(xy[cl[[x]], ], x)
+    })
+))
+
+ggraph(clique_graph, "stress") +
+    geom_edge_link0(edge_color = "grey66") +
+    geom_node_point(shape = 21, size = 8, fill = "grey25") +
+    ggforce::geom_mark_hull(data = cl_df, aes(V1, V2, fill = as.factor(x), group = x), show.legend = FALSE) +
+    scale_fill_manual(values = c(
+        "#E69F00", "#000000", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
+        "#D55E00", "#CC79A7", "#666666"
+    )) +
+    theme_void()
+
+```
+
+Related to cliques is the **k-core decomposition** of a network. A k-core is a subgraph in which every node has at least k neighbors within the subgraph. A k-core is thus a relaxed version of a clique.  
+The function `coreness()` can be used to calculate the k-core membership for each node.
+```{r}
+#| label: kcore
+kcore <- coreness(clique_graph)
+kcore
+```
+
+
+```{r}
+#| label: kcore_plot
+#| echo: FALSE
+
+cl_df <- as.data.frame(do.call(
+    "rbind",
+    lapply(sort(unique(kcore))[c(2, 3, 4)], function(x) {
+        cbind(xy[kcore >= x, ], x)
+    })
+))
+
+ggraph(clique_graph, "stress") +
+    geom_edge_link0(edge_color = "grey66") +
+    geom_node_point(shape = 21, size = 8, fill = "grey25") +
+    ggforce::geom_mark_hull(data = cl_df, aes(V1, V2, fill = as.factor(x), group = x), show.legend = FALSE) +
+    scale_fill_manual(values = c("red", "blue", "green")) +
+    theme_void()
+
+```
+
+Cliques are the prototypical and most strict definition of a cohesive subgroup of a graph. In empirical networks, however, we rarely encounter situations where we can partition the whole network into a set of 
+cliques. A relaxed version of this problem is that of clustering, also referred to as **comunity detection**. 
+
+## Comunity detection
+
+A cluster is loosely defined as a group of nodes which are internally densely and externally sparsely connected. The network below shows an example for a network with a visible and intuitive cluster structure.
+
+```{r}
+# labeL; clustered-graph
+#| echo: FALSE
+
+n1 <- 5
+n2 <- 20
+set.seed(1234)
+g <- sample_islands(n1, n2, 0.9, 5)
+g <- simplify(g)
+V(g)$grp <- rep(LETTERS[1:n1], each = n2)
+ggraph(g, "stress") +
+    geom_edge_link0(edge_linewidth =0.2, edge_color = "grey66") +
+    geom_node_point(shape = 21, size = 5, aes(fill = grp), show.legend = FALSE) +
+    theme_void()
+```
+
+In contrast, the network below does not really seem to have any well defined cluster structure.
+
+```{r}
+#| label: random-graph
+#| echo: FALSE
+n1 <- 5
+n2 <- 20
+
+set.seed(1234)
+g <- sample_islands(n1, n2, 0.25, 15)
+g <- simplify(g)
+V(g)$grp <- rep(LETTERS[1:n1], each = n2)
+ggraph(g, "stress") +
+    geom_edge_link0(edge_linewidth =0.2, edge_color = "grey66") +
+    geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
+    theme_void()
+
+```
+
+The following algorithms for graph clustering are implemented in `igraph`.
+
+```{r}
+#| label: cluster_alg
+#| echo: FALSE
+algs <- as.character(lsf.str("package:igraph"))
+algs[stringr::str_detect(algs, "cluster_")]
+```
+
+Most of these algorithms are based on "modularity maximization". Modularity is defined as the fraction of edges that fall within given groups minus the expected fraction if edges were distributed at random.
+
+The workflow of a cluster analysis is always the same, independent from the chosen method. We illustrate the workflow using the infamous karate club network.
+```{r}
+#| label: karate
+data("karate")
+```
+
+```{r}
+#| label: karate-plot
+#| echo: false
+ggraph(karate, "stress") +
+    geom_edge_link0(edge_color = "grey66") +
+    geom_node_point(shape = 21, size = 5, fill = "grey66") +
+    theme_void() +
+    coord_equal()
+```
+
+```{r}
+#| label: cluster_ex
+# compute clustering
+clu <- cluster_louvain(karate)
+
+# cluster membership vector
+mem <- membership(clu)
+mem
+
+# clusters as list
+com <- communities(clu)
+com
+```
+
+To compare the quality of clusterings, we can compute the modularity score for each output.
+
+```{r}
+#| label: karate-cluster
+imc <- cluster_infomap(karate)
+lec <- cluster_leading_eigen(karate)
+loc <- cluster_louvain(karate)
+sgc <- cluster_spinglass(karate)
+wtc <- cluster_walktrap(karate)
+scores <- c(
+    infomap = modularity(karate, membership(imc)),
+    eigen = modularity(karate, membership(lec)),
+    louvain = modularity(karate, membership(loc)),
+    spinglass = modularity(karate, membership(sgc)),
+    walk = modularity(karate, membership(wtc))
+)
+scores
+```
+
+For the karate network, `cluster_spinglass()` produces the highest modularity score.
+The corresponding clustering is shown below.
+
+```{r}
+#| label: karate-plot-clu
+#| echo: false
+V(karate)$clu <- membership(sgc)
+ggraph(karate, "stress") +
+    geom_edge_link0(edge_color = "grey66") +
+    geom_node_point(shape = 21, size = 5, aes(fill = as.factor(clu)), show.legend = FALSE) +
+    theme_void() +
+    coord_equal()
+```
+
+Modularity maximization is still widely considered as the state-of-the-art clustering method
+for networks. There are, however, some technical shortcomings that one should be aware of.
+One of those is the so called "resolution limit". When modularity is being maximized, it can happen
+that smaller clusters are merged together to form bigger clusters. The prime example is the graph that
+consists of cliques connected in a ring.
+
+```{r}
+#| label: prepare-Kn-graph
+#| echo: false
+n1 <- 5
+n2 <- 50
+A <- matrix(1, n1, n1)
+lst <- vector("list", n2)
+lst <- lapply(lst, function(x) A)
+AA <- Matrix::bdiag(lst)
+for (i in 1:(n2 - 1)) {
+    AA[i * n1, i * n1 + 1] <- AA[i * n1 + 1, i * n1] <- 1
+}
+AA[1, n1 * n2] <- AA[n1 * n2, 1] <- 1
+K50 <- graph_from_adjacency_matrix(AA, "undirected", diag = FALSE)
+```
+
+The figure below shows such a graph, consisting of 50 cliques of size 5. 
+
+```{r}
+#| label: plot-K50-blank
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+ggraph(K50, "stress") +
+    geom_edge_link0(edge_linewidth =0.6, edge_color = "grey66") +
+    geom_node_point(shape = 21, fill = "grey66", size = 2, show.legend = FALSE) +
+    theme_void() +
+    coord_fixed()
+```
+
+Intuitively, any clustering method should return a cluster for each clique.
+
+```{r}
+#| label: clu-louvain-K50
+clu_louvain <- cluster_louvain(K50)
+table(membership(clu_louvain))
+
+```
+
+A clustering algorithm that fixes this issue is the leiden algorithm.
+
+```{r}
+#| label: clu-leiden-K50
+clu_leiden <- cluster_leiden(K50, objective_function = "CPM", resolution_parameter = 0.5)
+table(membership(clu_leiden))
+
+```
+
+The figure below shows the clusters computed with the louvain method in grey and the leiden method in red.
+
+```{r}
+#| label: plot-K50-clu
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+V(K50)$louvain <- membership(clu_louvain)
+V(K50)$leiden <- membership(clu_leiden)
+ggraph(K50, "stress") +
+    geom_edge_link0(edge_linewidth =0.6, edge_color = "grey66") +
+    geom_node_point(shape = 21, fill = "grey66", size = 1.5, show.legend = FALSE) +
+    ggforce::geom_mark_ellipse(aes(x, y, group = louvain), expand = unit(4.5, "pt"), fill = "black", alpha = 0.25) +
+    ggforce::geom_mark_circle(aes(x, y, group = leiden), expand = unit(4.5, "pt"), col = "firebrick3", size = 1) +
+    theme_void() +
+    coord_fixed()
+
+```
+
+If you are interested in the technical details of the Leiden method, check out the [original paper](https://www.nature.com/articles/s41598-019-41695-z). 
+
+---
+
+# Blockmodeling
+
+Blockmodeling is similar to 
+
+(Stochastic) Blockmodels, for instance,
+can also be used to find community structures. Several packages exist for this, such as `randnet` or `blockmodels`.
+
+---
