@@ -2,15 +2,13 @@
 
 ```{r}
 #| label: libraries
-#| include: false
+#| message: false
 library(igraph)
 library(ggraph)
 library(graphlayouts)
-library(ggforce)
 library(networkdata)
-library(patchwork)
-data("got")
 
+data("got")
 gotS1 <- got[[1]]
 
 ```
@@ -318,6 +316,9 @@ got_palette2 <- c(
 #| fig-width: 13
 #| fig-height: 5
 #| echo: false
+
+library(patchwork)
+
 ggraph(gotS1, layout = "stress") +
   geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
@@ -391,3 +392,239 @@ ggraph(gotS1, layout = "stress") +
   theme_graph() +
   theme(legend.position = "bottom")
 ```
+
+## Recreate the polblogs viz
+
+In this section, we do a little code through to recreate the figure shown below.
+
+![](assets/img/polblogs_orig.png)
+The network shows the linking between political blogs during the 2004 election in the US. Red nodes are conservative leaning blogs and blue ones liberal.
+
+The dataset is included in the `networkdata` package.
+```{r}
+#| label:  data-polblogs
+data("polblogs")
+
+## add a vertex attribute for the indegree
+V(polblogs)$deg <- degree(polblogs, mode = "in")
+```
+
+Let us start with a simple plot without any styling.
+```{r}
+#| label: polblogs1
+#| fig-width: 10
+#| fig-height: 8
+lay <- create_layout(polblogs, "stress")
+
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, edge_colour = "grey66",
+        arrow = arrow(
+            angle = 15, length = unit(0.15, "inches"),
+            ends = "last", type = "closed"
+        )
+    ) +
+    geom_node_point()
+```
+
+There is obviously a lot missing. First, we delete all isolates and plot again. 
+
+```{r}
+#| label: polblogs2
+#| fig-width: 10
+#| fig-height: 8
+polblogs <- delete.vertices(polblogs, which(degree(polblogs) == 0))
+lay <- create_layout(polblogs, "stress")
+
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, edge_colour = "grey66",
+        arrow = arrow(
+            angle = 15, length = unit(0.1, "inches"),
+            ends = "last", type = "closed"
+        )
+    ) +
+    geom_node_point()
+```
+
+The original does feature a small disconnected component, but we remove this here.
+
+```{r}
+#| label: polblogs2a
+#| fig-width: 10
+#| fig-height: 8
+comps <- components(polblogs)
+polblogs <- delete.vertices(polblogs, which(comps$membership == which.min(comps$csize)))
+
+lay <- create_layout(polblogs, "stress")
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, edge_colour = "grey66",
+        arrow = arrow(
+            angle = 15, length = unit(0.15, "inches"),
+            ends = "last", type = "closed"
+        )
+    ) +
+    geom_node_point()
+```
+
+
+Better, let's start with some styling of the nodes.
+
+```{r}
+#| label: polblogs3
+#| fig-width: 10
+#| fig-height: 8
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, edge_colour = "grey66",
+        arrow = arrow(
+            angle = 15, length = unit(0.15, "inches"),
+            ends = "last", type = "closed"
+        )
+    ) +
+    geom_node_point(shape = 21, aes(fill = pol))
+```
+
+The colors are obviously wrong, so we fix this with a `scale_fill_manual()`. Additionally,
+we map the degree to node size.
+
+```{r}
+#| label: polblogs4
+#| fig-width: 10
+#| fig-height: 8
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, edge_colour = "grey66",
+        arrow = arrow(
+            angle = 15, length = unit(0.15, "inches"),
+            ends = "last", type = "closed"
+        )
+    ) +
+    geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
+    scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3"))
+```
+
+The node sizes are also not that satisfactory, so we fix the range with `scale_size()`.
+
+```{r}
+#| label: polblogs5
+#| fig-width: 10
+#| fig-height: 8
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, edge_colour = "grey66",
+        arrow = arrow(
+            angle = 10, length = unit(0.1, "inches"),
+            ends = "last", type = "closed"
+        )
+    ) +
+    geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
+    scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+    scale_size(range = c(0.5, 7))
+```
+
+Now we move on to the edges. This is a bit more complicated since we have to 
+create an edge variable first which indicates if an edge is within or between political orientations.
+This new variable is mapped to the edge color.
+
+```{r}
+#| label: polblogs6
+#| fig-width: 10
+#| fig-height: 8
+el <- get.edgelist(polblogs, names = FALSE)
+el_pol <- cbind(V(polblogs)$pol[el[, 1]], V(polblogs)$pol[el[, 2]])
+E(polblogs)$col <- ifelse(el_pol[, 1] == el_pol[, 2], el_pol[, 1], "mixed")
+
+
+lay <- create_layout(polblogs, "stress")
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, aes(edge_colour = col),
+        arrow = arrow(
+            angle = 10, length = unit(0.1, "inches"),
+            ends = "last", type = "closed"
+        )
+    ) +
+    geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
+    scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+    scale_size(range = c(0.5, 7))
+```
+
+Similar to the node colors, we add a `scale_edge_colour_manual()` to adjust the edge colors.
+
+```{r}
+#| label: polblogs7
+#| fig-width: 10
+#| fig-height: 8
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, aes(edge_colour = col),
+        arrow = arrow(
+            angle = 10, length = unit(0.1, "inches"),
+            ends = "last", type = "closed"
+        ), show.legend = FALSE
+    ) +
+    geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
+    scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+    scale_edge_colour_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
+    scale_size(range = c(0.5, 7))
+```
+
+Almost, but it seems there are a lot of yellow edges which run over blue edges. It looks as
+if these should run below according to the original viz. To achieve this, we use a filter trick.
+We add two `geom_edge_link0()` layers: First, for the mixed edges and then for the remaining edges.
+In that way, the mixed edges are getting plotted below.
+
+```{r}
+#| label: polblogs8
+#| fig-width: 10
+#| fig-height: 8
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, aes(filter = (col == "mixed"), edge_colour = col),
+        arrow = arrow(
+            angle = 10, length = unit(0.1, "inches"),
+            ends = "last", type = "closed"
+        ), show.legend = FALSE
+    ) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, aes(filter = (col != "mixed"), edge_colour = col),
+        arrow = arrow(
+            angle = 10, length = unit(0.1, "inches"),
+            ends = "last", type = "closed"
+        ), show.legend = FALSE
+    ) +
+    geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
+    scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+    scale_edge_colour_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
+    scale_size(range = c(0.5, 7))
+```
+
+Now lets just add the `theme_graph()`.
+```{r}
+#| label: polblogs9
+#| fig-width: 10
+#| fig-height: 8
+ggraph(lay) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, aes(filter = (col == "mixed"), edge_colour = col),
+        arrow = arrow(
+            angle = 10, length = unit(0.1, "inches"),
+            ends = "last", type = "closed"
+        ), show.legend = FALSE
+    ) +
+    geom_edge_link0(
+        edge_linewidth = 0.2, aes(filter = (col != "mixed"), edge_colour = col),
+        arrow = arrow(
+            angle = 10, length = unit(0.1, "inches"),
+            ends = "last", type = "closed"
+        ), show.legend = FALSE
+    ) +
+    geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
+    scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+    scale_edge_colour_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
+    scale_size(range = c(0.5, 7)) +
+    theme_graph()
+```
+
