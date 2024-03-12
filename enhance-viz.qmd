@@ -1,6 +1,6 @@
 # Enhancing Visualizations
 ```{r}
-#| label: libraries
+#| label: libraries1
 #| include: false
 library(igraph)
 library(ggraph)
@@ -286,6 +286,26 @@ ggraph(g, "stress") +
     coord_fixed()
 ```
 
+## Edge bundling
+
+```{r}
+#| label: fig-force-bundle
+gr <- edgebundle::us_flights
+states <- map_data("state")
+
+ggraph(gr, x = longitude, y = latitude) +
+    geom_polygon(aes(long, lat, group = group), states, color = "white", linewidth = 0.2) +
+    coord_sf(crs = "NAD83", default_crs = sf::st_crs(4326)) +
+    geom_edge_bundle_force(color = "white", width = 0.05)
+```
+
+```{r}
+#| label: fig-path-bundle
+ggraph(gr, x = longitude, y = latitude) +
+    geom_polygon(aes(long, lat, group = group), states, color = "white", linewidth = 0.2) +
+    coord_sf(crs = "NAD83", default_crs = sf::st_crs(4326)) +
+    geom_edge_bundle_path(color = "white", width = 0.05)
+```
 
 ## snahelper
 
