@@ -34,14 +34,11 @@ V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 V(gotS1)$size <- degree(gotS1)
 ```
 
-While “stress” is the key layout algorithm in `graphlayouts`, there are other, more specialized layouts that can be used for different purposes. In this part, we work through some examples with concentric layouts and learn how to disentangle extreme
-"hairball" networks.
+While “stress” is the key layout algorithm in `graphlayouts`, there are other, more specialized layouts that can be used for different purposes. In this part, we work through some examples with concentric layouts and learn how to disentangle extreme "hairball" networks.
 
 ### Concentric layouts
 
-Circular layouts are generally not advisable. Concentric circles, on the other hand, help to emphasize 
-the position of certain nodes in the network. The `graphlayouts` package has two function to create 
-concentric layouts, `layout_with_focus()` and `layout_with_centrality()`.
+Circular layouts are generally not advisable. Concentric circles, on the other hand, help to emphasize the position of certain nodes in the network. The `graphlayouts` package has two function to create concentric layouts, `layout_with_focus()` and `layout_with_centrality()`.
 
 The first one allows to focus the network on a specific node and arrange all other nodes in concentric circles (depending on the geodesic distance) around it. Below we focus on the character *Ned Stark*.
 ```{r}
@@ -62,8 +59,7 @@ ggraph(gotS1, layout = "focus", focus = 1) +
     theme(legend.position = "none")
 ```
 
-The parameter `focus` in the first line is used to choose the node id of the focal node. 
-The function `coord_fixed()` is used to always keep the aspect ratio at one (i.e. the circles are always displayed as a circle and not an ellipse). 
+The parameter `focus` in the first line is used to choose the node id of the focal node. The function `coord_fixed()` is used to always keep the aspect ratio at one (i.e. the circles are always displayed as a circle and not an ellipse). 
 
 The function `draw_circle()` can be used to add the circles explicitly.
 ```{r}
@@ -108,8 +104,7 @@ good tool to visualize ego networks.*)
 
 ### Backbone layout
 
-`layout_as_backbone()` is a layout algorithm that can help emphasize hidden group structures.
-To illustrate the performance of the algorithm, we create an artificial network with a subtle group structure using `sample_islands()` from `igraph`.
+`layout_as_backbone()` is a layout algorithm that can help emphasize hidden group structures. To illustrate the performance of the algorithm, we create an artificial network with a subtle group structure using `sample_islands()` from `igraph`.
 
 ```{r}
 #| label: island-network
@@ -135,34 +130,29 @@ ggraph(g, layout = "stress") +
 ```
 
 As you can see, the graph seems to be a proper "hairball" without any special 
-structural features standing out. In this case, though, we know that there should be
-9 groups of vertices that are internally more densely connected than externally.
-To uncover this group structure, we turn to the "backbone layout". 
+structural features standing out. In this case, though, we know that there should be 9 groups of vertices that are internally more densely connected than externally. To uncover this group structure, we turn to the "backbone layout". 
 
 ```{r}
 #| label: backbone-layout
+#| eval: false
 bb <- layout_as_backbone(g, keep = 0.4)
 E(g)$col <- FALSE
 E(g)$col[bb$backbone] <- TRUE
 ```
 
-The idea of the algorithm is as follows. For each edge, an embededness score is calculated which serves as an
-edge weight attribute. These weights are then ordered and only the edges with the highest score are kept. The number of
+The idea of the algorithm is as follows. For each edge, an embeddedness score is calculated which serves as an edge weight attribute. These weights are then ordered and only the edges with the highest score are kept. The number of
 edges to keep is controlled with the `keep` parameter. In our example, we keep the top 40%. The parameter usually requires some experimenting to find out what works best. Since this
 may result in an unconnected network, we add all edges of the union of all [maximum spanning trees](https://en.wikipedia.org/wiki/Spanning_tree). The resulting network is the "backbone" of the original 
 network and the "stress" layout algorithm is applied to this network. Once the layout is calculated, all edges are added back to the network. 
 
 The output of the function are the x and y coordinates for nodes and a vector that gives the ids of the
 edges in the backbone network. In the code above, we use this vector to create a binary edge attribute that indicates if an edge is part of the backbone or not.
-
-To use the coordinates, we set the `layout` parameter to "manual" and provide the x and y coordinates
-as parameters.
 ```{r}
 #| label: backbone-plot
 #| fig-width: 8
 #| fig-height: 6
-ggraph(g, layout = "manual", x = bb$xy[, 1], y = bb$xy[, 2]) +
-    geom_edge_link0(aes(edge_colour = col), edge_linewidth = 0.1) +
+ggraph(g, layout = "backbone", keep = 0.4) +
+    geom_edge_link0(aes(edge_colour = backbone), edge_linewidth = 0.1) +
     geom_node_point(aes(fill = grp), shape = 21) +
     scale_fill_brewer(palette = "Set1") +
     scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
@@ -180,9 +170,7 @@ Left is the ordinary stress layout and right the backbone layout.
 
 ### Longitudinal networks
 
-People regularly ask me if it is possible to animate a network evolution with `ggraph` and `gganimate`.
-Unfortunately this is not yet possible. But fear not! There is a way to still get it done with some 
-hacking around the ggraph package. I will walk through this hack below but hope that it will eventually become obsolete.
+Longitudinal network data usually comes in the form of panel data, gathered at different points in time. We thus have a series of snapshots that need to be visualized in a way that individual nodes are easy to trace without the layout becoming to awkward. 
 
 For this part of the tutorial, you will need two additional packages.
 ```{r}
@@ -200,8 +188,8 @@ We will be using the *50 actor excerpt from the Teenage Friends and Lifestyle St
 data("s50")
 ```
 
-The dataset consists of three networks with 50 actors each and a vertex attribute for the smoking behaviour of students.
-As a first step, we need to create a layout for all three networks. You can basically use any type of layout for each network, but I'd recommend `layout_as_dynamic()` from my very own package {{graphlayouts}}. The algorithm calculates a reference layout
+The dataset consists of three networks with 50 actors each and a vertex attribute for the smoking behavior of students.
+The function `layout_as_dynamic()` from `graphlayouts` can be used to visualize the three networks. The implemented algorithm calculates a reference layout
 which is a layout of the union of all networks and individual layouts based on stress minimization and combines those in a linear combination which is controlled by the `alpha` parameter. For `alpha=1`, only the reference layout is used and all graphs have the same layout. For `alpha=0`, the stress layout of each individual graph is used. Values in-between interpolate between the two layouts.
 
 ```{r}
@@ -209,7 +197,7 @@ which is a layout of the union of all networks and individual layouts based on s
 xy <- layout_as_dynamic(s50, alpha = 0.2)
 ```
 
-Now you could use {{ggraph}} and {{patchwork}} to produce a static plot with all networks side-by-side.
+Now you could use `ggraph` in conjunction with `patchwork` to produce a static plot with all networks side-by-side.
 
 ```{r}
 #| label: static_plot
@@ -237,96 +225,105 @@ wrap_plots(pList)
 ```
 
 This is nice but of course we want to animate the changes. This is where we 
-say goodbye to `ggraph` and hello to good-old `ggplot2`. First, we create a list of data frames
-for all nodes and add the layout to it. 
-
+have to get inventive, because ggraph does not (yet) work with `gganimate` out of the box. For the time being, the function below provides a hacky workaround to produce a data structure that can be passed to gganimate. 
 ```{r}
 #| label: node-lst
-nodes_lst <- lapply(1:length(s50), function(i) {
-    cbind(igraph::as_data_frame(s50[[i]], "vertices"),
-        x = xy[[i]][, 1], y = xy[[i]][, 2], frame = i
-    )
-})
-```
+aninet_data <- function(gList, alpha = 0.2, nodes = NULL) {
+    # check for absent nodes and add them
+    if (is.null(nodes)) {
+        all_nodes <- unique(unlist(sapply(gList, function(x) vertex_attr(x, "name"))))
+        for (i in 1:length(gList)) {
+            idx <- which(!all_nodes %in% V(gList[[i]])$name)
+            if (length(idx) > 0) {
+                gList[[i]] <- add_vertices(gList[[i]], length(idx), attr = list(name = all_nodes[idx]))
+            }
+        }
+    } else if (nodes >= 0) {
+        all_nodes <- unlist(sapply(gList, function(x) vertex_attr(x, "name")))
+        all_nodes <- names(which(table(all_nodes) >= nodes * length(gList)))
 
-This was the easy part, because all nodes are present in all time frames so there is not much to do.
-Edges will be a lot trickier.
+        for (i in 1:length(gList)) {
+            idx <- which(!all_nodes %in% V(gList[[i]])$name)
+            if (length(idx) > 0) {
+                gList[[i]] <- add_vertices(gList[[i]], length(idx), attr = list(name = all_nodes[idx]))
+            }
+        }
 
-```{r}
-#| label: edge-lst
-edges_lst <- lapply(1:length(s50), function(i) {
-    cbind(igraph::as_data_frame(s50[[i]], "edges"), frame = i)
-})
-
-edges_lst <- lapply(1:length(s50), function(i) {
-    edges_lst[[i]]$x <- nodes_lst[[i]]$x[match(edges_lst[[i]]$from, nodes_lst[[i]]$name)]
-    edges_lst[[i]]$y <- nodes_lst[[i]]$y[match(edges_lst[[i]]$from, nodes_lst[[i]]$name)]
-    edges_lst[[i]]$xend <- nodes_lst[[i]]$x[match(edges_lst[[i]]$to, nodes_lst[[i]]$name)]
-    edges_lst[[i]]$yend <- nodes_lst[[i]]$y[match(edges_lst[[i]]$to, nodes_lst[[i]]$name)]
-    edges_lst[[i]]$id <- paste0(edges_lst[[i]]$from, "-", edges_lst[[i]]$to)
-    edges_lst[[i]]$status <- TRUE
-    edges_lst[[i]]
-})
-
-head(edges_lst[[1]])
-```
-
-We have expanded the edge data frame in a way that also includes the coordinates of the endpoints from 
-the layout that we calculated earlier. 
-
-Now we create a helper matrix which includes all edges that are present in any of the networks
-```{r}
-#| label: helper-lst
-all_edges <- do.call("rbind", lapply(s50, get.edgelist))
-all_edges <- all_edges[!duplicated(all_edges), ]
-all_edges <- cbind(all_edges, paste0(all_edges[, 1], "-", all_edges[, 2]))
-```
-
-This is used to impute the edges into all networks. So any edge that is not present in time frame two and three gets added to
-time frame one. But to keep track of these, we set there status to `FALSE`. 
-
-```{r}
-#| label: add-missing
-edges_lst <- lapply(1:length(s50), function(i) {
-    idx <- which(!all_edges[, 3] %in% edges_lst[[i]]$id)
-    if (length(idx != 0)) {
-        tmp <- data.frame(from = all_edges[idx, 1], to = all_edges[idx, 2], id = all_edges[idx, 3])
-        tmp$x <- nodes_lst[[i]]$x[match(tmp$from, nodes_lst[[i]]$name)]
-        tmp$y <- nodes_lst[[i]]$y[match(tmp$from, nodes_lst[[i]]$name)]
-        tmp$xend <- nodes_lst[[i]]$x[match(tmp$to, nodes_lst[[i]]$name)]
-        tmp$yend <- nodes_lst[[i]]$y[match(tmp$to, nodes_lst[[i]]$name)]
-        tmp$frame <- i
-        tmp$status <- FALSE
-        edges_lst[[i]] <- rbind(edges_lst[[i]], tmp)
+        for (i in 1:length(gList)) {
+            idx <- which(!V(gList[[i]])$name %in% all_nodes)
+            if (length(idx) > 0) {
+                gList[[i]] <- delete_vertices(gList[[i]], idx)
+            }
+        }
     }
-    edges_lst[[i]]
-})
+
+    xy <- graphlayouts::layout_as_dynamic(gList, alpha = alpha)
+    nodes_lst <- lapply(1:length(gList), function(i) {
+        cbind(igraph::as_data_frame(gList[[i]], "vertices"),
+            x = xy[[i]][, 1], y = xy[[i]][, 2], frame = i
+        )
+    })
+
+    edges_lst <- lapply(1:length(gList), function(i) cbind(igraph::as_data_frame(gList[[i]], "edges"), frame = i))
+
+    edges_lst <- lapply(1:length(gList), function(i) {
+        edges_lst[[i]]$x <- nodes_lst[[i]]$x[match(edges_lst[[i]]$from, nodes_lst[[i]]$name)]
+        edges_lst[[i]]$y <- nodes_lst[[i]]$y[match(edges_lst[[i]]$from, nodes_lst[[i]]$name)]
+        edges_lst[[i]]$xend <- nodes_lst[[i]]$x[match(edges_lst[[i]]$to, nodes_lst[[i]]$name)]
+        edges_lst[[i]]$yend <- nodes_lst[[i]]$y[match(edges_lst[[i]]$to, nodes_lst[[i]]$name)]
+        edges_lst[[i]]$id <- paste0(edges_lst[[i]]$from, "-", edges_lst[[i]]$to)
+        edges_lst[[i]]$status <- TRUE
+        edges_lst[[i]]
+    })
+
+    all_edges <- do.call("rbind", lapply(gList, get.edgelist))
+    all_edges <- all_edges[!duplicated(all_edges), ]
+    all_edges <- cbind(all_edges, paste0(all_edges[, 1], "-", all_edges[, 2]))
+
+    edges_lst <- lapply(1:length(gList), function(i) {
+        idx <- which(!all_edges[, 3] %in% edges_lst[[i]]$id)
+        if (length(idx != 0)) {
+            tmp <- data.frame(from = all_edges[idx, 1], to = all_edges[idx, 2], id = all_edges[idx, 3])
+            tmp$x <- nodes_lst[[i]]$x[match(tmp$from, nodes_lst[[i]]$name)]
+            tmp$y <- nodes_lst[[i]]$y[match(tmp$from, nodes_lst[[i]]$name)]
+            tmp$xend <- nodes_lst[[i]]$x[match(tmp$to, nodes_lst[[i]]$name)]
+            tmp$yend <- nodes_lst[[i]]$y[match(tmp$to, nodes_lst[[i]]$name)]
+            tmp$frame <- i
+            tmp$status <- FALSE
+            idy <- which(!names(edges_lst[[i]]) %in% names(tmp))
+            if (length(idy) > 0) {
+                tmp[names(edges_lst[[i]])[idy]] <- NA
+            }
+            edges_lst[[i]] <- rbind(edges_lst[[i]], tmp)
+        }
+        edges_lst[[i]]
+    })
+
+    edges_df <- do.call("rbind", edges_lst)
+    nodes_df <- do.call("rbind", nodes_lst)
+    list(nodes = nodes_df, edges = edges_df)
+}
 ```
 
-Why are we doing this? After a lot of experimenting, I came to the conclusion that
-it is always best to draw all edges, but use zero opacity if `status = FALSE`. In that way, one gets a
-smoother transition for edges that (dis)appear. There are probably other workarounds though.
-
-In the last step, we create a data frame out of the lists. 
-```{r}
-#| label: combine
+```r
+#| label: build
 edges_df <- do.call("rbind", edges_lst)
 nodes_df <- do.call("rbind", nodes_lst)
 
-head(edges_df)
-head(nodes_df)
+dat <- aninet(s50)
+
 ```
 
 And that's it in terms of data wrangling. All that is left is to plot/animate the data.
 ```r
 ggplot() +
   geom_segment(
-    data = edges_df,
+    data = dat$edges_df,
     aes(x = x, xend = xend, y = y, yend = yend, group = id, alpha = status),
     show.legend = FALSE
   ) +
   geom_point(
-    data = nodes_df, aes(x, y, group = name, fill = as.factor(smoke)),
+    data = dat$nodes_df, aes(x, y, group = name, fill = as.factor(smoke)),
     shape = 21, size = 4, show.legend = FALSE
   ) +
   scale_fill_manual(values = c("forestgreen", "grey25", "firebrick")) +
