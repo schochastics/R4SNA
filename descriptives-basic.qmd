@@ -201,3 +201,122 @@ ggraph(rhesus,"stress")+
   theme(legend.position = "bottom")
 
 ```
+
+## Triad Census
+
+In a directed network, there are 16 possible configurations of edges that can occur between three nodes. 
+![](assets/img/triad_census.jpg)
+
+The **triad census** of a network gives the number of occurrences of each of these triad. Triads are labelled `xyzL` where `x` is the number of reciprocated ties, `y` is the number of unreciprocated ties and `z` is the number of null ties. The `L` term is a letter (U,C,D or T) which allows to differentiate between triads where these numbers are the same. 
+
+One of the many applications of the triad census is to compare a set of networks. In this example, we are tackling the question of "how transitive is football?" and assess structural differences among a set of football leagues. 
+
+```{r}
+#| label: football_triad
+data("football_triad")
+```
+
+`football_triad` is a list which contains networks of 112 football leagues as igraph objects. A directed link between
+team A and B indicates that A won a match against B. Note that there can also be an edge from B to A,
+since most leagues play a double round robin. For the sake of simplicity, all draws were deleted so that
+there could also be null ties between two teams if both games ended in a draw.
+
+Below, we calculate the triad census for all network at once using `lapply()`.
+The function returns the triad census for each network as a list, which we turn into a matrix
+in the second step. Afterwards, we manually add the row and column names of the matrix.
+
+```{r}
+#| label: football_census
+footy_census <- lapply(football_triad, triad_census)
+footy_census <- matrix(unlist(footy_census), ncol = 16, byrow = T)
+rownames(footy_census) <- sapply(football_triad, function(x) x$name)
+colnames(footy_census) <- c(
+    "003", "012", "102", "021D", "021U", "021C", "111D", "111U",
+    "030T", "030C", "201", "120D", "120U", "120C", "210", "300"
+)
+
+# normalize to make proportions comparable across leagues
+footy_census_norm <- footy_census / rowSums(footy_census)
+
+# check the Top 5 leagues
+idx <- which(rownames(footy_census) %in% c(
+    "england", "spain", "germany",
+    "italy", "france"
+))
+footy_census[idx, ]
+```
+
+Notice how the transitive triad (030T) has the largest count in the top leagues, hinting toward the childhood wisdom:
+"If A wins against B and B wins against C, then A must win against C".
+
+In empirical studies, we are not necessarily only interested in transitive triads, but rather how the triad census profiles compare across networks. We follow [Kathrine Faust's](https://doi.org/10.1111%2Fj.1467-9531.2007.00179.x) suggestion and do a singular value decomposition (SVD) on the normalized triad census matrix.
+
+```{r svd_footy}
+footy_svd <- svd(footy_census_norm)
+```
+
+SVDs are used to reduce the dimensionality of the data, but retaining most of the information. In our case, the 
+data is 16 dimensional, which is impossible to visualize to compare the networks. With an SVD, we can reduce it to two dimensions and get a better visual overview.
+
+```{r}
+#| label: plot_svd_u
+#| echo: false
+#| fig-width: 12
+#| fig-height: 6
+
+data.frame(u1 = footy_svd$d[1]*footy_svd$u[,1], 
+           u2 = footy_svd$d[2]*footy_svd$u[,2],
+           league = rownames(footy_census)) |>
+  ggplot(aes(x=u1,y=u2))+
+  geom_point()+
+  ggrepel::geom_text_repel(aes(label=league))+
+  theme_minimal()+
+  theme(axis.title = element_text(size=16))+
+  labs(x="First singular vector, multipled by singular value",
+       y="Second singular vector, multipled by singular value")
+
+```
+
+How to interpret the dimensions? To investigate this question, we take a closer look at the first two dimensions and compare it to some network descriptives. For the sake of brevity, we here only look at the density and proportion of 030T triads. In
+general, any node/dyad/triad level statistic could be used.
+
+```{r}
+#| label: svd1_density
+#| echo: false
+#| fig-width: 12
+#| fig-height: 6
+
+data.frame(
+    y = footy_svd$d[1] * footy_svd$u[, 1],
+    x = sapply(football_triad, graph.density)
+) |>
+    ggplot(aes(x, y)) +
+    geom_point() +
+    theme_minimal() +
+    theme(axis.title = element_text(size = 16)) +
+    labs(x = "density", y = "First singular vector, multipled by singular value")
+
+```
+
+Density doesn't really seem to be related to the first dimension in this case (in many cases it is!). Might be worthwhile to
+explore this further
+
+```{r}
+#| label: svd2_030T
+#| echo: false
+#| fig-width: 12
+#| fig-height: 6
+
+data.frame(
+    y = footy_svd$d[2] * footy_svd$u[, 2],
+    x = footy_census_norm[, 9]
+) |>
+    ggplot(aes(x, y)) +
+    geom_point() +
+    theme_minimal() +
+    theme(axis.title = element_text(size = 16)) +
+    labs(x = "fraction of 030T", y = "Second singular vector, multipled by singular value")
+```
+
+For the second dimension, we get a clearer association. It seems that the fraction of transitive triads 
+is a good indicator for structural differences among leagues.
