@@ -23,27 +23,7 @@ V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 V(gotS1)$size <- degree(gotS1)
 ```
 
-## Miscellaneous
-
-Everything we covered so far should be enough to produce nice network visualizations for scientific publications. However, `ggraph` has a lot more advanced functions/parameter settings to further enhance your visualization. 
-If you are looking for something specific, it is always a good idea to read the documentation of the geoms. 
-
-Some things that I frequently use are the following:
-
-- change the `end_cap` in `geom_edge_link()` to end edges before reaching the node. This is helpful
-  for directed edges to not make the arrows disappear.
-- `legend.position` in `theme()` controls all legends at once. If you don't want to show a specific legend, 
- use `guide = "none"` in the respective `scale_*` function.
-- use `scale_color_viridis_c()` and `scale_color_viridis_d()`. The viridis colour palette makes plots easier to read by those with colorblindness and print well in grey scale.
-
-The stress layout also works well with medium to large graphs. 
-
-![](assets/img/coauthor_cran.png)
-
-The network shows the biggest componentn of the co-authorship network of R package developers on CRAN (~12k nodes)
-
-If you want to go beyond ~20k nodes, then you may want to switch to `layout_with_pmds()` or
-`layout_with_sparse_stress()` which are optimized to work with large graphs.
+Everything that was covered so far should be enough to produce nice network visualizations, especially for scientific publications. However, `ggraph` has a lot more advanced functions/parameter settings to further enhance your visualization.  If you are looking for something specific, it is always a good idea to read the documentation of the geoms. 
 
 ## use the ggforce
 
@@ -111,7 +91,7 @@ ggraph(g, #|
 ```
 
 If you want to avoid node overlaps, you can use `geom_node_voronoi()`.
-So this is actually already implemented in {{ggraph}}, but originates from `geom_voronoi_tile()`.
+So this is actually already implemented in `ggraph`, but originates from `geom_voronoi_tile()`.
 
 ```{r}
 #| label: network-voronoi
@@ -329,3 +309,13 @@ To use the addin, simply highlight the variable name of your network within an R
 choose the SNAhelper from the Addins drop-down menu within RStudio. You can find more about the 
 Addin on its dedicated [pkgdown page](http://snahelper.schochastics.net)
 
+
+## Misc
+
+Some things that I frequently use are the following:
+
+- change the `end_cap` in `geom_edge_link()` to end edges before reaching the node. This is helpful
+  for directed edges to not make the arrows disappear.
+- `legend.position` in `theme()` controls all legends at once. If you don't want to show a specific legend, 
+ use `guide = "none"` in the respective `scale_*` function.
+- use `scale_color_viridis_c()` and `scale_color_viridis_d()`. The viridis colour palette makes plots easier to read by those with colorblindness and print well in grey scale.

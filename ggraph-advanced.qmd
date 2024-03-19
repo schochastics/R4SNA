@@ -1,4 +1,4 @@
-# Advanced ggraph 
+# Advanced Layouts 
 
 ```{r}
 #| label: libraries
@@ -9,10 +9,8 @@ library(graphlayouts)
 library(networkdata)
 ```
 
-## Advanced Layouts
 ```{r}
 #| label: libraries1
-#| include: false
 library(igraph)
 library(ggraph)
 library(graphlayouts)
@@ -36,7 +34,20 @@ V(gotS1)$size <- degree(gotS1)
 
 While “stress” is the key layout algorithm in `graphlayouts`, there are other, more specialized layouts that can be used for different purposes. In this part, we work through some examples with concentric layouts and learn how to disentangle extreme "hairball" networks.
 
-### Concentric layouts
+## Large Networks
+
+The stress layout also works well with medium to large graphs. 
+
+![](assets/img/coauthor_cran.png)
+
+The network shows the biggest componentn of the co-authorship network of R package developers on CRAN (~12k nodes)
+
+If you want to go beyond ~20k nodes, then you may want to switch to `layout_with_pmds()` or
+`layout_with_sparse_stress()` which are optimized to work with large graphs.
+
+These are capable to deal with networks with several 100,000 nodes.
+
+## Concentric Layouts
 
 Circular layouts are generally not advisable. Concentric circles, on the other hand, help to emphasize the position of certain nodes in the network. The `graphlayouts` package has two function to create concentric layouts, `layout_with_focus()` and `layout_with_centrality()`.
 
@@ -102,7 +113,7 @@ ggraph(gotS1, layout = "centrality", cent = graph.strength(gotS1)) +
 (*Concentric layouts are not only helpful to focus on specific nodes, but also make for a 
 good tool to visualize ego networks.*)
 
-### Backbone layout
+## Backbone Layout
 
 `layout_as_backbone()` is a layout algorithm that can help emphasize hidden group structures. To illustrate the performance of the algorithm, we create an artificial network with a subtle group structure using `sample_islands()` from `igraph`.
 
@@ -168,7 +179,7 @@ Left is the ordinary stress layout and right the backbone layout.
 
 ![](assets/img/facebook.png)
 
-### Longitudinal networks
+## Longitudinal Networks
 
 Longitudinal network data usually comes in the form of panel data, gathered at different points in time. We thus have a series of snapshots that need to be visualized in a way that individual nodes are easy to trace without the layout becoming to awkward. 
 
@@ -336,7 +347,7 @@ ggplot() +
 
 ![](assets/img/s50.gif)
 
-### Multilevel networks
+## Multilevel networks
 
 In this section, you will get to know  `layout_as_multilevel()`, a layout algorithm in the `raphlayouts` package which
 can be use to visualize multilevel networks. 
@@ -363,7 +374,7 @@ The parameters `alpha` and `beta` control the perspective of the projection.
 The default values seem to work for many instances, but may not always be optimal. 
 As a rough guideline: `beta` rotates the plot around the y axis (in 3D) and `alpha` moves the POV up or down.
 
-#### Complete layout
+### Complete layout
 
 A layout for the complete network can be computed via `layout_as_multilevel()` setting `type = "all"`.
 Internally, the algorithm produces a constrained 3D stress layout (each level on a different y plane) which is then 
@@ -408,7 +419,7 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
     theme(legend.position = "none")
 ```
 
-#### Separate layouts for both levels
+### Separate layouts for both levels
 
 In many instances, there may be different structural properties inherent to the levels of 
 the network. In that case, two layout functions can be passed to `layout_as_multilevel()` to deal 
@@ -476,7 +487,7 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
     theme(legend.position = "none")
 ```
 
-#### Fix only one level
+### Fix only one level
 
 This layout can be used to emphasize one intra-level structure. The layout 
 of the second level is calculated in a way that optimizes inter-level edge placement. 
@@ -528,7 +539,7 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
     theme(legend.position = "none")
 ```
 
-#### 3D with threejs
+### 3D with threejs
 
 Instead of the default 2D projection, `layout_as_multilevel()` can also return the 3D layout 
 by setting `project2d = FALSE`. The 3D layout can then be used with e.g. `threejs` to produce an interactive
