@@ -1,2 +1,203 @@
 # Basic Network Descriptives
 
+```{r}
+#| message: false
+library(igraph)
+library(networkdata)
+```
+
+```{r}
+#| include: false
+
+library(ggraph)
+```
+
+## Introduction
+
+## Basic Network Notation
+
+Networks are commonly represented with an **adjacency matrix** or via an **edgelist**. If you are interested 
+Below, we represent friendship relations between Bob, Ann, and Steve as a matrix and an edgelist.
+```{r}
+#| label: simple_struc
+# adjacency matrix#|
+A <- matrix(
+    c(0, 1, 1, 1, 0, 1, 1, 1, 0),
+    nrow = 3, ncol = 3, byrow = TRUE
+)
+
+rownames(A) <- colnames(A) <- c("Bob", "Ann", "Steve")
+A
+# edgelist
+el <- matrix(c("Bob", "Ann", "Bob", "Steve", "Ann", "Steve"),
+    nrow = 3, ncol = 2, byrow = TRUE
+)
+el
+```
+
+The adjacency matrix $A$ is symmetric, meaning that the relations are undirected, i.e. Bob is friends with
+Ann and Ann is friends with Bob. In general, $A[i,j]=1$, if there is a relation between $i$ and $j$.
+If $A[i,j]=1$ does not imply $A[j,i]=1$ then $A$ defines a directed network.
+
+Once we have defined an edgelist or an adjacency matrix, we can turn them into `igraph` objects as follows.
+
+```{r}
+#| label: simple-graph
+g1 <- graph_from_adjacency_matrix(A, mode = "undirected", diag = FALSE)
+
+g2 <- graph_from_edgelist(el, directed = FALSE)
+# g1 and g2 are the same graph so only printing g1
+g1
+```
+
+The printed summary shows some general descriptives of the graph.
+The string "UN--" in the first line indicates that the network is *U*ndirected (*D* for directed graphs) and has a *N*ame attribute (we named the nodes Bob, Ann, and Steve). The third and forth character are *W*, if there is a edge weight attribute, and *B* if the network is bipartite (there exists a node attribute "type"). The following number indicate the number of nodes and edges.
+The second line lists all graph, node and edge variables. Here, we only have a node attribute "name". 
+
+The conversion from edgelist/adjacency matrix into an igraph object is quite straightforward. The only difficulty is setting the parameters correctly (Is the network directed or not?), especially for edgelists where it may not immediately be obvious if the network is directed or not.
+
+In the following, we use a larger network to introduce some terminology.
+
+```{r load_greys}
+data("greys")
+```
+
+```{r}
+#| label: plot_greys
+#| echo: false
+#| fig-width: 12
+#| fig-height: 8
+ggraph(greys, "stress", bbox = 10) +
+    geom_edge_link0(edge_color = "grey66") +
+    geom_node_point(shape = 21, aes(fill = sex), size = 5, show.legend = FALSE) +
+    geom_node_text(aes(label = name), repel = TRUE) +
+    scale_fill_manual(values = c("grey66", "#E8813A", "#4D189D")) +
+    theme_void()
+```
+
+The "greys" network is part of the `networkdata` package and consists of most characters from the show "Grey's Anatomy" and who hooked up with whom.
+
+```{r print_greys}
+greys
+```
+
+## Simple Descriptives
+
+The **density** of a network is defined as the fraction of the potential edges in a network that are actually present.
+```{r}
+#| label: density
+c(
+    edge_density(make_empty_graph(10)),
+    edge_density(greys),
+    edge_density(make_full_graph(10))
+)
+```
+
+The density of an empty network is $0$ and for the full network it is $1$. The density of empirical network 
+is somewhere in between but as the number of nodes increases, we'd expect the density to decrease and the network 
+becomes quite sparse.
+
+A **shortest path** is a path that connects two nodes in a network with a minimal number of edges. The length of a shortest path is called the **distance** between two nodes.
+```{r}
+#| label: shortest_path
+shortest_paths(greys,from = "Alex Karev",to = "Owen Hunt",output = "vpath")
+```
+
+```{r}
+#| label: greys_shortest_path
+#| echo: false
+#| fig-width: 12
+#| fig-height: 8
+
+E(greys)$epath <- FALSE
+E(greys)$epath[as.integer(shortest_paths(greys,from = "Alex Karev",to = "Owen Hunt",output = "epath")$epath[[1]])] <- TRUE
+
+ggraph(greys,"stress",bbox=10) + 
+  geom_edge_link0(aes(color=epath,width=epath),show.legend = FALSE)+
+  geom_node_point(shape=21,aes(fill=sex),size=5,show.legend = FALSE)+
+  geom_node_text(aes(label=name),repel = TRUE)+
+  scale_fill_manual(values=c("grey66","#E8813A","#4D189D"))+
+  scale_edge_color_manual(values=c("grey66","firebrick3"))+
+  scale_edge_width_manual(values=c(0.5,1.5))+
+  theme_void()
+
+```
+
+```{r}
+#| label: distances
+distances(greys)[1:10, 1:10]
+```
+
+The Grey's Anatomy network is **disconnected** and consists of $4$ **connected components**. There are no 
+shortest paths between components, which means that the distance is not measurable and set to infinity.
+
+The length of the longest shortest path is called the **diameter** of the network.
+```{r}
+#| label: diameter
+diameter(greys)
+```
+
+```{r}
+#| label: greys_diameter
+#| echo: false
+#| fig-width: 12
+#| fig-height: 8
+
+E(greys)$epath <- FALSE
+E(greys)$epath[as.integer(shortest_paths(greys,from = "Finn Dandridge",to = "Colin Marlow",output = "epath")$epath[[1]])] <- TRUE
+
+ggraph(greys,"stress",bbox=10) + 
+  geom_edge_link0(aes(color=epath,width=epath),show.legend = FALSE)+
+  geom_node_point(shape=21,aes(fill=sex),size=5,show.legend = FALSE)+
+  geom_node_text(aes(label=name),repel = TRUE)+
+  scale_fill_manual(values=c("grey66","#E8813A","#4D189D"))+
+  scale_edge_color_manual(values=c("grey66","firebrick3"))+
+  scale_edge_width_manual(values=c(0.5,1.5))+
+  theme_void()
+
+```
+
+
+**Transitivity** measures the probability that the neighbors of a node are also connected. This is also called the **clustering coefficient**.  
+```{r}
+#| label: transitivity
+transitivity(greys, type = "global")
+transitivity(greys, type = "local", isolates = "zero")
+```
+The global transitivity of an undirected network is the ratio of the triangles and the connected triples in the network.
+Local transitivity of a node is the ratio of the triangles connected to the node and the triples centered on the node itself.
+In social networks, we generally assume that the transitivity is quite high ("the friend of my friend is also my friend"). In our 
+example, we have zero for all values. This is due to the fact that a triangle would require a same sex hook-up which did not occur (*Disclaimer: I never watched the show and gathered the hook ups from various internet resources. So this may well be wrong.*).
+
+For directed networks, a measure of importance is **reciprocity**, which is defined as the proportion of mutual edges between nodes. To illustrate the measure, we use a network of grooming relations among a group of rhesus monkeys.
+
+```{r}
+#| label: reciprocity_example
+data("rhesus")
+reciprocity(rhesus)
+```
+
+About `r round(reciprocity(rhesus)*100)`% of edges are reciprocated in the network. The figure below highlights the reciprocated edges. 
+
+```{r}
+#| label: rhesus_net
+#| echo: false
+E(rhesus)$mutual <- is.mutual(rhesus)
+#plot
+ggraph(rhesus,"stress")+
+  geom_edge_parallel( aes(filter =! mutual), edge_color="grey66", edge_width=0.5,
+    arrow = arrow(angle = 15, length = unit(0.15, "inches"),
+                  ends = "last", type = "closed"),n=2,end_cap = circle(8,"pt")
+    
+  )+
+  geom_edge_parallel( aes(filter=mutual), edge_color="black", edge_width=0.5,
+                      arrow = arrow(angle = 15, length = unit(0.15, "inches"),
+                                    ends = "last", type = "closed"),n=2,end_cap = circle(8,"pt")
+                      
+  )+
+  geom_node_point(shape=21,size=8,aes(fill=gender))+
+  scale_fill_manual(values=c("#E8813A","#4D189D"),name="")+
+  theme_void()+
+  theme(legend.position = "bottom")
+
+```
