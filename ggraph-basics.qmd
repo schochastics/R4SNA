@@ -1,5 +1,6 @@
 # Basics of ggraph
 
+## Introduction
 ```{r}
 #| label: libraries
 #| message: false
@@ -10,24 +11,9 @@ library(networkdata)
 
 data("got")
 gotS1 <- got[[1]]
-
 ```
 
-
-## Quick plots
-
-It is always a good idea to take a quick look at your network before starting any analysis. 
-This can be done with the function `autograph()` from the `ggraph` package.
-```{r}
-#| label: quickplot
-autograph(gotS1)
-```
-
-`autograph()` allows you to specify node/edge colours too but it really is only meant to 
-give you a quick overview without writing a massive amount of code. Think of it as the
-`plot()` function for `ggraph`
-
-Before we continue, we add some more node attributes to the GoT network that can be used during visualization.
+We add some more node attributes to the GoT network that can be used for visualization purposes.
 
 ```{r}
 #| label: prep_got
@@ -44,12 +30,7 @@ V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 V(gotS1)$size <- degree(gotS1)
 ```
 
-
-## Grammar of Graphs
-Once you want to move beyond quick plots, you need to understand the basics of, or at least develop a feeling for, 
-the grammar of graphics to work with `ggraph`.
-
-Instead of explaining the grammar, let us directly jump into some code and work through it one line at a time.
+To champion `ggraph` you need to understand the basics of, or at least develop a feeling for, the grammar of graphics. Instead of explaining the grammar, let us directly jump into some code and work through it one line at a time.
 
 ```{r}
 #| label: got-plot
@@ -67,8 +48,7 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "none")
 ```
 
-`ggraph` works with layers. Each layer adds a new feature to the plot and thus builds the figure
-step-by-step. We will work through each of the layers separately in the following sections.  
+`ggraph` works with layers. Each layer adds a new feature to the plot and thus builds the figure step-by-step. We will work through each of the layers separately in the following sections.  
 
 ## Layout
 
@@ -127,8 +107,7 @@ c(
   "geom_edge_loop", "geom_edge_loop0"
 )
 ```
-You can do a lot of fancy things with these `geoms` but for a standard network plot,
-you should always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it reduces readability. Always go with straight lines! If your network has multiple edges between two nodes, then you can switch to `geom_edge_parallel()`.
+You can do a lot of fancy things with these `geoms` but for a standard network plot, you should almost always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it reduces readability. Always go with straight lines! If your network has multiple edges between two nodes, then you can switch to `geom_edge_parallel()`.
 
 In case you are wondering what the "0" stands for: The standard `geom_edge_link()` draws 100 dots on each edge compared to only two dots (the endpoints) in `geom_edge_link0()`.
 This is done to allow, e.g., gradients along the edge. 
@@ -137,7 +116,6 @@ This is done to allow, e.g., gradients along the edge.
 #| label: got-plot-grad
 #| fig-width: 10
 #| fig-height: 6
-#| echo: false
 ggraph(gotS1, layout = "stress") +
   geom_edge_link(aes(alpha = after_stat(index)), edge_colour = "black") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
@@ -148,16 +126,9 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "none")
 ```
 
-You can reproduce this figure by substituting  
-```r
-geom_edge_link(aes(edge_alpha = after_stat(index)), edge_colour = "black")
-```
-in the code above. 
-
 The drawback of using `geom_edge_link()` is that the time to render the plot increases and so 
 does the size of the file if you export the plot ([example](https://twitter.com/schochastics/status/1091355396265201664))
-Typically, you do not need gradients along an edge. Hence, `geom_edge_link0()` should be your default choice
-to draw edges.
+Typically, you do not need gradients along an edge. Hence, `geom_edge_link0()` should be your default choice to draw edges.
 
 Within `geom_edge_link0`, you can specify the appearance of the edge, either by mapping edge attributes to aesthetics
 or setting them globally for the graph. Mapping attributes to aesthetics is done within `aes()`.
@@ -394,7 +365,9 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "bottom")
 ```
 
-## Recreate the polblogs viz
+This covers all the necessary steps to produce a standard network plot with `ggraph`. More advanced techniques will be covered in the next sections. We conclude the introductory part by recreating a quite famous network visualization 
+
+## Extended Example
 
 In this section, we do a little code through to recreate the figure shown below.
 
