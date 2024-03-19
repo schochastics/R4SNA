@@ -241,7 +241,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ggraph-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Advanced ggraph</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Advanced Layouts</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -319,11 +319,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#miscellaneous" id="toc-miscellaneous" class="nav-link active" data-scroll-target="#miscellaneous"><span class="header-section-number">14.1</span> Miscellaneous</a></li>
-  <li><a href="#use-the-ggforce" id="toc-use-the-ggforce" class="nav-link" data-scroll-target="#use-the-ggforce"><span class="header-section-number">14.2</span> use the ggforce</a></li>
-  <li><a href="#small-tricks-for-common-problems" id="toc-small-tricks-for-common-problems" class="nav-link" data-scroll-target="#small-tricks-for-common-problems"><span class="header-section-number">14.3</span> Small tricks for common problems</a></li>
-  <li><a href="#edge-bundling" id="toc-edge-bundling" class="nav-link" data-scroll-target="#edge-bundling"><span class="header-section-number">14.4</span> Edge bundling</a></li>
-  <li><a href="#snahelper" id="toc-snahelper" class="nav-link" data-scroll-target="#snahelper"><span class="header-section-number">14.5</span> snahelper</a></li>
+  <li><a href="#use-the-ggforce" id="toc-use-the-ggforce" class="nav-link active" data-scroll-target="#use-the-ggforce"><span class="header-section-number">14.1</span> use the ggforce</a></li>
+  <li><a href="#small-tricks-for-common-problems" id="toc-small-tricks-for-common-problems" class="nav-link" data-scroll-target="#small-tricks-for-common-problems"><span class="header-section-number">14.2</span> Small tricks for common problems</a></li>
+  <li><a href="#edge-bundling" id="toc-edge-bundling" class="nav-link" data-scroll-target="#edge-bundling"><span class="header-section-number">14.3</span> Edge bundling</a></li>
+  <li><a href="#snahelper" id="toc-snahelper" class="nav-link" data-scroll-target="#snahelper"><span class="header-section-number">14.4</span> snahelper</a></li>
+  <li><a href="#misc" id="toc-misc" class="nav-link" data-scroll-target="#misc"><span class="header-section-number">14.5</span> Misc</a></li>
   </ul>
 </nav>
     </div>
@@ -349,22 +349,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="miscellaneous" class="level2" data-number="14.1">
-<h2 data-number="14.1" class="anchored" data-anchor-id="miscellaneous"><span class="header-section-number">14.1</span> Miscellaneous</h2>
-<p>Everything we covered so far should be enough to produce nice network visualizations for scientific publications. However, <code>ggraph</code> has a lot more advanced functions/parameter settings to further enhance your visualization. If you are looking for something specific, it is always a good idea to read the documentation of the geoms.</p>
-<p>Some things that I frequently use are the following:</p>
-<ul>
-<li>change the <code>end_cap</code> in <code>geom_edge_link()</code> to end edges before reaching the node. This is helpful for directed edges to not make the arrows disappear.</li>
-<li><code>legend.position</code> in <code>theme()</code> controls all legends at once. If you don’t want to show a specific legend, use <code>guide = "none"</code> in the respective <code>scale_*</code> function.</li>
-<li>use <code>scale_color_viridis_c()</code> and <code>scale_color_viridis_d()</code>. The viridis colour palette makes plots easier to read by those with colorblindness and print well in grey scale.</li>
-</ul>
-<p>The stress layout also works well with medium to large graphs.</p>
-<p><img src="assets/img/coauthor_cran.png" class="img-fluid"></p>
-<p>The network shows the biggest componentn of the co-authorship network of R package developers on CRAN (~12k nodes)</p>
-<p>If you want to go beyond ~20k nodes, then you may want to switch to <code>layout_with_pmds()</code> or <code>layout_with_sparse_stress()</code> which are optimized to work with large graphs.</p>
-</section>
-<section id="use-the-ggforce" class="level2" data-number="14.2">
-<h2 data-number="14.2" class="anchored" data-anchor-id="use-the-ggforce"><span class="header-section-number">14.2</span> use the ggforce</h2>
+<p>Everything that was covered so far should be enough to produce nice network visualizations, especially for scientific publications. However, <code>ggraph</code> has a lot more advanced functions/parameter settings to further enhance your visualization. If you are looking for something specific, it is always a good idea to read the documentation of the geoms.</p>
+<section id="use-the-ggforce" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="use-the-ggforce"><span class="header-section-number">14.1</span> use the ggforce</h2>
 <p>The <code>ggforce</code> package works pretty nicely with <code>ggraph</code>. You can, for instance, use the <code>geom_mark_*()</code> functions to highlight clusters.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">665</span>)</span>
@@ -433,7 +420,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>If you want to avoid node overlaps, you can use <code>geom_node_voronoi()</code>. So this is actually already implemented in {{ggraph}}, but originates from <code>geom_voronoi_tile()</code>.</p>
+<p>If you want to avoid node overlaps, you can use <code>geom_node_voronoi()</code>. So this is actually already implemented in <code>ggraph</code>, but originates from <code>geom_voronoi_tile()</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(g,</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">layout =</span> <span class="st">"manual"</span>,</span>
@@ -467,8 +454,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="small-tricks-for-common-problems" class="level2" data-number="14.3">
-<h2 data-number="14.3" class="anchored" data-anchor-id="small-tricks-for-common-problems"><span class="header-section-number">14.3</span> Small tricks for common problems</h2>
+<section id="small-tricks-for-common-problems" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="small-tricks-for-common-problems"><span class="header-section-number">14.2</span> Small tricks for common problems</h2>
 <blockquote class="blockquote">
 <p>“How can I achieve that my directed edges stop at the node border, independent from the node size?”</p>
 </blockquote>
@@ -630,8 +617,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="edge-bundling" class="level2" data-number="14.4">
-<h2 data-number="14.4" class="anchored" data-anchor-id="edge-bundling"><span class="header-section-number">14.4</span> Edge bundling</h2>
+<section id="edge-bundling" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="edge-bundling"><span class="header-section-number">14.3</span> Edge bundling</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gr <span class="ot">&lt;-</span> edgebundle<span class="sc">::</span>us_flights</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"state"</span>)</span>
@@ -672,13 +659,22 @@ Figure&nbsp;14.2
 </div>
 </div>
 </section>
-<section id="snahelper" class="level2" data-number="14.5">
-<h2 data-number="14.5" class="anchored" data-anchor-id="snahelper"><span class="header-section-number">14.5</span> snahelper</h2>
+<section id="snahelper" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="snahelper"><span class="header-section-number">14.4</span> snahelper</h2>
 <p>Even with a lot of experience, it may still be a painful process to produce nice looking figures by writing <code>ggraph</code> code. Enter the <code>snahelper</code>.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"snahelper"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The <code>snahelper</code> is an RStudio addin which provides you with a GUI to plot networks. Instead of writing code, you simply use drop-down menus to assign attributes to aesthetics or change appearances globally. One great feature of the addin is that you can adjust the position of nodes individually if you are not satisfied with their location. Once you are done, you can either directly export the figure to png or automatically insert the code to produce the figure into your script. That way, you can review the code and hopefully learn something from it. Below if a demo that shows its functionality.</p>
 <p><img src="https://raw.githubusercontent.com/schochastics/snahelper/master/man/figures/snahelper.gif" class="img-fluid"></p>
 <p>To use the addin, simply highlight the variable name of your network within an R script and choose the SNAhelper from the Addins drop-down menu within RStudio. You can find more about the Addin on its dedicated <a href="http://snahelper.schochastics.net">pkgdown page</a></p>
+</section>
+<section id="misc" class="level2" data-number="14.5">
+<h2 data-number="14.5" class="anchored" data-anchor-id="misc"><span class="header-section-number">14.5</span> Misc</h2>
+<p>Some things that I frequently use are the following:</p>
+<ul>
+<li>change the <code>end_cap</code> in <code>geom_edge_link()</code> to end edges before reaching the node. This is helpful for directed edges to not make the arrows disappear.</li>
+<li><code>legend.position</code> in <code>theme()</code> controls all legends at once. If you don’t want to show a specific legend, use <code>guide = "none"</code> in the respective <code>scale_*</code> function.</li>
+<li>use <code>scale_color_viridis_c()</code> and <code>scale_color_viridis_d()</code>. The viridis colour palette makes plots easier to read by those with colorblindness and print well in grey scale.</li>
+</ul>
 
 
 </section>
@@ -1095,8 +1091,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./ggraph-advanced.html" class="pagination-link" aria-label="Advanced ggraph">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Advanced ggraph</span></span>
+      <a href="./ggraph-advanced.html" class="pagination-link" aria-label="Advanced Layouts">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Advanced Layouts</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
