@@ -2,6 +2,7 @@
 
 ```{r}
 #| label: libraries
+#| message: false
 library(igraph)
 library(networkdata)
 ```
@@ -87,8 +88,8 @@ ggraph(clique_graph, "stress") +
 
 ```
 
-Cliques are the prototypical and most strict definition of a cohesive subgroup of a graph. In empirical networks, however, we rarely encounter situations where we can partition the whole network into a set of 
-cliques. A relaxed version of this problem is that of clustering, also referred to as **comunity detection**. 
+Cliques are the prototypical and most strict definition of a cohesive subgroup in a network. In empirical networks, however, we rarely encounter situations where we can partition the whole network into a set of 
+cliques. The relaxed version of this problem is that of clustering, also referred to as **comunity detection**. 
 
 ## Comunity detection
 
@@ -105,7 +106,7 @@ g <- sample_islands(n1, n2, 0.9, 5)
 g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
 ggraph(g, "stress") +
-    geom_edge_link0(edge_linewidth =0.2, edge_color = "grey66") +
+    geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
     geom_node_point(shape = 21, size = 5, aes(fill = grp), show.legend = FALSE) +
     theme_void()
 ```
@@ -123,7 +124,7 @@ g <- sample_islands(n1, n2, 0.25, 15)
 g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
 ggraph(g, "stress") +
-    geom_edge_link0(edge_linewidth =0.2, edge_color = "grey66") +
+    geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
     geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
     theme_void()
 
@@ -230,10 +231,10 @@ The figure below shows such a graph, consisting of 50 cliques of size 5.
 ```{r}
 #| label: plot-K50-blank
 #| echo: false
-#| fig-width: 8
-#| fig-height: 8
+#| width: 8
+#| height: 8
 ggraph(K50, "stress") +
-    geom_edge_link0(edge_linewidth =0.6, edge_color = "grey66") +
+    geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
     geom_node_point(shape = 21, fill = "grey66", size = 2, show.legend = FALSE) +
     theme_void() +
     coord_fixed()
@@ -262,12 +263,12 @@ The figure below shows the clusters computed with the louvain method in grey and
 ```{r}
 #| label: plot-K50-clu
 #| echo: false
-#| fig-width: 8
-#| fig-height: 8
+#| width: 8
+#| height: 8
 V(K50)$louvain <- membership(clu_louvain)
 V(K50)$leiden <- membership(clu_leiden)
 ggraph(K50, "stress") +
-    geom_edge_link0(edge_linewidth =0.6, edge_color = "grey66") +
+    geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
     geom_node_point(shape = 21, fill = "grey66", size = 1.5, show.legend = FALSE) +
     ggforce::geom_mark_ellipse(aes(x, y, group = louvain), expand = unit(4.5, "pt"), fill = "black", alpha = 0.25) +
     ggforce::geom_mark_circle(aes(x, y, group = leiden), expand = unit(4.5, "pt"), col = "firebrick3", size = 1) +
@@ -278,13 +279,150 @@ ggraph(K50, "stress") +
 
 If you are interested in the technical details of the Leiden method, check out the [original paper](https://www.nature.com/articles/s41598-019-41695-z). 
 
----
+## Blockmodeling
 
-# Blockmodeling
+Blockmodeling is a more formal approach that aims to simplify the network's structure into blocks based on patterns of connections between nodes. Instead of focusing on the density of connections, it categorizes the relationships between different groups (or blocks) of nodes according to the roles they play in the network.
 
-Blockmodeling is similar to 
+The goal is to reduce the complexity of the network by identifying roles and positions within the network, where nodes in the same block have similar patterns of connections to other blocks, rather than necessarily being densely connected to each other.
 
-(Stochastic) Blockmodels, for instance,
-can also be used to find community structures. Several packages exist for this, such as `randnet` or `blockmodels`.
+Blockmodeling involves partitioning the network into blocks and then modeling the connections between these blocks. It can be done through conventional (deterministic) or stochastic approaches, including k-block modeling and stochastic blockmodeling.
 
----
+Blockmodeling is particularly useful in sociology for role analysis and in organizational studies, where it's important to understand how different groups (e.g., departments, hierarchies) interact, regardless of the density of the connections within each group.
+
+There are several packages that implement different kinds of (stochastic) blockmodels. The most basic approaches are implemented in the package `blockmodeling`.
+
+```{r}
+#| label: lib-blockmodel
+#| message: false
+library(blockmodeling)
+```
+
+In principle, blockmodels can also be used for clustering, as we will illustrate on this random network with 3 dense blocks of size 20.
+
+```{r}
+#| label: random-graph2
+#| echo: FALSE
+n1 <- 3
+n2 <- 20
+
+set.seed(1234)
+g <- sample_islands(n1, n2, 0.75, 5)
+g <- simplify(g)
+V(g)$grp <- rep(LETTERS[1:n1], each = n2)
+ggraph(g, "stress") +
+    geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
+    geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
+    theme_void()
+
+```
+
+The disadvantage is that we need to specify a lot more parameters than for community detection. 
+```{r}
+#| label: calc-rnd-block
+A <- as_adj(g)
+blk <- matrix(
+    c(
+        "com", "nul", "nul",
+        "nul", "com", "nul",
+        "nul", "nul", "com"
+    ),
+    nrow = 3
+)
+blk
+res <- optRandomParC(
+    M = A, k = 3, approaches = "bin",
+    blocks = blk, rep = 5, mingr = 20, maxgr = 20
+)
+```
+
+- `k`: number of blocks needs to be specified beforehand
+- `approaches`: defines the type of blockmodel approach to be used. "bin" is for binary and "val" for valued blockmodeling. There are several more possibilities available in the help of the function
+- `blocks`: allowed block types. Basically, what defines a block in the network. In our example we give a strict patterning that corresponds to a clustering. The diagonal blocks should be complete ("com") and offdiagonals should be empty ("nul"). So in the best case, we have 3 disconnected cliques. Again, consult the help for more available block options.
+- `rep`: number of random starting partitions to start the iteration from
+- `mingr` and `maxgr`: min and max size of the blocks. 
+
+the result can be accessed with `clu`.
+```{r}
+clu(res)
+```
+
+Note that this type of Blockmodeling is computationally expensive and best suited for small networks. 
+
+Looking at a more realistic dataset, we load the `baker` dataset from the `blockmodeling` package. The dataset includes citation data between social work journals for 1985-86.
+
+```{r}
+#| label: load-baker
+data("baker")
+diag(baker) <- 0
+
+plotMat(baker,
+    main = "Baker Network Data",
+    mar = c(1, 1, 3, 1), title.line = 2
+)
+```
+
+First, we run a binary blockmodel. This time we increase the number of repetions to 1000 and instead of giving a lear block structure, we just specify, what type of blocks we want our result to include. How they are distributed, we do not care and let the algorithm decide. We run the optimization in parallel (`nCores = 0`), which requires the package `doParallel` to be installed.
+```{r}
+#| label: baker_binary
+baker_binary <- baker
+baker_binary[baker_binary > 0] <- 1
+
+res_baker_binary <- optRandomParC(
+    M = baker_binary, k = 3, rep = 1000,
+    nCores = 0, blocks = c("nul", "com"), approach = "bin"
+)
+```
+
+The obtained optimal block structure can be accessed via `IM`.
+
+```{r}
+#| label: baker_binary_IM
+IM(res_baker_binary)
+``` 
+
+The resulting blocks can be visualized via the `plot` function.
+```{r}
+#| label: baker-bin
+plot(
+    res_baker_binary,
+    main = "Baker Binary Network Data",
+    mar = c(1, 2, 3, 1), title.line = 2
+)
+```
+
+Now we run a valued blockmodel on the original data. The parameter `preSpecM` is set to the median of the non-zero entries and defines a kind of cutoff for when to consider a value high enough to be a block internal tie.
+```{r}
+#| label: baker_valued
+res_baker_valued <- optRandomParC(
+    M = baker, k = 3, rep = 1000,
+    preSpecM = 13, approach = "val", blocks = c("nul", "com"),
+    nCores = 0
+)
+
+```
+
+
+```{r}
+#| label: baker_valued_IM
+IM(res_baker_valued)
+``` 
+
+
+```{r}
+#| label: baker-val
+plot(
+    res_baker_valued,
+    main = "Baker Valued Network Data",
+    mar = c(1, 2, 3, 1), title.line = 2
+)
+```
+
+### References
+
+Žiberna, A. (2007). Generalized Blockmodeling of Valued Networks. Social Networks, 29(1), 105-126. doi: 10.1016/j.socnet.2006.04.002
+
+Žiberna, A. (2008). Direct and indirect approaches to blockmodeling of valued networks in terms of regular equivalence. Journal of Mathematical Sociology, 32(1), 57-84. doi: 10.1080/00222500701790207
+
+Žiberna, A. (2014). Blockmodeling of multilevel networks. Social Networks, 39(1), 46-61. doi: 10.1016/j.socnet.2014.04.002
+
+## Core-Periphery
