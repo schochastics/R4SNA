@@ -11,8 +11,12 @@ library(networkdata)
 #| label: libraries_silent
 #| include: false
 library(ggraph)
+library(patchwork)
 ```
 
+## Introduction
+
+In this chapter, we explore cohesive subgroups within networks, focusing on cliques, community detection, blockmodeling, and core-periphery structures. Each concept offers a different way to examine how nodes cluster based on connectivity, from tightly-knit cliques, where every member is connected, to broader communities grouped by denser internal links. Blockmodeling abstracts these patterns into roles and relationships, while core-periphery structures reveal hierarchical organization with central and peripheral actors.
 
 ## Cliques 
 
@@ -429,43 +433,69 @@ plot(
 
 ## Core-Periphery
 
+Community detection aims to find clusters or groups of nodes within the network that are more densely connected to each other than to nodes outside the group. The core-periphery structure, in contrast, posits that a network is organized into a densely connected core and a sparsely connected periphery. The core consists of central nodes that are highly connected to each other and also to peripheral nodes. Peripheral nodes, on the other hand, have fewer connections and are mostly connected to nodes in the core rather than to each other. 
+
+the `netutils` package includes a function `core_periphery()` which allows to fit a discrete core-periphery model to a network. 
+
 ```{r}
 #| label: load_netUtils
 library(netUtils)
 ```
 
+To illustrate the function, we construct a graph which has a perfect core-periphery structure, also known as a **split graph**.
 
 ```{r}
 #| label: split-graph
 set.seed(1234)
-sg <- split_graph(n = 50, p = 0.3, core = 0.3)
+sg <- split_graph(n = 50, p = 0.35, core = 0.3)
 ```
+
+The created graph has 50 nodes and 30% of all nodes are in the core. The probability that a periphery node connects to a core node is 0.35.
 
 ```{r}
 #| label: split-graph-img
 #| echo: false
-ggraph(sg, "stress") +
+V(sg)$type <- c("periphery", "core")[V(sg)$core + 1]
+p1 <- ggraph(sg, "stress") +
     geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
-    geom_node_point(shape = 21, fill = "grey25") +
-    theme_graph()
+    geom_node_point(shape = 21, size = 5, aes(fill = type)) +
+    theme_graph() +
+    theme(legend.position = "bottom")
+
+E(sg)$col <- apply(matrix(V(sg)$core[as_edgelist(sg, names = FALSE)], ncol = 2), 1, all)
+E(sg)$type <- c("core - periphery", "core - core")[E(sg)$col + 1]
+p2 <- ggraph(sg, "matrix") +
+    geom_edge_point(mirror = TRUE, aes(edge_color = type)) +
+    coord_fixed() +
+    scale_y_reverse() +
+    theme_graph() +
+    theme(legend.position = "bottom")
+
+p1 + p2
 ```
 
+Running the `core_periphery()` function on this idealized graph should give the optimal result.
 ```{r}
 #| label: split-cp
-core_periphery(sg, method = "rk1_dc")
+core_periphery(sg)
 ```
 
+The function returns a list with two entries. The first, `vec`, returns the membership of nodes. It is one if a node is in the core and 0 if not. The second entry `corr` is the correlation of the adjacency matrix with the ideal adjacency matrix given from the `vec` memberships. In this case, the correlation is one meaning that we have discovered the perfect core-periphery structure. In empirical applications, we rarely expect such a good fit. 
+
+The function also has an argument which allows to use different optimization techniques to find core-periphery structures (the problem of finding the optimal solution is too complex). For illustration, we rewire some edges of the  graph `sg` to destroy the idealized structure and use all implemented optimization methods.
 
 ```{r}
-#| label: baker-cp
-g_baker <- graph_from_adjacency_matrix(
-    baker_binary,
-    mode = "max"
-)
-core_periphery(g_baker, method = "rk1_dc")
-core_periphery(g_baker, method = "rk1_ec")
-core_periphery(g_baker, method = "GA")
+#| label: rewired-cp
+set.seed(45)
+sg1 <- rewire(sg, each_edge(0.25))
+core_periphery(sg1, method = "rk1_dc")
+core_periphery(sg1, method = "rk1_ec")
+core_periphery(sg1, method = "GA")
 ```
+
+`rk1_dc` and `rk1_ec` are so called rank-one matix approximation methods which infer an idealized structure via the degrees and eigenvectors of the adjacency matrix. These methods are extremely fast but might result in a lower quality of the result compared to `GA` which runs a genetic algorithm. 
+
+There are several extensions to this simple discrete core-periphery model. An extension for weighted networks is implemented in the package `ITNr`.
 
 ### References
 
