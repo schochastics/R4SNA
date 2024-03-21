@@ -8,55 +8,15 @@ library(networkdata)
 
 ```{r}
 #| include: false
-
 library(ggraph)
 ```
 
 ## Introduction
 
-## Basic Network Notation
 
-Networks are commonly represented with an **adjacency matrix** or via an **edgelist**. If you are interested 
-Below, we represent friendship relations between Bob, Ann, and Steve as a matrix and an edgelist.
-```{r}
-#| label: simple_struc
-# adjacency matrix#|
-A <- matrix(
-    c(0, 1, 1, 1, 0, 1, 1, 1, 0),
-    nrow = 3, ncol = 3, byrow = TRUE
-)
+## Simple Descriptive Statistics
 
-rownames(A) <- colnames(A) <- c("Bob", "Ann", "Steve")
-A
-# edgelist
-el <- matrix(c("Bob", "Ann", "Bob", "Steve", "Ann", "Steve"),
-    nrow = 3, ncol = 2, byrow = TRUE
-)
-el
-```
-
-The adjacency matrix $A$ is symmetric, meaning that the relations are undirected, i.e. Bob is friends with
-Ann and Ann is friends with Bob. In general, $A[i,j]=1$, if there is a relation between $i$ and $j$.
-If $A[i,j]=1$ does not imply $A[j,i]=1$ then $A$ defines a directed network.
-
-Once we have defined an edgelist or an adjacency matrix, we can turn them into `igraph` objects as follows.
-
-```{r}
-#| label: simple-graph
-g1 <- graph_from_adjacency_matrix(A, mode = "undirected", diag = FALSE)
-
-g2 <- graph_from_edgelist(el, directed = FALSE)
-# g1 and g2 are the same graph so only printing g1
-g1
-```
-
-The printed summary shows some general descriptives of the graph.
-The string "UN--" in the first line indicates that the network is *U*ndirected (*D* for directed graphs) and has a *N*ame attribute (we named the nodes Bob, Ann, and Steve). The third and forth character are *W*, if there is a edge weight attribute, and *B* if the network is bipartite (there exists a node attribute "type"). The following number indicate the number of nodes and edges.
-The second line lists all graph, node and edge variables. Here, we only have a node attribute "name". 
-
-The conversion from edgelist/adjacency matrix into an igraph object is quite straightforward. The only difficulty is setting the parameters correctly (Is the network directed or not?), especially for edgelists where it may not immediately be obvious if the network is directed or not.
-
-In the following, we use a larger network to introduce some terminology.
+In the following, we use a network from the `networkdata` package to introduce some basic network statistics.
 
 ```{r load_greys}
 data("greys")
@@ -75,13 +35,12 @@ ggraph(greys, "stress", bbox = 10) +
     theme_void()
 ```
 
-The "greys" network is part of the `networkdata` package and consists of most characters from the show "Grey's Anatomy" and who hooked up with whom.
+The "greys" network consists of characters from the show "Grey's Anatomy" and links indicate who hooked up with whom (up to about 2022).
 
 ```{r print_greys}
 greys
 ```
 
-## Simple Descriptive Statistics
 
 The **density** of a network is defined as the fraction of the potential edges in a network that are actually present.
 ```{r}
@@ -202,12 +161,13 @@ ggraph(rhesus,"stress")+
 
 ```
 
-## Dyad Census
+The **dyad census** categorize all possible dyads within a network based on their mutual connection status. It classifies dyads into three categories: mutual (both nodes have a directed edge to the other, i.e. reciprocated), asymmetric (only one node has a directed edge to the other), and null (no directed edges between the nodes). The census provides insights into the overall reciprocity and directionality of relationships in the network, helping to understand the balance between mutual cooperation, one-sided relationships, and absence of direct interaction.
 
 ```{r}
-data("rhesus")
 dyad_census(rhesus)
 ```
+
+More important than the dyad census is usually the triad census.
 
 ## Triad Census
 
@@ -352,3 +312,5 @@ V(g)$type <- rep(1:2, each = 10)
 dyad_census_attr(g, "type")
 triad_census_attr(g, "type")
 ```
+
+## Degree distribution
