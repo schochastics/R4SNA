@@ -86,6 +86,72 @@
     ]
   },
   {
+    "objectID": "centrality-basic.html",
+    "href": "centrality-basic.html",
+    "title": "5  Centrality",
+    "section": "",
+    "text": "5.1 Introduction\nIn this chapter, we learn about network centrality, a key concept for identifying the most influential nodes within networks. In a nutshell, a measure of centrality is an index that assigns a numeric values to the nodes of the network. The higher the value, the more central the node. “Being central” is a very ambiguous term and it is thus no surprise that there exists a large variety of indices that assess centrality with very different structural properties of the network.\n[INSERT PERIODIC TABLE]",
+    "crumbs": [
+      "Descriptive Network Analysis",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Centrality</span>"
+    ]
+  },
+  {
+    "objectID": "centrality-basic.html#centrality-indices-igraph",
+    "href": "centrality-basic.html#centrality-indices-igraph",
+    "title": "5  Centrality",
+    "section": "5.2 Centrality Indices igraph",
+    "text": "5.2 Centrality Indices igraph\nThe package igraph implements the following 10 indices:\n\ndegree (degree())\nweighted degree (strength())\nbetweenness (betweenness())\ncloseness (closeness())\neigenvector (eigen_centrality())\nalpha centrality (alpha_centrality())\npower centrality (power_centrality())\nPageRank (page_rank())\neccentricity (eccentricity())\nhubs and authorities (authority_score() and hub_score())\nsubgraph centrality (subgraph_centrality())\n\nTo illustrate some of the indices, we use the “dbces11” graph which is part of the netrankr package.\n\ndata(\"dbces11\")\n\n\n\n\n\n\n\n\n\n\ndegree simply counts the number of neighbors a node has.\n\ndegree(dbces11)\n\nA B C D E F G H I J K \n1 1 2 2 3 4 4 4 4 4 5 \n\n\n\n\n\n\n\n\n\n\n\ncloseness computes the shortest path distances among nodes. The most central node has the minimum distance to all other nodes (Since high scores are associated with central nodes, the distances are inverted).\n\ncloseness(dbces11)\n\n        A         B         C         D         E         F         G         H \n0.0370370 0.0294118 0.0400000 0.0400000 0.0500000 0.0588235 0.0526316 0.0555556 \n        I         J         K \n0.0555556 0.0526316 0.0555556 \n\n\nThe animation below gives an intuition on the calculation for one node. \nbetweeness is the number of shortest paths that pass through a node (divided by the total number of shortest paths)\n\nbetweenness(dbces11)\n\n       A        B        C        D        E        F        G        H \n 0.00000  0.00000  0.00000  9.00000  3.83333  9.83333  2.66667 16.33333 \n       I        J        K \n 7.33333  1.33333 14.66667 \n\n\nTo get an intuition what it means to have a high betweenness, check the network below.\n\n\n\n\n\n\n\n\n\nAny shortest path from the right will pass through the red node and vice versa. The red note is thus a sort of “gatekeeper” for any information that is passed from left to right.\neigenvector centrality extends the idea of degree by assuming that a node is central if it is connected to other central nodes.\n\neigen_centrality(dbces11)$vector\n\n        A         B         C         D         E         F         G         H \n0.2259630 0.0645825 0.3786244 0.2415182 0.5709057 0.9846544 1.0000000 0.8386195 \n        I         J         K \n0.9113529 0.9986474 0.8450304 \n\n\nsubgraph centrality is a bit more abstract but what it does is summing up all closed walks weighting them by the inverse factorial of its length.\n\nsubgraph_centrality(dbces11)\n\n      A       B       C       D       E       F       G       H       I       J \n1.82510 1.59540 3.14857 2.42309 4.38713 7.80726 7.93941 6.67278 7.03267 8.24212 \n      K \n7.38956 \n\n\nThe remaining indices are mostly designed for directed networks, page rank being the prime example. Note, though that the indices above can also be applied to directed networks.\nIf we highlight the most central node for the calculated indices, we get the following.\n\n\n\n\n\n\n\n\n\nSo each index picks a different node as most central. While this is just a toy example, it highlights how influential the choice of indices can be in empirical settings.",
+    "crumbs": [
+      "Descriptive Network Analysis",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Centrality</span>"
+    ]
+  },
+  {
+    "objectID": "centrality-basic.html#centrality-indices-sna",
+    "href": "centrality-basic.html#centrality-indices-sna",
+    "title": "5  Centrality",
+    "section": "5.3 Centrality indices sna",
+    "text": "5.3 Centrality indices sna\nThe sna package implements roughly the same indices as igraph but adds:\n\nflow betweenness (flowbet())\nload centrality (loadcent())\nGil-Schmidt Power Index (gilschmidt())\ninformation centrality (infocent())\nstress centrality (stresscent())",
+    "crumbs": [
+      "Descriptive Network Analysis",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Centrality</span>"
+    ]
+  },
+  {
+    "objectID": "centrality-basic.html#other-centrality-packages",
+    "href": "centrality-basic.html#other-centrality-packages",
+    "title": "5  Centrality",
+    "section": "5.4 Other Centrality Packages",
+    "text": "5.4 Other Centrality Packages\nThere are also some dedicated centrality packages, such as centiserve, CINNA, influenceR and keyplayer. The biggest in terms of implemented indices is currently centiserve with a total of 33 indices.\n\nlibrary(centiserve)\n\nLoading required package: Matrix\n\nas.character(lsf.str(\"package:centiserve\"))\n\n [1] \"averagedis\"            \"barycenter\"            \"bottleneck\"           \n [4] \"centroid\"              \"closeness.currentflow\" \"closeness.freeman\"    \n [7] \"closeness.latora\"      \"closeness.residual\"    \"closeness.vitality\"   \n[10] \"clusterrank\"           \"communibet\"            \"communitycent\"        \n[13] \"crossclique\"           \"decay\"                 \"diffusion.degree\"     \n[16] \"dmnc\"                  \"entropy\"               \"epc\"                  \n[19] \"geokpath\"              \"hubbell\"               \"katzcent\"             \n[22] \"laplacian\"             \"leaderrank\"            \"leverage\"             \n[25] \"lincent\"               \"lobby\"                 \"markovcent\"           \n[28] \"mnc\"                   \"pairwisedis\"           \"radiality\"            \n[31] \"salsa\"                 \"semilocal\"             \"topocoefficient\"      \n\n\nThe description of CINNA says “Functions for computing, comparing and demonstrating top informative centrality measures within a network.” Most of the indices in the package are imported from other package, such as centiserve. In addition, there are:\n\nDangalchev closeness (dangalchev_closeness_centrality())\ngroup centrality (group_centrality())\nharmonic closeness (harmonic_centrality())\nlocal bridging centrality (local_bridging_centrality())\n\nThe function calculate_centralities() can be used to calculate all applicable indices to a network. The primary purpose of the package is to facilitate the choice of indices by visual and statistical tools. If you are interested in the details, see this tutorial and this vignette.\ninfluenceR and keyplayer are comparably small packages which implement only a small number of indices.",
+    "crumbs": [
+      "Descriptive Network Analysis",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Centrality</span>"
+    ]
+  },
+  {
+    "objectID": "centrality-basic.html#thoughts",
+    "href": "centrality-basic.html#thoughts",
+    "title": "5  Centrality",
+    "section": "5.5 Thoughts",
+    "text": "5.5 Thoughts\nThe choice of indices can be overwhelming and little guidelines exist on when to choose what. The worst thing to do in any case is to apply a handful of indices and pick the result that suits your interpretation best. In best case, you have substantive arguments to apply an index and the result does match the hypothesis (or not).",
+    "crumbs": [
+      "Descriptive Network Analysis",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Centrality</span>"
+    ]
+  },
+  {
+    "objectID": "centrality-basic.html#use-case-florentine-families",
+    "href": "centrality-basic.html#use-case-florentine-families",
+    "title": "5  Centrality",
+    "section": "5.6 Use case: Florentine Families",
+    "text": "5.6 Use case: Florentine Families\nA classic example application of centrality indices is the “Florentine Families” dataset, which is included in the networkdata package.\n\ndata(\"flo_marriage\")\n\n\n\n\n\n\n\n\n\n\nTh network shows marriage ties among Renaissance Families in Florence. Marriages at that time were strategic to improve the standing of families in society. The size of the names is proportional to the wealth of the families. Although the Strozzi were the wealthiest family, it was ultimately the Medici who became the most powerful family. This is in part due to their central position within this marriage network.\nThe table bellow shows the ranking for the four most commonly used centrality indices (1=top rank).\n\n\n\n\n\nname\ndegree\nbetweenness\ncloseness\neigen\n\n\n\n\nAcciaiuoli\n13.5\n14\n11.5\n12\n\n\nAlbizzi\n6.5\n3\n3.5\n9\n\n\nBarbadori\n10.5\n8\n6.5\n10\n\n\nBischeri\n6.5\n6\n8.0\n6\n\n\nCastellani\n6.5\n10\n9.5\n8\n\n\nGinori\n13.5\n14\n13.0\n14\n\n\nGuadagni\n2.5\n2\n5.0\n5\n\n\nLamberteschi\n13.5\n14\n14.0\n13\n\n\nMedici\n1.0\n1\n1.0\n1\n\n\nPazzi\n13.5\n14\n15.0\n15\n\n\nPeruzzi\n6.5\n11\n11.5\n7\n\n\nPucci\n16.0\n14\n16.0\n16\n\n\nRidolfi\n6.5\n5\n2.0\n3\n\n\nSalviati\n10.5\n4\n9.5\n11\n\n\nStrozzi\n2.5\n7\n6.5\n2\n\n\nTornabuoni\n6.5\n9\n3.5\n4\n\n\n\n\n\nNo matter what structural feature we consider to be important, the Medici always have the most advantageous position.",
+    "crumbs": [
+      "Descriptive Network Analysis",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Centrality</span>"
+    ]
+  },
+  {
     "objectID": "centrality-advanced.html",
     "href": "centrality-advanced.html",
     "title": "6  Advanced Centrality Concepts",

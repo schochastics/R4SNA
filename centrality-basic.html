@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -281,7 +315,18 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">5.1</span> Introduction</a></li>
+  <li><a href="#centrality-indices-igraph" id="toc-centrality-indices-igraph" class="nav-link" data-scroll-target="#centrality-indices-igraph"><span class="header-section-number">5.2</span> Centrality Indices <code>igraph</code></a></li>
+  <li><a href="#centrality-indices-sna" id="toc-centrality-indices-sna" class="nav-link" data-scroll-target="#centrality-indices-sna"><span class="header-section-number">5.3</span> Centrality indices <code>sna</code></a></li>
+  <li><a href="#other-centrality-packages" id="toc-other-centrality-packages" class="nav-link" data-scroll-target="#other-centrality-packages"><span class="header-section-number">5.4</span> Other Centrality Packages</a></li>
+  <li><a href="#thoughts" id="toc-thoughts" class="nav-link" data-scroll-target="#thoughts"><span class="header-section-number">5.5</span> Thoughts</a></li>
+  <li><a href="#use-case-florentine-families" id="toc-use-case-florentine-families" class="nav-link" data-scroll-target="#use-case-florentine-families"><span class="header-section-number">5.6</span> Use case: Florentine Families</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -305,8 +350,330 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netrankr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: ggplot2</code></pre>
+</div>
+</div>
+<section id="introduction" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">5.1</span> Introduction</h2>
+<p>In this chapter, we learn about network centrality, a key concept for identifying the most influential nodes within networks. In a nutshell, a measure of centrality is an index that assigns a numeric values to the nodes of the network. The higher the value, the more central the node. “Being central” is a very ambiguous term and it is thus no surprise that there exists a large variety of indices that assess centrality with very different structural properties of the network.</p>
+<p>[INSERT PERIODIC TABLE]</p>
+</section>
+<section id="centrality-indices-igraph" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="centrality-indices-igraph"><span class="header-section-number">5.2</span> Centrality Indices <code>igraph</code></h2>
+<p>The package <code>igraph</code> implements the following 10 indices:</p>
+<ul>
+<li>degree (<code>degree()</code>)</li>
+<li>weighted degree (<code>strength()</code>)</li>
+<li>betweenness (<code>betweenness()</code>)</li>
+<li>closeness (<code>closeness()</code>)</li>
+<li>eigenvector (<code>eigen_centrality()</code>)</li>
+<li>alpha centrality (<code>alpha_centrality()</code>)</li>
+<li>power centrality (<code>power_centrality()</code>)</li>
+<li>PageRank (<code>page_rank()</code>)</li>
+<li>eccentricity (<code>eccentricity()</code>)</li>
+<li>hubs and authorities (<code>authority_score()</code> and <code>hub_score()</code>)</li>
+<li>subgraph centrality (<code>subgraph_centrality()</code>)</li>
+</ul>
+<p>To illustrate some of the indices, we use the “dbces11” graph which is part of the <code>netrankr</code> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dbces11"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/dbces11_basic_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>degree</strong> simply counts the number of neighbors a node has.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">degree</span>(dbces11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>A B C D E F G H I J K 
+1 1 2 2 3 4 4 4 4 4 5 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/degree_dbces11_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>closeness</strong> computes the shortest path distances among nodes. The most central node has the minimum distance to all other nodes (Since high scores are associated with central nodes, the distances are inverted).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">closeness</span>(dbces11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        A         B         C         D         E         F         G         H 
+0.0370370 0.0294118 0.0400000 0.0400000 0.0500000 0.0588235 0.0526316 0.0555556 
+        I         J         K 
+0.0555556 0.0526316 0.0555556 </code></pre>
+</div>
+</div>
+<p>The animation below gives an intuition on the calculation for one node. <img src="assets/img/closeness.gif" class="img-fluid"></p>
+<p><strong>betweeness</strong> is the number of shortest paths that pass through a node (divided by the total number of shortest paths)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">betweenness</span>(dbces11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       A        B        C        D        E        F        G        H 
+ 0.00000  0.00000  0.00000  9.00000  3.83333  9.83333  2.66667 16.33333 
+       I        J        K 
+ 7.33333  1.33333 14.66667 </code></pre>
+</div>
+</div>
+<p>To get an intuition what it means to have a high betweenness, check the network below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/betweenness_bridge-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Any shortest path from the right will pass through the red node and vice versa. The red note is thus a sort of “gatekeeper” for any information that is passed from left to right.</p>
+<p><strong>eigenvector centrality</strong> extends the idea of degree by assuming that a node is central if it is connected to other central nodes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eigen_centrality</span>(dbces11)<span class="sc">$</span>vector</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        A         B         C         D         E         F         G         H 
+0.2259630 0.0645825 0.3786244 0.2415182 0.5709057 0.9846544 1.0000000 0.8386195 
+        I         J         K 
+0.9113529 0.9986474 0.8450304 </code></pre>
+</div>
+</div>
+<p><strong>subgraph centrality</strong> is a bit more abstract but what it does is summing up all closed walks weighting them by the inverse factorial of its length.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">subgraph_centrality</span>(dbces11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      A       B       C       D       E       F       G       H       I       J 
+1.82510 1.59540 3.14857 2.42309 4.38713 7.80726 7.93941 6.67278 7.03267 8.24212 
+      K 
+7.38956 </code></pre>
+</div>
+</div>
+<p>The remaining indices are mostly designed for directed networks, <strong>page rank</strong> being the prime example. Note, though that the indices above can also be applied to directed networks.</p>
+<p>If we highlight the most central node for the calculated indices, we get the following.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/dbces11_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>So each index picks a different node as most central. While this is just a toy example, it highlights how influential the choice of indices can be in empirical settings.</p>
+</section>
+<section id="centrality-indices-sna" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="centrality-indices-sna"><span class="header-section-number">5.3</span> Centrality indices <code>sna</code></h2>
+<p>The <code>sna</code> package implements roughly the same indices as <code>igraph</code> but adds:</p>
+<ul>
+<li>flow betweenness (<code>flowbet()</code>)</li>
+<li>load centrality (<code>loadcent()</code>)</li>
+<li>Gil-Schmidt Power Index (<code>gilschmidt()</code>)</li>
+<li>information centrality (<code>infocent()</code>)</li>
+<li>stress centrality (<code>stresscent()</code>)</li>
+</ul>
+</section>
+<section id="other-centrality-packages" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="other-centrality-packages"><span class="header-section-number">5.4</span> Other Centrality Packages</h2>
+<p>There are also some dedicated centrality packages, such as <code>centiserve</code>, <code>CINNA</code>, <code>influenceR</code> and <code>keyplayer</code>. The biggest in terms of implemented indices is currently <code>centiserve</code> with a total of 33 indices.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(centiserve)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.character</span>(<span class="fu">lsf.str</span>(<span class="st">"package:centiserve"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "averagedis"            "barycenter"            "bottleneck"           
+ [4] "centroid"              "closeness.currentflow" "closeness.freeman"    
+ [7] "closeness.latora"      "closeness.residual"    "closeness.vitality"   
+[10] "clusterrank"           "communibet"            "communitycent"        
+[13] "crossclique"           "decay"                 "diffusion.degree"     
+[16] "dmnc"                  "entropy"               "epc"                  
+[19] "geokpath"              "hubbell"               "katzcent"             
+[22] "laplacian"             "leaderrank"            "leverage"             
+[25] "lincent"               "lobby"                 "markovcent"           
+[28] "mnc"                   "pairwisedis"           "radiality"            
+[31] "salsa"                 "semilocal"             "topocoefficient"      </code></pre>
+</div>
+</div>
+<p>The description of <code>CINNA</code> says “Functions for computing, comparing and demonstrating top informative centrality measures within a network.” Most of the indices in the package are imported from other package, such as <code>centiserve</code>. In addition, there are:</p>
+<ul>
+<li>Dangalchev closeness (<code>dangalchev_closeness_centrality()</code>)</li>
+<li>group centrality (<code>group_centrality()</code>)</li>
+<li>harmonic closeness (<code>harmonic_centrality()</code>)</li>
+<li>local bridging centrality (<code>local_bridging_centrality()</code>)</li>
+</ul>
+<p>The function <code>calculate_centralities()</code> can be used to calculate all applicable indices to a network. The primary purpose of the package is to facilitate the choice of indices by visual and statistical tools. If you are interested in the details, see this <a href="https://www.datacamp.com/community/tutorials/centrality-network-analysis-R">tutorial</a> and this <a href="https://cran.r-project.org/web/packages/CINNA/vignettes/CINNA.html">vignette</a>.</p>
+<p><code>influenceR</code> and <code>keyplayer</code> are comparably small packages which implement only a small number of indices.</p>
+</section>
+<section id="thoughts" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="thoughts"><span class="header-section-number">5.5</span> Thoughts</h2>
+<p>The choice of indices can be overwhelming and little guidelines exist on when to choose what. The worst thing to do in any case is to apply a handful of indices and pick the result that suits your interpretation best. In best case, you have substantive arguments to apply an index and the result does match the hypothesis (or not).</p>
+</section>
+<section id="use-case-florentine-families" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="use-case-florentine-families"><span class="header-section-number">5.6</span> Use case: Florentine Families</h2>
+<p>A classic example application of centrality indices is the “Florentine Families” dataset, which is included in the <code>networkdata</code> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/flo_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Th network shows marriage ties among Renaissance Families in Florence. Marriages at that time were strategic to improve the standing of families in society. The size of the names is proportional to the wealth of the families. Although the Strozzi were the wealthiest family, it was ultimately the Medici who became the most powerful family. This is in part due to their central position within this marriage network.</p>
+<p>The table bellow shows the ranking for the four most commonly used centrality indices (1=top rank).</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: right;">degree</th>
+<th style="text-align: right;">betweenness</th>
+<th style="text-align: right;">closeness</th>
+<th style="text-align: right;">eigen</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Acciaiuoli</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Albizzi</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Barbadori</td>
+<td style="text-align: right;">10.5</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bischeri</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8.0</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Castellani</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9.5</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ginori</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">13.0</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Guadagni</td>
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lamberteschi</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14.0</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Medici</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pazzi</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Peruzzi</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pucci</td>
+<td style="text-align: right;">16.0</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">16.0</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ridolfi</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2.0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Salviati</td>
+<td style="text-align: right;">10.5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9.5</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Strozzi</td>
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tornabuoni</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>No matter what structural feature we consider to be important, the Medici always have the most advantageous position.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
