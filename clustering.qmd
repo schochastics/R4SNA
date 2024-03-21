@@ -279,6 +279,8 @@ ggraph(K50, "stress") +
 
 If you are interested in the technical details of the Leiden method, check out the [original paper](https://www.nature.com/articles/s41598-019-41695-z). 
 
+The `netUtils` package includes the function `sample_lfr()` which implements the well-known [Lancichinetti–Fortunato–Radicchi benchmark algorithm](https://en.wikipedia.org/wiki/Lancichinetti%E2%80%93Fortunato%E2%80%93Radicchi_benchmark) to generate artificial networks with a priori known communities and they can be used to compare different community detection methods.
+
 ## Blockmodeling
 
 Blockmodeling is a more formal approach that aims to simplify the network's structure into blocks based on patterns of connections between nodes. Instead of focusing on the density of connections, it categorizes the relationships between different groups (or blocks) of nodes according to the roles they play in the network.
@@ -361,7 +363,7 @@ plotMat(baker,
 )
 ```
 
-First, we run a binary blockmodel. This time we increase the number of repetions to 1000 and instead of giving a lear block structure, we just specify, what type of blocks we want our result to include. How they are distributed, we do not care and let the algorithm decide. We run the optimization in parallel (`nCores = 0`), which requires the package `doParallel` to be installed.
+First, we run a binary blockmodel. This time we increase the number of repetions to 1000 and instead of giving a lear block structure, we just specify, what type of blocks we want our result to include. How they are distributed, we do not care and let the algorithm decide. We run the optimization in parallel (`nCores = 0`), which requires the packages `doParallel` and `doRNG` to be installed.
 ```{r}
 #| label: baker_binary
 baker_binary <- baker
@@ -435,8 +437,34 @@ library(netUtils)
 
 ```{r}
 #| label: split-graph
+set.seed(1234)
+sg <- split_graph(n = 50, p = 0.3, core = 0.3)
+```
 
-sg <- split_graph(n = 50, p = 0.2, core = 0.3)
+```{r}
+#| label: split-graph-img
+#| echo: false
+ggraph(sg, "stress") +
+    geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
+    geom_node_point(shape = 21, fill = "grey25") +
+    theme_graph()
+```
+
+```{r}
+#| label: split-cp
+core_periphery(sg, method = "rk1_dc")
+```
+
+
+```{r}
+#| label: baker-cp
+g_baker <- graph_from_adjacency_matrix(
+    baker_binary,
+    mode = "max"
+)
+core_periphery(g_baker, method = "rk1_dc")
+core_periphery(g_baker, method = "rk1_ec")
+core_periphery(g_baker, method = "GA")
 ```
 
 ### References
