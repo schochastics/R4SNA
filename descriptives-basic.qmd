@@ -202,6 +202,13 @@ ggraph(rhesus,"stress")+
 
 ```
 
+## Dyad Census
+
+```{r}
+data("rhesus")
+dyad_census(rhesus)
+```
+
 ## Triad Census
 
 In a directed network, there are 16 possible configurations of edges that can occur between three nodes. 
@@ -320,3 +327,28 @@ data.frame(
 
 For the second dimension, we get a clearer association. It seems that the fraction of transitive triads 
 is a good indicator for structural differences among leagues.
+
+## Dyad/Triad Census with Attributes
+
+The R package `netUtils` implements a version of the dyad and triad census which can account for node attributes. 
+
+```{r}
+#| label: load-netUtils
+library(netUtils)
+```
+
+The node attribute should be integers from `1` to `max(attr)`. 
+The output of `dyad_census_attr()` is a data.frame where each row corresponds to a pair of attribute values and the count of asymmetric, symmetric and null dyads.
+
+The output of `triad_census_attr()` is a named vector where the names are of the form Txxx-abc, where xxx corresponds to the standard triad census notation and "abc" are the attributes of the involved nodes.
+
+```{r}
+#| label: rand-attr
+set.seed(112)
+g <- sample_gnp(20, p = 0.3, directed = TRUE)
+# add a vertex attribute
+V(g)$type <- rep(1:2, each = 10)
+
+dyad_census_attr(g, "type")
+triad_census_attr(g, "type")
+```
