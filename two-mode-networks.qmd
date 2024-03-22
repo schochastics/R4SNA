@@ -4,10 +4,8 @@
 #| label: libraries
 #| message: false
 library(igraph)
-library(backbone)
 library(networkdata)
 ```
-
 
 ```{r}
 #| label: libraries-silent
@@ -15,21 +13,26 @@ library(networkdata)
 library(ggraph)
 ```
 
-A two-mode network is a network that consists of two disjoint sets of nodes (like people and events). Ties connect the two sets, e. g. participation of people in events. There exists a great variet of two mode networks. The most often encountered ones are 
+## Introduction
+
+A **two-mode network** is a network that consists of two disjoint sets of nodes (like people and events). Ties connect the two sets, for example participation of people in events. Other examples are 
 
 - Affiliation networks (Membership in institutions/clubs)
 - Voting/Sponsorship networks (politicians and bills)
 - Citation network (authors and papers)
-- Co-Authorship networks (authors and papers)
+- Co-Authorship networks (also authors and papers)
 
-Below we will discuss some methods via the famous "southern women" dataset consisting of
-18 women who attended a series of 14 events.
+There are two ways of analysing a two-mode network. Either directly by using methods specifically created for such networks, or by projecting it to a regular one-mode network. The advantage of the former is that there is no information loss and the advantage of the latter is that we are working with more familiar data structures. The projection approach is more popular these days, but we will still introduce some direct methods to analyse two-mode networks. The main part of this chapter will however deal with the projection approach.
+
+## Two-mode data structure
+We will discuss some methods tailored for two-mode networks via the famous "southern women" dataset consisting of 18 women who attended a series of 14 events. The network is included in the `networkdata` package.
 ```{r}
 #| label: southern-dat-load
 data("southern_women")
 southern_women
 ```
 
+`igraph` interprets a network as a two-mode network if it has a logical node attribute called `type`.
 ```{r}
 #| label: two-mode-type
 table(V(southern_women)$type)
@@ -38,15 +41,15 @@ table(V(southern_women)$type)
 ```{r}
 #| label: southern-women-plot
 #| echo: false
-ggraph(southern_women, "stress")+
-    geom_edge_link(edge_color = "grey66")+
-    geom_node_point(aes(fill = type, shape = type), size = 8, show.legend = FALSE)+
-    geom_node_text(aes(label = name))+
-    scale_shape_manual(values = c(21,22))+
+ggraph(southern_women, "stress") +
+    geom_edge_link(edge_color = "grey66") +
+    geom_node_point(aes(fill = type, shape = type), size = 8, show.legend = FALSE) +
+    geom_node_text(aes(label = name)) +
+    scale_shape_manual(values = c(21, 22)) +
     theme_void()
 ```
 
-The adjacency matrix of a two mode network is also referred to as an incidence matrix and can be obtained via `as biadjacency_matrix()`.
+The adjacency matrix of a two-mode network is referred to as  **biadjacency matrix** and can be obtained via `as_biadjacency_matrix()`.
 
 ```{r}
 #| label: incidence_southern
@@ -54,19 +57,54 @@ A <- as_biadjacency_matrix(southern_women)
 A
 ```
 
-The `tnet` ([link](https://CRAN.R-project.org/package=tnet)) and `bipartite` ([link](https://CRAN.R-project.org/package=bipartite)) offer some methods to analyse two mode networks directly, by  adapting tools for standard (one-mode) networks (like the ones described in previous sections).
+## Direct Approach
+The `tnet` and `bipartite` packages offer some methods to analyse two mode networks directly, by adapting tools for standard (one-mode) networks, like the methods described in previous sections.
 
-## Bipartite Projections
+```{r}
+#| label: load-tnet
+library(tnet)
+```
+
+`tnet` implements a version of the clustering coefficient for two-mode networks. Remember that its one-mode equivalent is based on triangle counts, a structure that cannot exist in two-mode networks (think about it for a second).
+
+```{r}
+#| label: transitivity-sw
+transitivity(southern_women)
+transitivity(southern_women, type = "local")
+```
+
+The version implemented in `tnet` is based on cycles of length 6, which involves three nodes of each mode.
+```{r}
+#| label: transitivity-sw-tm
+el_women <- as_edgelist(southern_women, names = FALSE)
+
+clustering_tm(el_women)
+# coefficient for first mode
+clustering_local_tm(el_women)
+# coefficient for second mode
+clustering_local_tm(el_women[, 2:1])
+
+```
+
+Note that this very cumbersome to count these cycles. It is advisable to run this function only on fairly small networks.
+
+The package does include some more two-mode specific functions (look for `*_tm()`), but the outcomes are equivalent to using its counterpart in igraph. 
+
+The `bipartite` package is tailored towards ecological network analysis. Relevant functions for standard two-mode networks are the same as in `tnet`.
+
+## Projection Approach
 Besides analyzing a two-mode network as-is, there is also the possibility to project it to one mode. 
 Mathematically, this is done by calculating $AA^T$ or $A^TA$, depending which mode we project on.
 As an example, consider the southern women dataset again.
 ```{r}
 #| label: proj-women
-B <- A%*%t(A)
+B <- A %*% t(A)
 B
 ```
 
 This matrix can now be interpreted as a weighted network among the 18 women. Each entry corresponds to the number of times two women went to the same event.
+
+The same can be achieved with the function `bipartite_projection()`, which returns both projections.
 
 ```{r}
 #| label: proj-women_direct
@@ -76,22 +114,31 @@ bipartite_projection(southern_women)
 ```{r}
 #| label: plot_weighted_proj
 #| echo: FALSE
-proj <- graph_from_adjacency_matrix(B,weighted = TRUE,diag = FALSE,mode = "undirected")
+proj <- graph_from_adjacency_matrix(B, weighted = TRUE, diag = FALSE, mode = "undirected")
 
-ggraph(proj,"stress")+
-  geom_edge_link(aes(edge_linewidth=weight),edge_color="grey66",show.legend = FALSE)+
-  geom_node_point(shape=21,fill="grey66",size=8,show.legend = FALSE)+
-  geom_node_text(aes(label=name))+
-  scale_edge_width(range = c(1,4))+
-  theme_void()+
-  coord_cartesian(clip = "off")
+ggraph(proj, "stress") +
+    geom_edge_link(aes(edge_linewidth = weight), edge_color = "grey66", show.legend = FALSE) +
+    geom_node_point(shape = 21, fill = "grey66", size = 8, show.legend = FALSE) +
+    geom_node_text(aes(label = name)) +
+    scale_edge_width(range = c(1, 4)) +
+    theme_void() +
+    coord_cartesian(clip = "off")
 
 ```
 
-As you can see, the network has become very dense. A very common step is now to binarize the
+As you can see, the network has become weighted and very dense. A very common step is to binarize the
 network. In doing so, we basically turn the network into a simple undirected one-mode network. This makes all methods we described in the first few sections applicable to the network (at least in theory).
 
-The simplest way of binarizing a weighted projection is to define a global threshold and remove a tie if its weight is below the global threshold. This is simple but come with many undesirable structural problems. More sophisticated tools work with statistical models in the background which determine if an edge weight differs enough from the expected value. If so, the edge is kept in the binary "backbone" of the network. 
+The simplest way of binarizing a weighted projection is to define a global threshold and remove a tie if its weight is below the global threshold. This is simple but comes with many undesirable structural problems. More sophisticated tools work with statistical models in the background which determine if an edge weight differs enough from the expected value. If so, the edge is kept in the binary "backbone" of the network. 
 
-All possible backbone extraction methods are implemented in the `backbone` package ([link](https://CRAN.R-project.org/package=backbone)). An introduction to the package can be
+```{r}
+#| label: load-backbone
+library(backbone)
+```
+
+All possible backbone extraction methods are implemented in the `backbone` package. 
+
+
+
+An introduction to the package can be
 found on [arxiv](https://arxiv.org/abs/1912.12779).
