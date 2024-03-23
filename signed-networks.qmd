@@ -1,4 +1,4 @@
-# Signed Networks
+# Signed Networks {#sec-signed-networks}
 ```{r}
 #| label: libraries
 #| message: false
@@ -14,7 +14,7 @@ library(networkdata)
 library(ggraph)
 ```
 
-## What are signed networks?
+## Introduction
 
 Traditional SNA usually deals with relations among entities (e.g. people) that are positive, including "friendship", "advice seeking", etc. Most network analytic tools are devised under this premise, be that centrality indices, clustering tools and so forth.
 But of course not all occurring relations are positive. People can be friends but also foes. 
@@ -30,7 +30,7 @@ The `signnet` package brings together methods that have been developed to analys
 * Centrality
 * Signed two-mode networks
 
-## Data structures for signed networks in `signnet`
+## Data structures for signed networks
 
 The foundation of `signnet` is provided by `igraph`. All functions in the package assume
 that an igraph object is a signed network if it has an edge attribute "sign" with values 1 (positive) or -1 (negative).
@@ -42,7 +42,7 @@ E(g)$sign <- 1
 g
 ```
 
-All methods (should) throw an error if the sign attribute is missing or contains other values than -1 and 1.
+All methods throw an error if the sign attribute is missing or contains other values than -1 and 1.
 
 Matrices associated with a signed network follow the `igraph` naming scheme.
 The signed adjacency matrix can be obtained with `as_adj_signed()`.
@@ -58,8 +58,6 @@ The signed Laplacian matrix is obtained by `laplacian_matrix_signed()`.
 #| label: signed_lap
 laplacian_matrix_signed(tribes)[1:5,1:5]
 ```
-
-## Datasets
 
 The `signnet` package includes two well known example datasets. 
 
@@ -260,7 +258,7 @@ Note that PN centrality and eigenvector centrality differ significantly for this
 cor(eigen_centrality_signed(g),pn_index(g),method = "kendall")
 ```
 
-## A note on eigenvector centrality
+### A note on eigenvector centrality
 
 The adjacency matrix of a signed network may not have a dominant eigenvalue. This means it is not clear which eigenvector should be used. In addition it is possible for the adjacency matrix to have repeated eigenvalues and hence multiple linearly independent eigenvectors. In this case certain centralities can be arbitrarily assigned. The `eigen_centrality_signed()` function returns an error if this is the case.
 
@@ -283,7 +281,7 @@ eigen_centrality_signed(g)
 ```
 
 
-## References
+## Scientific Reading
 
 Everett, Martin G., and Stephen P. Borgatti. 2014. "Networks Containing Negative Ties." Social Networks 38: 111–20. 
 

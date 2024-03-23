@@ -62,6 +62,7 @@ The `tnet` and `bipartite` packages offer some methods to analyse two mode netwo
 
 ```{r}
 #| label: load-tnet
+#| message: false
 library(tnet)
 ```
 
@@ -86,13 +87,15 @@ clustering_local_tm(el_women[, 2:1])
 
 ```
 
-Note that this very cumbersome to count these cycles. It is advisable to run this function only on fairly small networks.
+Note that it is very cumbersome to count these cycles. It is advisable to run this function only on fairly small networks.
 
 The package does include some more two-mode specific functions (look for `*_tm()`), but the outcomes are equivalent to using its counterpart in igraph. 
 
 The `bipartite` package is tailored towards ecological network analysis. Relevant functions for standard two-mode networks are the same as in `tnet`.
 
 ## Projection Approach
+
+### Weighted Projection
 Besides analyzing a two-mode network as-is, there is also the possibility to project it to one mode. 
 Mathematically, this is done by calculating $AA^T$ or $A^TA$, depending which mode we project on.
 As an example, consider the southern women dataset again.
@@ -108,7 +111,8 @@ The same can be achieved with the function `bipartite_projection()`, which retur
 
 ```{r}
 #| label: proj-women_direct
-bipartite_projection(southern_women)
+projs <- bipartite_projection(southern_women)
+projs
 ```
 
 ```{r}
@@ -126,20 +130,109 @@ ggraph(proj, "stress") +
 
 ```
 
-As you can see, the network has become weighted and very dense. A very common step is to binarize the
+As you can see, the network is weighted and very dense. In principle it is possible to analyze the network as is, but a very common step is to binarize the
 network. In doing so, we basically turn the network into a simple undirected one-mode network. This makes all methods we described in the first few sections applicable to the network (at least in theory).
 
-The simplest way of binarizing a weighted projection is to define a global threshold and remove a tie if its weight is below the global threshold. This is simple but comes with many undesirable structural problems. More sophisticated tools work with statistical models in the background which determine if an edge weight differs enough from the expected value. If so, the edge is kept in the binary "backbone" of the network. 
+### Simple Binary Projections
+The simplest way of binarizing a weighted projection is to define a global threshold and remove a tie if its weight is below the global threshold. A popular choice is to take the mean edge weight (sometimes also plus the 1-2 times the standard deviation).
 
+```{r}
+#| label: southern-rm-proj
+women_proj <- projs$proj1
+threshold <- mean(E(projs$proj1)$weight)
+women_bin <- delete_edges(women_proj, which(E(women_proj)$weight <= threshold))
+women_bin <- delete_edge_attr(women_bin, "weight")
+women_bin
+```
+
+```{r}
+#| label: southern-women-bin-plot
+#| echo: false
+ggraph(women_bin, "stress", bbox = 5) +
+    geom_edge_link(edge_color = "grey66") +
+    geom_node_point(shape = 21, fill = "grey66", size = 8) +
+    geom_node_text(aes(label = name)) +
+    theme_void() +
+    coord_cartesian(clip = "off")
+```
+
+### Model-based Binary Projections
+The global threshold method is very simple but in many cases leads to undesirable structural features. More sophisticated tools work with statistical models in the background which determine if an edge weight differs enough from the expected value of an underlying null model. If so, the edge is kept in the binary projection. Many of such models are implemented in the `backbone` package.
 ```{r}
 #| label: load-backbone
 #| message: false
 library(backbone)
 ```
 
-All possible backbone extraction methods are implemented in the `backbone` package. 
+The idea behind all of the models is always the same:
+
+1. Create the weighted projection of interest, e.g. `B <- A%*%t(A)`
+2. Generate random two-mode networks according to a given model.
+3. Compare if the values `B[i,j]` differ significantly from the distribution of values in the random projections.
+
+The only difference in all models is the construction of the random two-mode networks which follow different rules:
+
+- **Fixed Degree Sequence Model** `fdsm()`: Create random two-mode networks with the same row and column sums as `A`.
+- **Fixed Column Model** `fixedcol()`: Create random two-mode networks with the same column sums as `A`.
+- **Fixed Row Model** `fixedrow()`: Create random two-mode networks with the same row sums as `A`.
+- **Fixed Fill Model** `fixedfill()`: Create random two-mode networks with the same number of ones as `A`.
+- **Stochastic Degree Sequence Model** `sdsm()`: Create random two-mode networks with *approximately* the same row and column sums as `A`.
+
+Before we move to an actual use case, you may ask: So which model is the right one for me? That is actually quite a tricky question.
+There is some [guidance](https://doi.org/10.1038/s41598-021-03238-3) available but in general you can follow these rough guidelines:
+
+1. Use the model that fits you empirical setting or a known link formation process. If that link formation process dictates that row sums are fixed but column sums not, then choose `fixedow()`. 
+2. Use `fdsm()` if your network is small enough. Sampling from the FDSM is quite expensive.
+3. Use the `sdsm()` for large networks.
+
+Given that there is never a "ground-truth" binary projection, any choice of model is fine as long as it is motivated substantively and not merely because it fits the papers narrative best.
+
+To illustrate the model fitting, we use a bill cosponsorship of the Senate 2015. A link between a senator and a bill exists, if they sponsored it. We are no interested in how the binary projection of Senators looks like.
+
+```{r}
+#| label: data-cosponsor
+data("cosponsor")
+cosponsor
+```
+
+Given that the network is fairly large, we will use the SDSM. Note that all models create the projection for the mode where `type == FALSE`. If you want to project on the `TRUE` mode, you need to invert the type attribute. 
+
+```{r}
+#| label: fit-sdsm
+senators <- sdsm(cosponsor, alpha = 0.05, signed = FALSE)
+senators
+```
+
+For `signed = FALSE`, a one-tailed test is performed for each edge with a non-zero weight. It yields a projection that preserves edges whose weights are significantly stronger than expected in the null model. 
+
+When `signed = TRUE`, a two-tailed test is performed for every pair of nodes. It yields a backbone that contains positive edges for edges whose weights are significantly stronger, and negative edges for edges whose weights are significantly weaker, than expected in the chosen null model. The projections thus becomes a signed network (see @sec-signed-networks).
+
+The figure below shows the not so surprising result that Democrats and Republicans do not tend to significantly cosponsor the same bills.
 
 
+```{r}
+#| label: cosponsor-plot
+#| echo: false
+V(senators)$party <- V(cosponsor)$party[match(V(senators)$name, V(cosponsor)$name)]
+senators <- largest_component(senators)
+party_cols <-
+    c(D = "#104E8B", R = "#CD3333", I = "#EEB422")
+ggraph(senators, "stress") +
+    geom_edge_link0(edge_linewidth = 0.1, edge_color = "grey66") +
+    geom_node_point(shape = 21, aes(fill = party), size = 4) +
+    scale_fill_manual(values = party_cols) +
+    theme_graph() +
+    theme(legend.position = "bottom")
+```
 
-An introduction to the package can be
-found on [arxiv](https://arxiv.org/abs/1912.12779).
+## Scientific Reading
+
+Faust, K. (1997). Centrality in affiliation networks. Social networks, 19(2), 157-191.
+
+Everett, M. G., & Borgatti, S. P. (2013). The dual-projection approach for two-mode networks. Social networks, 35(2), 204-210.
+
+Opsahl, T. (2013). Triadic closure in two-mode networks: Redefining the global and local clustering coefficients. Social networks, 35(2), 159-167.
+
+Neal, Z. P. (2014). The backbone of bipartite projections: Inferring relationships from co-authorship, co-sponsorship, co-attendance, and other co-behaviors. Social Networks, 39, 84-97. 
+
+Neal, Z. P., Domagalski, R., and Sagan, B. (2021). Comparing Alternatives to the Fixed Degree Sequence Model for Extracting the Backbone of Bipartite Projections. Scientific Reports, 11, 23929. 
