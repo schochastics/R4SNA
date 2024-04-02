@@ -14,7 +14,7 @@ library(ggraph)
 ## Introduction
 
 
-## Simple Descriptive Statistics
+## Simple Network Characteristics
 
 In the following, we use a network from the `networkdata` package to introduce some basic network statistics.
 
@@ -161,20 +161,28 @@ ggraph(rhesus,"stress")+
 
 ```
 
+## Dyad and Triad Census
+
 The **dyad census** categorize all possible dyads within a network based on their mutual connection status. It classifies dyads into three categories: mutual (both nodes have a directed edge to the other, i.e. reciprocated), asymmetric (only one node has a directed edge to the other), and null (no directed edges between the nodes). The census provides insights into the overall reciprocity and directionality of relationships in the network, helping to understand the balance between mutual cooperation, one-sided relationships, and absence of direct interaction.
 
 ```{r}
+#| label: dyad_census
 dyad_census(rhesus)
 ```
 
-More important than the dyad census is usually the triad census.
-
-## Triad Census
-
+More important than the dyad census is usually the **triad census**.
 In a directed network, there are 16 possible configurations of edges that can occur between three nodes. 
 ![](assets/img/triad_census.jpg)
 
-The **triad census** of a network gives the number of occurrences of each of these triad. Triads are labelled `xyzL` where `x` is the number of reciprocated ties, `y` is the number of unreciprocated ties and `z` is the number of null ties. The `L` term is a letter (U,C,D or T) which allows to differentiate between triads where these numbers are the same. 
+The triad census of a network gives the number of occurrences of each of these triad. Triads are labelled `xyzL` where `x` is the number of reciprocated ties, `y` is the number of unreciprocated ties and `z` is the number of null ties. The `L` term is a letter (U,C,D or T) which allows to differentiate between triads where these numbers are the same. 
+
+```{r}
+#| label: triad_census
+triad_census(rhesus)
+
+```
+
+## Use case: Triad Census
 
 One of the many applications of the triad census is to compare a set of networks. In this example, we are tackling the question of "how transitive is football?" and assess structural differences among a set of football leagues. 
 
