@@ -340,7 +340,8 @@ window.Quarto = {
   <li><a href="#dyad-and-triad-census" id="toc-dyad-and-triad-census" class="nav-link" data-scroll-target="#dyad-and-triad-census"><span class="header-section-number">1.3</span> Dyad and Triad Census</a></li>
   <li><a href="#use-case-triad-census" id="toc-use-case-triad-census" class="nav-link" data-scroll-target="#use-case-triad-census"><span class="header-section-number">1.4</span> Use case: Triad Census</a></li>
   <li><a href="#dyadtriad-census-with-attributes" id="toc-dyadtriad-census-with-attributes" class="nav-link" data-scroll-target="#dyadtriad-census-with-attributes"><span class="header-section-number">1.5</span> Dyad/Triad Census with Attributes</a></li>
-  <li><a href="#degree-distribution" id="toc-degree-distribution" class="nav-link" data-scroll-target="#degree-distribution"><span class="header-section-number">1.6</span> Degree distribution</a></li>
+  <li><a href="#degree-distributions" id="toc-degree-distributions" class="nav-link" data-scroll-target="#degree-distributions"><span class="header-section-number">1.6</span> Degree distributions</a></li>
+  <li><a href="#scientific-reading" id="toc-scientific-reading" class="nav-link" data-scroll-target="#scientific-reading"><span class="header-section-number">1.7</span> Scientific Reading</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/descriptives-basic.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -511,8 +512,34 @@ Henry Burton              Inf            0</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transitivity</span>(greys, <span class="at">type =</span> <span class="st">"local"</span>, <span class="at">isolates =</span> <span class="st">"zero"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-[39] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</code></pre>
+<pre><code>Addison Montgomery       Adele Webber       Teddy Altman    Amelia Shepherd 
+                 0                  0                  0                  0 
+   Arizona Robbins       Rebecca Pope      Jackson Avery     Miranda Bailey 
+                 0                  0                  0                  0 
+        Ben Warren       Henry Burton    Catherine Avery       Colin Marlow 
+                 0                  0                  0                  0 
+     Denny Duqutte      Derek Sheperd         Ellis Grey     Finn Dandridge 
+                 0                  0                  0                  0 
+     Meredith Grey         Erica Hahn               Hank      Izzie Stevens 
+                 0                  0                  0                  0 
+        Alex Karev       April Kepner         Lexie Grey              Lloyd 
+                 0                  0                  0                  0 
+       Lucy Fields      Megan Nowland       Steve Mostow       Dana Seabury 
+                 0                  0                  0                  0 
+     Nancy Shepard       Nurse Olivia    George O'Malley          Owen Hunt 
+                 0                  0                  0                  0 
+    Andrew Perkins      Pierce Halley      Preston Burke       Reed Adamson 
+                 0                  0                  0                  0 
+        Mark Sloan       Steve Murphy         Susan Grey      Thatcher Grey 
+                 0                  0                  0                  0 
+     Callie Torres       Tucker Jones      Cristina Yang     Heather Brooks 
+                 0                  0                  0                  0 
+         Jo Wilson     Lauren Boswell        Leah Murphy          Eli James 
+                 0                  0                  0                  0 
+              Emma  Stephanie Edwards         Shane Ross     Richard Webber 
+                 0                  0                  0                  0 
+              Rose       Nathan Riggs 
+                 0                  0 </code></pre>
 </div>
 </div>
 <p>The global transitivity of an undirected network is the ratio of the triangles and the connected triples in the network. Local transitivity of a node is the ratio of the triangles connected to the node and the triples centered on the node itself. In social networks, we generally assume that the transitivity is quite high (“the friend of my friend is also my friend”). In our example, we have zero for all values. This is due to the fact that a triangle would require a same sex hook-up which did not occur (<em>Disclaimer: I never watched the show and gathered the hook ups from various internet resources. So this may well be wrong.</em>).</p>
@@ -526,6 +553,10 @@ Henry Burton              Inf            0</code></pre>
 </div>
 <p>About 76% of edges are reciprocated in the network. The figure below highlights the reciprocated edges.</p>
 <div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `is.mutual()` was deprecated in igraph 2.0.0.
+ℹ Please use `which_mutual()` instead.</code></pre>
+</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -539,7 +570,7 @@ Henry Burton              Inf            0</code></pre>
 <h2 data-number="1.3" class="anchored" data-anchor-id="dyad-and-triad-census"><span class="header-section-number">1.3</span> Dyad and Triad Census</h2>
 <p>The <strong>dyad census</strong> categorize all possible dyads within a network based on their mutual connection status. It classifies dyads into three categories: mutual (both nodes have a directed edge to the other, i.e.&nbsp;reciprocated), asymmetric (only one node has a directed edge to the other), and null (no directed edges between the nodes). The census provides insights into the overall reciprocity and directionality of relationships in the network, helping to understand the balance between mutual cooperation, one-sided relationships, and absence of direct interaction.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census</span>(rhesus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census</span>(rhesus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$mut
 [1] 42
@@ -554,7 +585,7 @@ $null
 <p>More important than the dyad census is usually the <strong>triad census</strong>. In a directed network, there are 16 possible configurations of edges that can occur between three nodes. <img src="assets/img/triad_census.jpg" class="img-fluid"></p>
 <p>The triad census of a network gives the number of occurrences of each of these triad. Triads are labelled <code>xyzL</code> where <code>x</code> is the number of reciprocated ties, <code>y</code> is the number of unreciprocated ties and <code>z</code> is the number of null ties. The <code>L</code> term is a letter (U,C,D or T) which allows to differentiate between triads where these numbers are the same.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census</span>(rhesus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census</span>(rhesus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1]  49  72 115  16  12  11  50  50   2   0  54  13  12   7  58  39</code></pre>
 </div>
@@ -564,28 +595,28 @@ $null
 <h2 data-number="1.4" class="anchored" data-anchor-id="use-case-triad-census"><span class="header-section-number">1.4</span> Use case: Triad Census</h2>
 <p>One of the many applications of the triad census is to compare a set of networks. In this example, we are tackling the question of “how transitive is football?” and assess structural differences among a set of football leagues.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"football_triad"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"football_triad"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><code>football_triad</code> is a list which contains networks of 112 football leagues as igraph objects. A directed link between team A and B indicates that A won a match against B. Note that there can also be an edge from B to A, since most leagues play a double round robin. For the sake of simplicity, all draws were deleted so that there could also be null ties between two teams if both games ended in a draw.</p>
 <p>Below, we calculate the triad census for all network at once using <code>lapply()</code>. The function returns the triad census for each network as a list, which we turn into a matrix in the second step. Afterwards, we manually add the row and column names of the matrix.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">lapply</span>(football_triad, triad_census)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">unlist</span>(footy_census), <span class="at">ncol =</span> <span class="dv">16</span>, <span class="at">byrow =</span> T)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">sapply</span>(football_triad, <span class="cf">function</span>(x) x<span class="sc">$</span>name)</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"003"</span>, <span class="st">"012"</span>, <span class="st">"102"</span>, <span class="st">"021D"</span>, <span class="st">"021U"</span>, <span class="st">"021C"</span>, <span class="st">"111D"</span>, <span class="st">"111U"</span>,</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"030T"</span>, <span class="st">"030C"</span>, <span class="st">"201"</span>, <span class="st">"120D"</span>, <span class="st">"120U"</span>, <span class="st">"120C"</span>, <span class="st">"210"</span>, <span class="st">"300"</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize to make proportions comparable across leagues</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>footy_census_norm <span class="ot">&lt;-</span> footy_census <span class="sc">/</span> <span class="fu">rowSums</span>(footy_census)</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co"># check the Top 5 leagues</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">rownames</span>(footy_census) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"england"</span>, <span class="st">"spain"</span>, <span class="st">"germany"</span>,</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"italy"</span>, <span class="st">"france"</span></span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>footy_census[idx, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">lapply</span>(football_triad, triad_census)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">unlist</span>(footy_census), <span class="at">ncol =</span> <span class="dv">16</span>, <span class="at">byrow =</span> T)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">sapply</span>(football_triad, <span class="cf">function</span>(x) x<span class="sc">$</span>name)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"003"</span>, <span class="st">"012"</span>, <span class="st">"102"</span>, <span class="st">"021D"</span>, <span class="st">"021U"</span>, <span class="st">"021C"</span>, <span class="st">"111D"</span>, <span class="st">"111U"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"030T"</span>, <span class="st">"030C"</span>, <span class="st">"201"</span>, <span class="st">"120D"</span>, <span class="st">"120U"</span>, <span class="st">"120C"</span>, <span class="st">"210"</span>, <span class="st">"300"</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize to make proportions comparable across leagues</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>footy_census_norm <span class="ot">&lt;-</span> footy_census <span class="sc">/</span> <span class="fu">rowSums</span>(footy_census)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="co"># check the Top 5 leagues</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">rownames</span>(footy_census) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"england"</span>, <span class="st">"spain"</span>, <span class="st">"germany"</span>,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"italy"</span>, <span class="st">"france"</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>footy_census[idx, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        003 012 102 021D 021U 021C 111D 111U 030T 030C 201 120D 120U 120C 210
 england   2  10   0   58   31   40   34   44  338   29  19  118  129  143 131
@@ -604,7 +635,7 @@ spain    20</code></pre>
 <p>Notice how the transitive triad (030T) has the largest count in the top leagues, hinting toward the childhood wisdom: “If A wins against B and B wins against C, then A must win against C”.</p>
 <p>In empirical studies, we are not necessarily only interested in transitive triads, but rather how the triad census profiles compare across networks. We follow <a href="https://doi.org/10.1111%2Fj.1467-9531.2007.00179.x">Kathrine Faust’s</a> suggestion and do a singular value decomposition (SVD) on the normalized triad census matrix.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>footy_svd <span class="ot">&lt;-</span> <span class="fu">svd</span>(footy_census_norm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>footy_svd <span class="ot">&lt;-</span> <span class="fu">svd</span>(footy_census_norm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>SVDs are used to reduce the dimensionality of the data, but retaining most of the information. In our case, the data is 16 dimensional, which is impossible to visualize to compare the networks. With an SVD, we can reduce it to two dimensions and get a better visual overview.</p>
 <div class="cell">
@@ -646,24 +677,24 @@ increasing max.overlaps</code></pre>
 <h2 data-number="1.5" class="anchored" data-anchor-id="dyadtriad-census-with-attributes"><span class="header-section-number">1.5</span> Dyad/Triad Census with Attributes</h2>
 <p>The R package <code>netUtils</code> implements a version of the dyad and triad census which can account for node attributes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netUtils)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netUtils)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The node attribute should be integers from <code>1</code> to <code>max(attr)</code>. The output of <code>dyad_census_attr()</code> is a data.frame where each row corresponds to a pair of attribute values and the count of asymmetric, symmetric and null dyads.</p>
 <p>The output of <code>triad_census_attr()</code> is a named vector where the names are of the form Txxx-abc, where xxx corresponds to the standard triad census notation and “abc” are the attributes of the involved nodes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">112</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="dv">20</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># add a vertex attribute</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">10</span>)</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census_attr</span>(g, <span class="st">"type"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">112</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="dv">20</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># add a vertex attribute</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">10</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census_attr</span>(g, <span class="st">"type"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  from_attr to_attr asym_ab asym_ba sym null
 1         1       1       0       0   4   41
 2         1       2      20      28  14   38
 3         2       2       0       0   8   37</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census_attr</span>(g, <span class="st">"type"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census_attr</span>(g, <span class="st">"type"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> T003-111  T003-112  T003-122  T003-222  T012-111  T012-121  T012-112  T012-122 
         8        33        28         7        32        40        31        19 
@@ -694,8 +725,11 @@ T120D-211 T120D-212 T120D-122 T120D-222  T210-111  T210-121  T210-211  T210-221
 </div>
 </div>
 </section>
-<section id="degree-distribution" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="degree-distribution"><span class="header-section-number">1.6</span> Degree distribution</h2>
+<section id="degree-distributions" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="degree-distributions"><span class="header-section-number">1.6</span> Degree distributions</h2>
+</section>
+<section id="scientific-reading" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="scientific-reading"><span class="header-section-number">1.7</span> Scientific Reading</h2>
 
 
 </section>
