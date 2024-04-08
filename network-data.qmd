@@ -1,14 +1,79 @@
 # Network Data {.unnumbered}
 
+## Introduction
 ```{r}
 #| label: libraries
 #| message: false
 library(igraph)
 ```
 
-## Basic Network Notation using `igraph`
+## Definitions
 
-Networks are commonly represented with an **adjacency matrix** or via an **edgelist**. If you are interested 
+- vertices
+- edges
+
+## Network representations
+
+
+### Adjacency Matrix
+
+An adjacency matrix is a square matrix where the elements indicate whether pairs of vertices in the graph are adjacent or not—meaning, whether they are directly connected by an edge. If the graph has $n$ vertices, the matrix $A$ will be an $n \times n$ matrix where the entry $A_{ij}$ is $1$ if there is an edge from vertex $i$ to vertex $j$, and $0$ if there is no edge. In the case of weighted graphs the weight of the edge is used. This matrix is symmetric for undirected graphs, indicating that an edge is bidirectional.  
+
+**Pros:**  
+
+- **Simple Representation**: It provides a straightforward and compact way to represent graphs, especially useful for dense graphs where many or most pairs of vertices are connected.
+
+- **Efficient for Edge Lookups**: Checking whether an edge exists between two vertices can be done in constant time, making it efficient for operations that require frequent edge lookups.
+
+- **Easy Implementation of Algorithms**: Many graph algorithms can be easily implemented using adjacency matrices, making it a preferred choice for certain computational tasks.
+
+**Cons:**  
+
+- **Space Inefficiency**: For sparse graphs, where the number of edges is much less than the square of the number of vertices, an adjacency matrix uses a lot of memory to represent a relatively small number of edges.
+
+- **Poor Scalability**: As the number of vertices grows, the size of the matrix grows quadratically, which can quickly become impractical for large graphs.
+
+### Edge List
+
+An edge list is a matrix where each row indicates an edge. In an undirected graph, an edge is represented by a pair $(i,j)$, indicating a connection between vertices $i$ and $j$. For directed graphs, the order of the vertices in each pair denotes the direction of the edge, from the first vertex to the second. In weighted graphs, a third column can be added to each pair to represent the weight of the edge.
+
+**Pros:**  
+
+- **Space Efficiency for Sparse Graphs**: Edge lists are particularly space-efficient for representing sparse graphs where the number of edges is much lower than the square of the number of vertices, as they only store the existing edges.
+
+- **Simplicity**: The structure is straightforward and easy to understand, making it suitable for simple graph operations and for initial graph representation before processing.
+
+**Cons:**  
+
+- **Inefficient for Edge Lookups**: Checking whether an edge exists between two specific vertices can be time-consuming, as it may require scanning through the entire list, leading to an operation that is linear in the number of edges.
+
+- **Inefficiency in Graph Operations**: Operations like finding all vertices adjacent to a given vertex or checking for connectivity between vertices can be inefficient compared to other representations like adjacency matrices or adjacency lists, especially for dense graphs.
+
+- **Less Suitable for Dense Graphs**: As the number of edges grows, the edge list can become large and less efficient in terms of both space and operation time compared to an adjacency matrix for dense graphs, where the number of edges is close to the maximum possible number of edges.
+
+### Adjacency List
+
+An adjacency list is a collection of lists, with each list corresponding to the set of adjacent vertices of a given vertex. This means that for every vertex $i$ in the graph, there is an associated list that contains all the vertices $j$ to which $i$ is directly connected. 
+
+**Pros:**  
+
+- **Space Efficiency**: Adjacency lists are more space-efficient than adjacency matrices in sparse graphs, as they only store information about the actual connections.
+
+- **Scalability**: This representation scales better with the number of edges, especially for graphs where the number of edges is far less than the square of the number of vertices.
+
+- **Efficiency in Graph Traversal**: For operations like graph traversal or finding all neighbors of a vertex, adjacency lists provide more efficient operations compared to adjacency matrices, particularly in sparse graphs.
+
+**Cons:**  
+
+- **Edge Lookups**: Checking whether an edge exists between two specific vertices can be less efficient than with an adjacency matrix, as it may require traversing a list of neighbors.
+
+- **Variable Edge Access Time**: The time to access a specific edge or to check for its existence can vary depending on the degree of the vertices involved, leading to potentially inefficient operations in certain scenarios.
+
+- **Higher Complexity for Dense Graphs**: In very dense graphs, where the number of edges approaches the number of vertex pairs, adjacency lists can become less efficient in terms of space and time compared to adjacency matrices, due to the overhead of storing a list for each vertex.
+
+
+## Networks in `igraph`
+ 
 Below, we represent friendship relations between Bob, Ann, and Steve as a matrix and an edgelist.
 ```{r}
 #| label: simple_struc
@@ -27,10 +92,6 @@ el <- matrix(c("Bob", "Ann", "Bob", "Steve", "Ann", "Steve"),
 )
 el
 ```
-
-The adjacency matrix $A$ is symmetric, meaning that the relations are undirected, i.e. Bob is friends with
-Ann and Ann is friends with Bob. In general, $A[i,j]=1$, if there is a relation between $i$ and $j$.
-If $A[i,j]=1$ does not imply $A[j,i]=1$ then $A$ defines a directed network.
 
 Once we have defined an edgelist or an adjacency matrix, we can turn them into `igraph` objects as follows.
 
