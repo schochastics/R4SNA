@@ -335,7 +335,15 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#basic-network-notation-using-igraph" id="toc-basic-network-notation-using-igraph" class="nav-link active" data-scroll-target="#basic-network-notation-using-igraph">Basic Network Notation using <code>igraph</code></a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#what-is-a-network" id="toc-what-is-a-network" class="nav-link" data-scroll-target="#what-is-a-network">What is a network?</a></li>
+  <li><a href="#network-representations" id="toc-network-representations" class="nav-link" data-scroll-target="#network-representations">Network representations</a>
+  <ul class="collapse">
+  <li><a href="#adjacency-matrix" id="toc-adjacency-matrix" class="nav-link" data-scroll-target="#adjacency-matrix">Adjacency Matrix</a></li>
+  <li><a href="#edge-list" id="toc-edge-list" class="nav-link" data-scroll-target="#edge-list">Edge List</a></li>
+  <li><a href="#adjacency-list" id="toc-adjacency-list" class="nav-link" data-scroll-target="#adjacency-list">Adjacency List</a></li>
+  </ul></li>
+  <li><a href="#networks-in-igraph" id="toc-networks-in-igraph" class="nav-link" data-scroll-target="#networks-in-igraph">Networks in <code>igraph</code></a></li>
   <li><a href="#importing-network-data" id="toc-importing-network-data" class="nav-link" data-scroll-target="#importing-network-data">Importing Network Data</a>
   <ul class="collapse">
   <li><a href="#nodes-and-ties" id="toc-nodes-and-ties" class="nav-link" data-scroll-target="#nodes-and-ties">Nodes and Ties</a></li>
@@ -367,12 +375,71 @@ window.Quarto = {
 </header>
 
 
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="basic-network-notation-using-igraph" class="level2">
-<h2 class="anchored" data-anchor-id="basic-network-notation-using-igraph">Basic Network Notation using <code>igraph</code></h2>
-<p>Networks are commonly represented with an <strong>adjacency matrix</strong> or via an <strong>edgelist</strong>. If you are interested Below, we represent friendship relations between Bob, Ann, and Steve as a matrix and an edgelist.</p>
+</section>
+<section id="what-is-a-network" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-a-network">What is a network?</h2>
+<p>A network is a collection of nodes (or vertices) and edges that connect pairs of nodes. Networks can model relationships and structures in various types of data, such as social networks, transportation networks, and more.</p>
+<p>Node (or vertices) are the fundamental unit in a network, representing an entity or object. In network analysis, nodes typically stand for individuals, places, or things depending on the context of the network.</p>
+<p>edges indicate connections between two nodes in a network, representing the relationship or interaction between them. Edges can be undirected (bidirectional relationship) or directed (unidirectional relationship).</p>
+</section>
+<section id="network-representations" class="level2">
+<h2 class="anchored" data-anchor-id="network-representations">Network representations</h2>
+<p>There are several possible ways to express network data. All come with a set of advantages and disadvantages.</p>
+<section id="adjacency-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="adjacency-matrix">Adjacency Matrix</h3>
+<p>An adjacency matrix is a square matrix where the elements indicate whether pairs of vertices in the graph are adjacent or not—meaning, whether they are directly connected by an edge. If the graph has <span class="math inline">\(n\)</span> vertices, the matrix <span class="math inline">\(A\)</span> will be an <span class="math inline">\(n \times n\)</span> matrix where the entry <span class="math inline">\(A_{ij}\)</span> is <span class="math inline">\(1\)</span> if there is an edge from vertex <span class="math inline">\(i\)</span> to vertex <span class="math inline">\(j\)</span>, and <span class="math inline">\(0\)</span> if there is no edge. In the case of weighted graphs the weight of the edge is used. This matrix is symmetric for undirected graphs, indicating that an edge is bidirectional.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><p><strong>Simple Representation</strong>: It provides a straightforward and compact way to represent graphs, especially useful for dense graphs where many or most pairs of vertices are connected.</p></li>
+<li><p><strong>Efficient for Edge Lookups</strong>: Checking whether an edge exists between two vertices can be done in constant time, making it efficient for operations that require frequent edge lookups.</p></li>
+<li><p><strong>Easy Implementation of Algorithms</strong>: Many graph algorithms can be easily implemented using adjacency matrices, making it a preferred choice for certain computational tasks.</p></li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><p><strong>Space Inefficiency</strong>: For sparse graphs, where the number of edges is much less than the square of the number of vertices, an adjacency matrix uses a lot of memory to represent a relatively small number of edges.</p></li>
+<li><p><strong>Poor Scalability</strong>: As the number of vertices grows, the size of the matrix grows quadratically, which can quickly become impractical for large graphs.</p></li>
+</ul>
+</section>
+<section id="edge-list" class="level3">
+<h3 class="anchored" data-anchor-id="edge-list">Edge List</h3>
+<p>An edge list is a matrix where each row indicates an edge. In an undirected graph, an edge is represented by a pair <span class="math inline">\((i,j)\)</span>, indicating a connection between vertices <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. For directed graphs, the order of the vertices in each pair denotes the direction of the edge, from the first vertex to the second. In weighted graphs, a third column can be added to each pair to represent the weight of the edge.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><p><strong>Space Efficiency for Sparse Graphs</strong>: Edge lists are particularly space-efficient for representing sparse graphs where the number of edges is much lower than the square of the number of vertices, as they only store the existing edges.</p></li>
+<li><p><strong>Simplicity</strong>: The structure is straightforward and easy to understand, making it suitable for simple graph operations and for initial graph representation before processing.</p></li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><p><strong>Inefficient for Edge Lookups</strong>: Checking whether an edge exists between two specific vertices can be time-consuming, as it may require scanning through the entire list, leading to an operation that is linear in the number of edges.</p></li>
+<li><p><strong>Inefficiency in Graph Operations</strong>: Operations like finding all vertices adjacent to a given vertex or checking for connectivity between vertices can be inefficient compared to other representations like adjacency matrices or adjacency lists, especially for dense graphs.</p></li>
+<li><p><strong>Less Suitable for Dense Graphs</strong>: As the number of edges grows, the edge list can become large and less efficient in terms of both space and operation time compared to an adjacency matrix for dense graphs, where the number of edges is close to the maximum possible number of edges.</p></li>
+</ul>
+</section>
+<section id="adjacency-list" class="level3">
+<h3 class="anchored" data-anchor-id="adjacency-list">Adjacency List</h3>
+<p>An adjacency list is a collection of lists, with each list corresponding to the set of adjacent vertices of a given vertex. This means that for every vertex <span class="math inline">\(i\)</span> in the graph, there is an associated list that contains all the vertices <span class="math inline">\(j\)</span> to which <span class="math inline">\(i\)</span> is directly connected.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><p><strong>Space Efficiency</strong>: Adjacency lists are more space-efficient than adjacency matrices in sparse graphs, as they only store information about the actual connections.</p></li>
+<li><p><strong>Scalability</strong>: This representation scales better with the number of edges, especially for graphs where the number of edges is far less than the square of the number of vertices.</p></li>
+<li><p><strong>Efficiency in Graph Traversal</strong>: For operations like graph traversal or finding all neighbors of a vertex, adjacency lists provide more efficient operations compared to adjacency matrices, particularly in sparse graphs.</p></li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><p><strong>Edge Lookups</strong>: Checking whether an edge exists between two specific vertices can be less efficient than with an adjacency matrix, as it may require traversing a list of neighbors.</p></li>
+<li><p><strong>Variable Edge Access Time</strong>: The time to access a specific edge or to check for its existence can vary depending on the degree of the vertices involved, leading to potentially inefficient operations in certain scenarios.</p></li>
+<li><p><strong>Higher Complexity for Dense Graphs</strong>: In very dense graphs, where the number of edges approaches the number of vertex pairs, adjacency lists can become less efficient in terms of space and time compared to adjacency matrices, due to the overhead of storing a list for each vertex.</p></li>
+</ul>
+</section>
+</section>
+<section id="networks-in-igraph" class="level2">
+<h2 class="anchored" data-anchor-id="networks-in-igraph">Networks in <code>igraph</code></h2>
+<p>Below, we represent friendship relations between Bob, Ann, and Steve as a matrix and an edgelist.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># adjacency matrix</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
@@ -400,7 +467,6 @@ Steve   1   1     0</code></pre>
 [3,] "Ann" "Steve"</code></pre>
 </div>
 </div>
-<p>The adjacency matrix <span class="math inline">\(A\)</span> is symmetric, meaning that the relations are undirected, i.e.&nbsp;Bob is friends with Ann and Ann is friends with Bob. In general, <span class="math inline">\(A[i,j]=1\)</span>, if there is a relation between <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. If <span class="math inline">\(A[i,j]=1\)</span> does not imply <span class="math inline">\(A[j,i]=1\)</span> then <span class="math inline">\(A\)</span> defines a directed network.</p>
 <p>Once we have defined an edgelist or an adjacency matrix, we can turn them into <code>igraph</code> objects as follows.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(A, <span class="at">mode =</span> <span class="st">"undirected"</span>, <span class="at">diag =</span> <span class="cn">FALSE</span>)</span>
@@ -409,9 +475,9 @@ Steve   1   1     0</code></pre>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># g1 and g2 are the same graph so only printing g1</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>g1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH 35b09df UN-- 3 3 -- 
+<pre><code>IGRAPH 683fd6b UN-- 3 3 -- 
 + attr: name (v/c)
-+ edges from 35b09df (vertex names):
++ edges from 683fd6b (vertex names):
 [1] Bob--Ann   Bob--Steve Ann--Steve</code></pre>
 </div>
 </div>
