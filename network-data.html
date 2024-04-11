@@ -343,11 +343,13 @@ window.Quarto = {
   <li><a href="#edge-list" id="toc-edge-list" class="nav-link" data-scroll-target="#edge-list">Edge List</a></li>
   <li><a href="#adjacency-list" id="toc-adjacency-list" class="nav-link" data-scroll-target="#adjacency-list">Adjacency List</a></li>
   </ul></li>
-  <li><a href="#networks-in-igraph" id="toc-networks-in-igraph" class="nav-link" data-scroll-target="#networks-in-igraph">Networks in <code>igraph</code></a></li>
   <li><a href="#importing-network-data" id="toc-importing-network-data" class="nav-link" data-scroll-target="#importing-network-data">Importing Network Data</a>
   <ul class="collapse">
-  <li><a href="#nodes-and-edges" id="toc-nodes-and-edges" class="nav-link" data-scroll-target="#nodes-and-edges">Nodes and Edges</a></li>
-  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#foreign-formats" id="toc-foreign-formats" class="nav-link" data-scroll-target="#foreign-formats">Foreign Formats</a></li>
+  <li><a href="#nodes-edges-and-attributes" id="toc-nodes-edges-and-attributes" class="nav-link" data-scroll-target="#nodes-edges-and-attributes">Nodes, Edges, and Attributes</a></li>
+  </ul></li>
+  <li><a href="#networks-in-igraph" id="toc-networks-in-igraph" class="nav-link" data-scroll-target="#networks-in-igraph">Networks in <code>igraph</code></a>
+  <ul class="collapse">
   <li><a href="#import-via-snahelper" id="toc-import-via-snahelper" class="nav-link" data-scroll-target="#import-via-snahelper">Import via <code>snahelper</code></a></li>
   </ul></li>
   <li><a href="#scientific-reading" id="toc-scientific-reading" class="nav-link" data-scroll-target="#scientific-reading">Scientific reading</a></li>
@@ -439,29 +441,50 @@ window.Quarto = {
 </ul>
 </section>
 </section>
+<section id="importing-network-data" class="level2">
+<h2 class="anchored" data-anchor-id="importing-network-data">Importing Network Data</h2>
+<section id="foreign-formats" class="level3">
+<h3 class="anchored" data-anchor-id="foreign-formats">Foreign Formats</h3>
+<p><code>igraph</code> can deal with many different foreign network formats with the function <code>read_graph</code>. (The <code>rgexf</code> package can be used to import Gephi files.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_graph</span>(file, <span class="at">format =</span> <span class="fu">c</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"edgelist"</span>, <span class="st">"pajek"</span>, <span class="st">"ncol"</span>, <span class="st">"lgl"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"graphml"</span>, <span class="st">"dimacs"</span>, <span class="st">"graphdb"</span>, <span class="st">"gml"</span>, <span class="st">"dl"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>), ...)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If your network data is in one of the above formats you will find it easy to import your network.</p>
+</section>
+<section id="nodes-edges-and-attributes" class="level3">
+<h3 class="anchored" data-anchor-id="nodes-edges-and-attributes">Nodes, Edges, and Attributes</h3>
+<p>If your data is not in a network file format, you will need one of the following functions to turn raw network data into an <code>igraph</code> object: <code>graph_from_edgelist()</code>, <code>graph_from_adjacency_matrix()</code>, <code>graph_from_adj_list()</code>, or <code>graph_from_data_frame()</code>.</p>
+<p>Before using these functions, however, you still need to get the raw data into R. The concrete procedure depends on the file format. If your data is stored as an excel spreadsheet, you need additional packages. If you are familiar with the <code>tidyverse</code>, you can use the <code>readxl</code> package. Other options are, e.g.&nbsp;the <code>xlsx</code> package.</p>
+<p>Most network data you’ll find is in a plain text format (csv or tsv), either as an edgelist or adjacency matrix. To read in such data, you can use base R’s <code>read.table()</code>.</p>
+<p>Make sure you check the following before trying to load a file: Does it contain a header (e.g.&nbsp;row/column names of an adjacency matrix)? How are values delimited (comma, whitespace or tab)? This is important to set the parameters <code>header</code>, <code>sep</code> to read the data properly.</p>
+</section>
+</section>
 <section id="networks-in-igraph" class="level2">
 <h2 class="anchored" data-anchor-id="networks-in-igraph">Networks in <code>igraph</code></h2>
 <p>Below, we represent friendship relations between Bob, Ann, and Steve as a matrix and an edgelist.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># adjacency matrix</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(A) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(A) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># adjacency matrix</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(A) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(A) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      Bob Ann Steve
 Bob     0   1     1
 Ann     1   0     1
 Steve   1   1     0</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># edgelist</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>el <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Bob"</span>, <span class="st">"Steve"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>),</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>el</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># edgelist</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>el <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Bob"</span>, <span class="st">"Steve"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>el</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1]  [,2]   
 [1,] "Bob" "Ann"  
@@ -471,29 +494,20 @@ Steve   1   1     0</code></pre>
 </div>
 <p>Once we have defined an edgelist or an adjacency matrix, we can turn them into <code>igraph</code> objects as follows.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(A, <span class="at">mode =</span> <span class="st">"undirected"</span>, <span class="at">diag =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">graph_from_edgelist</span>(el, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># g1 and g2 are the same graph so only printing g1</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>g1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(A, <span class="at">mode =</span> <span class="st">"undirected"</span>, <span class="at">diag =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">graph_from_edgelist</span>(el, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># g1 and g2 are the same graph so only printing g1</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>g1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH 07778bc UN-- 3 3 -- 
+<pre><code>IGRAPH 58723e1 UN-- 3 3 -- 
 + attr: name (v/c)
-+ edges from 07778bc (vertex names):
++ edges from 58723e1 (vertex names):
 [1] Bob--Ann   Bob--Steve Ann--Steve</code></pre>
 </div>
 </div>
 <p>The printed summary shows some general descriptives of the graph. The string “UN–” in the first line indicates that the network is <em>U</em>ndirected (<em>D</em> for directed graphs) and has a <em>N</em>ame attribute (we named the nodes Bob, Ann, and Steve). The third and forth character are <em>W</em>, if there is a edge weight attribute, and <em>B</em> if the network is bipartite (there exists a node attribute “type”). The following number indicate the number of nodes and edges. The second line lists all graph, node and edge variables. Here, we only have a node attribute “name”.</p>
 <p>The conversion from edgelist/adjacency matrix into an igraph object is quite straightforward. The only difficulty is setting the parameters correctly (Is the network directed or not?), especially for edgelists where it may not immediately be obvious if the network is directed or not.</p>
-</section>
-<section id="importing-network-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-network-data">Importing Network Data</h2>
-<section id="nodes-and-edges" class="level3">
-<h3 class="anchored" data-anchor-id="nodes-and-edges">Nodes and Edges</h3>
-</section>
-<section id="attributes" class="level3">
-<h3 class="anchored" data-anchor-id="attributes">Attributes</h3>
-</section>
 <section id="import-via-snahelper" class="level3">
 <h3 class="anchored" data-anchor-id="import-via-snahelper">Import via <code>snahelper</code></h3>
 <p>The R package <code>snahelper</code> implements several Addins for RStudio that facilitate working with network data by providing a GUI for various tasks. One of these is the <code>Netreader</code> which allows to import network data.</p>
