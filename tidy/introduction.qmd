@@ -1,0 +1,50 @@
+# Introduction
+
+The main focus of this part is to introduce the tidy approach for network analysis.
+
+## Required libraries
+
+To run all the code in this part, you need to install and load two packages.
+```r
+install.packages("tidygraph")
+devtools::install_github("schochastics/networkdata")
+```
+
+`tidygraph` implements the tidy approach for network analysis. `networkdata` contains a diverse set of
+network dataset. 
+```{r}
+#| label: libraries
+library(tidygraph)
+library(networkdata)
+```
+
+```{r}
+#| label: silent-libraries
+#| include: false
+library(ggraph)
+library(graphlayouts)
+```
+
+Make sure you have at least the version given below. Some of the examples may not be backward compatible.
+
+```{r}
+#| label: pkg-version-check
+packageVersion("tidygraph")
+packageVersion("networkdata")
+```
+
+## What is tidy network data?
+
+On first glance, there is not much tidiness in networks or the ways it is usually encoded, like a 
+graph, adjacency matrix, edgelist, etc. How should this fit into a single data frame? If you are an avid
+`igraph` user, then you may suspect the answer. It doesn't fit, but it fits in two with `graph_from_data_frame()` which takes two data frames, one for nodes and one for edges, as input. In other words, we can represent 
+a network as two separate data frames. One for the nodes and node attributes, and one for the edges and edge attributes. Working with these two data frames together is the premise for the `tidygraph` package.
+If you are interested in more technical details on how this is implemented under the hood, see the [introductory blog post](https://www.data-imaginist.com/2017/introducing-tidygraph/) for the package.
+
+## Why tidy network data?
+
+This is a good question. If you aren't a fan of the tidyverse, then you should probably move along and
+stick with established packages such as `igraph` or `sna` which offer the exact same functionalities (`tidygraph` actually imports most of `igraph`). If you appreciate the tidyverse, then there is no need 
+for convincing you that this is a good idea. If you are indifferent, then I hope I can make a case 
+for the tidy framework below. To start off with, the package does a great job to harmonize many network analytic tasks. For instance, you do not need to know all the different centrality indices that are implemented. You simply type `centrality_` and press tab in the RStudio console and get all functions that allow the calculation of a 
+centrality index. Other node level functions are accessible via `node_*()` and edge level measures via `edge_*()`.
