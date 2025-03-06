@@ -8,7 +8,7 @@
 
 <meta name="author" content="David Schoch, and Termeh Shafie">
 
-<title>Network Data – R for Social Network Analysis</title>
+<title>3&nbsp; Centrality – R for Social Network Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -58,25 +58,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./descriptive/introduction.html" rel="next">
-<link href="./intro.html" rel="prev">
-<link href="./cover.png" rel="icon" type="image/png">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-a34d670291f06f286357e447776a572a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../descriptive/centrality-advanced.html" rel="next">
+<link href="../descriptive/descriptives-basic.html" rel="prev">
+<link href="../cover.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a34d670291f06f286357e447776a572a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -105,35 +105,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -146,7 +117,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./network-data.html">Network Data</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../descriptive/introduction.html">Descriptive Network Analysis</a></li><li class="breadcrumb-item"><a href="../descriptive/centrality-basic.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -161,7 +132,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">R for Social Network Analysis</a> 
+      <a href="../">R for Social Network Analysis</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/schochastics/R4sna" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
@@ -176,19 +147,19 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Welcome</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+  <a href="../intro.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./network-data.html" class="sidebar-item-text sidebar-link active">
+  <a href="../network-data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Network Data</span></a>
   </div>
 </li>
@@ -203,49 +174,49 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/introduction.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/descriptives-basic.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/descriptives-basic.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Basic Network Statistics</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/centrality-basic.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/centrality-basic.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/centrality-advanced.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/centrality-advanced.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Advanced Centrality Concepts</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/clustering.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/clustering.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Cohesive Subgroups</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/two-mode-networks.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/two-mode-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Two-Mode Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/signed-networks.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/signed-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Signed Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/ego-networks.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/ego-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Ego Networks</span></span></a>
   </div>
 </li>
@@ -262,31 +233,31 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/introduction.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/ggraph-basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/ggraph-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Basics of ggraph</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/ggraph-advanced.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/ggraph-advanced.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Advanced Layouts</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/enhance-viz.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/enhance-viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Enhancing Visualizations</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/interactive-viz.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/interactive-viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactive Visualization</span></span></a>
   </div>
 </li>
@@ -307,25 +278,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tidy/introduction.html" class="sidebar-item-text sidebar-link">
+  <a href="../tidy/introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tidy/tidygraph-basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../tidy/tidygraph-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Basics of tidygraph</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tidy/tidygraph-descriptive.html" class="sidebar-item-text sidebar-link">
+  <a href="../tidy/tidygraph-descriptive.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Descriptive Network Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tidy/tidygraph-summary.html" class="sidebar-item-text sidebar-link">
+  <a href="../tidy/tidygraph-summary.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
   </div>
 </li>
@@ -333,13 +304,13 @@ window.Quarto = {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+  <a href="../summary.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
 </li>
@@ -353,33 +324,21 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#what-is-a-network" id="toc-what-is-a-network" class="nav-link" data-scroll-target="#what-is-a-network">What is a network?</a></li>
-  <li><a href="#network-representations" id="toc-network-representations" class="nav-link" data-scroll-target="#network-representations">Network representations</a>
-  <ul class="collapse">
-  <li><a href="#adjacency-matrix" id="toc-adjacency-matrix" class="nav-link" data-scroll-target="#adjacency-matrix">Adjacency Matrix</a></li>
-  <li><a href="#edge-list" id="toc-edge-list" class="nav-link" data-scroll-target="#edge-list">Edge List</a></li>
-  <li><a href="#adjacency-list" id="toc-adjacency-list" class="nav-link" data-scroll-target="#adjacency-list">Adjacency List</a></li>
-  </ul></li>
-  <li><a href="#importing-network-data" id="toc-importing-network-data" class="nav-link" data-scroll-target="#importing-network-data">Importing Network Data</a>
-  <ul class="collapse">
-  <li><a href="#foreign-formats" id="toc-foreign-formats" class="nav-link" data-scroll-target="#foreign-formats">Foreign Formats</a></li>
-  <li><a href="#nodes-edges-and-attributes" id="toc-nodes-edges-and-attributes" class="nav-link" data-scroll-target="#nodes-edges-and-attributes">Nodes, Edges, and Attributes</a></li>
-  </ul></li>
-  <li><a href="#networks-in-igraph" id="toc-networks-in-igraph" class="nav-link" data-scroll-target="#networks-in-igraph">Networks in <code>igraph</code></a>
-  <ul class="collapse">
-  <li><a href="#import-via-snahelper" id="toc-import-via-snahelper" class="nav-link" data-scroll-target="#import-via-snahelper">Import via <code>snahelper</code></a></li>
-  </ul></li>
-  <li><a href="#scientific-reading" id="toc-scientific-reading" class="nav-link" data-scroll-target="#scientific-reading">Scientific reading</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">3.1</span> Introduction</a></li>
+  <li><a href="#centrality-indices-igraph" id="toc-centrality-indices-igraph" class="nav-link" data-scroll-target="#centrality-indices-igraph"><span class="header-section-number">3.2</span> Centrality Indices <code>igraph</code></a></li>
+  <li><a href="#centrality-indices-sna" id="toc-centrality-indices-sna" class="nav-link" data-scroll-target="#centrality-indices-sna"><span class="header-section-number">3.3</span> Centrality indices <code>sna</code></a></li>
+  <li><a href="#other-centrality-packages" id="toc-other-centrality-packages" class="nav-link" data-scroll-target="#other-centrality-packages"><span class="header-section-number">3.4</span> Other Centrality Packages</a></li>
+  <li><a href="#thoughts" id="toc-thoughts" class="nav-link" data-scroll-target="#thoughts"><span class="header-section-number">3.5</span> Thoughts</a></li>
+  <li><a href="#use-case-florentine-families" id="toc-use-case-florentine-families" class="nav-link" data-scroll-target="#use-case-florentine-families"><span class="header-section-number">3.6</span> Use case: Florentine Families</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/network-data.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/descriptive/centrality-basic.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../descriptive/introduction.html">Descriptive Network Analysis</a></li><li class="breadcrumb-item"><a href="../descriptive/centrality-basic.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Network Data</h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></h1>
 </div>
 
 
@@ -397,165 +356,329 @@ window.Quarto = {
 
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netrankr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>This introductory chapter will give a short explanation of key terminology and how network data can be represented. The larger part of the chapter is concerned with representing networks in R using <code>igraph</code> and how to construct or read network data.</p>
-<p>After reading this chapter, you should have a basic understanding of what networks and network data is and how to create network objects in R using <code>igraph</code>.</p>
+<section id="introduction" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">3.1</span> Introduction</h2>
+<p>In this chapter, we learn about network centrality, a key concept for identifying the most influential nodes within networks. In a nutshell, a measure of centrality is an index that assigns a numeric values to the nodes of the network. The higher the value, the more central the node. “Being central” is a very ambiguous term and it is thus no surprise that there exists a large variety of indices that assess centrality with very different structural properties of the network.</p>
+<p>[INSERT PERIODIC TABLE]</p>
 </section>
-<section id="what-is-a-network" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-a-network">What is a network?</h2>
-<p>In the context of social network analysis, a network is a conceptual and analytical construct to understand, visualize, and examine the (social) relationships and structures that emerge from the interactions among individuals, groups, organizations, or even entire societies. At its core, a network consists of <strong>nodes</strong> (which represent the actors, whether individuals or organizations) and <strong>edges</strong> (which signify the relationships or connections between these actors). These relationships can embody various types of interactions such as communication, friendship, professional ties, or social influence, among others.</p>
-<p>Networks in the social sciences are tools for mapping and quantifying the patterns of social connections, helping to reveal the underlying dynamics of social cohesion, influence, and information flow within a community or society. Through the lens of network theory, analysts can explore how social structures influence behaviors, opportunities, and outcomes for individuals and groups, making it an invaluable approach in sociology, anthropology, political science, and many other disciplines that study social systems and interactions.</p>
-</section>
-<section id="network-representations" class="level2">
-<h2 class="anchored" data-anchor-id="network-representations">Network representations</h2>
-<p>There are several possible ways to express network data. All come with a set of advantages and disadvantages.</p>
-<section id="adjacency-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="adjacency-matrix">Adjacency Matrix</h3>
-<p>An adjacency matrix is a square matrix where the elements indicate whether pairs of vertices in the graph are adjacent or not—meaning, whether they are directly connected by an edge. If the graph has <span class="math inline">\(n\)</span> vertices, the matrix <span class="math inline">\(A\)</span> will be an <span class="math inline">\(n \times n\)</span> matrix where the entry <span class="math inline">\(A_{ij}\)</span> is <span class="math inline">\(1\)</span> if there is an edge from vertex <span class="math inline">\(i\)</span> to vertex <span class="math inline">\(j\)</span>, and <span class="math inline">\(0\)</span> if there is no edge. In the case of weighted graphs the weight of the edge is used. This matrix is symmetric for undirected graphs, indicating that an edge is bidirectional.</p>
-<p><strong>Pros:</strong></p>
+<section id="centrality-indices-igraph" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="centrality-indices-igraph"><span class="header-section-number">3.2</span> Centrality Indices <code>igraph</code></h2>
+<p>The package <code>igraph</code> implements the following 10 indices:</p>
 <ul>
-<li><p><strong>Simple Representation</strong>: It provides a straightforward and compact way to represent graphs, especially useful for dense graphs where many or most pairs of vertices are connected.</p></li>
-<li><p><strong>Efficient for Edge Lookups</strong>: Checking whether an edge exists between two vertices can be done in constant time, making it efficient for operations that require frequent edge lookups.</p></li>
-<li><p><strong>Easy Implementation of Algorithms</strong>: Many graph algorithms can be easily implemented using adjacency matrices, making it a preferred choice for certain computational tasks.</p></li>
+<li>degree (<code>degree()</code>)</li>
+<li>weighted degree (<code>strength()</code>)</li>
+<li>betweenness (<code>betweenness()</code>)</li>
+<li>closeness (<code>closeness()</code>)</li>
+<li>eigenvector (<code>eigen_centrality()</code>)</li>
+<li>alpha centrality (<code>alpha_centrality()</code>)</li>
+<li>power centrality (<code>power_centrality()</code>)</li>
+<li>PageRank (<code>page_rank()</code>)</li>
+<li>eccentricity (<code>eccentricity()</code>)</li>
+<li>hubs and authorities (<code>authority_score()</code> and <code>hub_score()</code>)</li>
+<li>subgraph centrality (<code>subgraph_centrality()</code>)</li>
 </ul>
-<p><strong>Cons:</strong></p>
-<ul>
-<li><p><strong>Space Inefficiency</strong>: For sparse graphs, where the number of edges is much less than the square of the number of vertices, an adjacency matrix uses a lot of memory to represent a relatively small number of edges.</p></li>
-<li><p><strong>Poor Scalability</strong>: As the number of vertices grows, the size of the matrix grows quadratically, which can quickly become impractical for large graphs.</p></li>
-</ul>
-</section>
-<section id="edge-list" class="level3">
-<h3 class="anchored" data-anchor-id="edge-list">Edge List</h3>
-<p>An edge list is a matrix where each row indicates an edge. In an undirected graph, an edge is represented by a pair <span class="math inline">\((i,j)\)</span>, indicating a connection between vertices <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. For directed graphs, the order of the vertices in each pair denotes the direction of the edge, from the first vertex to the second. In weighted graphs, a third column can be added to each pair to represent the weight of the edge.</p>
-<p><strong>Pros:</strong></p>
-<ul>
-<li><p><strong>Space Efficiency for Sparse Graphs</strong>: Edge lists are particularly space-efficient for representing sparse graphs where the number of edges is much lower than the square of the number of vertices, as they only store the existing edges.</p></li>
-<li><p><strong>Simplicity</strong>: The structure is straightforward and easy to understand, making it suitable for simple graph operations and for initial graph representation before processing.</p></li>
-</ul>
-<p><strong>Cons:</strong></p>
-<ul>
-<li><p><strong>Inefficient for Edge Lookups</strong>: Checking whether an edge exists between two specific vertices can be time-consuming, as it may require scanning through the entire list, leading to an operation that is linear in the number of edges.</p></li>
-<li><p><strong>Inefficiency in Graph Operations</strong>: Operations like finding all vertices adjacent to a given vertex or checking for connectivity between vertices can be inefficient compared to other representations like adjacency matrices or adjacency lists, especially for dense graphs.</p></li>
-<li><p><strong>Less Suitable for Dense Graphs</strong>: As the number of edges grows, the edge list can become large and less efficient in terms of both space and operation time compared to an adjacency matrix for dense graphs, where the number of edges is close to the maximum possible number of edges.</p></li>
-</ul>
-</section>
-<section id="adjacency-list" class="level3">
-<h3 class="anchored" data-anchor-id="adjacency-list">Adjacency List</h3>
-<p>An adjacency list is a collection of lists, with each list corresponding to the set of adjacent vertices of a given vertex. This means that for every vertex <span class="math inline">\(i\)</span> in the graph, there is an associated list that contains all the vertices <span class="math inline">\(j\)</span> to which <span class="math inline">\(i\)</span> is directly connected.</p>
-<p><strong>Pros:</strong></p>
-<ul>
-<li><p><strong>Space Efficiency</strong>: Adjacency lists are more space-efficient than adjacency matrices in sparse graphs, as they only store information about the actual connections.</p></li>
-<li><p><strong>Scalability</strong>: This representation scales better with the number of edges, especially for graphs where the number of edges is far less than the square of the number of vertices.</p></li>
-<li><p><strong>Efficiency in Graph Traversal</strong>: For operations like graph traversal or finding all neighbors of a vertex, adjacency lists provide more efficient operations compared to adjacency matrices, particularly in sparse graphs.</p></li>
-</ul>
-<p><strong>Cons:</strong></p>
-<ul>
-<li><p><strong>Edge Lookups</strong>: Checking whether an edge exists between two specific vertices can be less efficient than with an adjacency matrix, as it may require traversing a list of neighbors.</p></li>
-<li><p><strong>Variable Edge Access Time</strong>: The time to access a specific edge or to check for its existence can vary depending on the degree of the vertices involved, leading to potentially inefficient operations in certain scenarios.</p></li>
-<li><p><strong>Higher Complexity for Dense Graphs</strong>: In very dense graphs, where the number of edges approaches the number of vertex pairs, adjacency lists can become less efficient in terms of space and time compared to adjacency matrices, due to the overhead of storing a list for each vertex.</p></li>
-</ul>
-</section>
-</section>
-<section id="importing-network-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-network-data">Importing Network Data</h2>
-<section id="foreign-formats" class="level3">
-<h3 class="anchored" data-anchor-id="foreign-formats">Foreign Formats</h3>
-<p><code>igraph</code> can deal with many different foreign network formats with the function <code>read_graph</code>. (The <code>rgexf</code> package can be used to import Gephi files.)</p>
+<p>To illustrate some of the indices, we use the “dbces11” graph which is part of the <code>netrankr</code> package.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_graph</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  file,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="fu">c</span>(</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"edgelist"</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"pajek"</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ncol"</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lgl"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"graphml"</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dimacs"</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"graphdb"</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gml"</span>,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dl"</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  ...</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dbces11"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>If your network data is in one of the above formats you will find it easy to import your network.</p>
-</section>
-<section id="nodes-edges-and-attributes" class="level3">
-<h3 class="anchored" data-anchor-id="nodes-edges-and-attributes">Nodes, Edges, and Attributes</h3>
-<p>If your data is not in a network file format, you will need one of the following functions to turn raw network data into an <code>igraph</code> object: <code>graph_from_edgelist()</code>, <code>graph_from_adjacency_matrix()</code>, <code>graph_from_adj_list()</code>, or <code>graph_from_data_frame()</code>.</p>
-<p>Before using these functions, however, you still need to get the raw data into R. The concrete procedure depends on the file format. If your data is stored as an excel spreadsheet, you need additional packages. If you are familiar with the <code>tidyverse</code>, you can use the <code>readxl</code> package. Other options are, e.g.&nbsp;the <code>xlsx</code> package.</p>
-<p>Most network data you’ll find is in a plain text format (csv or tsv), either as an edgelist or adjacency matrix. To read in such data, you can use base R’s <code>read.table()</code>.</p>
-<p>Make sure you check the following before trying to load a file: Does it contain a header (e.g.&nbsp;row/column names of an adjacency matrix)? How are values delimited (comma, whitespace or tab)? This is important to set the parameters <code>header</code>, <code>sep</code> to read the data properly.</p>
-</section>
-</section>
-<section id="networks-in-igraph" class="level2">
-<h2 class="anchored" data-anchor-id="networks-in-igraph">Networks in <code>igraph</code></h2>
-<p>Below, we represent friendship relations between Bob, Ann, and Steve as a matrix and an edgelist.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># adjacency matrix</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">3</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(A) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(A) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>      Bob Ann Steve
-Bob     0   1     1
-Ann     1   0     1
-Steve   1   1     0</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># edgelist</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>el <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Bob"</span>, <span class="st">"Steve"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>),</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">2</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>el</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>     [,1]  [,2]   
-[1,] "Bob" "Ann"  
-[2,] "Bob" "Steve"
-[3,] "Ann" "Steve"</code></pre>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/dbces11_basic_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
-<p>Once we have defined an edgelist or an adjacency matrix, we can turn them into <code>igraph</code> objects as follows.</p>
+</div>
+<p><strong>degree</strong> simply counts the number of neighbors a node has.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(A, <span class="at">mode =</span> <span class="st">"undirected"</span>, <span class="at">diag =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">graph_from_edgelist</span>(el, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># g1 and g2 are the same graph so only printing g1</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>g1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">degree</span>(dbces11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH 3a48715 UN-- 3 3 -- 
-+ attr: name (v/c)
-+ edges from 3a48715 (vertex names):
-[1] Bob--Ann   Bob--Steve Ann--Steve</code></pre>
+<pre><code>A B C D E F G H I J K 
+1 1 2 2 3 4 4 4 4 4 5 </code></pre>
 </div>
 </div>
-<p>The printed summary shows some general descriptives of the graph. The string “UN–” in the first line indicates that the network is <em>U</em>ndirected (<em>D</em> for directed graphs) and has a <em>N</em>ame attribute (we named the nodes Bob, Ann, and Steve). The third and forth character are <em>W</em>, if there is a edge weight attribute, and <em>B</em> if the network is bipartite (there exists a node attribute “type”). The following number indicate the number of nodes and edges. The second line lists all graph, node and edge variables. Here, we only have a node attribute “name”.</p>
-<p>The conversion from edgelist/adjacency matrix into an igraph object is quite straightforward. The only difficulty is setting the parameters correctly (Is the network directed or not?), especially for edgelists where it may not immediately be obvious if the network is directed or not.</p>
-<section id="import-via-snahelper" class="level3">
-<h3 class="anchored" data-anchor-id="import-via-snahelper">Import via <code>snahelper</code></h3>
-<p>The R package <code>snahelper</code> implements several Addins for RStudio that facilitate working with network data by providing a GUI for various tasks. One of these is the <code>Netreader</code> which allows to import network data.</p>
-<p>The first two tabs allow you to import raw data (edges and attributes). Make sure to specify file delimiters, etc. according to the shown preview.</p>
-<p><img src="assets/img/netreader1.png" class="img-fluid"></p>
-<p>Using the <code>Netreader</code> should comes with a learning effect (hopefully). The last tab shows the R code to produce the network with the chosen data <strong>without</strong> using the Addin.</p>
-<p><img src="assets/img/netreader2.png" class="img-fluid"></p>
-<p>The network will be saved in your global environment once you click “Done”.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/degree_dbces11_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>closeness</strong> computes the shortest path distances among nodes. The most central node has the minimum distance to all other nodes (Since high scores are associated with central nodes, the distances are inverted).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">closeness</span>(dbces11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         A          B          C          D          E          F          G 
+0.03703704 0.02941176 0.04000000 0.04000000 0.05000000 0.05882353 0.05263158 
+         H          I          J          K 
+0.05555556 0.05555556 0.05263158 0.05555556 </code></pre>
+</div>
+</div>
+<p>The animation below gives an intuition on the calculation for one node. <img src="img/closeness.gif" class="img-fluid"></p>
+<p><strong>betweeness</strong> is the number of shortest paths that pass through a node (divided by the total number of shortest paths)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">betweenness</span>(dbces11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        A         B         C         D         E         F         G         H 
+ 0.000000  0.000000  0.000000  9.000000  3.833333  9.833333  2.666667 16.333333 
+        I         J         K 
+ 7.333333  1.333333 14.666667 </code></pre>
+</div>
+</div>
+<p>To get an intuition what it means to have a high betweenness, check the network below.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `add.vertices()` was deprecated in igraph 2.0.0.
+ℹ Please use `add_vertices()` instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `add.edges()` was deprecated in igraph 2.0.0.
+ℹ Please use `add_edges()` instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/betweenness_bridge-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Any shortest path from the right will pass through the red node and vice versa. The red note is thus a sort of “gatekeeper” for any information that is passed from left to right.</p>
+<p><strong>eigenvector centrality</strong> extends the idea of degree by assuming that a node is central if it is connected to other central nodes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eigen_centrality</span>(dbces11)<span class="sc">$</span>vector</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        A         B         C         D         E         F         G         H 
+0.2259630 0.0645825 0.3786244 0.2415182 0.5709057 0.9846544 1.0000000 0.8386195 
+        I         J         K 
+0.9113529 0.9986474 0.8450304 </code></pre>
+</div>
+</div>
+<p><strong>subgraph centrality</strong> is a bit more abstract but what it does is summing up all closed walks weighting them by the inverse factorial of its length.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">subgraph_centrality</span>(dbces11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       A        B        C        D        E        F        G        H 
+1.825100 1.595400 3.148571 2.423091 4.387127 7.807257 7.939410 6.672783 
+       I        J        K 
+7.032672 8.242124 7.389559 </code></pre>
+</div>
+</div>
+<p>The remaining indices are mostly designed for directed networks, <strong>page rank</strong> being the prime example. Note, though that the indices above can also be applied to directed networks.</p>
+<p>If we highlight the most central node for the calculated indices, we get the following.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/dbces11_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>So each index picks a different node as most central. While this is just a toy example, it highlights how influential the choice of indices can be in empirical settings.</p>
 </section>
+<section id="centrality-indices-sna" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="centrality-indices-sna"><span class="header-section-number">3.3</span> Centrality indices <code>sna</code></h2>
+<p>The <code>sna</code> package implements roughly the same indices as <code>igraph</code> but adds:</p>
+<ul>
+<li>flow betweenness (<code>flowbet()</code>)</li>
+<li>load centrality (<code>loadcent()</code>)</li>
+<li>Gil-Schmidt Power Index (<code>gilschmidt()</code>)</li>
+<li>information centrality (<code>infocent()</code>)</li>
+<li>stress centrality (<code>stresscent()</code>)</li>
+</ul>
 </section>
-<section id="scientific-reading" class="level2">
-<h2 class="anchored" data-anchor-id="scientific-reading">Scientific reading</h2>
-<p>Wasserman, S., &amp; Faust, K. (1994). Social network analysis: Methods and applications.</p>
-<p>Scott, J. (2012). What is Social Network Analysis? Bloomsbury Academic.</p>
+<section id="other-centrality-packages" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="other-centrality-packages"><span class="header-section-number">3.4</span> Other Centrality Packages</h2>
+<p>There are also some dedicated centrality packages, such as <code>centiserve</code>, <code>CINNA</code>, <code>influenceR</code> and <code>keyplayer</code>. The biggest in terms of implemented indices is currently <code>centiserve</code> with a total of 33 indices.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(centiserve)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.character</span>(<span class="fu">lsf.str</span>(<span class="st">"package:centiserve"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "averagedis"            "barycenter"            "bottleneck"           
+ [4] "centroid"              "closeness.currentflow" "closeness.freeman"    
+ [7] "closeness.latora"      "closeness.residual"    "closeness.vitality"   
+[10] "clusterrank"           "communibet"            "communitycent"        
+[13] "crossclique"           "decay"                 "diffusion.degree"     
+[16] "dmnc"                  "entropy"               "epc"                  
+[19] "geokpath"              "hubbell"               "katzcent"             
+[22] "laplacian"             "leaderrank"            "leverage"             
+[25] "lincent"               "lobby"                 "markovcent"           
+[28] "mnc"                   "pairwisedis"           "radiality"            
+[31] "salsa"                 "semilocal"             "topocoefficient"      </code></pre>
+</div>
+</div>
+<p>The description of <code>CINNA</code> says “Functions for computing, comparing and demonstrating top informative centrality measures within a network.” Most of the indices in the package are imported from other package, such as <code>centiserve</code>. In addition, there are:</p>
+<ul>
+<li>Dangalchev closeness (<code>dangalchev_closeness_centrality()</code>)</li>
+<li>group centrality (<code>group_centrality()</code>)</li>
+<li>harmonic closeness (<code>harmonic_centrality()</code>)</li>
+<li>local bridging centrality (<code>local_bridging_centrality()</code>)</li>
+</ul>
+<p>The function <code>calculate_centralities()</code> can be used to calculate all applicable indices to a network. The primary purpose of the package is to facilitate the choice of indices by visual and statistical tools. If you are interested in the details, see this <a href="https://www.datacamp.com/community/tutorials/centrality-network-analysis-R">tutorial</a> and this <a href="https://cran.r-project.org/web/packages/CINNA/vignettes/CINNA.html">vignette</a>.</p>
+<p><code>influenceR</code> and <code>keyplayer</code> are comparably small packages which implement only a small number of indices.</p>
+</section>
+<section id="thoughts" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="thoughts"><span class="header-section-number">3.5</span> Thoughts</h2>
+<p>The choice of indices can be overwhelming and little guidelines exist on when to choose what. The worst thing to do in any case is to apply a handful of indices and pick the result that suits your interpretation best. In best case, you have substantive arguments to apply an index and the result does match the hypothesis (or not).</p>
+</section>
+<section id="use-case-florentine-families" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="use-case-florentine-families"><span class="header-section-number">3.6</span> Use case: Florentine Families</h2>
+<p>A classic example application of centrality indices is the “Florentine Families” dataset, which is included in the <code>networkdata</code> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="centrality-basic_files/figure-html/flo_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Th network shows marriage ties among Renaissance Families in Florence. Marriages at that time were strategic to improve the standing of families in society. The size of the names is proportional to the wealth of the families. Although the Strozzi were the wealthiest family, it was ultimately the Medici who became the most powerful family. This is in part due to their central position within this marriage network.</p>
+<p>The table bellow shows the ranking for the four most commonly used centrality indices (1=top rank).</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: right;">degree</th>
+<th style="text-align: right;">betweenness</th>
+<th style="text-align: right;">closeness</th>
+<th style="text-align: right;">eigen</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Acciaiuoli</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Albizzi</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Barbadori</td>
+<td style="text-align: right;">10.5</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bischeri</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8.0</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Castellani</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9.5</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ginori</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">13.0</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Guadagni</td>
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lamberteschi</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14.0</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Medici</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pazzi</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Peruzzi</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pucci</td>
+<td style="text-align: right;">16.0</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">16.0</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ridolfi</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2.0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Salviati</td>
+<td style="text-align: right;">10.5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9.5</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Strozzi</td>
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tornabuoni</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>No matter what structural feature we consider to be important, the Medici always have the most advantageous position.</p>
 
 
 </section>
@@ -980,13 +1103,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./intro.html" class="pagination-link" aria-label="Introduction">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Introduction</span>
+      <a href="../descriptive/descriptives-basic.html" class="pagination-link" aria-label="Basic Network Statistics">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Basic Network Statistics</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./descriptive/introduction.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../descriptive/centrality-advanced.html" class="pagination-link" aria-label="Advanced Centrality Concepts">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Advanced Centrality Concepts</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -998,7 +1121,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/network-data.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/descriptive/centrality-basic.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>
