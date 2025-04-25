@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.6.43">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -21,7 +21,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -39,10 +59,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-a34d670291f06f286357e447776a572a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-292c0866b2e53f8190c286d1fd533ef9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -304,6 +324,8 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#the-challenges-of-network-modeling" id="toc-the-challenges-of-network-modeling" class="nav-link active" data-scroll-target="#the-challenges-of-network-modeling"><span class="header-section-number">14.1</span> The Challenges of Network Modeling</a></li>
+  <li><a href="#the-importance-of-statistical-network-modeling" id="toc-the-importance-of-statistical-network-modeling" class="nav-link" data-scroll-target="#the-importance-of-statistical-network-modeling"><span class="header-section-number">14.2</span> The Importance of Statistical Network Modeling</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/introduction.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -329,14 +351,63 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>When we look at a network, we don’t just want to describe what we see. We want to understand why the connections exist and how they shape the bigger picture. That’s where statistical network models come in. Unlike purely descriptive approaches, models enable us to infer the underlying processes that generate network structures.</p>
-<p>What makes modeling a powerful statistical tool is that they don’t just summarize the data we already have, but instead dig deeper to uncover the hidden rules that shape the network. They let us test ideas, explore patterns, and even predict how networks might evolve. Of course, no model can fully capture the complexity of the real world, but they provide useful blueprints for understanding the mechanisms forming and driving the system.</p>
+<p>Using <strong>inferential network analysis</strong>, we can determine whether observed patterns — such as clustering, homophily, or centralization — are statistically significant or simply the result of random processes. This allows us to differentiate between patterns that are meaningful and those that arise by chance.</p>
+<p>Statistical network models bridge the gap between theory and empirical reality, allowing us to test hypotheses, uncover hidden mechanisms, and build predictive models that inform policy and intervention across diverse domains. When we look at a network, we don’t just want to describe what we see. We want to understand why the connections exist and how they shape the bigger picture. Thus to move beyond description and into prediction and explanation, statistical network modeling becomes essential.</p>
 <section id="the-challenges-of-network-modeling" class="level2" data-number="14.1">
 <h2 data-number="14.1" class="anchored" data-anchor-id="the-challenges-of-network-modeling"><span class="header-section-number">14.1</span> The Challenges of Network Modeling</h2>
 <p>Most traditional data analysis treats the world like a collection of independent units; people, companies, events, each with their own neatly packaged characteristics. This monadic approach assumes that what happens to one entity has no impact on another, much like strangers sitting silently in a waiting room. This assumption, known as independent and identically distributed (i.i.d.) data, underlies most statistical models.</p>
 <p>But network data laughs in the face of independence. Here, the unit of observation isn’t the individual, but the relationships between them; whether it’s friendships, collaboration or trade agreements. These relationships (or ties) don’t exist in isolation; they overlap, influence each other, and evolve in complex ways. When walking down the street, you do not let the flip of a coin determine whether you will befriend a by-passer or not.</p>
 <p>A defining feature of network data is that one tie can change the likelihood of another forming. Think of social circles: if Alice and Bob are both friends with Carol, odds are Alice and Bob will become friends too. This phenomenon (triadic closure), explains everything from friend groups to why your LinkedIn keeps suggesting you connect with your ex’s new colleague.</p>
 <p>Unlike spatial or temporal dependencies, where values near each other in space or time are correlated, network dependencies aren’t just noise to correct for; they’re the main event. Instead of being a nuisance, these dependencies are precisely what we study to understand how networks form and evolve.</p>
+</section>
+<section id="the-importance-of-statistical-network-modeling" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="the-importance-of-statistical-network-modeling"><span class="header-section-number">14.2</span> The Importance of Statistical Network Modeling</h2>
+<p>Networks do not emerge randomly; rather, they are shaped by underlying social processes that drive the formation of ties and structures. These processes operate at both local and global levels, leading to self-organizing patterns that define social interaction.</p>
+<p>At the core of social networks is the idea that structural patterns emerge locally. Individual relationships form through reciprocity, trust, and shared interests, and these small-scale interactions gradually create larger, more complex structures. Network ties do not form in isolation; they are dependent on existing connections, meaning that the presence of one tie often leads to another.</p>
+<p>Network theory provides a framework for understanding how these mechanisms shape the growth, stability, and dynamics of social networks. Moreover, inferential statistics allow us to test hypotheses based on these theories with respect to an observed network. Below, a few examples of theories that are directly connected to the social rules governing network formation are given:</p>
+<ul>
+<li><strong>Social Exchange &amp; Reciprocity</strong> – Ties are often formed based on resource exchange, reinforcing reciprocity in network interactions <span class="citation" data-cites="gouldner1960norm">(<a href="introduction.html#ref-gouldner1960norm" role="doc-biblioref">Gouldner 1960</a>)</span>.<br>
+</li>
+<li><strong>Structural Balance &amp; Triadic Closure</strong> – Networks tend toward stable triads, following the principle of balance theory, originally developed by Fritz Heider in the 40’s and later formalized by <span class="citation" data-cites="cartwright1956structural">Cartwright and Harary (<a href="introduction.html#ref-cartwright1956structural" role="doc-biblioref">1956</a>)</span>.<br>
+</li>
+<li><strong>Structural Holes &amp; Brokerage</strong> – Some individuals act as bridges between disconnected groups, gaining influence by controlling information flow. This process is linked to social influence, as brokers shape the diffusion of knowledge and innovation <span class="citation" data-cites="burt1992structural">(<a href="introduction.html#ref-burt1992structural" role="doc-biblioref">Burt 1992</a>)</span>.</li>
+<li><strong>Homophily: Selection &amp; Influence</strong> (“Birds of a feather flock together”) — People tend to form relationships with those who share similar attributes, attitude and behavior <span class="citation" data-cites="mcpherson2001birds">(<a href="introduction.html#ref-mcpherson2001birds" role="doc-biblioref">McPherson, Smith-Lovin, and Cook 2001</a>)</span>.</li>
+<li><strong>The Matthew Effect &amp; Preferential Attachment</strong> – Individuals with many connections tend to accumulate even more—a process known in network theory as preferential attachment. This dynamic follows the rich-get-richer principle, reinforcing homopholy (or assortativity) as well-connected individuals attract even more ties <span class="citation" data-cites="merton1968matthew barabasi1999pa">(<a href="introduction.html#ref-merton1968matthew" role="doc-biblioref">Merton 1968</a>; <a href="introduction.html#ref-barabasi1999pa" role="doc-biblioref">Barabási and Albert 1999</a>)</span>.</li>
+</ul>
+<p>When combined with inferential methods, network theory offers more than just structural description—it enables deep insight into how social networks emerge, stabilize, and adapt. This is vital for understanding social influence, the spread of information or disease, and the resilience of communities in the face of disruption.</p>
+<p>Through these interconnected processes, social networks self-organize, shaping everything from friendship patterns to organizational hierarchies. What may begin as localized interactions—formed by individual choices and social rules—eventually leads to the emergence of complex structures that govern social life.</p>
+<p>By linking social rules to structural mechanisms, network theory provides a powerful lens for understanding how and why networks evolve. This perspective is critical in fields ranging from sociology and economics to epidemiology and computational social science, where the ability to model and predict network behavior has practical implications for understanding influence, diffusion, and social resilience.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-barabasi1999pa" class="csl-entry" role="listitem">
+Barabási, Albert-László, and Réka Albert. 1999. <span>“Emergence of
+Scaling in Random Networks.”</span> <em>Science</em> 286 (5439): 509–12.
+</div>
+<div id="ref-burt1992structural" class="csl-entry" role="listitem">
+Burt, Ronald. 1992. <em>Structural Holes: The Social Structure of
+Competition</em>. Harvard University Press.
+</div>
+<div id="ref-cartwright1956structural" class="csl-entry" role="listitem">
+Cartwright, Dorwin, and Frank Harary. 1956. <span>“Structural Balance: A
+Generalization of Heider’s Theory.”</span> <em>Psychological Review</em>
+63 (5): 277.
+</div>
+<div id="ref-gouldner1960norm" class="csl-entry" role="listitem">
+Gouldner, Alvin W. 1960. <span>“The Norm of Reciprocity: A Preliminary
+Statement.”</span> <em>American Sociological Review</em>, 161–78.
+</div>
+<div id="ref-mcpherson2001birds" class="csl-entry" role="listitem">
+McPherson, Miller, Lynn Smith-Lovin, and James M Cook. 2001.
+<span>“Birds of a Feather: Homophily in Social Networks.”</span>
+<em>Annual Review of Sociology</em> 27 (1): 415–44.
+</div>
+<div id="ref-merton1968matthew" class="csl-entry" role="listitem">
+Merton, Robert K. 1968. <span>“The Matthew Effect in Science.”</span>
+<em>Science</em> 159 (3810): 56–63.
+</div>
+</div>
 
 
 </section>
