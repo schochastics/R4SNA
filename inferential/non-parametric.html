@@ -393,11 +393,12 @@ window.Quarto = {
    
   <ul>
   <li><a href="#conditional-uniform-graph-distributions-cugs" id="toc-conditional-uniform-graph-distributions-cugs" class="nav-link active" data-scroll-target="#conditional-uniform-graph-distributions-cugs"><span class="header-section-number">15.1</span> Conditional Uniform Graph Distributions (CUGs)</a></li>
-  <li><a href="#uniform-graph-distribution-given-expected-density" id="toc-uniform-graph-distribution-given-expected-density" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.2</span> Uniform graph distribution given expected density</a></li>
-  <li><a href="#uniform-graph-distribution-given-number-of-edges" id="toc-uniform-graph-distribution-given-number-of-edges" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-number-of-edges"><span class="header-section-number">15.3</span> Uniform graph distribution given number of edges</a></li>
-  <li><a href="#uniform-graph-distribution-given-dyad-census" id="toc-uniform-graph-distribution-given-dyad-census" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-dyad-census"><span class="header-section-number">15.4</span> Uniform graph distribution given dyad census</a></li>
-  <li><a href="#uniform-graph-distribution-given-fixed-degree" id="toc-uniform-graph-distribution-given-fixed-degree" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-fixed-degree"><span class="header-section-number">15.5</span> Uniform graph distribution given fixed degree</a></li>
-  <li><a href="#analysing-homophily-using-non-parametric-null-distribution" id="toc-analysing-homophily-using-non-parametric-null-distribution" class="nav-link" data-scroll-target="#analysing-homophily-using-non-parametric-null-distribution"><span class="header-section-number">15.6</span> Analysing homophily using non-parametric null distribution</a></li>
+  <li><a href="#hypothesis-testing-procedure" id="toc-hypothesis-testing-procedure" class="nav-link" data-scroll-target="#hypothesis-testing-procedure"><span class="header-section-number">15.2</span> Hypothesis Testing Procedure</a></li>
+  <li><a href="#uniform-graph-distribution-given-expected-density" id="toc-uniform-graph-distribution-given-expected-density" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.3</span> Uniform graph distribution given expected density</a></li>
+  <li><a href="#uniform-graph-distribution-given-number-of-edges" id="toc-uniform-graph-distribution-given-number-of-edges" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-number-of-edges"><span class="header-section-number">15.4</span> Uniform graph distribution given number of edges</a></li>
+  <li><a href="#uniform-graph-distribution-given-dyad-census" id="toc-uniform-graph-distribution-given-dyad-census" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-dyad-census"><span class="header-section-number">15.5</span> Uniform graph distribution given dyad census</a></li>
+  <li><a href="#uniform-graph-distribution-given-fixed-degree" id="toc-uniform-graph-distribution-given-fixed-degree" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-fixed-degree"><span class="header-section-number">15.6</span> Uniform graph distribution given fixed degree</a></li>
+  <li><a href="#analysing-homophily-using-non-parametric-null-distribution" id="toc-analysing-homophily-using-non-parametric-null-distribution" class="nav-link" data-scroll-target="#analysing-homophily-using-non-parametric-null-distribution"><span class="header-section-number">15.7</span> Analysing homophily using non-parametric null distribution</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/non-parametric.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -439,20 +440,36 @@ window.Quarto = {
 </ul>
 <p>For example, in a CUG with fixed density (number of edges), each graph that meets the constraint is equally probable. Graphs that do not satisfy the constraint (e.g., different number of ties) are assigned a probability of zero. This results in a <strong>null model</strong> that is tightly defined and suitable for hypothesis testing.</p>
 </section>
-<section id="uniform-graph-distribution-given-expected-density" class="level2" data-number="15.2">
-<h2 data-number="15.2" class="anchored" data-anchor-id="uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.2</span> Uniform graph distribution given expected density</h2>
+<section id="hypothesis-testing-procedure" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="hypothesis-testing-procedure"><span class="header-section-number">15.2</span> Hypothesis Testing Procedure</h2>
+<p>The process follows classical null hypothesis testing logic:</p>
+<ul>
+<li><strong>Null Hypothesis (<span class="math inline">\(H_{0}\)</span>):</strong> The observed network is drawn from a CUG model that preserves a given constraint (e.g., edge count).</li>
+<li><strong>Alternative Hypothesis (<span class="math inline">\(H_{1}\)</span>):</strong> The observed network structure is not typical under this model and thus suggests a non-random social mechanism.</li>
+</ul>
+<p>To test <span class="math inline">\(H_0\)</span> we follow the below steps:</p>
+<ol type="1">
+<li>Define a summary statistic (e.g., degree centralization).</li>
+<li>Generate a large number of networks from the CUG distribution.</li>
+<li>Compute the statistic for each simulated network.</li>
+<li>Compare the observed statistic to the simulated distribution.</li>
+</ol>
+<p>If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject <span class="math inline">\(H_{0}\)</span> at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance. n observed network features, thereby enabling controlled comparisons.</p>
 </section>
-<section id="uniform-graph-distribution-given-number-of-edges" class="level2" data-number="15.3">
-<h2 data-number="15.3" class="anchored" data-anchor-id="uniform-graph-distribution-given-number-of-edges"><span class="header-section-number">15.3</span> Uniform graph distribution given number of edges</h2>
+<section id="uniform-graph-distribution-given-expected-density" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.3</span> Uniform graph distribution given expected density</h2>
 </section>
-<section id="uniform-graph-distribution-given-dyad-census" class="level2" data-number="15.4">
-<h2 data-number="15.4" class="anchored" data-anchor-id="uniform-graph-distribution-given-dyad-census"><span class="header-section-number">15.4</span> Uniform graph distribution given dyad census</h2>
+<section id="uniform-graph-distribution-given-number-of-edges" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="uniform-graph-distribution-given-number-of-edges"><span class="header-section-number">15.4</span> Uniform graph distribution given number of edges</h2>
 </section>
-<section id="uniform-graph-distribution-given-fixed-degree" class="level2" data-number="15.5">
-<h2 data-number="15.5" class="anchored" data-anchor-id="uniform-graph-distribution-given-fixed-degree"><span class="header-section-number">15.5</span> Uniform graph distribution given fixed degree</h2>
+<section id="uniform-graph-distribution-given-dyad-census" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="uniform-graph-distribution-given-dyad-census"><span class="header-section-number">15.5</span> Uniform graph distribution given dyad census</h2>
 </section>
-<section id="analysing-homophily-using-non-parametric-null-distribution" class="level2" data-number="15.6">
-<h2 data-number="15.6" class="anchored" data-anchor-id="analysing-homophily-using-non-parametric-null-distribution"><span class="header-section-number">15.6</span> Analysing homophily using non-parametric null distribution</h2>
+<section id="uniform-graph-distribution-given-fixed-degree" class="level2" data-number="15.6">
+<h2 data-number="15.6" class="anchored" data-anchor-id="uniform-graph-distribution-given-fixed-degree"><span class="header-section-number">15.6</span> Uniform graph distribution given fixed degree</h2>
+</section>
+<section id="analysing-homophily-using-non-parametric-null-distribution" class="level2" data-number="15.7">
+<h2 data-number="15.7" class="anchored" data-anchor-id="analysing-homophily-using-non-parametric-null-distribution"><span class="header-section-number">15.7</span> Analysing homophily using non-parametric null distribution</h2>
 
 
 </section>
