@@ -38,9 +38,67 @@ To test $H_0$ we follow the below steps:
 3. Compute the statistic for each simulated network.
 4. Compare the observed statistic to the simulated distribution.
 
-If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject $H_{0}$ at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance.
+If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject $H_{0}$ at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance. 
+
+The process is visualized in @fig-cugex where the left panel shows the observed network, while the right panel displays the null distribution of the statistic based on 500 randomly generated graphs that preserve the same number of nodes and edges. The dashed red line indicates the observed value. If this value lies in the tail of the distribution, it suggests the observed structure is unlikely to have arisen by chance under the null model.
+
+::: {#fig-cugex .center}
+```{r}
+#| echo: false
+#| message: false
+#| fig-height: 4
+#| fig-width: 10
+#| fig-align: center
+
+library(igraph)
+library(ggraph)
+library(tidygraph)
+library(ggplot2)
+library(patchwork)  
+
+# Create an observed graph
+set.seed(77)
+obs_graph <- sample_smallworld(1, 50, nei = 5, p = 0.15)
+
+# Compute observed centralization
+obs_measure <- centr_degree(obs_graph)$centralization
+
+# Simulate null distribution
+n_sim <- 500
+null_vals <- replicate(n_sim, {
+  g_sim <- sample_gnm(vcount(obs_graph), ecount(obs_graph))
+  centr_degree(g_sim)$centralization
+})
+
+# Create histogram plot
+df <- data.frame(centralization = null_vals)
+
+hist_plot <- ggplot(df, aes(x = centralization)) +
+  geom_histogram(binwidth = 0.02, fill = "lightgrey", color = "black") +
+  geom_vline(xintercept = obs_measure, linetype = "dashed", color = "firebrick", linewidth = 1.2) +
+  annotate("text", x = obs_measure, y = max(table(cut(null_vals, breaks = 30))) + 2,
+           label = "observed value", color = "firebrick", angle = 90, vjust = -0.5,  hjust = 1) +
+  labs(title = "Null distribution of measure of interest", x = " ", y = "Frequency") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 
 
+# Create network plot
+net_plot <- ggraph(obs_graph, layout = "fr") +
+  geom_edge_link(color = "lightgrey") +
+  geom_node_point(size = 3, color = "black") +
+  theme_void() +
+  labs(title = "Observed network") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Combine using patchwork
+net_plot + hist_plot + plot_layout(ncol = 2)
+
+```
+Conditional Uniform Graph (CUG) test of a network statistic of interest.
+
+
+:::
 
 ##  Uniform graph distribution given expected density
 
