@@ -576,7 +576,7 @@
     "href": "descriptive/ego-networks.html",
     "title": "8  Ego Networks",
     "section": "",
-    "text": "8.1 Scientific Reading\nIf you want to analyze ego networks, then I can only recommend this book by Raffaele Vacca. Raffaele has given countless workshops on ego network analysis in R and his material should provide you with everything you need.\nMcCarty, C., Lubbers, M. J., Vacca, R., & Molina, J. L. (2019). Conducting personal network research: A practical guide. The Guilford Press.",
+    "text": "8.1 Scientific Reading\nThis part will be added soon! In the meantime, if you want to analyze ego networks, we recommend this book by Raffaele Vacca. Raffaele has given countless workshops on ego network analysis in R and his material should provide you with everything you need.\nMcCarty, C., Lubbers, M. J., Vacca, R., & Molina, J. L. (2019). Conducting personal network research: A practical guide. The Guilford Press.",
     "crumbs": [
       "Descriptive Network Analysis",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Ego Networks</span>"
@@ -807,7 +807,7 @@
     "href": "inferential/introduction.html#parametric-and-non-parametric-methods",
     "title": "14  Introduction",
     "section": "14.3 Parametric and Non-Parametric Methods",
-    "text": "14.3 Parametric and Non-Parametric Methods\nParametric methods in network analysis are based on the assumption that the data conform to a specific theoretical probability distribution. This foundation enables formal statistical inference: researchers can evaluate network summary statistics—such as centrality, density, or clustering coefficients—within the framework of known distributions.\nA significant advantage of parametric approaches is their ability to incorporate dependencies among ties. In social networks, the presence of one tie often influences the likelihood of others forming. Parametric models, such as Exponential Random Graph Models (ERGMs) and Stochastic Actor-Oriented Models (SAOMs), are explicitly designed to account for these interdependencies. They can model complex phenomena like reciprocity (the tendency for ties to be mutual), transitivity (the tendency for friends of friends to become friends), and homophily (the preference for connecting with similar others).\nWhen the assumptions underlying parametric methods hold, these models provide powerful explanations and predictions. They allow researchers to simulate alternative network scenarios, test competing hypotheses about network formation, and predict how networks might evolve under different conditions.\nNon-parametric methods offer an alternative path when the assumptions required by parametric models are too restrictive or difficult to verify. Unlike parametric approaches, non-parametric methods make minimal assumptions about the data-generating process. They are particularly useful for analyzing real-world networks that are too irregular, complex, or dynamic to fit neatly into predefined distributions.\nA common non-parametric technique is permutation testing, where the observed network is systematically altered—typically by shuffling ties while preserving certain properties, such as the number of connections each node has. This process creates a reference distribution under the null hypothesis, allowing researchers to assess whether observed patterns (like high clustering or assortativity) are statistically significant or could have arisen by chance.\nImportantly, in non-parametric frameworks, p-values retain their traditional interpretation**. They represent the probability of observing network features as extreme as those found in the data if the null hypothesis were true. This familiar statistical grounding makes non-parametric tests both intuitive and flexible.\nNon-parametric methods are particularly valuable during the exploratory phase of research, for validating parametric models, and in contexts where theoretical models are either undeveloped or poorly understood.",
+    "text": "14.3 Parametric and Non-Parametric Methods\nParametric methods in network analysis are based on the assumption that the data conform to a specific theoretical probability distribution. This foundation enables formal statistical inference: researchers can evaluate network summary statistics—such as centrality, density, or clustering coefficients—within the framework of known distributions.\nA big advantage of parametric approaches is their ability to incorporate dependencies among ties. In social networks, the presence of one tie often influences the likelihood of others forming. Parametric models, such as Exponential Random Graph Models (ERGMs) and Stochastic Actor-Oriented Models (SAOMs), are explicitly designed to account for these interdependencies. They can model complex phenomena like reciprocity (the tendency for ties to be mutual), transitivity (the tendency for friends of friends to become friends), and homophily (the preference for connecting with similar others). When the assumptions underlying parametric methods hold, these models provide powerful explanations and predictions. They allow researchers to simulate alternative network scenarios, test competing hypotheses about network formation, and predict how networks might evolve under different conditions.\nIn contrast, non-parametric approaches avoid making strong assumptions about the underlying distribution of the data. These methods are especially valuable when working with real-world networks that are too complex, noisy, or irregular to fit neatly into a parametric mold. Rather than relying on predefined distributions, non-parametric approaches use data-driven techniques to generate reference distributions, often through permutation or resampling methods.\nNon-parametric methods are particularly useful in exploratory analyses or when assessing the robustness of findings derived from parametric models. They provide a flexible framework for evaluating whether observed patterns—such as high clustering or assortative mixing—are statistically meaningful or likely to have arisen by chance.\nThe choice between parametric and non-parametric methods should be guided by the research objectives, the nature and structure of the data, and the strength of theoretical assumptions. In the following chapters, we will explore both approaches in greater depth, focusing on their foundational principles, how they align with different data structures, and their practical use in modeling social networks.",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>14</span>  <span class='chapter-title'>Introduction</span>"
@@ -825,145 +825,222 @@
     ]
   },
   {
+    "objectID": "inferential/non-parametric.html",
+    "href": "inferential/non-parametric.html",
+    "title": "15  Non-Parametric Methods",
+    "section": "",
+    "text": "15.1 Conditional Uniform Graph Distributions (CUGs)\nA common non-parametric technique is permutation testing, where the observed network is systematically altered—typically by shuffling ties while preserving certain properties, such as the number of connections each node has. This process creates a reference distribution under the null hypothesis, allowing researchers to assess whether observed patterns (like high clustering or assortativity) are statistically significant or could have arisen by chance.\nImportantly, in non-parametric frameworks, p-values retain their traditional interpretation. They represent the probability of observing network features as extreme as those found in the data if the null hypothesis were true. This familiar statistical grounding makes non-parametric tests both intuitive and flexible.\nNon-parametric methods are particularly valuable during the exploratory phase of research, for validating parametric models, and in contexts where theoretical models are either undeveloped or poorly understood.\nOne widely used non-parametric approach is the Conditional Uniform Graph Distribution (CUG). CUGs define a reference distribution of graphs generated uniformly at random, but conditioned on one or more fixed characteristics of the observed network, such as the number of nodes, total number of edges, or degree distribution. By preserving these basic structural features, CUGs enable researchers to assess whether a more complex pattern (e.g., high reciprocity, homophily, or transitivity) is likely to have arisen by chance given the observed constraints.\nWhy do we do this? Well, in network analysis, statistical inference relies on some form of randomness; we assume that if a structure emerges more often than we would expect under random conditions, it likely reflects an underlying social mechanism. A CUG distribution formalizes this by defining a uniform distribution over a set of graphs, where each graph satisfies a fixed constraint, such as the same number of edges, node degrees, or dyadic relationships.\nFor example, if a network displays unusually high clustering, a CUG test can evaluate whether this is statistically exceptional or simply a byproduct of the network’s size and density. By comparing the observed statistic to the distribution of values from randomly generated but structurally constrained networks, researchers can determine the significance of the observed pattern. CUGs are especially useful when a full parametric model is unavailable, difficult to specify, or when the goal is to control for known network features while testing specific structural hypotheses.\nSeveral types of CUGs can be defined:\nFor example, in a CUG with fixed density (number of edges), each graph that meets the constraint is equally probable. Graphs that do not satisfy the constraint (e.g., different number of ties) are assigned a probability of zero. This results in a null model that is tightly defined and suitable for hypothesis testing.",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
+    "objectID": "inferential/non-parametric.html#conditional-uniform-graph-distributions-cugs",
+    "href": "inferential/non-parametric.html#conditional-uniform-graph-distributions-cugs",
+    "title": "15  Non-Parametric Methods",
+    "section": "",
+    "text": "𝒰 |E(L): All graphs with the same number of edges as the observed graph.\n𝒰 |d: All graphs with the same degree distribution \\(d = (d_1, d_2, ..., d_n)\\).\n𝒰 |MAN: All graphs with the same dyad census (i.e., counts of mutual, asymmetric, and null ties).",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
+    "objectID": "inferential/non-parametric.html#uniform-graph-distribution-given-expected-density",
+    "href": "inferential/non-parametric.html#uniform-graph-distribution-given-expected-density",
+    "title": "15  Non-Parametric Methods",
+    "section": "15.2 Uniform graph distribution given expected density",
+    "text": "15.2 Uniform graph distribution given expected density",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
+    "objectID": "inferential/non-parametric.html#uniform-graph-distribution-given-number-of-edges",
+    "href": "inferential/non-parametric.html#uniform-graph-distribution-given-number-of-edges",
+    "title": "15  Non-Parametric Methods",
+    "section": "15.3 Uniform graph distribution given number of edges",
+    "text": "15.3 Uniform graph distribution given number of edges",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
+    "objectID": "inferential/non-parametric.html#uniform-graph-distribution-given-dyad-census",
+    "href": "inferential/non-parametric.html#uniform-graph-distribution-given-dyad-census",
+    "title": "15  Non-Parametric Methods",
+    "section": "15.4 Uniform graph distribution given dyad census",
+    "text": "15.4 Uniform graph distribution given dyad census",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
+    "objectID": "inferential/non-parametric.html#uniform-graph-distribution-given-fixed-degree",
+    "href": "inferential/non-parametric.html#uniform-graph-distribution-given-fixed-degree",
+    "title": "15  Non-Parametric Methods",
+    "section": "15.5 Uniform graph distribution given fixed degree",
+    "text": "15.5 Uniform graph distribution given fixed degree",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
+    "objectID": "inferential/non-parametric.html#analysing-homophily-using-non-parametric-null-distribution",
+    "href": "inferential/non-parametric.html#analysing-homophily-using-non-parametric-null-distribution",
+    "title": "15  Non-Parametric Methods",
+    "section": "15.6 Analysing homophily using non-parametric null distribution",
+    "text": "15.6 Analysing homophily using non-parametric null distribution",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
     "objectID": "tidy/introduction.html",
     "href": "tidy/introduction.html",
-    "title": "15  Introduction",
+    "title": "20  Introduction",
     "section": "",
-    "text": "15.1 Required libraries\nThe main focus of this part is to introduce the tidy approach for network analysis.\nTo run all the code in this part, you need to install and load two packages.\ntidygraph implements the tidy approach for network analysis. networkdata contains a diverse set of network dataset.\nlibrary(tidygraph)\n\n\nAttaching package: 'tidygraph'\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nlibrary(networkdata)\nMake sure you have at least the version given below. Some of the examples may not be backward compatible.\npackageVersion(\"tidygraph\")\n\n[1] '1.3.1'\n\npackageVersion(\"networkdata\")\n\n[1] '0.2.1'",
+    "text": "20.1 Required libraries\nThe main focus of this part is to introduce the tidy approach for network analysis.\nTo run all the code in this part, you need to install and load two packages.\ntidygraph implements the tidy approach for network analysis. networkdata contains a diverse set of network dataset.\nlibrary(tidygraph)\n\n\nAttaching package: 'tidygraph'\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\nlibrary(networkdata)\nMake sure you have at least the version given below. Some of the examples may not be backward compatible.\npackageVersion(\"tidygraph\")\n\n[1] '1.3.1'\n\npackageVersion(\"networkdata\")\n\n[1] '0.2.1'",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Introduction</span>"
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
     "objectID": "tidy/introduction.html#required-libraries",
     "href": "tidy/introduction.html#required-libraries",
-    "title": "15  Introduction",
+    "title": "20  Introduction",
     "section": "",
     "text": "install.packages(\"tidygraph\")\ndevtools::install_github(\"schochastics/networkdata\")",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Introduction</span>"
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
     "objectID": "tidy/introduction.html#what-is-tidy-network-data",
     "href": "tidy/introduction.html#what-is-tidy-network-data",
-    "title": "15  Introduction",
-    "section": "15.2 What is tidy network data?",
-    "text": "15.2 What is tidy network data?\nOn first glance, there is not much tidiness in networks or the ways it is usually encoded, like a graph, adjacency matrix, edgelist, etc. How should this fit into a single data frame? If you are an avid igraph user, then you may suspect the answer. It doesn’t fit, but it fits in two with graph_from_data_frame() which takes two data frames, one for nodes and one for edges, as input. In other words, we can represent a network as two separate data frames. One for the nodes and node attributes, and one for the edges and edge attributes. Working with these two data frames together is the premise for the tidygraph package. If you are interested in more technical details on how this is implemented under the hood, see the introductory blog post for the package.",
+    "title": "20  Introduction",
+    "section": "20.2 What is tidy network data?",
+    "text": "20.2 What is tidy network data?\nOn first glance, there is not much tidiness in networks or the ways it is usually encoded, like a graph, adjacency matrix, edgelist, etc. How should this fit into a single data frame? If you are an avid igraph user, then you may suspect the answer. It doesn’t fit, but it fits in two with graph_from_data_frame() which takes two data frames, one for nodes and one for edges, as input. In other words, we can represent a network as two separate data frames. One for the nodes and node attributes, and one for the edges and edge attributes. Working with these two data frames together is the premise for the tidygraph package. If you are interested in more technical details on how this is implemented under the hood, see the introductory blog post for the package.",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Introduction</span>"
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
     "objectID": "tidy/introduction.html#why-tidy-network-data",
     "href": "tidy/introduction.html#why-tidy-network-data",
-    "title": "15  Introduction",
-    "section": "15.3 Why tidy network data?",
-    "text": "15.3 Why tidy network data?\nThis is a good question. If you aren’t a fan of the tidyverse, then you should probably move along and stick with established packages such as igraph or sna which offer the exact same functionalities (tidygraph actually imports most of igraph). If you appreciate the tidyverse, then there is no need for convincing you that this is a good idea. If you are indifferent, then I hope I can make a case for the tidy framework below. To start off with, the package does a great job to harmonize many network analytic tasks. For instance, you do not need to know all the different centrality indices that are implemented. You simply type centrality_ and press tab in the RStudio console and get all functions that allow the calculation of a centrality index. Other node level functions are accessible via node_*() and edge level measures via edge_*().",
+    "title": "20  Introduction",
+    "section": "20.3 Why tidy network data?",
+    "text": "20.3 Why tidy network data?\nThis is a good question. If you aren’t a fan of the tidyverse, then you should probably move along and stick with established packages such as igraph or sna which offer the exact same functionalities (tidygraph actually imports most of igraph). If you appreciate the tidyverse, then there is no need for convincing you that this is a good idea. If you are indifferent, then I hope I can make a case for the tidy framework below. To start off with, the package does a great job to harmonize many network analytic tasks. For instance, you do not need to know all the different centrality indices that are implemented. You simply type centrality_ and press tab in the RStudio console and get all functions that allow the calculation of a centrality index. Other node level functions are accessible via node_*() and edge level measures via edge_*().",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Introduction</span>"
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
     "objectID": "tidy/tidygraph-basics.html",
     "href": "tidy/tidygraph-basics.html",
-    "title": "16  Basics of tidygraph",
+    "title": "21  Basics of tidygraph",
     "section": "",
-    "text": "16.1 Graph structures\nWe’ll use the famous Florentine Family marriage dataset as a running example. The dataset is in igraph format but can be converted to a tbl_graph object with as_tbl_graph().\ndata(\"flo_marriage\")\nflo_tidy &lt;- as_tbl_graph(flo_marriage)\nflo_tidy\n\n# A tbl_graph: 16 nodes and 20 edges\n#\n# An undirected simple graph with 2 components\n#\n# Node Data: 16 × 4 (active)\n   name         wealth `#priors` `#ties`\n   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;\n 1 Acciaiuoli       10        53       2\n 2 Albizzi          36        65       3\n 3 Barbadori        55         0      14\n 4 Bischeri         44        12       9\n 5 Castellani       20        22      18\n 6 Ginori           32         0       9\n 7 Guadagni          8        21      14\n 8 Lamberteschi     42         0      14\n 9 Medici          103        53      54\n10 Pazzi            48         0       7\n11 Peruzzi          49        42      32\n12 Pucci             3         0       1\n13 Ridolfi          27        38       4\n14 Salviati         10        35       5\n15 Strozzi         146        74      29\n16 Tornabuoni       48         0       7\n#\n# Edge Data: 20 × 2\n   from    to\n  &lt;int&gt; &lt;int&gt;\n1     1     9\n2     2     6\n3     2     7\n# ℹ 17 more rows\nThis new graph class just subclasses igraph and simply represents the network in a tidy fashion, printing two data frames, one for nodes and one for edges.\nclass(flo_tidy)\n\n[1] \"tbl_graph\" \"igraph\"\nAny function in R that expects an igraph object as input will also accept a tbl_graph.\nThe function tbl_graph() can be used to create a network from scratch with two data frames. It is basically equivalent to graph_from_data_frame().\nTo create random graphs with the usual generators, check out the create_*() and play_*() families of functions.",
+    "text": "21.1 Graph structures\nWe’ll use the famous Florentine Family marriage dataset as a running example. The dataset is in igraph format but can be converted to a tbl_graph object with as_tbl_graph().\ndata(\"flo_marriage\")\nflo_tidy &lt;- as_tbl_graph(flo_marriage)\nflo_tidy\n\n# A tbl_graph: 16 nodes and 20 edges\n#\n# An undirected simple graph with 2 components\n#\n# Node Data: 16 × 4 (active)\n   name         wealth `#priors` `#ties`\n   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;\n 1 Acciaiuoli       10        53       2\n 2 Albizzi          36        65       3\n 3 Barbadori        55         0      14\n 4 Bischeri         44        12       9\n 5 Castellani       20        22      18\n 6 Ginori           32         0       9\n 7 Guadagni          8        21      14\n 8 Lamberteschi     42         0      14\n 9 Medici          103        53      54\n10 Pazzi            48         0       7\n11 Peruzzi          49        42      32\n12 Pucci             3         0       1\n13 Ridolfi          27        38       4\n14 Salviati         10        35       5\n15 Strozzi         146        74      29\n16 Tornabuoni       48         0       7\n#\n# Edge Data: 20 × 2\n   from    to\n  &lt;int&gt; &lt;int&gt;\n1     1     9\n2     2     6\n3     2     7\n# ℹ 17 more rows\nThis new graph class just subclasses igraph and simply represents the network in a tidy fashion, printing two data frames, one for nodes and one for edges.\nclass(flo_tidy)\n\n[1] \"tbl_graph\" \"igraph\"\nAny function in R that expects an igraph object as input will also accept a tbl_graph.\nThe function tbl_graph() can be used to create a network from scratch with two data frames. It is basically equivalent to graph_from_data_frame().\nTo create random graphs with the usual generators, check out the create_*() and play_*() families of functions.",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Basics of tidygraph</span>"
+      "<span class='chapter-number'>21</span>  <span class='chapter-title'>Basics of tidygraph</span>"
     ]
   },
   {
     "objectID": "tidy/tidygraph-basics.html#standard-verbs",
     "href": "tidy/tidygraph-basics.html#standard-verbs",
-    "title": "16  Basics of tidygraph",
-    "section": "16.2 Standard verbs",
-    "text": "16.2 Standard verbs\nThe tidy framework, specifically thinking about dplyr, is about providing verbs which help to solve common data manipulation tasks, such as mutate(), select(), filter(), and summarise(). The challange for the tbl_graph objects is that these verbs somehow need to work with two different data frames. The way tidygraph solves this is via a pointer to the data frame which is supposed to be manipulated. This pointer can be changed with the verb activate(). By default the nodes are activated, which can also be seen with the print function (see line 5 in the output of flo_tidy). To activate the edge data frame, simply use activate(\"edges\").\n\nflo_tidy %&gt;% activate(\"edges\")\n\n# A tbl_graph: 16 nodes and 20 edges\n#\n# An undirected simple graph with 2 components\n#\n# Edge Data: 20 × 2 (active)\n    from    to\n   &lt;int&gt; &lt;int&gt;\n 1     1     9\n 2     2     6\n 3     2     7\n 4     2     9\n 5     3     5\n 6     3     9\n 7     4     7\n 8     4    11\n 9     4    15\n10     5    11\n11     5    15\n12     7     8\n13     7    16\n14     9    13\n15     9    14\n16     9    16\n17    10    14\n18    11    15\n19    13    15\n20    13    16\n#\n# Node Data: 16 × 4\n  name       wealth `#priors` `#ties`\n  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;\n1 Acciaiuoli     10        53       2\n2 Albizzi        36        65       3\n3 Barbadori      55         0      14\n# ℹ 13 more rows\n\n\nAny data manipulation would now be done on the edge data frame.\nHaving “activated” a data frame, many of the known dplyr verbs can be used to manipulate the data frame. The activation process might indicate that edges and nodes can only be manipulated separately, which is certainly not desirable. It is, however, possible to gain access to the edge data frame when nodes are activated via the .E(). Similarly, nodes can be accessed via .N() when edges are activated. In the below example, we activate the edges and create a new edge attribute which indicates if a family is connected to the Medici or not.\n\nflo_tidy &lt;- flo_tidy %&gt;% \n  activate(\"edges\") %&gt;% \n  mutate(to_medici=(.N()$name[from]==\"Medici\" | .N()$name[to]==\"Medici\"))\n\nThis particular use case is helpful for visualizations.\n\nggraph(flo_tidy, \"stress\") +\n    geom_edge_link0(aes(edge_color = to_medici)) +\n    geom_node_point(shape = 21, size = 10, fill = \"grey66\") +\n    geom_node_text(aes(label = name)) +\n    theme_graph()\n\n\n\n\n\n\n\n\nThe dplyr verb filter() can be used to obtain a subgraph that satisfies given conditions on the nodes. Note that in the case that you filter on nodes, also edges will be effected. If a node does not satisfy the condition, then all edges connected to that node disappear. This is not the case for edges though.\n\nflo_tidy %&gt;%\n    activate(\"edges\") %&gt;%\n    filter(to_medici) %&gt;%\n    ggraph(\"stress\", bbox = 10) +\n    geom_edge_link0(edge_color = \"black\") +\n    geom_node_point(shape = 21, size = 10, fill = \"grey66\") +\n    geom_node_text(aes(label = name)) +\n    theme_graph()",
+    "title": "21  Basics of tidygraph",
+    "section": "21.2 Standard verbs",
+    "text": "21.2 Standard verbs\nThe tidy framework, specifically thinking about dplyr, is about providing verbs which help to solve common data manipulation tasks, such as mutate(), select(), filter(), and summarise(). The challange for the tbl_graph objects is that these verbs somehow need to work with two different data frames. The way tidygraph solves this is via a pointer to the data frame which is supposed to be manipulated. This pointer can be changed with the verb activate(). By default the nodes are activated, which can also be seen with the print function (see line 5 in the output of flo_tidy). To activate the edge data frame, simply use activate(\"edges\").\n\nflo_tidy %&gt;% activate(\"edges\")\n\n# A tbl_graph: 16 nodes and 20 edges\n#\n# An undirected simple graph with 2 components\n#\n# Edge Data: 20 × 2 (active)\n    from    to\n   &lt;int&gt; &lt;int&gt;\n 1     1     9\n 2     2     6\n 3     2     7\n 4     2     9\n 5     3     5\n 6     3     9\n 7     4     7\n 8     4    11\n 9     4    15\n10     5    11\n11     5    15\n12     7     8\n13     7    16\n14     9    13\n15     9    14\n16     9    16\n17    10    14\n18    11    15\n19    13    15\n20    13    16\n#\n# Node Data: 16 × 4\n  name       wealth `#priors` `#ties`\n  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;\n1 Acciaiuoli     10        53       2\n2 Albizzi        36        65       3\n3 Barbadori      55         0      14\n# ℹ 13 more rows\n\n\nAny data manipulation would now be done on the edge data frame.\nHaving “activated” a data frame, many of the known dplyr verbs can be used to manipulate the data frame. The activation process might indicate that edges and nodes can only be manipulated separately, which is certainly not desirable. It is, however, possible to gain access to the edge data frame when nodes are activated via the .E(). Similarly, nodes can be accessed via .N() when edges are activated. In the below example, we activate the edges and create a new edge attribute which indicates if a family is connected to the Medici or not.\n\nflo_tidy &lt;- flo_tidy %&gt;% \n  activate(\"edges\") %&gt;% \n  mutate(to_medici=(.N()$name[from]==\"Medici\" | .N()$name[to]==\"Medici\"))\n\nThis particular use case is helpful for visualizations.\n\nggraph(flo_tidy, \"stress\") +\n    geom_edge_link0(aes(edge_color = to_medici)) +\n    geom_node_point(shape = 21, size = 10, fill = \"grey66\") +\n    geom_node_text(aes(label = name)) +\n    theme_graph()\n\n\n\n\n\n\n\n\nThe dplyr verb filter() can be used to obtain a subgraph that satisfies given conditions on the nodes. Note that in the case that you filter on nodes, also edges will be effected. If a node does not satisfy the condition, then all edges connected to that node disappear. This is not the case for edges though.\n\nflo_tidy %&gt;%\n    activate(\"edges\") %&gt;%\n    filter(to_medici) %&gt;%\n    ggraph(\"stress\", bbox = 10) +\n    geom_edge_link0(edge_color = \"black\") +\n    geom_node_point(shape = 21, size = 10, fill = \"grey66\") +\n    geom_node_text(aes(label = name)) +\n    theme_graph()",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Basics of tidygraph</span>"
+      "<span class='chapter-number'>21</span>  <span class='chapter-title'>Basics of tidygraph</span>"
     ]
   },
   {
     "objectID": "tidy/tidygraph-basics.html#joins",
     "href": "tidy/tidygraph-basics.html#joins",
-    "title": "16  Basics of tidygraph",
-    "section": "16.3 Joins",
-    "text": "16.3 Joins",
+    "title": "21  Basics of tidygraph",
+    "section": "21.3 Joins",
+    "text": "21.3 Joins",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Basics of tidygraph</span>"
+      "<span class='chapter-number'>21</span>  <span class='chapter-title'>Basics of tidygraph</span>"
     ]
   },
   {
     "objectID": "tidy/tidygraph-basics.html#new-verbs",
     "href": "tidy/tidygraph-basics.html#new-verbs",
-    "title": "16  Basics of tidygraph",
-    "section": "16.4 New Verbs",
-    "text": "16.4 New Verbs",
+    "title": "21  Basics of tidygraph",
+    "section": "21.4 New Verbs",
+    "text": "21.4 New Verbs",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Basics of tidygraph</span>"
+      "<span class='chapter-number'>21</span>  <span class='chapter-title'>Basics of tidygraph</span>"
     ]
   },
   {
     "objectID": "tidy/tidygraph-descriptive.html",
     "href": "tidy/tidygraph-descriptive.html",
-    "title": "17  Descriptive Network Analysis",
+    "title": "22  Descriptive Network Analysis",
     "section": "",
-    "text": "17.1 Centrality\nThe package includes all centrality indices implemented in igraph and additionally all that are made available in the netrankr package. All indices can be found in the function group centrality_*().\nflo_tidy %&gt;%\n    activate(\"nodes\") %&gt;%\n    mutate(\n        degree = centrality_degree(),\n        betweenness = centrality_betweenness()\n    ) %&gt;%\n    ggraph(\"stress\", bbox = 10) +\n    geom_edge_link0(edge_color = \"black\") +\n    geom_node_point(shape = 21, aes(size = degree, fill = betweenness)) +\n    geom_node_text(aes(label = name)) +\n    scale_fill_gradient(low = \"#104E8B\", high = \"#CD2626\") +\n    scale_size(range = c(4, 10)) +\n    theme_graph()",
+    "text": "22.1 Centrality\nThe package includes all centrality indices implemented in igraph and additionally all that are made available in the netrankr package. All indices can be found in the function group centrality_*().\nflo_tidy %&gt;%\n    activate(\"nodes\") %&gt;%\n    mutate(\n        degree = centrality_degree(),\n        betweenness = centrality_betweenness()\n    ) %&gt;%\n    ggraph(\"stress\", bbox = 10) +\n    geom_edge_link0(edge_color = \"black\") +\n    geom_node_point(shape = 21, aes(size = degree, fill = betweenness)) +\n    geom_node_text(aes(label = name)) +\n    scale_fill_gradient(low = \"#104E8B\", high = \"#CD2626\") +\n    scale_size(range = c(4, 10)) +\n    theme_graph()",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Descriptive Network Analysis</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Descriptive Network Analysis</span>"
     ]
   },
   {
     "objectID": "tidy/tidygraph-descriptive.html#clustering",
     "href": "tidy/tidygraph-descriptive.html#clustering",
-    "title": "17  Descriptive Network Analysis",
-    "section": "17.2 Clustering",
-    "text": "17.2 Clustering\nSimilar to centrality, all clustering algorithms from igraph are available via group_*()\n\n# create random graph with group structure (igraph equivalent is sample_islands())\nplay_islands(4, 12, 0.8, 4) %&gt;%\n    mutate(community = as.factor(group_louvain())) %&gt;%\n    ggraph(layout = \"stress\") +\n    geom_edge_link0() +\n    geom_node_point(aes(fill = community), shape = 21, size = 6) +\n    theme_graph()\n\n\n\n\n\n\n\n\nCoupling this with what we learned above, we can color the edges according to the cluster they belong to.\n\nplay_islands(4, 12, 0.8, 4) %&gt;%\n    mutate(community = as.factor(group_louvain())) %&gt;%\n    activate(\"edges\") %&gt;%\n    mutate(community = as.factor(ifelse(.N()$community[from] == .N()$community[to], .N()$community[from], 5))) %&gt;%\n    ggraph(layout = \"stress\") +\n    geom_edge_link0(aes(edge_colour = community), show.legend = FALSE) +\n    geom_node_point(aes(fill = community), shape = 21, size = 6) +\n    scale_fill_brewer(palette = \"Set3\") +\n    scale_edge_color_brewer(palette = \"Set3\") +\n    theme_graph(background = \"grey88\")",
+    "title": "22  Descriptive Network Analysis",
+    "section": "22.2 Clustering",
+    "text": "22.2 Clustering\nSimilar to centrality, all clustering algorithms from igraph are available via group_*()\n\n# create random graph with group structure (igraph equivalent is sample_islands())\nplay_islands(4, 12, 0.8, 4) %&gt;%\n    mutate(community = as.factor(group_louvain())) %&gt;%\n    ggraph(layout = \"stress\") +\n    geom_edge_link0() +\n    geom_node_point(aes(fill = community), shape = 21, size = 6) +\n    theme_graph()\n\n\n\n\n\n\n\n\nCoupling this with what we learned above, we can color the edges according to the cluster they belong to.\n\nplay_islands(4, 12, 0.8, 4) %&gt;%\n    mutate(community = as.factor(group_louvain())) %&gt;%\n    activate(\"edges\") %&gt;%\n    mutate(community = as.factor(ifelse(.N()$community[from] == .N()$community[to], .N()$community[from], 5))) %&gt;%\n    ggraph(layout = \"stress\") +\n    geom_edge_link0(aes(edge_colour = community), show.legend = FALSE) +\n    geom_node_point(aes(fill = community), shape = 21, size = 6) +\n    scale_fill_brewer(palette = \"Set3\") +\n    scale_edge_color_brewer(palette = \"Set3\") +\n    theme_graph(background = \"grey88\")",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Descriptive Network Analysis</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Descriptive Network Analysis</span>"
     ]
   },
   {
     "objectID": "tidy/tidygraph-descriptive.html#other-node-or-edge-level-functions",
     "href": "tidy/tidygraph-descriptive.html#other-node-or-edge-level-functions",
-    "title": "17  Descriptive Network Analysis",
-    "section": "17.3 Other node or edge level functions",
-    "text": "17.3 Other node or edge level functions\ntidygraphs harmonizes many other available functions in igraph to make them easier accessible. The best way to check what is available is to look at the function groups node_*() and edge_*(). Some simple examples are shown below.\n\n# the node id of the Medici is 9\nflo_tidy %&gt;%\n    activate(\"nodes\") %&gt;%\n    mutate(dist2Medici = node_distance_to(nodes = 9)) %&gt;%\n    activate(\"edges\") %&gt;%\n    mutate(edge2Medici = edge_is_incident(9)) %&gt;%\n    ggraph(\"stress\") +\n    geom_edge_link0(aes(edge_color = edge2Medici)) +\n    geom_node_point(aes(fill = dist2Medici), size = 9, shape = 21) +\n    theme_graph()",
+    "title": "22  Descriptive Network Analysis",
+    "section": "22.3 Other node or edge level functions",
+    "text": "22.3 Other node or edge level functions\ntidygraphs harmonizes many other available functions in igraph to make them easier accessible. The best way to check what is available is to look at the function groups node_*() and edge_*(). Some simple examples are shown below.\n\n# the node id of the Medici is 9\nflo_tidy %&gt;%\n    activate(\"nodes\") %&gt;%\n    mutate(dist2Medici = node_distance_to(nodes = 9)) %&gt;%\n    activate(\"edges\") %&gt;%\n    mutate(edge2Medici = edge_is_incident(9)) %&gt;%\n    ggraph(\"stress\") +\n    geom_edge_link0(aes(edge_color = edge2Medici)) +\n    geom_node_point(aes(fill = dist2Medici), size = 9, shape = 21) +\n    theme_graph()",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Descriptive Network Analysis</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Descriptive Network Analysis</span>"
     ]
   },
   {
     "objectID": "tidy/tidygraph-summary.html",
     "href": "tidy/tidygraph-summary.html",
-    "title": "18  Summary",
+    "title": "23  Summary",
     "section": "",
     "text": "The tidy framework works well in general but there are some shortcomings. So far, only basic network analytic methods are supported. This is enough for many tasks but as soon as more advanced techniques are needed, you are forced to switch to the “untidy” way again. A lot of coding but also conceptual work is needed to advance the framework further. For instance, how do ERGMs or SAOMs fit into this? Maybe there is a way to use tidymodels, but that is beyond the scope for now.",
     "crumbs": [
       "Tidy Network Analysis",
-      "<span class='chapter-number'>18</span>  <span class='chapter-title'>Summary</span>"
+      "<span class='chapter-number'>23</span>  <span class='chapter-title'>Summary</span>"
     ]
   },
   {
     "objectID": "summary.html",
     "href": "summary.html",
-    "title": "19  Summary",
+    "title": "27  Summary",
     "section": "",
     "text": "In summary, this book has no content whatsoever.",
     "crumbs": [
-      "<span class='chapter-number'>19</span>  <span class='chapter-title'>Summary</span>"
+      "<span class='chapter-number'>27</span>  <span class='chapter-title'>Summary</span>"
     ]
   }
 ]
