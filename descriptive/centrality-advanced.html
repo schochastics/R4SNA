@@ -546,10 +546,10 @@ For now we convert it on the fly...</code></pre>
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>disc2 <span class="ot">&lt;-</span> <span class="fu">compare_ranks</span>(<span class="fu">betweenness</span>(tg3_noise),<span class="fu">closeness</span>(tg3_noise))<span class="sc">$</span>discordant</span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(disc1,disc2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1]   0 570</code></pre>
+<pre><code>[1]   0 520</code></pre>
 </div>
 </div>
-<p>On the threshold graph we do not observe any discordant pairs for the two indices. However, the little noise we added to the threshold graph was enough to introduce 570 pairs of nodes that are now ranked differently. In general, we can say that</p>
+<p>On the threshold graph we do not observe any discordant pairs for the two indices. However, the little noise we added to the threshold graph was enough to introduce 520 pairs of nodes that are now ranked differently. In general, we can say that</p>
 <p><em>The closer a network is to be a threshold graph, the higher we expect the correlation of any pair of centrality indices to be, independent of their definition.</em></p>
 <p>But how to define <em>being close</em> to a threshold graph? One obvious choice is to use the function <code>comparable_pairs()</code>. The more pairs are comparable, the less possibilities for indices to rank the nodes differently. Hence, we are close to a unique ranking obtained for threshold graphs. A second option is to use an appropriate distance measure for graphs. <code>netrankr</code> implements the so called <em>majorization gap</em> which operates on the degree sequences of graphs. In its essence, it returns the number of edges that need to be rewired, in order to turn an arbitrary graph into a threshold graph.</p>
 <div class="cell">
@@ -557,14 +557,14 @@ For now we convert it on the fly...</code></pre>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mg2 <span class="ot">&lt;-</span> <span class="fu">majorization_gap</span>(tg3_noise)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(mg1,mg2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.000 0.034</code></pre>
+<pre><code>[1] 0.00000000 0.02061123</code></pre>
 </div>
 </div>
 <p>The result is given as a fraction of the total number of edges. So 12% of edges need to be rewired in the noisy graph to turn it into a threshold graph. To get the raw count, set <code>norm=FALSE</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">majorization_gap</span>(tg3_noise,<span class="at">norm =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 34</code></pre>
+<pre><code>[1] 29</code></pre>
 </div>
 </div>
 </section>
