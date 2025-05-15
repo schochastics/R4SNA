@@ -818,7 +818,7 @@
     "href": "inferential/introduction.html#references",
     "title": "14  Introduction",
     "section": "References",
-    "text": "References\n\n\nBarabási, Albert-László, and Réka Albert. 1999. “Emergence of\nScaling in Random Networks.” Science 286 (5439): 509–12.\n\n\nBurt, Ronald. 1992. Structural Holes: The Social Structure of\nCompetition. Harvard University Press.\n\n\nCartwright, Dorwin, and Frank Harary. 1956. “Structural Balance: A\nGeneralization of Heider’s Theory.” Psychological Review\n63 (5): 277.\n\n\nGouldner, Alvin W. 1960. “The Norm of Reciprocity: A Preliminary\nStatement.” American Sociological Review, 161–78.\n\n\nHeider, Fritz. 1946. “Attitudes and Cognitive\nOrganization.” The Journal of Psychology 21 (1): 107–12.\n\n\nMcPherson, Miller, Lynn Smith-Lovin, and James M Cook. 2001.\n“Birds of a Feather: Homophily in Social Networks.”\nAnnual Review of Sociology 27 (1): 415–44.\n\n\nMerton, Robert K. 1968. “The Matthew Effect in Science.”\nScience 159 (3810): 56–63.",
+    "text": "References\n\n\nBarabási, Albert-László, and Réka Albert. 1999. “Emergence of\nScaling in Random Networks.” Science 286 (5439): 509–12.\n\n\nBurt, Ronald. 1992. Structural Holes: The Social Structure of\nCompetition. Harvard University Press.\n\n\nCartwright, Dorwin, and Frank Harary. 1956. “Structural Balance: A\nGeneralization of Heider’s Theory.” Psychological Review\n63 (5): 277.\n\n\nColeman, James Samuel. 1964. “Introduction to Mathematical\nSociology.”\n\n\nGouldner, Alvin W. 1960. “The Norm of Reciprocity: A Preliminary\nStatement.” American Sociological Review, 161–78.\n\n\nHeider, Fritz. 1946. “Attitudes and Cognitive\nOrganization.” The Journal of Psychology 21 (1): 107–12.\n\n\nMcPherson, Miller, Lynn Smith-Lovin, and James M Cook. 2001.\n“Birds of a Feather: Homophily in Social Networks.”\nAnnual Review of Sociology 27 (1): 415–44.\n\n\nMerton, Robert K. 1968. “The Matthew Effect in Science.”\nScience 159 (3810): 56–63.",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>14</span>  <span class='chapter-title'>Introduction</span>"
@@ -829,7 +829,7 @@
     "href": "inferential/non-parametric.html",
     "title": "15  Non-Parametric Methods",
     "section": "",
-    "text": "15.1 Conditional Uniform Graph Distributions (CUGs)\nA common non-parametric technique is permutation testing, where the observed network is systematically altered—typically by shuffling ties while preserving certain properties, such as the number of connections each node has. This process creates a reference distribution under the null hypothesis, allowing researchers to assess whether observed patterns (like high clustering or assortativity) are statistically significant or could have arisen by chance.\nImportantly, in non-parametric frameworks, p-values retain their traditional interpretation. They represent the probability of observing network features as extreme as those found in the data if the null hypothesis were true. This familiar statistical grounding makes non-parametric tests both intuitive and flexible.\nNon-parametric methods are particularly valuable during the exploratory phase of research, for validating parametric models, and in contexts where theoretical models are either undeveloped or poorly understood.\nOne widely used non-parametric approach is the Conditional Uniform Graph Distribution (CUG). CUGs define a reference distribution of graphs generated uniformly at random, but conditioned on one or more fixed characteristics of the observed network, such as the number of nodes, total number of edges, or degree distribution. By preserving these basic structural features, CUGs enable researchers to assess whether a more complex pattern (e.g., high reciprocity, homophily, or transitivity) is likely to have arisen by chance given the observed constraints.\nWhy do we do this? Well, in network analysis, statistical inference relies on some form of randomness; we assume that if a structure emerges more often than we would expect under random conditions, it likely reflects an underlying social mechanism. A CUG distribution formalizes this by defining a uniform distribution over a set of graphs, where each graph satisfies a fixed constraint, such as the same number of edges, node degrees, or dyadic relationships.\nFor example, if a network displays unusually high clustering, a CUG test can evaluate whether this is statistically exceptional or simply a byproduct of the network’s size and density. By comparing the observed statistic to the distribution of values from randomly generated but structurally constrained networks, researchers can determine the significance of the observed pattern. CUGs are especially useful when a full parametric model is unavailable, difficult to specify, or when the goal is to control for known network features while testing specific structural hypotheses.\nSeveral types of CUGs can be defined:\nFor example, in a CUG with fixed density (number of edges), each graph that meets the constraint is equally probable. Graphs that do not satisfy the constraint (e.g., different number of ties) are assigned a probability of zero. This results in a null model that is tightly defined and suitable for hypothesis testing.",
+    "text": "15.1 Packages Needed for this Chapter\nA common non-parametric technique is permutation testing, where the observed network is systematically altered—typically by shuffling ties while preserving certain properties, such as the number of connections each node has. This process creates a reference distribution under the null hypothesis, allowing researchers to assess whether observed patterns (like high clustering or assortativity) are statistically significant or could have arisen by chance.\nImportantly, in non-parametric frameworks, p-values retain their traditional interpretation. They represent the probability of observing network features as extreme as those found in the data if the null hypothesis were true. This familiar statistical grounding makes non-parametric tests both intuitive and flexible.\nNon-parametric methods are particularly valuable during the exploratory phase of research, for validating parametric models, and in contexts where theoretical models are either undeveloped or poorly understood.\nlibrary(statnet)\nlibrary(igraph)\nlibrary(ggraph)\nlibrary(graphlayouts)\nlibrary(intergraph)\nlibrary(patchwork)\nlibrary(networkdata)",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
@@ -839,8 +839,8 @@
     "objectID": "inferential/non-parametric.html#conditional-uniform-graph-distributions-cugs",
     "href": "inferential/non-parametric.html#conditional-uniform-graph-distributions-cugs",
     "title": "15  Non-Parametric Methods",
-    "section": "",
-    "text": "𝒰 |E(L): All graphs with the same number of edges as the observed graph.\n𝒰 |d: All graphs with the same degree distribution \\(d = (d_1, d_2, ..., d_n)\\).\n𝒰 |MAN: All graphs with the same dyad census (i.e., counts of mutual, asymmetric, and null ties).",
+    "section": "15.2 Conditional Uniform Graph Distributions (CUGs)",
+    "text": "15.2 Conditional Uniform Graph Distributions (CUGs)\nOne widely used non-parametric approach is the Conditional Uniform Graph Distribution (CUG). CUGs define a reference distribution of graphs generated uniformly at random, but conditioned on one or more fixed characteristics of the observed network, such as the number of nodes, total number of edges, or degree distribution. By preserving these basic structural features, CUGs enable researchers to assess whether a more complex pattern (e.g., high reciprocity, homophily, or transitivity) is likely to have arisen by chance given the observed constraints.\nWhy do we do this? Well, in network analysis, statistical inference relies on some form of randomness; we assume that if a structure emerges more often than we would expect under random conditions, it likely reflects an underlying social mechanism. A CUG distribution formalizes this by defining a uniform distribution over a set of graphs, where each graph satisfies a fixed constraint, such as the same number of edges, node degrees, or dyadic relationships.\nFor example, if a network displays unusually high clustering, a CUG test can evaluate whether this is statistically exceptional or simply a byproduct of the network’s size and density. By comparing the observed statistic to the distribution of values from randomly generated but structurally constrained networks, researchers can determine the significance of the observed pattern. CUGs are especially useful when a full parametric model is unavailable, difficult to specify, or when the goal is to control for known network features while testing specific structural hypotheses.\nSeveral types of CUGs can be defined:\n\n𝒰 |E(L): All graphs with the same number of edges as the observed graph.\n𝒰 |d: All graphs with the same degree distribution \\(d = (d_1, d_2, ..., d_n)\\).\n𝒰 |MAN: All graphs with the same dyad census (i.e., counts of mutual, asymmetric, and null ties).\n\nFor example, in a CUG with fixed density (number of edges), each graph that meets the constraint is equally probable. Graphs that do not satisfy the constraint (e.g., different number of ties) are assigned a probability of zero. This results in a null model that is tightly defined and suitable for hypothesis testing.",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
@@ -850,8 +850,19 @@
     "objectID": "inferential/non-parametric.html#hypothesis-testing-procedure",
     "href": "inferential/non-parametric.html#hypothesis-testing-procedure",
     "title": "15  Non-Parametric Methods",
-    "section": "15.2 Hypothesis Testing Procedure",
-    "text": "15.2 Hypothesis Testing Procedure\nThe process follows classical null hypothesis testing logic:\n\nNull Hypothesis (\\(H_{0}\\)): The observed network is drawn from a CUG model that preserves a given constraint (e.g., edge count).\nAlternative Hypothesis (\\(H_{1}\\)): The observed network structure is not typical under this model and thus suggests a non-random social mechanism.\n\nTo test \\(H_0\\) we follow the below steps:\n\nDefine a summary statistic (e.g., degree centralization).\nGenerate a large number of networks from the CUG distribution.\nCompute the statistic for each simulated network.\nCompare the observed statistic to the simulated distribution.\n\nIf the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject \\(H_{0}\\) at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance.\nThe process is visualized in Figure 15.1 where the left panel shows the observed network, while the right panel displays the null distribution of the statistic based on 500 randomly generated graphs that preserve the same number of nodes and edges. The dashed red line indicates the observed value. If this value lies in the tail of the distribution, it suggests the observed structure is unlikely to have arisen by chance under the null model.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 15.1: Conditional Uniform Graph (CUG) test of a network statistic of interest.",
+    "section": "15.3 Hypothesis Testing Procedure",
+    "text": "15.3 Hypothesis Testing Procedure\nThe process follows classical null hypothesis testing logic:\n\nNull Hypothesis (\\(H_{0}\\)): The observed network is drawn from a CUG model that preserves a given constraint (e.g., edge count).\nAlternative Hypothesis (\\(H_{1}\\)): The observed network structure is not typical under this model and thus suggests a non-random social mechanism.\n\nTo test \\(H_0\\) we follow the below steps:\n\nDefine a summary statistic (e.g., degree centralization, reciprocity or transitivity).\nGenerate a large number of networks from the CUG distribution.\nCompute the statistic for each simulated network.\nCompare the observed statistic to the simulated distribution for that statistic.\n\nIf the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject \\(H_{0}\\) at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance.\nThe process is visualized in Figure 15.1 where the left panel shows the observed network, while the right panel displays the null distribution of the statistic based on 500 randomly generated graphs that preserve the same number of nodes and edges. The dashed red line indicates the observed value. If this value lies in the tail of the distribution, it suggests the observed structure is unlikely to have arisen by chance under the null model.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 15.1: Conditional Uniform Graph (CUG) test of a network statistic of interest.",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
+    "objectID": "inferential/non-parametric.html#running-example",
+    "href": "inferential/non-parametric.html#running-example",
+    "title": "15  Non-Parametric Methods",
+    "section": "15.4 Running Example",
+    "text": "15.4 Running Example\nWe will use a running example, namely Coleman (Coleman 1964) which is available as graph object in the networkdata package and as an array in statnet. We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring). We will only focus on the fall network here, which we load and visualize:\n\n# Load data as graph object from networkdata and extract the fall network\ncoleman_g &lt;- networkdata::coleman[[1]]\n\n# plot using gggraph\nggraph(coleman_g, layout = \"stress\") + \n          geom_edge_link(edge_colour = \"#666060\", end_cap = circle(9,\"pt\"), \n                         n = 2, edge_width = 0.4, edge_alpha = 1, \n                         arrow = arrow(angle = 15, \n                         length = unit(0.1, \"inches\"), \n                         ends = \"last\", type = \"closed\"))  +\n          geom_node_point(fill = \"#525252\",colour = \"#FFFFFF\", \n                           size = 5, stroke = 1.1, shape = 21) + \n          theme_graph() + \n          ggtitle(\"fall friendship network\") +\n          theme(legend.position = \"none\")",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
@@ -861,8 +872,8 @@
     "objectID": "inferential/non-parametric.html#uniform-graph-distribution-given-expected-density",
     "href": "inferential/non-parametric.html#uniform-graph-distribution-given-expected-density",
     "title": "15  Non-Parametric Methods",
-    "section": "15.3 Uniform graph distribution given expected density",
-    "text": "15.3 Uniform graph distribution given expected density",
+    "section": "15.5 Uniform graph distribution given expected density",
+    "text": "15.5 Uniform graph distribution given expected density",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
@@ -872,8 +883,8 @@
     "objectID": "inferential/non-parametric.html#uniform-graph-distribution-given-number-of-edges",
     "href": "inferential/non-parametric.html#uniform-graph-distribution-given-number-of-edges",
     "title": "15  Non-Parametric Methods",
-    "section": "15.4 Uniform graph distribution given number of edges",
-    "text": "15.4 Uniform graph distribution given number of edges",
+    "section": "15.6 Uniform graph distribution given number of edges",
+    "text": "15.6 Uniform graph distribution given number of edges",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
@@ -883,8 +894,8 @@
     "objectID": "inferential/non-parametric.html#uniform-graph-distribution-given-dyad-census",
     "href": "inferential/non-parametric.html#uniform-graph-distribution-given-dyad-census",
     "title": "15  Non-Parametric Methods",
-    "section": "15.5 Uniform graph distribution given dyad census",
-    "text": "15.5 Uniform graph distribution given dyad census",
+    "section": "15.7 Uniform graph distribution given dyad census",
+    "text": "15.7 Uniform graph distribution given dyad census",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
@@ -894,8 +905,8 @@
     "objectID": "inferential/non-parametric.html#uniform-graph-distribution-given-fixed-degree",
     "href": "inferential/non-parametric.html#uniform-graph-distribution-given-fixed-degree",
     "title": "15  Non-Parametric Methods",
-    "section": "15.6 Uniform graph distribution given fixed degree",
-    "text": "15.6 Uniform graph distribution given fixed degree",
+    "section": "15.8 Uniform graph distribution given fixed degree",
+    "text": "15.8 Uniform graph distribution given fixed degree",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
@@ -905,8 +916,19 @@
     "objectID": "inferential/non-parametric.html#analysing-homophily-using-non-parametric-null-distribution",
     "href": "inferential/non-parametric.html#analysing-homophily-using-non-parametric-null-distribution",
     "title": "15  Non-Parametric Methods",
-    "section": "15.7 Analysing homophily using non-parametric null distribution",
-    "text": "15.7 Analysing homophily using non-parametric null distribution",
+    "section": "15.9 Analysing homophily using non-parametric null distribution",
+    "text": "15.9 Analysing homophily using non-parametric null distribution",
+    "crumbs": [
+      "Inferential Network Analysis",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
+    ]
+  },
+  {
+    "objectID": "inferential/non-parametric.html#references",
+    "href": "inferential/non-parametric.html#references",
+    "title": "15  Non-Parametric Methods",
+    "section": "References",
+    "text": "References\n\n\nColeman, James Samuel. 1964. “Introduction to Mathematical Sociology.”",
     "crumbs": [
       "Inferential Network Analysis",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span>"
