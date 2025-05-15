@@ -6,6 +6,19 @@ Importantly, in non-parametric frameworks, p-values retain their traditional int
 
 Non-parametric methods are particularly valuable during the exploratory phase of research, for validating parametric models, and in contexts where theoretical models are either undeveloped or poorly understood.
 
+
+## Packages Needed for this Chapter
+```{r}
+#| message: false
+library(statnet)
+library(igraph)
+library(ggraph)
+library(graphlayouts)
+library(intergraph)
+library(patchwork)
+library(networkdata)
+```
+
 ## Conditional Uniform Graph Distributions (CUGs)
 
 One widely used non-parametric approach is the **Conditional Uniform Graph Distribution (CUG)**. CUGs define a reference distribution of graphs generated uniformly at random, but conditioned on one or more fixed characteristics of the observed network, such as the number of nodes, total number of edges, or degree distribution. By preserving these basic structural features, CUGs enable researchers to assess whether a more complex pattern (e.g., high reciprocity, homophily, or transitivity) is likely to have arisen by chance given the observed constraints.
@@ -33,10 +46,10 @@ The process follows classical null hypothesis testing logic:
 
 To test $H_0$ we follow the below steps:
 
-1. Define a summary statistic (e.g., degree centralization).
+1. Define a summary statistic (e.g., degree centralization, reciprocity or transitivity).
 2. Generate a large number of networks from the CUG distribution.
 3. Compute the statistic for each simulated network.
-4. Compare the observed statistic to the simulated distribution.
+4. Compare the observed statistic to the simulated distribution for that statistic.
 
 If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject $H_{0}$ at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance. 
 
@@ -49,6 +62,7 @@ The process is visualized in @fig-cugex where the left panel shows the observed 
 #| fig-height: 4
 #| fig-width: 10
 #| fig-align: center
+#| label: nullmodel-ex
 
 library(igraph)
 library(ggraph)
@@ -100,7 +114,36 @@ Conditional Uniform Graph (CUG) test of a network statistic of interest.
 
 :::
 
-##  Uniform graph distribution given expected density
+
+
+
+## Running Example
+We will use a running example, namely `Coleman` [@coleman1964data] which is available as graph object in the `networkdata` package and as an array in `statnet`. We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring).  We will only focus on the fall network here, which we load and visualize:
+
+
+```{r}
+#| fig-height: 7
+#| fig-width: 12
+# Load data as graph object from networkdata and extract the fall network
+coleman_g <- networkdata::coleman[[1]]
+
+# plot using gggraph
+ggraph(coleman_g, layout = "stress") + 
+          geom_edge_link(edge_colour = "#666060", end_cap = circle(9,"pt"), 
+                         n = 2, edge_width = 0.4, edge_alpha = 1, 
+                         arrow = arrow(angle = 15, 
+                         length = unit(0.1, "inches"), 
+                         ends = "last", type = "closed"))  +
+          geom_node_point(fill = "#525252",colour = "#FFFFFF", 
+                           size = 5, stroke = 1.1, shape = 21) + 
+          theme_graph() + 
+          ggtitle("fall friendship network") +
+          theme(legend.position = "none")
+
+```
+
+## Uniform graph distribution given expected density
+
 
 ## Uniform graph distribution given number of edges
 
@@ -110,3 +153,9 @@ Conditional Uniform Graph (CUG) test of a network statistic of interest.
 
 ## Analysing homophily using non-parametric null distribution
 
+
+## References {.unnumbered}
+
+
+::: {#refs}
+:::
