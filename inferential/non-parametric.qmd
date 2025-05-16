@@ -51,7 +51,7 @@ To test $H_0$ we follow the below steps:
 3. Compute the statistic for each simulated network.
 4. Compare the observed statistic to the simulated distribution for that statistic.
 
-If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject $H_{0}$ at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance. 
+If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject $H_{0}$ at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance. Since the tests are actually **non-parametric (Monte Carlo)** tests,  we can estimate the $p$-value as the proportion of simulated test statistics that are as extreme or more extreme than the observed value. This provides a data-driven way to assess whether the observed statistic is likely under the null model, allowing for hypothesis testing without strong distributional assumptions.
 
 The process is visualized in @fig-cugex where the left panel shows the observed network, while the right panel displays the null distribution of the statistic based on 500 randomly generated graphs that preserve the same number of nodes and edges. The dashed red line indicates the observed value. If this value lies in the tail of the distribution, it suggests the observed structure is unlikely to have arisen by chance under the null model.
 
@@ -88,10 +88,10 @@ null_vals <- replicate(n_sim, {
 df <- data.frame(centralization = null_vals)
 
 hist_plot <- ggplot(df, aes(x = centralization)) +
-  geom_histogram(binwidth = 0.02, fill = "lightgrey", color = "black") +
-  geom_vline(xintercept = obs_measure, linetype = "dashed", color = "firebrick", linewidth = 1.2) +
+  geom_histogram(binwidth = 0.02, fill = "skyblue", color = "white") +
+  geom_vline(xintercept = obs_measure, linetype = "dashed", color = "firebrick3") +
   annotate("text", x = obs_measure, y = max(table(cut(null_vals, breaks = 30))) + 2,
-           label = "observed value", color = "firebrick", angle = 90, vjust = -0.5,  hjust = 1) +
+           label = "observed value", color = "firebrick3", angle = 90, vjust = -0.5,  hjust = 1) +
   labs(title = "Null distribution of statistic of interest", x = " ", y = "Frequency") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5)) 
@@ -118,7 +118,7 @@ Conditional Uniform Graph (CUG) test of a network statistic of interest.
 
 
 ## Running Example
-We will use a running example, namely `Coleman` [@coleman1964data] which is available as graph object in the `networkdata` package and as an array in `statnet`. We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring).  We will only focus on the fall network here, which we load and visualize:
+We will use a running example, namely `Coleman` [@coleman1964data] which is available as graph object in the `networkdata` package and as an array in `statnet` (or more specifically `sna`). We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring).  We will only focus on the fall network here, which we load and visualize:
 
 
 ```{r}
@@ -142,8 +142,94 @@ ggraph(coleman_g, layout = "stress") +
 
 ```
 
-## Uniform graph distribution given expected density
+We also prepare the network as a network pbject??
 
+## Uniform Graph Distribution Given Expected Density
+Here, we simulate graoh distributions while keeping the expected frequency from the observed network fixed. We aim to answer the follwoing quesiton: *do we observed significantly many more reciporcal ties in our observed than what is expected by pure chance given random networks of the same expected density?* So the statistic of interested here is number of reciprocal ties which we obtain from dyad census:
+```{r}
+dyad_census(coleman_g)
+# alterantiver one can also use the below
+sum(which_mutual(coleman_g)) / 2 
+```
+The number of reciprocal ties is equal to `r dyad_census(coleman_g)$mut`. In order to compute this density, we can use the `igraph` function `edge_density()`.
+
+```{r}
+edge_density(coleman_g)
+```
+Further we save number of nodes and edges of the observed network:
+```{r}
+vcount(coleman_g)
+ecount(coleman_g)
+```
+
+To simulate the null distribution we use the function `rgraph` from the `sna` package. We simulate 1000 random networks with the parameters specified above.
+
+```{r}
+sim_nets_dens <- rgraph(n = vcount(coleman_g), m = 1000, 
+                 tprob = edge_density(coleman_g), mode = "digraph")
+```
+Note that the output consists of adjacency matrices representing 1000 randomly generated networks. While each individual simulated network may not contain exactly the same number of edges as the observed network, they are **stochastically equivalent** in terms of overall density.
+
+
+We then compute the number of reciprocal (mutual) ties in each simulated network and visualize the resulting distribution under the null model of random tie allocation. A red dashed line is included in the plot to indicate the number of mutual ties observed in the actual network (`r dyad_census(coleman_g)$mut`), highlighting how it compares to the distribution expected by chance.
+
+```{r}
+#| label: CUG-given-dens
+#| fig-width: 8
+#| fig-height: 5
+#| message: false
+#| warning: false
+#| fig-align: center
+ 
+# Define mutual tie counting function
+count_mutual <- function(adj_matrix) {
+  g <- graph_from_adjacency_matrix(adj_matrix, mode = "directed")
+  sum(which_mutual(g)) / 2
+}
+
+# Generate list of adjacency matrices from current structure
+adj_list <- lapply(1:dim(sim_nets_dens)[1], function(i) sim_nets_dens[i,,])
+
+# Compute mutual tie count for each simulated network
+mutual_counts <- sapply(adj_list, count_mutual)
+
+# Create data frame for plotting
+mutual_df <- data.frame(mutual_ties = mutual_counts)
+
+# Plot with ggplot2
+ggplot(mutual_df, aes(x = mutual_ties)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "white") +
+  geom_vline(xintercept = dyad_census(coleman_g)$mut, color = "firebrick3", linetype = "dashed") +
+  annotate("text", x = dyad_census(coleman_g)$mut, y = Inf, label = "Observed", 
+           vjust = -0.5, hjust = 1.1, color = "firebrick3", angle = 90) +
+  labs(title = "Distribution of Mutual Ties in Random Networks",
+       x = "Number of Mutual Ties",
+       y = "Frequency") +
+  theme_minimal()
+```
+
+As shown in the plot, the observed number of mutual ties falls far in the right tail of the distribution. This indicates a substantial deviation from what would be expected under random tie formation. This can be interpreted as follows:
+
+> *If ties in the network were allocated completely at random—while preserving the overall density—it would be highly unlikely to observe as many reciprocal ties as we do in the actual network.*
+
+Stated more formally, this analysis serves as a test of the following null hypothesis:
+
+> $H_0$: The number of mutual ties in the observed network does not differ from what would be expected under random tie formation, given the observed network density.
+
+> $H_1$: The observed number of mutual ties is significantly greater than expected by chance, indicating a tendency toward reciprocity beyond what density alone would predict.
+
+Since the observed number of mutual ties falls far in the right tail of the simulated distribution, we see a clear and substantial deviation from the null model.  Therefore, we  reject the null hypothesis, concluding that the observed network exhibits significantly more reciprocity than would be expected by random chance alone. This indicates a strong tendency for mutual connections in the network that is not explained by density alone.
+
+In order to compute the $p$-value, we compare the observed value to the distribution from the simulated null model:
+
+```{r}
+# Empirical p-value (proportion of simulated mutual counts >= observed)
+p_value <- mean(mutual_counts >= dyad_census(coleman_g)$mut)
+p_value
+```
+Unsurprisingly, this value is equal to zero, as we do not have any part of the distribution ranging over the observed count. However, $p$-values from Monte Carlo tests are never exactly 0, but rather “less than 1 / number of simulations”, so a more correct statement would be that 
+
+> $p$ < 0.001 (based on 1,000 simulations)  providing very strong evidence against the null hypothesis.
 
 ## Uniform graph distribution given number of edges
 
