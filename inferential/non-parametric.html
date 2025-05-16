@@ -451,7 +451,7 @@ window.Quarto = {
   <li><a href="#conditional-uniform-graph-distributions-cugs" id="toc-conditional-uniform-graph-distributions-cugs" class="nav-link" data-scroll-target="#conditional-uniform-graph-distributions-cugs"><span class="header-section-number">15.2</span> Conditional Uniform Graph Distributions (CUGs)</a></li>
   <li><a href="#hypothesis-testing-procedure" id="toc-hypothesis-testing-procedure" class="nav-link" data-scroll-target="#hypothesis-testing-procedure"><span class="header-section-number">15.3</span> Hypothesis Testing Procedure</a></li>
   <li><a href="#running-example" id="toc-running-example" class="nav-link" data-scroll-target="#running-example"><span class="header-section-number">15.4</span> Running Example</a></li>
-  <li><a href="#uniform-graph-distribution-given-expected-density" id="toc-uniform-graph-distribution-given-expected-density" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.5</span> Uniform graph distribution given expected density</a></li>
+  <li><a href="#uniform-graph-distribution-given-expected-density" id="toc-uniform-graph-distribution-given-expected-density" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.5</span> Uniform Graph Distribution Given Expected Density</a></li>
   <li><a href="#uniform-graph-distribution-given-number-of-edges" id="toc-uniform-graph-distribution-given-number-of-edges" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-number-of-edges"><span class="header-section-number">15.6</span> Uniform graph distribution given number of edges</a></li>
   <li><a href="#uniform-graph-distribution-given-dyad-census" id="toc-uniform-graph-distribution-given-dyad-census" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-dyad-census"><span class="header-section-number">15.7</span> Uniform graph distribution given dyad census</a></li>
   <li><a href="#uniform-graph-distribution-given-fixed-degree" id="toc-uniform-graph-distribution-given-fixed-degree" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-fixed-degree"><span class="header-section-number">15.8</span> Uniform graph distribution given fixed degree</a></li>
@@ -524,7 +524,7 @@ window.Quarto = {
 <li>Compute the statistic for each simulated network.</li>
 <li>Compare the observed statistic to the simulated distribution for that statistic.</li>
 </ol>
-<p>If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject <span class="math inline">\(H_{0}\)</span> at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance.</p>
+<p>If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject <span class="math inline">\(H_{0}\)</span> at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance. Since the tests are actually <strong>non-parametric (Monte Carlo)</strong> tests, we can estimate the <span class="math inline">\(p\)</span>-value as the proportion of simulated test statistics that are as extreme or more extreme than the observed value. This provides a data-driven way to assess whether the observed statistic is likely under the null model, allowing for hypothesis testing without strong distributional assumptions.</p>
 <p>The process is visualized in <a href="#fig-cugex" class="quarto-xref">Figure&nbsp;<span>15.1</span></a> where the left panel shows the observed network, while the right panel displays the null distribution of the statistic based on 500 randomly generated graphs that preserve the same number of nodes and edges. The dashed red line indicates the observed value. If this value lies in the tail of the distribution, it suggests the observed structure is unlikely to have arisen by chance under the null model.</p>
 <div id="fig-cugex" class="center quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -547,7 +547,7 @@ Figure&nbsp;15.1: Conditional Uniform Graph (CUG) test of a network statistic of
 </section>
 <section id="running-example" class="level2" data-number="15.4">
 <h2 data-number="15.4" class="anchored" data-anchor-id="running-example"><span class="header-section-number">15.4</span> Running Example</h2>
-<p>We will use a running example, namely <code>Coleman</code> <span class="citation" data-cites="coleman1964data">(<a href="introduction.html#ref-coleman1964data" role="doc-biblioref">Coleman 1964</a>)</span> which is available as graph object in the <code>networkdata</code> package and as an array in <code>statnet</code>. We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring). We will only focus on the fall network here, which we load and visualize:</p>
+<p>We will use a running example, namely <code>Coleman</code> <span class="citation" data-cites="coleman1964data">(<a href="introduction.html#ref-coleman1964data" role="doc-biblioref">Coleman 1964</a>)</span> which is available as graph object in the <code>networkdata</code> package and as an array in <code>statnet</code> (or more specifically <code>sna</code>). We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring). We will only focus on the fall network here, which we load and visualize:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract the fall network</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>coleman_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>coleman[[<span class="dv">1</span>]]</span>
@@ -572,9 +572,113 @@ Figure&nbsp;15.1: Conditional Uniform Graph (CUG) test of a network statistic of
 </div>
 </div>
 </div>
+<p>We also prepare the network as a network pbject??</p>
 </section>
 <section id="uniform-graph-distribution-given-expected-density" class="level2" data-number="15.5">
-<h2 data-number="15.5" class="anchored" data-anchor-id="uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.5</span> Uniform graph distribution given expected density</h2>
+<h2 data-number="15.5" class="anchored" data-anchor-id="uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.5</span> Uniform Graph Distribution Given Expected Density</h2>
+<p>Here, we simulate graoh distributions while keeping the expected frequency from the observed network fixed. We aim to answer the follwoing quesiton: <em>do we observed significantly many more reciporcal ties in our observed than what is expected by pure chance given random networks of the same expected density?</em> So the statistic of interested here is number of reciprocal ties which we obtain from dyad census:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census</span>(coleman_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$mut
+[1] 62
+
+$asym
+[1] 119
+
+$null
+[1] 2447</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># alterantiver one can also use the below</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">which_mutual</span>(coleman_g)) <span class="sc">/</span> <span class="dv">2</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 62</code></pre>
+</div>
+</div>
+<p>The number of reciprocal ties is equal to 62. In order to compute this density, we can use the <code>igraph</code> function <code>edge_density()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">edge_density</span>(coleman_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.04623288</code></pre>
+</div>
+</div>
+<p>Further we save number of nodes and edges of the observed network:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vcount</span>(coleman_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 73</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ecount</span>(coleman_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 243</code></pre>
+</div>
+</div>
+<p>To simulate the null distribution we use the function <code>rgraph</code> from the <code>sna</code> package. We simulate 1000 random networks with the parameters specified above.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sim_nets_dens <span class="ot">&lt;-</span> <span class="fu">rgraph</span>(<span class="at">n =</span> <span class="fu">vcount</span>(coleman_g), <span class="at">m =</span> <span class="dv">1000</span>, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">tprob =</span> <span class="fu">edge_density</span>(coleman_g), <span class="at">mode =</span> <span class="st">"digraph"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the output consists of adjacency matrices representing 1000 randomly generated networks. While each individual simulated network may not contain exactly the same number of edges as the observed network, they are <strong>stochastically equivalent</strong> in terms of overall density.</p>
+<p>We then compute the number of reciprocal (mutual) ties in each simulated network and visualize the resulting distribution under the null model of random tie allocation. A red dashed line is included in the plot to indicate the number of mutual ties observed in the actual network (62), highlighting how it compares to the distribution expected by chance.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define mutual tie counting function</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>count_mutual <span class="ot">&lt;-</span> <span class="cf">function</span>(adj_matrix) {</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(adj_matrix, <span class="at">mode =</span> <span class="st">"directed"</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(<span class="fu">which_mutual</span>(g)) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate list of adjacency matrices from current structure</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>adj_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(sim_nets_dens)[<span class="dv">1</span>], <span class="cf">function</span>(i) sim_nets_dens[i,,])</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute mutual tie count for each simulated network</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>mutual_counts <span class="ot">&lt;-</span> <span class="fu">sapply</span>(adj_list, count_mutual)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data frame for plotting</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>mutual_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">mutual_ties =</span> mutual_counts)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot with ggplot2</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mutual_df, <span class="fu">aes</span>(<span class="at">x =</span> mutual_ties)) <span class="sc">+</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">dyad_census</span>(coleman_g)<span class="sc">$</span>mut, <span class="at">color =</span> <span class="st">"firebrick3"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fu">dyad_census</span>(coleman_g)<span class="sc">$</span>mut, <span class="at">y =</span> <span class="cn">Inf</span>, <span class="at">label =</span> <span class="st">"Observed"</span>, </span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>           <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">hjust =</span> <span class="fl">1.1</span>, <span class="at">color =</span> <span class="st">"firebrick3"</span>, <span class="at">angle =</span> <span class="dv">90</span>) <span class="sc">+</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Mutual Ties in Random Networks"</span>,</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Number of Mutual Ties"</span>,</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frequency"</span>) <span class="sc">+</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="non-parametric_files/figure-html/CUG-given-dens-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As shown in the plot, the observed number of mutual ties falls far in the right tail of the distribution. This indicates a substantial deviation from what would be expected under random tie formation. This can be interpreted as follows:</p>
+<blockquote class="blockquote">
+<p><em>If ties in the network were allocated completely at random—while preserving the overall density—it would be highly unlikely to observe as many reciprocal ties as we do in the actual network.</em></p>
+</blockquote>
+<p>Stated more formally, this analysis serves as a test of the following null hypothesis:</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_0\)</span>: The number of mutual ties in the observed network does not differ from what would be expected under random tie formation, given the observed network density.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_1\)</span>: The observed number of mutual ties is significantly greater than expected by chance, indicating a tendency toward reciprocity beyond what density alone would predict.</p>
+</blockquote>
+<p>Since the observed number of mutual ties falls far in the right tail of the simulated distribution, we see a clear and substantial deviation from the null model. Therefore, we reject the null hypothesis, concluding that the observed network exhibits significantly more reciprocity than would be expected by random chance alone. This indicates a strong tendency for mutual connections in the network that is not explained by density alone.</p>
+<p>In order to compute the <span class="math inline">\(p\)</span>-value, we compare the observed value to the distribution from the simulated null model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Empirical p-value (proportion of simulated mutual counts &gt;= observed)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">mean</span>(mutual_counts <span class="sc">&gt;=</span> <span class="fu">dyad_census</span>(coleman_g)<span class="sc">$</span>mut)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>p_value</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Unsurprisingly, this value is equal to zero, as we do not have any part of the distribution ranging over the observed count. However, <span class="math inline">\(p\)</span>-values from Monte Carlo tests are never exactly 0, but rather “less than 1 / number of simulations”, so a more correct statement would be that</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(p\)</span> &lt; 0.001 (based on 1,000 simulations) providing very strong evidence against the null hypothesis.</p>
+</blockquote>
 </section>
 <section id="uniform-graph-distribution-given-number-of-edges" class="level2" data-number="15.6">
 <h2 data-number="15.6" class="anchored" data-anchor-id="uniform-graph-distribution-given-number-of-edges"><span class="header-section-number">15.6</span> Uniform graph distribution given number of edges</h2>
