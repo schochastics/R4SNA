@@ -126,11 +126,11 @@ coleman_g <- networkdata::coleman[[1]]
 # plot using gggraph
 ggraph(coleman_g, layout = "stress") + 
           geom_edge_link(edge_colour = "#666060", end_cap = circle(9,"pt"), 
-                         n = 2, edge_width = 0.4, edge_alpha = 1, 
+                         n = 2, edge_width = 0.4, edge_alpha = 0.7, 
                          arrow = arrow(angle = 15, 
                          length = unit(0.1, "inches"), 
                          ends = "last", type = "closed"))  +
-          geom_node_point(fill = "#525252",colour = "#FFFFFF", 
+          geom_node_point(fill = "#525240",color = "#FFFFFF", 
                            size = 5, stroke = 1.1, shape = 21) + 
           theme_graph() + 
           ggtitle("fall friendship network") +
@@ -439,16 +439,88 @@ This indicates that the observed network is significantly more efficiently conne
 
 ## Analysing Homophily Using Non-Parametric Null Distribution
 
-To illustrate how we can test for homophily using a non-paramtric approach, we turn to another data set with available node attributes.
+To illustrate how we can test for homophily using a non-paramtric approach, we turn to another data set with available node attributes, namely the one by @lazega2001collegial. This data set comes from a network study of corporate law partnership that was carried out in a Northeastern US corporate law firm, referred to as SG&R, 1988-1991 in New England. It includes (among others) measurements of networks among the 71 attorneys (partners and associates) of this firm, i.e. their coworker network, advice network, friendship network, and indirect control networks. Various members' attributes are also part of the dataset, including seniority, formal status, office in which they work, gender, lawschool attended.
+
+Two tests will be performed:
+
+-  Test 1: Friendship based on gender
+-  Test 2: Cowork among partners based on law practice
+
+These two networks that are used in the following are visualized in @fig-lawnets.
+
+
+::: {#fig-lawnets .center}
+```{r}
+#| label: lawyer-plot1
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-align: center
+#| fig-height: 12
+#| fig-width: 10
+library(tidygraph)
+
+# Load networks
+data("law_friends")
+data("law_cowork")
+
+# --- Friendship network (full) ---
+law_friends_g <- law_friends
+gender <- as.factor(V(law_friends_g)$gender)  # 1 = male, 2 = female
+
+# --- Coworking network (only 36 partners) ---
+partners <- 1:36
+law_cowork_partners_g <- induced_subgraph(law_cowork, vids = partners)
+practice <- as.factor(V(law_cowork_partners_g)$pract)  # 1 = litigation, 2 = corporate
+
+
+# --- Convert to tidygraph objects and add attributes ---
+tg_friends <- as_tbl_graph(law_friends_g) %>%
+  mutate(gender = as.factor(gender), network = "Friendship (71 Lawyers)")
+
+tg_cowork <- as_tbl_graph(law_cowork_partners_g) %>%
+  mutate(practice = as.factor(practice), network = "Coworking (36 Partners)")
+
+# --- Create layouts ---
+set.seed(123)
+layout_friends <- create_layout(tg_friends, layout = "fr")
+layout_cowork <- create_layout(tg_cowork, layout = "fr")
+
+# --- Plot 1: Friendship colored by gender ---
+p1 <- ggraph(layout_friends) +
+  geom_edge_link(edge_colour = "#666060", end_cap = circle(9,"pt"), 
+                         n = 2, edge_width = 0.4, edge_alpha = 0.7, 
+                         arrow = arrow(angle = 15, 
+                         length = unit(0.1, "inches"), 
+                         ends = "last", type = "closed"))  +
+  geom_node_point(aes(color = gender), size = 4) +
+  scale_color_manual(values = c("darkturquoise", "tan2"), labels = c("Male", "Female")) +
+  labs(title = "Friendship Network", color = "Gender") +
+  theme_graph() 
+
+# --- Plot 2: Coworking colored by practice ---
+p2 <- ggraph(layout_cowork) +
+  geom_edge_link(edge_colour = "#666060") +
+  geom_node_point(aes(color = practice), size = 4) +
+  scale_color_manual(values = c("forestgreen", "violet"), labels = c("Litigation", "Corporate")) +
+  labs(title = "Coworking Network (Partners)", color = "Practice") +
+  theme_graph() 
+
+# --- Combine plots side by side ---
+p1 / p2
+```
+Visualization of two relational networks among lawyers in the Lazega dataset.
+Top: The friendship network, with nodes colored by gender.
+Bottom: The symmetrized coworking network among the 36 law firm partners, with nodes colored by practice area.
+:::
 
 ### Test 1: Friendship based on gender {.unnumbered}
-First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset [@lazega2001collegial]. We load the data as a graph object from  the package **networkdata**:
-
+First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset. We load the data as a graph object from  the package **networkdata** and vizualize it, with node color representing gender:
 ```{r}
 law_friends_g <-  networkdata::law_friends
 ```
 
-We are now testing hte following
+We are here testing the following
 
 > $H_0$: The number of same-gender ties in the network is consistent with a random distribution of ties (given network size and density).
 
@@ -463,7 +535,9 @@ law_nodes <- vcount(law_friends_g)
 law_edges <- sum(law_mat)
 law_gender <- V(law_friends_g)$gender # gender extracted
 ```
+
 Then, we compute the number of observed homophilous ties (same-gender friendships) in the observed network:
+
 ```{r}
 # 1 = male, 2 = female
 homoph_obs <- sum(law_mat[law_gender == 1, law_gender == 1]) +
@@ -517,12 +591,19 @@ mean(homoph_sim >= homoph_obs)
 ```
 which implies that we reject the null hypothesis, concluding that gender-based homophily exists in the friendship network.
 
-### Test 2: Cowork based on law practice {.unnumbered}
+### Test 2: Cowork among partners based on law practice {.unnumbered}
 Our second test is whether partners in the law firm are more likely to collaborate (cowork) with others who share the same practice area (litigation or corporate) than we would expect by chance. This is a test of homophily based on professional specialization.
 
 We begin by loading the `law_cowork` network from the **networkdata** package:
 
 ```{r}
+#| label: lawyer-plot2
+#| fig-width: 8
+#| fig-height: 5
+#| message: false
+#| warning: false
+#| fig-align: center
+#| 
 law_cw_g <- networkdata::law_cowork
 ```
 
@@ -535,6 +616,7 @@ The follwing hypotheses can be stated:
 > $H_1$: The observed number of same-practice ties is significantly greater than expected under random conditions; suggesting homophily based on professional specialization.
 
 Since coworking is a reciprocal relationship, we treat the network as undirected by symmetrizing the adjacency matrix:
+
 ```{r}
 # Create an adjacency matrix
 law_mat_cwdir <- as.matrix(as_adjacency_matrix(law_cw_g, sparse = FALSE))
