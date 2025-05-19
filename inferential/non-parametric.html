@@ -458,7 +458,7 @@ window.Quarto = {
   <li><a href="#analysing-homophily-using-non-parametric-null-distribution" id="toc-analysing-homophily-using-non-parametric-null-distribution" class="nav-link" data-scroll-target="#analysing-homophily-using-non-parametric-null-distribution"><span class="header-section-number">15.9</span> Analysing Homophily Using Non-Parametric Null Distribution</a>
   <ul class="collapse">
   <li><a href="#test-1-friendship-based-on-gender" id="toc-test-1-friendship-based-on-gender" class="nav-link" data-scroll-target="#test-1-friendship-based-on-gender">Test 1: Friendship based on gender</a></li>
-  <li><a href="#test-2-cowork-based-on-law-practice" id="toc-test-2-cowork-based-on-law-practice" class="nav-link" data-scroll-target="#test-2-cowork-based-on-law-practice">Test 2: Cowork based on law practice</a></li>
+  <li><a href="#test-2-cowork-among-partners-based-on-law-practice" id="toc-test-2-cowork-among-partners-based-on-law-practice" class="nav-link" data-scroll-target="#test-2-cowork-among-partners-based-on-law-practice">Test 2: Cowork among partners based on law practice</a></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -560,11 +560,11 @@ Figure&nbsp;15.1: Conditional Uniform Graph (CUG) test of a network statistic of
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using gggraph</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(coleman_g, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span> </span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_edge_link</span>(<span class="at">edge_colour =</span> <span class="st">"#666060"</span>, <span class="at">end_cap =</span> <span class="fu">circle</span>(<span class="dv">9</span>,<span class="st">"pt"</span>), </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">n =</span> <span class="dv">2</span>, <span class="at">edge_width =</span> <span class="fl">0.4</span>, <span class="at">edge_alpha =</span> <span class="dv">1</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">n =</span> <span class="dv">2</span>, <span class="at">edge_width =</span> <span class="fl">0.4</span>, <span class="at">edge_alpha =</span> <span class="fl">0.7</span>, </span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">angle =</span> <span class="dv">15</span>, </span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                         <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"inches"</span>), </span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span>))  <span class="sc">+</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_node_point</span>(<span class="at">fill =</span> <span class="st">"#525252"</span>,<span class="at">colour =</span> <span class="st">"#FFFFFF"</span>, </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_node_point</span>(<span class="at">fill =</span> <span class="st">"#525240"</span>,<span class="at">color =</span> <span class="st">"#FFFFFF"</span>, </span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                           <span class="at">size =</span> <span class="dv">5</span>, <span class="at">stroke =</span> <span class="fl">1.1</span>, <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span> </span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>          <span class="fu">theme_graph</span>() <span class="sc">+</span> </span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>          <span class="fu">ggtitle</span>(<span class="st">"fall friendship network"</span>) <span class="sc">+</span></span>
@@ -929,14 +929,38 @@ Figure&nbsp;15.5: Distribution of average geodesic distance across 1000 random d
 </section>
 <section id="analysing-homophily-using-non-parametric-null-distribution" class="level2" data-number="15.9">
 <h2 data-number="15.9" class="anchored" data-anchor-id="analysing-homophily-using-non-parametric-null-distribution"><span class="header-section-number">15.9</span> Analysing Homophily Using Non-Parametric Null Distribution</h2>
-<p>To illustrate how we can test for homophily using a non-paramtric approach, we turn to another data set with available node attributes.</p>
+<p>To illustrate how we can test for homophily using a non-paramtric approach, we turn to another data set with available node attributes, namely the one by <span class="citation" data-cites="lazega2001collegial">Lazega (<a href="introduction.html#ref-lazega2001collegial" role="doc-biblioref">2001</a>)</span>. This data set comes from a network study of corporate law partnership that was carried out in a Northeastern US corporate law firm, referred to as SG&amp;R, 1988-1991 in New England. It includes (among others) measurements of networks among the 71 attorneys (partners and associates) of this firm, i.e.&nbsp;their coworker network, advice network, friendship network, and indirect control networks. Various members’ attributes are also part of the dataset, including seniority, formal status, office in which they work, gender, lawschool attended.</p>
+<p>Two tests will be performed:</p>
+<ul>
+<li>Test 1: Friendship based on gender</li>
+<li>Test 2: Cowork among partners based on law practice</li>
+</ul>
+<p>These two networks that are used in the following are visualized in <a href="#fig-lawnets" class="quarto-xref">Figure&nbsp;<span>15.6</span></a>.</p>
+<div id="fig-lawnets" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-lawnets-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="non-parametric_files/figure-html/lawyer-plot1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lawnets-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.6: Visualization of two relational networks among lawyers in the Lazega dataset. Top: The friendship network, with nodes colored by gender. Bottom: The symmetrized coworking network among the 36 law firm partners, with nodes colored by practice area.
+</figcaption>
+</figure>
+</div>
 <section id="test-1-friendship-based-on-gender" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="test-1-friendship-based-on-gender">Test 1: Friendship based on gender</h3>
-<p>First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset <span class="citation" data-cites="lazega2001collegial">(<a href="introduction.html#ref-lazega2001collegial" role="doc-biblioref">Lazega 2001</a>)</span>. We load the data as a graph object from the package <strong>networkdata</strong>:</p>
+<p>First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset. We load the data as a graph object from the package <strong>networkdata</strong> and vizualize it, with node color representing gender:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>law_friends_g <span class="ot">&lt;-</span>  networkdata<span class="sc">::</span>law_friends</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We are now testing hte following</p>
+<p>We are here testing the following</p>
 <blockquote class="blockquote">
 <p><span class="math inline">\(H_0\)</span>: The number of same-gender ties in the network is consistent with a random distribution of ties (given network size and density).</p>
 </blockquote>
@@ -970,7 +994,7 @@ Figure&nbsp;15.5: Distribution of average geodesic distance across 1000 random d
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(mat[law_gender <span class="sc">==</span> <span class="dv">2</span>, law_gender <span class="sc">==</span> <span class="dv">2</span>])</span>
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>As before, we can create a histogram of the simulated homophilous tie counts and mark the observed value, as shown in <a href="#fig-cug-hom1" class="quarto-xref">Figure&nbsp;<span>15.6</span></a>:</p>
+<p>As before, we can create a histogram of the simulated homophilous tie counts and mark the observed value, as shown in <a href="#fig-cug-hom1" class="quarto-xref">Figure&nbsp;<span>15.7</span></a>:</p>
 <div id="fig-cug-hom1" class="center quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cug-hom1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -996,7 +1020,7 @@ Figure&nbsp;15.5: Distribution of average geodesic distance across 1000 random d
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cug-hom1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15.6: Distribution of same-gender friendship ties in 1000 random directed graphs preserving the number of nodes and total number of ties. The red dashed line marks the number of same-gender ties in the observed network.
+Figure&nbsp;15.7: Distribution of same-gender friendship ties in 1000 random directed graphs preserving the number of nodes and total number of ties. The red dashed line marks the number of same-gender ties in the observed network.
 </figcaption>
 </figure>
 </div>
@@ -1009,11 +1033,11 @@ Figure&nbsp;15.6: Distribution of same-gender friendship ties in 1000 random dir
 </div>
 <p>which implies that we reject the null hypothesis, concluding that gender-based homophily exists in the friendship network.</p>
 </section>
-<section id="test-2-cowork-based-on-law-practice" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="test-2-cowork-based-on-law-practice">Test 2: Cowork based on law practice</h3>
+<section id="test-2-cowork-among-partners-based-on-law-practice" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="test-2-cowork-among-partners-based-on-law-practice">Test 2: Cowork among partners based on law practice</h3>
 <p>Our second test is whether partners in the law firm are more likely to collaborate (cowork) with others who share the same practice area (litigation or corporate) than we would expect by chance. This is a test of homophily based on professional specialization.</p>
 <p>We begin by loading the <code>law_cowork</code> network from the <strong>networkdata</strong> package:</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>law_cw_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>law_cowork</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We restrict the analysis to the first 36 lawyers, corresponding to the partners of the firm (as indicated by their “status” attribute).</p>
@@ -1088,11 +1112,11 @@ Figure&nbsp;15.6: Distribution of same-gender friendship ties in 1000 random dir
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cug-hom2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15.7: Distribution of same-practice coworking ties in 1000 random undirected graphs preserving the number of nodes and ties. The red dashed line indicates the observed number of homophilous ties among law firm partners. This test evaluates whether the level of professional homophily (litigation or corporate) is different than what is expected under random tie allocation.
+Figure&nbsp;15.8: Distribution of same-practice coworking ties in 1000 random undirected graphs preserving the number of nodes and ties. The red dashed line indicates the observed number of homophilous ties among law firm partners. This test evaluates whether the level of professional homophily (litigation or corporate) is different than what is expected under random tie allocation.
 </figcaption>
 </figure>
 </div>
-<p>As seen in <a href="#fig-cug-hom2" class="quarto-xref">Figure&nbsp;<span>15.7</span></a>, we are in the right tail, indicating we arfe observing more homophilous ties than expected by chance. To formnally test the hypothesis above we can compute the <span class="math inline">\(p\)</span>-value:</p>
+<p>As seen in <a href="#fig-cug-hom2" class="quarto-xref">Figure&nbsp;<span>15.8</span></a>, we are in the right tail, indicating we arfe observing more homophilous ties than expected by chance. To formnally test the hypothesis above we can compute the <span class="math inline">\(p\)</span>-value:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(homoph_sim_cw <span class="sc">&gt;=</span> homoph_obs_cw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
