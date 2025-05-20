@@ -129,10 +129,11 @@ To further illustrate the limitations of the $G(n, p)$ model, we also examine th
 
 ::: {#fig-gnp-deg .center}
 ```{r}
+#| label: example-gnp-deg
+#| echo: false
+#| fig-align: center
 #| fig-height: 4
 #| fig-width: 10
-#| fig-align: center
-#| label: example-gnp-deg
 # Plot the degree distributions
 df_deg <- data.frame(
   Degree = c(deg_obs, deg_gnp),
@@ -144,7 +145,8 @@ ggplot(df_deg, aes(x = Degree, fill = Type)) +
   facet_wrap(~Type, scales = "free_y") +
   labs(x = "Node Degree", y = "Frequency") +
   theme_minimal() +
-  scale_fill_manual(values = c("skyblue", "tomato"))
+  scale_fill_manual(values = c("skyblue", "tomato")) +
+  theme(legend.title = element_blank())
   
   
 ```
@@ -225,16 +227,18 @@ kable(conf_comparison, caption = "Comparison of structural features: Observed vs
   
 ::: {#fig-confmod .center}
 ```{r}
+#| label: example-confmod-deg
+#| echo: false
+#| fig-align: center
 #| fig-height: 4
 #| fig-width: 10
-#| fig-align: center
-#| label: example-confmod-deg
 ggplot(deg_df, aes(x = Degree, fill = Type)) +
   geom_histogram(position = "identity", bins = 20, alpha = 0.6, color = "white") +
   facet_wrap(~Type, scales = "free_y") +
   labs(x = "Node Degree", y = "Frequency") +
   scale_fill_manual(values = c("skyblue", "tomato")) +
-  theme_minimal()
+  theme_minimal() +
+  theme(legend.title = element_blank())
 ``` 
 Comparison of degree distributions for the observed *Les Misérables* network and a network generated from the configuration model. The configuration model preserves the exact degree sequence of the observed network, resulting in an identical distribution. 
 :::
@@ -308,10 +312,11 @@ kable(sw_comparison, caption = "Comparison of structural features: Observed vs S
 
 ::: {#fig-sw .center}
 ```{r}
+#| label: example-sw
+#| echo: false
+#| fig-align: center
 #| fig-height: 4
 #| fig-width: 10
-#| fig-align: center
-#| label: example-sw
 
 # Degree distribution
 deg_df <- data.frame(
@@ -326,12 +331,13 @@ ggplot(deg_df, aes(x = Degree, fill = Type)) +
   facet_wrap(~Type, scales = "free_y") +
   labs(x = "Node Degree", y = "Frequency") +
   scale_fill_manual(values = c("skyblue","tomato")) +
-  theme_minimal()
+  theme_minimal() +
+  theme(legend.title = element_blank())
 ```
 Degree distributions for the observed *Les Misérables* network and the simulated small-world model. The observed network displays a more skewed distribution, while the small-world model produces a narrow, symmetric range centered around the average degree.
 :::
 
-The simulation summarized in @tbl-sw demonstrates how the small-world model approximates certain properties of the observed network. As shown in the table, the simulated network achieves a relatively short average path length—similar to that of the *Les Misérables* network—due to the introduction of random long-range ties. The clustering coefficient remains substantial, reflecting the model’s ability to preserve local neighborhood structure.
+The simulation summarized in @tbl-sw demonstrates how the small-world model approximates certain properties of the observed network. As shown in the table, the simulated network achieves a relatively short average path length, similar to that of the *Les Misérables* network, due to the introduction of random long-range ties. The clustering coefficient remains substantial, reflecting the model’s ability to preserve local neighborhood structure.
 
 However, the degree distribution  in the small-world model shown in @fig-sw remains relatively narrow, with most nodes having degrees close to the average.  This limitation highlights that while the small-world model captures some global and local properties, it does not account for degree heterogeneity. The results show that the small-world model offers a useful structural middle ground between regular and fully random graphs but still lacks the full complexity observed in empirical networks.
 
