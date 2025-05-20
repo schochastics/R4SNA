@@ -21,7 +21,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -72,6 +127,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -358,8 +442,26 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">17.1</span> Packages Needed for this Chapter</a></li>
+  <li><a href="#ergm-modeling-outline" id="toc-ergm-modeling-outline" class="nav-link" data-scroll-target="#ergm-modeling-outline"><span class="header-section-number">17.2</span> ERGM Modeling Outline</a></li>
+  <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification">1. Model Specification</a>
+  <ul class="collapse">
+  <li><a href="#dyadic-independence-edges" id="toc-dyadic-independence-edges" class="nav-link" data-scroll-target="#dyadic-independence-edges">Dyadic Independence: Edges</a></li>
+  <li><a href="#example-coleman-friendship" id="toc-example-coleman-friendship" class="nav-link" data-scroll-target="#example-coleman-friendship">Example: Coleman Friendship</a></li>
+  <li><a href="#dyadic-independence-homophily" id="toc-dyadic-independence-homophily" class="nav-link" data-scroll-target="#dyadic-independence-homophily">Dyadic Independence: Homophily</a></li>
+  <li><a href="#example-teenage-friends-and-lifestyle-study-data" id="toc-example-teenage-friends-and-lifestyle-study-data" class="nav-link" data-scroll-target="#example-teenage-friends-and-lifestyle-study-data">Example: Teenage Friends and Lifestyle Study data</a></li>
+  <li><a href="#dyadic-dependence-reciprocity" id="toc-dyadic-dependence-reciprocity" class="nav-link" data-scroll-target="#dyadic-dependence-reciprocity">Dyadic Dependence: Reciprocity</a></li>
+  <li><a href="#markov-dependence-triangles-and-stars" id="toc-markov-dependence-triangles-and-stars" class="nav-link" data-scroll-target="#markov-dependence-triangles-and-stars">Markov Dependence: Triangles and Stars</a></li>
+  <li><a href="#social-circuit-dependence-gwesp" id="toc-social-circuit-dependence-gwesp" class="nav-link" data-scroll-target="#social-circuit-dependence-gwesp">Social Circuit Dependence: GWESP</a></li>
+  </ul></li>
+  <li><a href="#model-estimation-and-simulation" id="toc-model-estimation-and-simulation" class="nav-link" data-scroll-target="#model-estimation-and-simulation">2. Model Estimation and Simulation</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/ergm.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -383,7 +485,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>In real social networks, however, ties are often <strong>dependent</strong> on one another. The formation of one tie may increase or decrease the likelihood of another. For example, two people who share a common friend may be more likely to form a tie themselves (triadic closure), or individuals may be more likely to reciprocate a connection that is initiated by someone else. These kinds of dependencies are central to many <strong>social theories</strong>, and they give rise to complex patterns of <strong>self-organization</strong> in networks.</p>
+<p>So far, the models we’ve considered have treated tie formation as mostly random or locally constrained: ties are formed with fixed probabilities (<span class="math inline">\(G(n, p)\)</span>), rewired at random (small-world), or arranged to match node degrees (configuration model). However, real-world networks are shaped by richer and more structured processes. People don’t form ties independently or at random, they’re influenced by patterns like mutual friendships, popularity, shared group membership, and social norms like reciprocity and transitivity. For example, two people who share a common friend may be more likely to form a tie themselves (triadic closure), or individuals may be more likely to reciprocate a connection that is initiated by someone else. These kinds of dependencies are central to many social theories, and they give rise to complex patterns of self-organization in networks.</p>
 <p>To capture these processes, we need a more flexible modeling framework—one that allows for:</p>
 <ul>
 <li>Multiple network features to be modeled simultaneously</li>
@@ -391,9 +493,306 @@ ul.task-list li input[type="checkbox"] {
 <li>Testing of competing social mechanisms</li>
 </ul>
 <p>This leads us to models that are built around network configurations, i.e.&nbsp;small, interpretable patterns of ties (such as mutual ties, stars, and triangles) that collectively describe the structure of the network. These configurations are often nested, meaning they build on one another hierarchically, and they can represent competing explanations for the observed structure. For instance, both reciprocity and popularity could explain why a node has many incoming tie, but these explanations imply different underlying processes.</p>
-<p>By explicitly modeling such configurations, we gain not only better empirical fit but also the ability to test theoretical hypotheses about the generative processes that shape real-world networks. This chapter introduces a class of models designed for this purpose: <strong>Exponential Random Graph models (ERGMs)</strong>.</p>
+<p><strong>Exponential Random Graph Models (ERGMs)</strong> provide a flexible way to model these kinds of patterns. Instead of assuming each edge forms independently, ERGMs allow the probability of a tie to depend on what else is happening in the network. For example, the likelihood of a tie forming between two nodes may increase if they share mutual connections (triadic closure), or decrease if one node is already connected to many others (crowding out).</p>
+<p>By explicitly modeling such configurations, we gain not only better empirical fit but also the ability to test theoretical hypotheses about the generative processes that shape real-world networks.</p>
+<section id="packages-needed-for-this-chapter" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">17.1</span> Packages Needed for this Chapter</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(statnet)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(intergraph)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(graphlayouts)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="ergm-modeling-outline" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="ergm-modeling-outline"><span class="header-section-number">17.2</span> ERGM Modeling Outline</h2>
+<p>Exponential Random Graph Models (ERGMs) are a powerful family of statistical models for analyzing and simulating social networks. Unlike simpler random graph models, ERGMs are designed to capture the complex dependencies that often characterize real-world networks, such as reciprocity, transitivity, or clustering—by explicitly modeling how the presence of one tie can affect the likelihood of others.</p>
+<p>The core idea is as follows. ERGMs specify a probability distribution over the set of all possible networks with a given number of nodes. The probability of observing a particular graph <span class="math inline">\(G\)</span> is defined as:</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G) \right)
+\]</span> where</p>
+<ul>
+<li><span class="math inline">\(s_i(G)\)</span> is a network statistic that counts a specific configuration (e.g., number of edges, mutual ties, triangles).</li>
+<li><span class="math inline">\(\theta_i\)</span> is the parameter associated with statistic <span class="math inline">\(s_i(G)\)</span>; it tells us how strongly that configuration influences tie formation.</li>
+<li><span class="math inline">\(\kappa\)</span> is a normalizing constant ensuring that all possible graphs sum to a probability of 1: <span class="math display">\[
+\kappa = \sum_{G'} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G') \right)
+\]</span></li>
+</ul>
+<p>This formulation makes clear that networks with more of the structures positively weighted by <span class="math inline">\(\theta\)</span> are more probable. For instance, a large positive <span class="math inline">\(\theta_{\text{mutual}}\)</span> implies that the observed network contains more reciprocated ties than expected by chance.</p>
+<p>In general, we interpret the parameters as follows:</p>
+<ul>
+<li>A positive <span class="math inline">\(\theta_i\)</span> means that the corresponding configuration (e.g., triangles) is overrepresented in the observed network than what is expected by pure chance.</li>
+<li>A negative <span class="math inline">\(\theta_i\)</span> indicates that the configuration is underrepresented than what is expected by pure chance.</li>
+<li>A zero value implies that the configuration occurs at chance levels.</li>
+</ul>
+<p>The statistics <span class="math inline">\(s_i\)</span> are network configurations. As mentioned, ERGMs rely on small, interpretable network configurations to explain structure. These include:</p>
+<ul>
+<li><strong>Edges</strong>: baseline tendency for tie formation (controls overall density)</li>
+<li><strong>Mutual</strong>: reciprocity in directed networks</li>
+<li><strong>Triangles</strong>: clustering or transitivity (friends of friends)</li>
+<li><strong>Stars</strong>: centralization or popularity (many ties to a node)</li>
+<li><strong>Homophily</strong>: ties between nodes with similar attributes</li>
+</ul>
+<p>Each of these configurations reflects a hypothesized mechanism that may drive the evolution of network structure. We formalize some of the standard statistics in the following but for a full list of available statistics in the <code>ergm</code> package you can check:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>?ergmTerm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="model-specification" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="model-specification">1. Model Specification</h2>
+<section id="dyadic-independence-edges" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="dyadic-independence-edges">Dyadic Independence: Edges</h3>
+<p>To begin working with exponential random graph models (ERGMs), we first need to understand how models are specified and what kinds of network structures they describe. In this section, we introduce the simplest possible ERGM, one that assumes Bernoulli dependence, and show how it connects to the familiar <span class="math inline">\(G(n, p)\)</span> model. This first step lays the foundation for more complex ERGMs that incorporate structural dependencies.</p>
+<p>The Bernoulli ERGM assumes that all possible edges form independently of one another. In other words, the probability that a tie exists between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> is unrelated to whether other ties are present elsewhere in the network. This is a very strong assumption—and one that is often unrealistic in practice—but it is useful as a baseline.</p>
+<p>Let <span class="math inline">\(Y_{uv}\)</span> be a binary random variable indicating the presence (<span class="math inline">\(1\)</span>) or absence (<span class="math inline">\(0\)</span>) of a tie between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>. The full graph <span class="math inline">\(G\)</span> can then be represented by its adjacency matrix <span class="math inline">\(Y\)</span>, where <span class="math inline">\(Y_{uv}\)</span> encodes the tie between <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>.</p>
+<p>In the general formulation of an exponential random graph model, one could imagine assigning a different parameter <span class="math inline">\(\theta_{uv}\)</span> to every possible tie <span class="math inline">\((u, v)\)</span> in the network. This would allow the model to express highly specific tendencies for each dyad. The probability of observing a network <span class="math inline">\(G\)</span> under this formulation would be:</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left( \sum_{u&lt;v} \theta_{uv} y_{uv} \right)
+\]</span></p>
+<p>However, this model quickly becomes infeasible because it would require estimating a separate parameter for every possible edge—a number that grows quadratically with the number of nodes.</p>
+<p>To make the model estimable and interpretable, ERGMs rely on the <strong>homogeneity assumption</strong>: the effect of a given configuration (such as an edge, triangle, or mutual tie) is the same wherever it appears in the network. That is, all instances of the same configuration share a single global parameter. For the Bernoulli ERGM, this means:</p>
+<p><span class="math display">\[
+\theta_{uv} = \theta \quad \text{for all } (u, v)
+\]</span></p>
+<p>Applying this assumption simplifies the model considerably:</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left( \theta \sum_{u&lt;v} y_{uv} \right) = \frac{1}{\kappa} \exp(\theta \cdot L)
+\]</span></p>
+<p>Here, <span class="math inline">\(L\)</span> is the total number of edges in the network, <span class="math inline">\(\theta\)</span> is a single parameter that governs the overall probability of tie formation, and <span class="math inline">\(\kappa\)</span> is the normalizing constant ensuring all probabilities sum to 1.</p>
+<p>This structure implies that each potential tie forms independently with the same probability, much like in a <span class="math inline">\(G(n, p)\)</span> random graph. Here, the parameter <span class="math inline">\(\theta\)</span> governs the log-odds of a tie between any two nodes. More formally, the relationship between <span class="math inline">\(\theta\)</span> and the tie probability <span class="math inline">\(p\)</span> (i.e., the density of the network) is:</p>
+<p><span class="math display">\[
+\theta = \log\left( \frac{p}{1 - p} \right) \quad \Leftrightarrow \quad p = \frac{e^\theta}{1 + e^\theta}
+\]</span></p>
+<p>This means that:</p>
+<ul>
+<li>When <span class="math inline">\(\theta = 0\)</span>, the expected density is <span class="math inline">\(p\)</span> = 0.5</li>
+<li>When <span class="math inline">\(\theta &lt; 0\)</span>, the expected density is less than 0.5 (a sparse network)</li>
+<li>When <span class="math inline">\(\theta &gt; 0\)</span>, the expected density is greater than 0.5</li>
+</ul>
+<p>So, the edge parameter directly controls the overall density of the network. In practice, real-world social networks tend to be sparse, so <span class="math inline">\(\theta\)</span> is typically negative. This relationship also means that if you estimate a Bernoulli ERGM and obtain an edge coefficient <span class="math inline">\(\hat{\theta}\)</span>, you can compute the implied expected density using:</p>
+<p><span class="math display">\[
+\hat{p} = \frac{e^{\hat{\theta}}}{1 + e^{\hat{\theta}}}
+\]</span></p>
+<p>This makes the edge parameter easy to interpret: it is just the logit-transformed density.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note: <span class="math inline">\(G(n, p)\)</span> as a Special Case of ERGM
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Bernoulli ERGM is structurally identical to the <span class="math inline">\(G(n, p)\)</span> model, with the relationship:</p>
+<ul>
+<li><span class="math inline">\(\theta = 0\)</span> → expected density <span class="math inline">\(p = 0.5\)</span></li>
+<li><span class="math inline">\(\theta &gt; 0\)</span> → expected density <span class="math inline">\(p &gt; 0.5\)</span></li>
+<li><span class="math inline">\(\theta &lt; 0\)</span> → expected density <span class="math inline">\(p &lt; 0.5\)</span></li>
+</ul>
+<p>However, this does not hold in general (if the ERGM contains other statistics).</p>
+<p>Put differently, the <span class="math inline">\(G(n, p)\)</span> random graph model is actually a special case of an ERGM. It includes only one term: the number of edges.</p>
+</div>
+</div>
+<p>In ERGMs, a parameter estimate is considered statistically significant (by convention) if the absolute value of the estimate is greater than approximately twice its standard error (i.e., <span class="math inline">\(|\hat{\theta}| &gt; 2 \cdot \text{SE}\)</span>). This rule of thumb suggests that the corresponding network feature (such as homophily or reciprocity) is unlikely to have arisen by chance, and is therefore meaningfully associated with the observed pattern of tie formation.</p>
+</section>
+<section id="example-coleman-friendship" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="example-coleman-friendship">Example: Coleman Friendship</h3>
+<p>To demonstrate the Bernoulli ERGM, we fit the model to the Coleman high school friendship network used in <a href="non-parametric.html" class="quarto-xref"><span>Chapter 15</span></a>. However, here we convert ther graph object into an adjacency matrix since the <code>ergm</code> response argument needs to be a network object or a matrix that can be coerced to a network object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract the fall network</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>coleman_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>coleman[[<span class="dv">1</span>]]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to adjacency matrix</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>coleman_mat <span class="ot">&lt;-</span> <span class="fu">as_adjacency_matrix</span>(coleman_g, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Bernoulli ERGM with only the edge term</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>model_bern <span class="ot">&lt;-</span> <span class="fu">ergm</span>(coleman_mat <span class="sc">~</span> edges)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_bern)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = coleman_mat ~ edges)
+
+Maximum Likelihood Results:
+
+      Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges -3.02673    0.06569      0  -46.08   &lt;1e-04 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+     Null Deviance: 7286  on 5256  degrees of freedom
+ Residual Deviance: 1969  on 5255  degrees of freedom
+ 
+AIC: 1971  BIC: 1977  (Smaller is better. MC Std. Err. = 0)</code></pre>
+</div>
+</div>
+<p>The output provides the estimated <span class="math inline">\(\theta\)</span> parameter for the edge term. A strongly negative value suggests that the probability of a tie between any two students is low, which is typical of real-world social networks that are sparse.</p>
+<p>The estimated edge parameter from the Bernoulli ERGM is: <span class="math display">\[
+\hat{\theta}_{\text{edges}} = -3.02673
+\]</span></p>
+<p>This value reflects the log-odds of a tie forming between any two nodes in the network. To convert this into an expected tie probability (i.e., network density), we apply the inverse logit function:</p>
+<p><span class="math display">\[
+p = \frac{e^{\hat{\theta}}}{1 + e^{\hat{\theta}}}
+\]</span></p>
+<p>Substituting the estimated value:</p>
+<p><span class="math display">\[
+p = \frac{e^{-3.02673}}{1 + e^{-3.02673}} \approx 0.046
+\]</span></p>
+<p>This result implies that the expected density of the network under this model is approximately 4.6%. This is in fact the density of the observed network which you can verify:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">edge_density</span>(coleman_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.04623288</code></pre>
+</div>
+</div>
+</section>
+<section id="dyadic-independence-homophily" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="dyadic-independence-homophily">Dyadic Independence: Homophily</h3>
+<p>Another class of network statistics in ERGMs captures <strong>homophily</strong>: the tendency of individuals to form ties with others who are similar to themselves in a particular attribute, such as gender, age, race, or occupation.</p>
+<p>Let each node in the network have a categorical attribute, denoted:</p>
+<p><span class="math display">\[
+a : V \rightarrow \{1, \dots, c\}
+\]</span></p>
+<p>This maps each actor to one of <span class="math inline">\(c\)</span> categories. To model homophily, we define a statistic that counts the number of ties between actors who share the same attribute value:</p>
+<p><span class="math display">\[
+m_a(G) = \left| \left\{ \{u, v\} \in E : a(u) = a(v) \right\} \right|
+\]</span></p>
+<p>That is, <span class="math inline">\(m_a(G)\)</span> is the number of edges where both endpoints belong to the same category. Adding this statistic to the ERGM, the model becomes:</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left( \theta_1 \cdot L + \theta_2 \cdot m_a(G) \right)
+\]</span></p>
+<p>We interpret the homophily parameter as follows:</p>
+<ul>
+<li><span class="math inline">\(\theta_2 &gt; 0\)</span>: Ties between similar nodes are more likely (homophily)</li>
+<li><span class="math inline">\(\theta_2 &lt; 0\)</span>: Ties between dissimilar nodes are more likely (heterophily)</li>
+<li><span class="math inline">\(\theta_2 = 0\)</span>: No effect of similarity</li>
+</ul>
+<p>This formulation assumes that the tendency for similarity-based tie formation is uniform across all dyads, consistent with the homogeneity assumption discussed earlier. Moreover, since the statistic depends only on the attributes of the two actors in a dyad and not on any other ties in the network, it also maintains dyadic independence. That is, the presence or absence of one tie does not influence the probability of others, unless additional structural terms (like triangles or mutual ties) are included in the model.</p>
+<p>Thus, including a homophily term allows us to model nodal covariate effects; how actor characteristics affect tie formation—while keeping the model simple and tractable.</p>
+</section>
+<section id="example-teenage-friends-and-lifestyle-study-data" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="example-teenage-friends-and-lifestyle-study-data">Example: Teenage Friends and Lifestyle Study data</h3>
+<p>For an example including the homophily statistic, we use the the Teenage Friends and Lifestyle Study data called <code>s50</code> in the <code>networkdata</code> package. The <code>s50</code> dataset is a subset of 50 girls over a three-year panel study of adolescent friendship networks and health behaviors conducted in a school in the West of Scotland <span class="citation" data-cites="west1996s50">(<a href="introduction.html#ref-west1996s50" role="doc-biblioref">West and Sweeting 1996</a>)</span>. This excerpt was created for illustrative purposes and includes dynamic friendship data over three waves, capturing changes in social ties alongside attributes like gender, sport participation, and substance use. We will focus on the homophily based on smoking behavior.</p>
+<p>We only consider cross-sectional network data here so we only focus on the third wave network (we will in later chapters look at modeling longitudinal network data). Let’s prepare the data for the <code>ergm</code> specification. Note that we here instead convert the graph object inot a network one using the package <code>integraph</code> in order to preserve the node attribute of interest</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract the third wave network</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>s50_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>s50[[<span class="dv">3</span>]]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to network object using intergraph</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>s50_net <span class="ot">&lt;-</span> <span class="fu">asNetwork</span>(s50_g)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># check netowrk obejct and stored attributes</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>s50_net</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Network attributes:
+  vertices = 50 
+  directed = FALSE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 77 
+    missing edges= 0 
+    non-missing edges= 77 
+
+ Vertex attribute names: 
+    smoke vertex.names 
+
+No edge attributes</code></pre>
+</div>
+</div>
+<p>We now test whether students tend to form friendships with others who have the same smoking behavior. The <code>s50</code> dataset includes a categorical node attribute called <code>smoke</code>, with three levels: non-smoker (1), occasional smoker (2), and regular smoker (3). To test for smoking-based homophily, we fit an ERGM that includes an edge term and a <code>nodematch("smoke")</code> term.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with homophily on smoking status</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>model_smoke <span class="ot">&lt;-</span> <span class="fu">ergm</span>(s50_net <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">"smoke"</span>))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_smoke)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = s50_net ~ edges + nodematch("smoke"))
+
+Maximum Likelihood Results:
+
+                Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges            -3.0196     0.1902      0 -15.878   &lt;1e-04 ***
+nodematch.smoke   0.5736     0.2425      0   2.365    0.018 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+     Null Deviance: 1698.2  on 1225  degrees of freedom
+ Residual Deviance:  569.4  on 1223  degrees of freedom
+ 
+AIC: 573.4  BIC: 583.6  (Smaller is better. MC Std. Err. = 0)</code></pre>
+</div>
+</div>
+<p>The model includes two terms:</p>
+<ul>
+<li><code>edges</code>: controls for the overall density of the network (should always be included)</li>
+<li><code>nodematch("smoke")</code>: counts the number of ties where both nodes have the same smoking status.</li>
+</ul>
+<p>This specification assumes that the tendency to form ties is homogeneous across dyads, and the homophily term preserves dyadic independence, as it depends only on the attributes of the two individuals involved in each potential tie.</p>
+<p>We interpret the output as follows. The <code>edges</code> term gives the baseline log-odds of a tie between two students, regardless of smoking behavior. The <code>nodematch(“smoke”)</code> term estimates the additional log-odds of a tie when two students share the same smoking status.</p>
+<p>Since the coefficient for <code>nodematch("smoke")</code> is positive and significant, we see that students tend to form ties with peers who have similar smoking habits (homophily).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on <code>nodematch()</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that <code>nodematch("smoke")</code> adds one statistic to the model: the total number of edges connecting nodes that share the same value of the smoke attribute. It does not distinguish between which category is shared, it treats all matches equally. So in our case, it would count:</p>
+<ul>
+<li>Ties between two non-smokers</li>
+<li>Ties between two occasional smokers</li>
+<li>Ties between two regular smokers</li>
+</ul>
+<p>All of those contribute to the same term. It does not tell you whether one group is more homophilous than another. If we want more detail, we can instead use <code>nodemix("smoke")</code> as it can separate estimates for each combination of categories (e.g., smoker-smoker, smoker-non-smoker, etc.), that is you get detailed between-group dynamics.</p>
+</div>
+</div>
+</section>
+<section id="dyadic-dependence-reciprocity" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="dyadic-dependence-reciprocity">Dyadic Dependence: Reciprocity</h3>
+</section>
+<section id="markov-dependence-triangles-and-stars" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="markov-dependence-triangles-and-stars">Markov Dependence: Triangles and Stars</h3>
+</section>
+<section id="social-circuit-dependence-gwesp" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="social-circuit-dependence-gwesp">Social Circuit Dependence: GWESP</h3>
+</section>
+</section>
+<section id="model-estimation-and-simulation" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="model-estimation-and-simulation">2. Model Estimation and Simulation</h2>
+<p>Estimating the parameters of an ERGM involves finding values for <span class="math inline">\(\boldsymbol{\theta}\)</span> that make the observed network most likely under the specified model. This is done using <strong>maximum likelihood estimation (MLE)</strong>. The goal is to find the parameter vector <span class="math inline">\(\hat{\boldsymbol{\theta}}\)</span> that maximizes the probability of the observed network <span class="math inline">\(G_{\text{obs}}\)</span>:</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\theta}} = \arg\max_{\boldsymbol{\theta}} \, P(G_{\text{obs}} \mid \boldsymbol{\theta}) = \frac{\exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G_{\text{obs}}) \right)}{\kappa(\boldsymbol{\theta})}
+\]</span></p>
+<p>Here, <span class="math inline">\(\mathbf{s}(G)\)</span> is the vector of network statistics (e.g., number of edges, mutual ties, triangles), and <span class="math inline">\(\kappa(\boldsymbol{\theta})\)</span> is the normalizing constant that sums the exponential term over all possible networks:</p>
+<p><span class="math display">\[
+\kappa(\boldsymbol{\theta}) = \sum_{G'} \exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G') \right)
+\]</span> The main difficulty in estimating ERGMs lies in the fact that <span class="math inline">\(\kappa(\boldsymbol{\theta})\)</span> involves a sum over all possible networks with the same number of nodes; an astronomically large space. This makes direct likelihood maximization intractable for any network of realistic size.</p>
+<p>To overcome this, ERGMs use <strong>Markov Chain Monte Carlo Maximum Likelihood Estimation (MCMCMLE)</strong>. The idea is to simulate many networks from the current estimate of the model and compare their statistics to those of the observed network. The process iteratively updates the parameter estimates so that the simulated statistics converge toward the observed ones.</p>
+<p>This simulation-based procedure involves two key steps:</p>
+<ol type="1">
+<li><strong>MCMC Sampling</strong>: Generate random networks from the current parameter estimates using a Markov chain.</li>
+<li><strong>Score Updating</strong>: Adjust the parameter values to reduce the difference between simulated and observed network statistics.</li>
+</ol>
+<p>This process continues until convergence is achieved, when the model parameters yield simulations whose average statistics closely match those of the observed network.</p>
+<p>Because ERGMs rely on MCMC simulation to estimate model parameters, it is crucial to check whether the estimation process has properly converged. <strong>MCMC diagnostics</strong> help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include trace plots (to check stability of simulated statistics over time), autocorrelation plots (to assess dependence between samples), and comparisons between observed and simulated statistics. A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process.</p>
+<p>While MCMC diagnostics are useful in general, they are especially critical when estimating dyad-dependent ERGMs; models in which the probability of a tie depends on the presence or absence of other ties in the network. This includes models with terms like triangles, <span class="math inline">\(k\)</span>-stars, or other structural dependencies. In these cases, the network space becomes highly constrained and interdependent, making it more challenging for the Markov chain to explore effectively. As a result, convergence issues are more common, and MCMC diagnostics play a key role in ensuring that the simulation-based estimation has produced reliable parameter values.</p>
+<p>For dyad-independent models (e.g., those using only nodal covariates like homophily), estimation is generally simpler and may not require full MCMC sampling or diagnostics. Thus, careful diagnostic checks are particularly essential when modeling endogenous network structure.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-west1996s50" class="csl-entry" role="listitem">
+West, P, and H Sweeting. 1996. <span>“Background, Rationale and Design of the West of Scotland 11 to 16 Study.”</span> <em>MRC Medical Sociology Unit Working Paper</em>, no. 52: 1.
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -815,7 +1214,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/ergm.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/ergm.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>
