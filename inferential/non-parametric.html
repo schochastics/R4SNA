@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.29">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="David Schoch, and Termeh Shafie">
+<title>15&nbsp; Non-Parametric Methods – R for Social Network Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../inferential/rgm.html" rel="next">
+<link href="../inferential/introduction.html" rel="prev">
+<link href="../cover.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-485d01fc63b59abcd3ee1bf1e8e2748d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../inferential/introduction.html">Inferential Network Analysis</a></li><li class="breadcrumb-item"><a href="../inferential/non-parametric.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Non-Parametric Methods</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">R for Social Network Analysis</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/schochastics/R4sna" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../network-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Network Data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Descriptive Network Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../descriptive/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../descriptive/descriptives-basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Basic Network Statistics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../descriptive/centrality-basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../descriptive/centrality-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Advanced Centrality Concepts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../descriptive/clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Cohesive Subgroups</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../descriptive/two-mode-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Two-Mode Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../descriptive/signed-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Signed Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../descriptive/ego-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Ego Networks</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Network Visualization</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../visualization/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../visualization/ggraph-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Basics of ggraph</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../visualization/ggraph-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Advanced Layouts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../visualization/enhance-viz.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Enhancing Visualizations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../visualization/interactive-viz.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactive Visualization</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Inferential Network Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../inferential/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../inferential/non-parametric.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Non-Parametric Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../inferential/rgm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Random Graph Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../inferential/ergm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exponential Random Graph Models (ERGMs)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../inferential/saom.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Stochastic Actor Oriented Models (SAOMs)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../inferential/rem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Relational event Models (REMs)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Tidy Network Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tidy/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tidy/tidygraph-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Basics of tidygraph</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tidy/tidygraph-descriptive.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Descriptive Network Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tidy/tidygraph-summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Additional Tools</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../additional/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../additional/netropy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Entropy Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../additional/multigraphr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Multigraph Approach</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">15.1</span> Packages Needed for this Chapter</a></li>
+  <li><a href="#conditional-uniform-graph-distributions-cugs" id="toc-conditional-uniform-graph-distributions-cugs" class="nav-link" data-scroll-target="#conditional-uniform-graph-distributions-cugs"><span class="header-section-number">15.2</span> Conditional Uniform Graph Distributions (CUGs)</a></li>
+  <li><a href="#hypothesis-testing-procedure" id="toc-hypothesis-testing-procedure" class="nav-link" data-scroll-target="#hypothesis-testing-procedure"><span class="header-section-number">15.3</span> Hypothesis Testing Procedure</a></li>
+  <li><a href="#running-example" id="toc-running-example" class="nav-link" data-scroll-target="#running-example"><span class="header-section-number">15.4</span> Running Example</a></li>
+  <li><a href="#uniform-graph-distribution-given-expected-density" id="toc-uniform-graph-distribution-given-expected-density" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.5</span> Uniform Graph Distribution Given Expected Density</a></li>
+  <li><a href="#uniform-graph-distribution-given-number-of-edges" id="toc-uniform-graph-distribution-given-number-of-edges" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-number-of-edges"><span class="header-section-number">15.6</span> Uniform Graph Distribution Given Number of Edges</a></li>
+  <li><a href="#uniform-graph-distribution-given-dyad-census" id="toc-uniform-graph-distribution-given-dyad-census" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-dyad-census"><span class="header-section-number">15.7</span> Uniform Graph Distribution Given Dyad Census</a></li>
+  <li><a href="#uniform-graph-distribution-given-fixed-degree" id="toc-uniform-graph-distribution-given-fixed-degree" class="nav-link" data-scroll-target="#uniform-graph-distribution-given-fixed-degree"><span class="header-section-number">15.8</span> Uniform Graph Distribution Given Fixed Degree</a></li>
+  <li>
+<a href="#analysing-homophily-using-non-parametric-null-distribution" id="toc-analysing-homophily-using-non-parametric-null-distribution" class="nav-link" data-scroll-target="#analysing-homophily-using-non-parametric-null-distribution"><span class="header-section-number">15.9</span> Analysing Homophily Using Non-Parametric Null Distribution</a>
+  <ul class="collapse">
+<li><a href="#test-1-friendship-based-on-gender" id="toc-test-1-friendship-based-on-gender" class="nav-link" data-scroll-target="#test-1-friendship-based-on-gender">Test 1: Friendship based on gender</a></li>
+  <li><a href="#test-2-cowork-among-partners-based-on-law-practice" id="toc-test-2-cowork-among-partners-based-on-law-practice" class="nav-link" data-scroll-target="#test-2-cowork-among-partners-based-on-law-practice">Test 2: Cowork among partners based on law practice</a></li>
+  </ul>
+</li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/non-parametric.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../inferential/introduction.html">Inferential Network Analysis</a></li><li class="breadcrumb-item"><a href="../inferential/non-parametric.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Non-Parametric Methods</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="sec-nonparam" class="quarto-section-identifier"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Non-Parametric Methods</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p>A common non-parametric technique is permutation testing, where the observed network is systematically altered—typically by shuffling ties while preserving certain properties, such as the number of connections each node has. This process creates a reference distribution under the null hypothesis, allowing researchers to assess whether observed patterns (like high clustering or assortativity) are statistically significant or could have arisen by chance.</p>
+<p>Importantly, in non-parametric frameworks, <span class="math inline">\(p\)</span>-values retain their traditional interpretation. They represent the probability of observing network features as extreme as those found in the data if the null hypothesis were true. This familiar statistical grounding makes non-parametric tests both intuitive and flexible.</p>
+<p>Non-parametric methods are particularly valuable during the exploratory phase of research, for validating parametric models, and in contexts where theoretical models are either undeveloped or poorly understood.</p>
+<section id="packages-needed-for-this-chapter" class="level2" data-number="15.1"><h2 data-number="15.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter">
+<span class="header-section-number">15.1</span> Packages Needed for this Chapter</h2>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://statnet.org">statnet</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/">igraph</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggraph.data-imaginist.com">ggraph</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/schochastics/graphlayouts">graphlayouts</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com">patchwork</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/schochastics/networkdata">networkdata</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="conditional-uniform-graph-distributions-cugs" class="level2" data-number="15.2"><h2 data-number="15.2" class="anchored" data-anchor-id="conditional-uniform-graph-distributions-cugs">
+<span class="header-section-number">15.2</span> Conditional Uniform Graph Distributions (CUGs)</h2>
+<p>One widely used non-parametric approach is the <strong>Conditional Uniform Graph Distribution (CUG)</strong>. CUGs define a reference distribution of graphs generated uniformly at random, but conditioned on one or more fixed characteristics of the observed network, such as the number of nodes, total number of edges, or degree distribution. By preserving these basic structural features, CUGs enable researchers to assess whether a more complex pattern (e.g., high reciprocity, homophily, or transitivity) is likely to have arisen by chance given the observed constraints.</p>
+<p>Why do we do this? Well, in network analysis, statistical inference relies on some form of randomness; we assume that if a structure emerges more often than we would expect under random conditions, it likely reflects an underlying social mechanism. A <strong>CUG distribution</strong> formalizes this by defining a uniform distribution over a set of graphs, where each graph satisfies a fixed constraint, such as the same number of edges, node degrees, or dyadic relationships.</p>
+<p>For example, if a network displays unusually high clustering, a CUG test can evaluate whether this is statistically exceptional or simply a byproduct of the network’s size and density. By comparing the observed statistic to the distribution of values from randomly generated but structurally constrained networks, researchers can determine the significance of the observed pattern. CUGs are especially useful when a full parametric model is unavailable, difficult to specify, or when the goal is to control for known network features while testing specific structural hypotheses.</p>
+<p>Several types of CUGs can be defined:</p>
+<ul>
+<li>
+<strong>𝒰 |E(L)</strong>: All graphs with the same density as the observed graph.</li>
+<li>
+<strong>𝒰 |L</strong>: All graphs with the same number of edges as the observed graph.</li>
+<li>
+<strong>𝒰 |d</strong>: All graphs with the same degree distribution <span class="math inline">\(d = (d_1, d_2, ..., d_n)\)</span>.</li>
+<li>
+<strong>𝒰 |MAN</strong>: All graphs with the same dyad census (i.e., counts of mutual, asymmetric, and null ties).</li>
+</ul>
+<p>For example, in a CUG with fixed density (number of edges), each graph that meets the constraint is equally probable. Graphs that do not satisfy the constraint (e.g., different number of ties) are assigned a probability of zero. This results in a <strong>null model</strong> that is tightly defined and suitable for hypothesis testing.</p>
+</section><section id="hypothesis-testing-procedure" class="level2" data-number="15.3"><h2 data-number="15.3" class="anchored" data-anchor-id="hypothesis-testing-procedure">
+<span class="header-section-number">15.3</span> Hypothesis Testing Procedure</h2>
+<p>The process follows classical null hypothesis testing logic:</p>
+<ul>
+<li>
+<strong>Null Hypothesis (<span class="math inline">\(H_{0}\)</span>):</strong> The observed network is drawn from a CUG model that preserves a given constraint (e.g., edge count).</li>
+<li>
+<strong>Alternative Hypothesis (<span class="math inline">\(H_{1}\)</span>):</strong> The observed network structure is not typical under this model and thus suggests a non-random social mechanism.</li>
+</ul>
+<p>To test <span class="math inline">\(H_0\)</span> we follow the below steps:</p>
+<ol type="1">
+<li>Define a summary statistic (e.g., degree centralization, reciprocity or transitivity).</li>
+<li>Generate a large number of networks from the CUG distribution.</li>
+<li>Compute the statistic for each simulated network.</li>
+<li>Compare the observed statistic to the simulated distribution for that statistic.</li>
+</ol>
+<p>If the observed value lies in the extreme tails (e.g., below the 2.5th percentile or above the 97.5th), we reject <span class="math inline">\(H_{0}\)</span> at the corresponding 5% significance level, concluding that the observed structure likely reflects a genuine social mechanism rather than random chance. Since the tests are actually <strong>non-parametric (Monte Carlo)</strong> tests, we can estimate the <span class="math inline">\(p\)</span>-value as the proportion of simulated test statistics that are as extreme or more extreme than the observed value. This provides a data-driven way to assess whether the observed statistic is likely under the null model, allowing for hypothesis testing without strong distributional assumptions.</p>
+<p>The process is visualized in <a href="#fig-cugex" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cugex</span></a> where the left panel shows the observed network, while the right panel displays the null distribution of the statistic based on 500 randomly generated graphs that preserve the same number of nodes and edges. The dashed red line indicates the observed value. If this value lies in the tail of the distribution, it suggests the observed structure is unlikely to have arisen by chance under the null model.</p>
+<div id="fig-cugex" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-cugex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="non-parametric_files/figure-html/nullmodel-ex-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cugex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.1: Conditional Uniform Graph (CUG) test of a network statistic of interest.
+</figcaption></figure>
+</div>
+</section><section id="running-example" class="level2" data-number="15.4"><h2 data-number="15.4" class="anchored" data-anchor-id="running-example">
+<span class="header-section-number">15.4</span> Running Example</h2>
+<p>We will use a running example, namely <code>Coleman</code> <span class="citation" data-cites="coleman1964data">(<a href="#ref-coleman1964data" role="doc-biblioref">Coleman 1964</a>)</span> which is available as graph object in the <code>networkdata</code> package and as an array in <code>statnet</code> (or more specifically <code>sna</code>). We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring). We will only focus on the fall network here, which we load and visualize:</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Load data as graph object from networkdata and extract the fall network</span></span>
+<span><span class="va">coleman_g</span> <span class="op">&lt;-</span> <span class="fu">networkdata</span><span class="fu">::</span><span class="va"><a href="https://schochastics.github.io/networkdata/reference/coleman.html">coleman</a></span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># plot using gggraph</span></span>
+<span><span class="fu"><a href="https://ggraph.data-imaginist.com/reference/ggraph.html">ggraph</a></span><span class="op">(</span><span class="va">coleman_g</span>, layout <span class="op">=</span> <span class="st">"stress"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>          <span class="fu"><a href="https://ggraph.data-imaginist.com/reference/geom_edge_link.html">geom_edge_link</a></span><span class="op">(</span>edge_colour <span class="op">=</span> <span class="st">"#666060"</span>, end_cap <span class="op">=</span> <span class="fu"><a href="https://ggraph.data-imaginist.com/reference/geometry.html">circle</a></span><span class="op">(</span><span class="fl">9</span>,<span class="st">"pt"</span><span class="op">)</span>, </span>
+<span>                         n <span class="op">=</span> <span class="fl">2</span>, edge_width <span class="op">=</span> <span class="fl">0.4</span>, edge_alpha <span class="op">=</span> <span class="fl">0.7</span>, </span>
+<span>                         arrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/arrow.html">arrow</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">15</span>, </span>
+<span>                         length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="st">"inches"</span><span class="op">)</span>, </span>
+<span>                         ends <span class="op">=</span> <span class="st">"last"</span>, type <span class="op">=</span> <span class="st">"closed"</span><span class="op">)</span><span class="op">)</span>  <span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://ggraph.data-imaginist.com/reference/geom_node_point.html">geom_node_point</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#525240"</span>,color <span class="op">=</span> <span class="st">"#FFFFFF"</span>, </span>
+<span>                           size <span class="op">=</span> <span class="fl">5</span>, stroke <span class="op">=</span> <span class="fl">1.1</span>, shape <span class="op">=</span> <span class="fl">21</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>          <span class="fu"><a href="https://ggraph.data-imaginist.com/reference/theme_graph.html">theme_graph</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"fall friendship network"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="non-parametric_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="uniform-graph-distribution-given-expected-density" class="level2" data-number="15.5"><h2 data-number="15.5" class="anchored" data-anchor-id="uniform-graph-distribution-given-expected-density">
+<span class="header-section-number">15.5</span> Uniform Graph Distribution Given Expected Density</h2>
+<p>Here, we simulate graoh distributions while keeping the expected frequency from the observed network fixed. We aim to answer the follwoing quesiton: <em>do we observed significantly many more reciporcal ties in our observed than what is expected by pure chance given random networks of the same expected density?</em> So the statistic of interested here is number of reciprocal ties which we obtain from dyad census:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$mut
+[1] 62
+
+$asym
+[1] 119
+
+$null
+[1] 2447</code></pre>
+</div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># alterantiver one can also use the below</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/which_mutual.html">which_mutual</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 62</code></pre>
+</div>
+</div>
+<p>The number of reciprocal ties is equal to 62. In order to compute this density, we can use the <code>igraph</code> function <code><a href="https://r.igraph.org/reference/edge_density.html">edge_density()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">density_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/edge_density.html">edge_density</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Further we save number of nodes and edges of the observed network:</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">n_nodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/gorder.html">vcount</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To simulate the null distribution we use the function <code>igraph</code> from the <code>sample_gnp</code> package. We simulate 1000 random networks with the parameters specified above.</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Simulate 1000 random graphs with same density</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">sim_g_dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://r.igraph.org/reference/sample_gnp.html">sample_gnp</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n_nodes</span>, p <span class="op">=</span> <span class="va">density_obs</span>, directed <span class="op">=</span> <span class="cn">TRUE</span>, loops <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">}</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the output consists of 1000 randomly generated networks as graph objects. While each individual simulated network may not contain exactly the same number of edges as the observed network, they are <strong>stochastically equivalent</strong> in terms of overall density.</p>
+<p>We then compute the number of reciprocal (mutual) ties in each simulated network and visualize the resulting distribution under the null model of random tie allocation in <a href="#fig-cug-density" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cug-density</span></a>. A red dashed line is included in the plot to indicate the number of mutual ties observed in the actual network (62), highlighting how it compares to the distribution expected by chance.</p>
+<div id="fig-cug-density" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-cug-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Define mutual tie counter </span></span>
+<span><span class="va">count_mutual</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/which_mutual.html">which_mutual</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Apply to all simulated igraph objects</span></span>
+<span><span class="va">mutual_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">sim_g_dens</span>, <span class="va">count_mutual</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create data frame</span></span>
+<span><span class="va">mutual_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>mutual_ties <span class="op">=</span> <span class="va">mutual_counts</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">mutual_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mutual_ties</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">1</span>, fill <span class="op">=</span> <span class="st">"skyblue"</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">$</span><span class="va">mut</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">$</span><span class="va">mut</span>, y <span class="op">=</span> <span class="cn">Inf</span>, label <span class="op">=</span> <span class="st">"Observed"</span>, </span>
+<span>           vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, hjust <span class="op">=</span> <span class="fl">1.1</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span>, angle <span class="op">=</span> <span class="fl">90</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">" "</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Number of Mutual Ties"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Frequency"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="non-parametric_files/figure-html/CUG-given-dens-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cug-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.2: Empirical distribution of reciprocal ties obtained from 1,000 random directed networks generated under the Conditional Uniform Graph (CUG) null model, holding constant the number of nodes and density (or expected number of edges). The vertical dashed line shows the number of mutual ties observed in the actual network, highlighting its deviation from the null model.
+</figcaption></figure>
+</div>
+<p>As shown in the plot, the observed number of mutual ties falls far in the right tail of the distribution. This indicates a substantial deviation from what would be expected under random tie formation. This can be interpreted as follows:</p>
+<blockquote class="blockquote">
+<p><em>If ties in the network were allocated completely at random—while preserving the overall density—it would be highly unlikely to observe as many reciprocal ties as we do in the actual network.</em></p>
+</blockquote>
+<p>Stated more formally, this analysis serves as a test of the following null hypothesis:</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_0\)</span>: The number of mutual ties in the observed network does not differ from what would be expected under random tie formation, given the observed network density.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_1\)</span>: The observed number of mutual ties is significantly greater than expected by chance, indicating a tendency toward reciprocity beyond what density alone would predict.</p>
+</blockquote>
+<p>Since the observed number of mutual ties falls far in the right tail of the simulated distribution, we see a clear and substantial deviation from the null model. Therefore, we reject the null hypothesis, concluding that the observed network exhibits significantly more reciprocity than would be expected by random chance alone. This indicates a strong tendency for mutual connections in the network that is not explained by density alone.</p>
+<p>In order to compute the <span class="math inline">\(p\)</span>-value, we compare the observed value to the distribution from the simulated null model:</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Empirical p-value (proportion of simulated mutual counts &gt;= observed)</span></span>
+<span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">mutual_counts</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">$</span><span class="va">mut</span><span class="op">)</span></span>
+<span><span class="va">p_value</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Unsurprisingly, this value is equal to zero, as we do not have any part of the distribution ranging over the observed count. However, <span class="math inline">\(p\)</span>-values from Monte Carlo tests are never exactly 0, but rather “less than 1 / number of simulations”, so a more correct statement would be that</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(p\)</span> &lt; 0.001 (based on 1,000 simulations) providing very strong evidence against the null hypothesis.</p>
+</blockquote>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The <code><a href="https://rdrr.io/pkg/sna/man/rgraph.html">rgraph()</a></code> function from the <code>sna</code> (or <code>statnet</code>) package can also be used to simulate random networks with a specified expected density. However, note that its output consists of adjacency matrices (as a 3D array or list), rather than <code>igraph</code> graph objects. This requires additional conversion before applying <code>igraph</code>-based analyses.</p>
+</div>
+</div>
+</div>
+</section><section id="uniform-graph-distribution-given-number-of-edges" class="level2" data-number="15.6"><h2 data-number="15.6" class="anchored" data-anchor-id="uniform-graph-distribution-given-number-of-edges">
+<span class="header-section-number">15.6</span> Uniform Graph Distribution Given Number of Edges</h2>
+<p>In this section, we perform the same test but condition the random networks generated on the <strong>exact</strong> number of edges. So out null world is now stated as</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_0\)</span>: The number of mutual ties in the observed network is consistent with what would be expected under random edge assignment, given a fixed number of nodes and edges.</p>
+</blockquote>
+<p>To simulate this null distribution under this new constraint, we generate 1000 random networks using the <code><a href="https://r.igraph.org/reference/sample_gnm.html">sample_gnm()</a></code> function from the <code>igraph</code> package, which samples graphs with a fixed number of edges.</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>  </span>
+<span><span class="co"># Parameters from the observed network</span></span>
+<span><span class="va">n_nodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/gorder.html">vcount</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span></span>
+<span><span class="va">n_edges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/gsize.html">ecount</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Simulate 1000 random directed graphs with fixed number of edges</span></span>
+<span><span class="va">sim_g_edges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="op">{</span></span>
+<span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html">sample_gnm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n_nodes</span>, m <span class="op">=</span> <span class="va">n_edges</span>, directed <span class="op">=</span> <span class="cn">TRUE</span>, loops <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://r.igraph.org/reference/as_adjacency_matrix.html">as_adjacency_matrix</a></span><span class="op">(</span><span class="va">g</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">}</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that each simulated network has exactly the same number of edges as the observed network, ensuring that any difference in mutual ties arises from the pattern of connections, not their quantity. We then compute the number of mutual ties in each simulated network and visualize the distribution, shown in <a href="#fig-cug-edges" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cug-edges</span></a>:</p>
+<div id="fig-cug-edges" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-cug-edges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Define mutual tie counting function</span></span>
+<span><span class="va">count_mutual</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">adj_matrix</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/graph_from_adjacency_matrix.html">graph_from_adjacency_matrix</a></span><span class="op">(</span><span class="va">adj_matrix</span>, mode <span class="op">=</span> <span class="st">"directed"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/which_mutual.html">which_mutual</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Apply to all simulated graphs</span></span>
+<span><span class="va">mutual_counts_edges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">sim_g_edges</span>, <span class="va">count_mutual</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot the distribution</span></span>
+<span><span class="va">mutual_df_edges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>mutual_ties <span class="op">=</span> <span class="va">mutual_counts_edges</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">mutual_df_edges</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mutual_ties</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">1</span>, fill <span class="op">=</span> <span class="st">"skyblue"</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">$</span><span class="va">mut</span>, </span>
+<span>             color <span class="op">=</span> <span class="st">"firebrick3"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">$</span><span class="va">mut</span>, y <span class="op">=</span> <span class="cn">Inf</span>, label <span class="op">=</span> <span class="st">"Observed"</span>, </span>
+<span>           vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, hjust <span class="op">=</span> <span class="fl">1.1</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span>, angle <span class="op">=</span> <span class="fl">90</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">" "</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Number of Mutual Ties"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Frequency"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="non-parametric_files/figure-html/CUG-given-edge-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cug-edges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.3: Empirical distribution of reciprocal ties obtained from 1,000 random directed networks generated under the Conditional Uniform Graph (CUG) null model, holding constant the number of nodes and edges. The vertical dashed line shows the number of mutual ties observed in the actual network, highlighting its deviation from the null model.
+</figcaption></figure>
+</div>
+<p>The results are very similar to earlier; the observed number of mutual ties lies in the extreme right tail of the simulated distribution. This suggests a strong deviation from what would be expected under the null model of randomly assigned edges with no structural bias toward reciprocity.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The <code><a href="https://rdrr.io/pkg/sna/man/rgnm.html">rgnm()</a></code> function from the <code>sna</code> (or <code>statnet</code>) package can also be used to simulate random networks with a specified expected density. However, note again that its output consists of adjacency matrices (as a 3D array or list).</p>
+</div>
+</div>
+</div>
+</section><section id="uniform-graph-distribution-given-dyad-census" class="level2" data-number="15.7"><h2 data-number="15.7" class="anchored" data-anchor-id="uniform-graph-distribution-given-dyad-census">
+<span class="header-section-number">15.7</span> Uniform Graph Distribution Given Dyad Census</h2>
+<p>Given the results above where we tested for reciprocity using CUG null models that preserved either network density or the total number of edges—we now move to a more constrained and informative baseline: null models conditioned on dyadic structure. Specifically, we consider CUG tests based on the dyad census, which preserve the number of mutual, asymmetric, and null dyads observed in the original network. This means that the basic dyadic processes, such as the overall tendency toward reciprocity, are held constant in the simulated networks.</p>
+<p>Because mutual ties are fixed across all networks under this null model, the number of reciprocal ties can no longer be used as a test statistic (it will be identical in every simulation). As a result, we shift our focus to higher-order structural properties that emerge from patterns of connected dyads. One such property is <strong>transitivity</strong> (or triadic closure), which captures the tendency for actors who share a common partner to also be directly connected.</p>
+<p>By conditioning on the dyad census and evaluating statistics like transitivity, we can assess whether the observed network exhibits more complex structural organization than would be expected by chance, even after accounting for baseline dyadic tendencies.</p>
+<p>Our null hypothesis is now defined as:</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_0\)</span>: The number of complete triangles (transitive triads) observed in the network does not differ from what would be expected under random tie allocation, conditional on the observed dyadic processes (i.e., mutual, asymmetric, and null dyad frequencies).</p>
+</blockquote>
+<p>Can we then say that there are more complete triangles than we expect by chance? Just how likely or unlikely is it to observe this many triangles? In order to answer this we again need to produce the world of hypothetical networks by simulation.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Since <code>igraph</code> does not currently provide a function to generate random graphs with a fixed dyad census, we make use of <code><a href="https://rdrr.io/pkg/sna/man/rguman.html">rguman()</a></code> from the <code>sna</code> package, and then convert them to graph objects, and use <code><a href="https://r.igraph.org/reference/triad_census.html">igraph::triad_census()</a></code> to compute the triad-level statistics.</p>
+</div>
+</div>
+</div>
+<p>In directed netowrks, there are two triad types cprresponding to closed triads MAN-030 and MAN-300.</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> </span>
+<span><span class="co"># Generate 1000 graphs with fixed dyad census using rguman (from sna)</span></span>
+<span><span class="va">sim_nets_man</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/sna/man/rguman.html">rguman</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, nv <span class="op">=</span> <span class="va">n_nodes</span>, </span>
+<span>                        mut <span class="op">=</span>  <span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">$</span><span class="va">mut</span>, </span>
+<span>                        asym <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">$</span><span class="va">asym</span>, </span>
+<span>                        null <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/dyad_census.html">dyad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span><span class="op">$</span><span class="va">null</span>, </span>
+<span>                        method <span class="op">=</span> <span class="st">"exact"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Convert to igraph objects</span></span>
+<span><span class="va">sim_g_man</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">sim_nets_man</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://r.igraph.org/reference/graph_from_adjacency_matrix.html">graph_from_adjacency_matrix</a></span><span class="op">(</span><span class="va">sim_nets_man</span><span class="op">[</span><span class="va">i</span>,,<span class="op">]</span>, mode <span class="op">=</span> <span class="st">"directed"</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get observed triad counts by index</span></span>
+<span><span class="va">obs_triad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/triad_census.html">triad_census</a></span><span class="op">(</span><span class="va">coleman_g</span><span class="op">)</span></span>
+<span><span class="va">obs_030T</span> <span class="op">&lt;-</span> <span class="va">obs_triad</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span>   <span class="co"># position of 030T</span></span>
+<span><span class="va">obs_300</span>  <span class="op">&lt;-</span> <span class="va">obs_triad</span><span class="op">[</span><span class="fl">16</span><span class="op">]</span>  <span class="co"># position of 300</span></span>
+<span></span>
+<span><span class="co"># sim_graphs: list of igraph directed networks</span></span>
+<span><span class="va">sim_g_tc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">sim_g_man</span>, <span class="va">triad_census</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sim_g_tc_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">sim_g_tc</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Extract simulated triad counts </span></span>
+<span><span class="va">triad_df</span> <span class="op">&lt;-</span> <span class="va">sim_g_tc_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fl">9</span>, <span class="fl">16</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>`Triad 030T` <span class="op">=</span> <span class="fl">1</span>, `Triad 300` <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"Triad_Type"</span>, values_to <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create observed values for vertical lines</span></span>
+<span><span class="va">obs_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  Triad_Type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Triad 030T"</span>, <span class="st">"Triad 300"</span><span class="op">)</span>,</span>
+<span>  Count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">obs_030T</span>, <span class="va">obs_300</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we have everything set to plot out the results as before to test out hypothesis. The results are shown in <a href="#fig-cug-man" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cug-man</span></a>.</p>
+<div id="fig-cug-man" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-cug-man-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">triad_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Count</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">1</span>, fill <span class="op">=</span> <span class="st">"skyblue"</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">Count</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html">geom_text</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">obs_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Count</span>, y <span class="op">=</span> <span class="cn">Inf</span>, label <span class="op">=</span> <span class="st">"Observed"</span><span class="op">)</span>,</span>
+<span>            angle <span class="op">=</span> <span class="fl">90</span>, vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, hjust <span class="op">=</span> <span class="fl">1.1</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Triad_Type</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">" "</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Triad Counts"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Frequency"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="non-parametric_files/figure-html/CUG-given-MAN-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cug-man-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.4: Distributions of two types of closed triads, 030T (one mutual and two asymmetric ties) and 300 (three mutual ties), across 1000 randomly generated directed networks with a fixed dyad census. The red dashed lines indicate the counts of each triad type observed in the actual network. These plots assess whether the observed levels of triadic closure (23 and 22) deviate significantly from what would be expected under a null model that preserves mutual, asymmetric, and null dyads.
+</figcaption></figure>
+</div>
+</section><section id="uniform-graph-distribution-given-fixed-degree" class="level2" data-number="15.8"><h2 data-number="15.8" class="anchored" data-anchor-id="uniform-graph-distribution-given-fixed-degree">
+<span class="header-section-number">15.8</span> Uniform Graph Distribution Given Fixed Degree</h2>
+<p>Is the average geodesic distance in the observed network significantly shorter (or longer) than would be expected in random networks with the same in- and out-degree sequence? To answer this we turn to uniform graph distribution given fixed degree. The null world correspond now to the following:</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_0\)</span>: The average geodesic distance observed in the network is consistent with what would be expected under random graphs that preserve the in- and out-degree sequence.</p>
+</blockquote>
+<p>This CUG test here evaluates whether the observed network is more (or less) efficiently connected than expected under degree-preserving randomization. The results are run and visualized below in <a href="#fig-cug-deg" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cug-deg</span></a>.</p>
+<div id="fig-cug-deg" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-cug-deg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Extract in-degree and out-degree from observed network</span></span>
+<span><span class="va">in_deg</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/degree.html">degree</a></span><span class="op">(</span><span class="va">coleman_g</span>, mode <span class="op">=</span> <span class="st">"in"</span><span class="op">)</span></span>
+<span><span class="va">out_deg</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/degree.html">degree</a></span><span class="op">(</span><span class="va">coleman_g</span>, mode <span class="op">=</span> <span class="st">"out"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compute observed average geodesic distance (exclude disconnected pairs)</span></span>
+<span><span class="va">obs_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/distances.html">mean_distance</a></span><span class="op">(</span><span class="va">coleman_g</span>, directed <span class="op">=</span> <span class="cn">TRUE</span>, unconnected <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Simulate 1000 graphs preserving degree sequence</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">sim_deg_graphs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fu"><a href="https://r.igraph.org/reference/sample_degseq.html">sample_degseq</a></span><span class="op">(</span>out.deg <span class="op">=</span> <span class="va">out_deg</span>, </span>
+<span>                                                in.deg <span class="op">=</span> <span class="va">in_deg</span>,</span>
+<span>                                                method <span class="op">=</span> <span class="st">"fast.heur.simple"</span><span class="op">)</span>, </span>
+<span>                                                simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  </span>
+<span></span>
+<span><span class="co"># Compute average geodesic distance for each simulation</span></span>
+<span><span class="va">sim_geodist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">sim_deg_graphs</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://r.igraph.org/reference/distances.html">mean_distance</a></span><span class="op">(</span><span class="va">g</span>, directed <span class="op">=</span> <span class="cn">TRUE</span>, unconnected <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create data frame</span></span>
+<span><span class="va">geodist_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>avg_geodist <span class="op">=</span> <span class="va">sim_geodist</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">geodist_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">avg_geodist</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.05</span>, fill <span class="op">=</span> <span class="st">"skyblue"</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">obs_dist</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="va">obs_dist</span>, y <span class="op">=</span> <span class="cn">Inf</span>, label <span class="op">=</span> <span class="st">"Observed"</span>,</span>
+<span>           angle <span class="op">=</span> <span class="fl">90</span>, vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, hjust <span class="op">=</span> <span class="fl">1.1</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">" "</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Average Geodesic Distance"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Frequency"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="non-parametric_files/figure-html/CUG-given-deg-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cug-deg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.5: Distribution of average geodesic distance across 1000 random directed graphs preserving the in- and out-degree sequences of the observed network. The red dashed line indicates the observed value.
+</figcaption></figure>
+</div>
+<p>This indicates that the observed network is significantly more efficiently connected (in terms of shortest paths) than what would be expected under random edge arrangement, given the same degree distribution. In other words, the network’s structure enables actors to reach one another more quickly than random networks with the same node-level connectivity.</p>
+</section><section id="analysing-homophily-using-non-parametric-null-distribution" class="level2" data-number="15.9"><h2 data-number="15.9" class="anchored" data-anchor-id="analysing-homophily-using-non-parametric-null-distribution">
+<span class="header-section-number">15.9</span> Analysing Homophily Using Non-Parametric Null Distribution</h2>
+<p>To illustrate how we can test for homophily using a non-paramtric approach, we turn to another data set with available node attributes, namely the one by <span class="citation" data-cites="lazega2001collegial">Lazega (<a href="#ref-lazega2001collegial" role="doc-biblioref">2001</a>)</span>. This data set comes from a network study of corporate law partnership that was carried out in a Northeastern US corporate law firm, referred to as SG&amp;R, 1988-1991 in New England. It includes (among others) measurements of networks among the 71 attorneys (partners and associates) of this firm, i.e.&nbsp;their coworker network, advice network, friendship network, and indirect control networks. Various members’ attributes are also part of the dataset, including seniority, formal status, office in which they work, gender, lawschool attended.</p>
+<p>Two tests will be performed:</p>
+<ul>
+<li>Test 1: Friendship based on gender</li>
+<li>Test 2: Cowork among partners based on law practice</li>
+</ul>
+<p>These two networks that are used in the following are visualized in <a href="#fig-lawnets" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-lawnets</span></a>.</p>
+<div id="fig-lawnets" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-lawnets-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="non-parametric_files/figure-html/lawyer-plot1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lawnets-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.6: Visualization of two relational networks among lawyers in the Lazega dataset. Top: The friendship network, with nodes colored by gender. Bottom: The symmetrized coworking network among the 36 law firm partners, with nodes colored by practice area.
+</figcaption></figure>
+</div>
+<section id="test-1-friendship-based-on-gender" class="level3 unnumbered"><h3 class="unnumbered anchored" data-anchor-id="test-1-friendship-based-on-gender">Test 1: Friendship based on gender</h3>
+<p>First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset. We load the data as a graph object from the package <code>networkdata</code> and vizualize it, with node color representing gender:</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">law_friends_g</span> <span class="op">&lt;-</span>  <span class="fu">networkdata</span><span class="fu">::</span><span class="va"><a href="https://schochastics.github.io/networkdata/reference/law_friends.html">law_friends</a></span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We are here testing the following</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_0\)</span>: The number of same-gender ties in the network is consistent with a random distribution of ties (given network size and density).</p>
+</blockquote>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_1\)</span>: The observed network has significantly more (or fewer) same-gender ties than expected by chance.</p>
+</blockquote>
+<p>To answer this, we use a non-parametric test based on randomly generated networks that match the observed network in size and density. This is effectively a CUG test under the null model <strong>𝒰 |L</strong>, where ties are randomly distributed.</p>
+<p>We start by converting the friendship network to an adjacency matrix and extracting the gender attribute from the nodes:</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">law_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/as_adjacency_matrix.html">as_adjacency_matrix</a></span><span class="op">(</span><span class="va">law_friends_g</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">law_nodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/gorder.html">vcount</a></span><span class="op">(</span><span class="va">law_friends_g</span><span class="op">)</span></span>
+<span><span class="va">law_edges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">law_mat</span><span class="op">)</span></span>
+<span><span class="va">law_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/V.html">V</a></span><span class="op">(</span><span class="va">law_friends_g</span><span class="op">)</span><span class="op">$</span><span class="va">gender</span> <span class="co"># gender extracted</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then, we compute the number of observed homophilous ties (same-gender friendships) in the observed network:</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># 1 = male, 2 = female</span></span>
+<span><span class="va">homoph_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">law_mat</span><span class="op">[</span><span class="va">law_gender</span> <span class="op">==</span> <span class="fl">1</span>, <span class="va">law_gender</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">law_mat</span><span class="op">[</span><span class="va">law_gender</span> <span class="op">==</span> <span class="fl">2</span>, <span class="va">law_gender</span> <span class="op">==</span> <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To generate networks from the null world, we simulate 1000 random directed graphs with the same number of nodes and edges as the observed network and then compute the number of homophilous ties in each simulated network (assuming the same ordering of gender assignments to nodes in each simulated network):</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">law_sim_g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="op">{</span></span>
+<span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html">sample_gnm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">law_nodes</span>, m <span class="op">=</span> <span class="va">law_edges</span>, directed <span class="op">=</span> <span class="cn">TRUE</span>, loops <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://r.igraph.org/reference/as_adjacency_matrix.html">as_adjacency_matrix</a></span><span class="op">(</span><span class="va">g</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">}</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">homoph_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">law_sim_g</span>, <span class="kw">function</span><span class="op">(</span><span class="va">mat</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">mat</span><span class="op">[</span><span class="va">law_gender</span> <span class="op">==</span> <span class="fl">1</span>, <span class="va">law_gender</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">mat</span><span class="op">[</span><span class="va">law_gender</span> <span class="op">==</span> <span class="fl">2</span>, <span class="va">law_gender</span> <span class="op">==</span> <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As before, we can create a histogram of the simulated homophilous tie counts and mark the observed value, as shown in <a href="#fig-cug-hom1" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cug-hom1</span></a>:</p>
+<div id="fig-cug-hom1" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-cug-hom1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">homoph_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>homophilous_ties <span class="op">=</span> <span class="va">homoph_sim</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">homoph_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">homophilous_ties</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">5</span>, fill <span class="op">=</span> <span class="st">"skyblue"</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">homoph_obs</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="va">homoph_obs</span>, y <span class="op">=</span> <span class="cn">Inf</span>, label <span class="op">=</span> <span class="st">"Observed"</span>,</span>
+<span>           vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, hjust <span class="op">=</span> <span class="fl">1.1</span>, angle <span class="op">=</span> <span class="fl">90</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">" "</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Number of Homophilous Ties"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Frequency"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="non-parametric_files/figure-html/CUG-hom-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cug-hom1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.7: Distribution of same-gender friendship ties in 1000 random directed graphs preserving the number of nodes and total number of ties. The red dashed line marks the number of same-gender ties in the observed network.
+</figcaption></figure>
+</div>
+<p>The empirical <span class="math inline">\(p\)</span>-value is computed as</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">homoph_sim</span> <span class="op">&gt;=</span> <span class="va">homoph_obs</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>which implies that we reject the null hypothesis, concluding that gender-based homophily exists in the friendship network.</p>
+</section><section id="test-2-cowork-among-partners-based-on-law-practice" class="level3 unnumbered"><h3 class="unnumbered anchored" data-anchor-id="test-2-cowork-among-partners-based-on-law-practice">Test 2: Cowork among partners based on law practice</h3>
+<p>Our second test is whether partners in the law firm are more likely to collaborate (cowork) with others who share the same practice area (litigation or corporate) than we would expect by chance. This is a test of homophily based on professional specialization.</p>
+<p>We begin by loading the <code>law_cowork</code> network from the <code>networkdata</code> package:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">law_cw_g</span> <span class="op">&lt;-</span> <span class="fu">networkdata</span><span class="fu">::</span><span class="va"><a href="https://schochastics.github.io/networkdata/reference/law_cowork.html">law_cowork</a></span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We restrict the analysis to the first 36 lawyers, corresponding to the partners of the firm (as indicated by their “status” attribute).</p>
+<p>The follwing hypotheses can be stated:</p>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_0\)</span>: The number of same-practice coworking ties is consistent with a random distribution of ties, given number of ties and edges of the network.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p><span class="math inline">\(H_1\)</span>: The observed number of same-practice ties is significantly greater than expected under random conditions; suggesting homophily based on professional specialization.</p>
+</blockquote>
+<p>Since coworking is a reciprocal relationship, we treat the network as undirected by symmetrizing the adjacency matrix:</p>
+<div class="cell">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Create an adjacency matrix</span></span>
+<span><span class="va">law_mat_cwdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/as_adjacency_matrix.html">as_adjacency_matrix</a></span><span class="op">(</span><span class="va">law_cw_g</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">law_mat_cwdir</span> <span class="op">&lt;-</span> <span class="va">law_mat_cwdir</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">36</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">36</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Symmetrize to create undirected matrix (co-ties must be mutual)</span></span>
+<span><span class="va">law_mat_cw</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">law_mat_cwdir</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">law_mat_cwdir</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1</span></span>
+<span></span>
+<span><span class="va">law_nodes_cw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">law_mat_cw</span><span class="op">)</span></span>
+<span><span class="va">law_ties_cw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">law_mat_cw</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span>  <span class="co"># undirected: each tie counted twice</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We now extract the binary attribute practice for each partner and store it as a vector:</p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">law_attr_pract</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/V.html">V</a></span><span class="op">(</span><span class="va">law_cw_g</span><span class="op">)</span><span class="op">$</span><span class="va">practice</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">36</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We define homophilous ties as coworking ties between two lawyers of the same practice area. We count both litigation–litigation and corporate–corporate ties:</p>
+<div class="cell">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">homoph_obs_cw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span></span>
+<span>  <span class="va">law_mat_cw</span><span class="op">[</span><span class="va">law_attr_pract</span> <span class="op">==</span> <span class="fl">1</span>, <span class="va">law_attr_pract</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">law_mat_cw</span><span class="op">[</span><span class="va">law_attr_pract</span> <span class="op">==</span> <span class="fl">2</span>, <span class="va">law_attr_pract</span> <span class="op">==</span> <span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To construct the null model, we generate 1000 random undirected graphs with the same number of nodes and total number of ties:</p>
+<div class="cell">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">77</span><span class="op">)</span></span>
+<span><span class="va">law_sim_cw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="op">{</span></span>
+<span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html">sample_gnm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">law_nodes_cw</span>, m <span class="op">=</span> <span class="va">law_ties_cw</span>, directed <span class="op">=</span> <span class="cn">FALSE</span>, loops <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://r.igraph.org/reference/as_adjacency_matrix.html">as_adjacency_matrix</a></span><span class="op">(</span><span class="va">g</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">}</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We calculate the number of same-practice ties in each simulated graph:</p>
+<div class="cell">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">homoph_sim_cw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">law_sim_cw</span>, <span class="kw">function</span><span class="op">(</span><span class="va">mat</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">mat</span><span class="op">[</span><span class="va">law_attr_pract</span> <span class="op">==</span> <span class="fl">1</span>, <span class="va">law_attr_pract</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">mat</span><span class="op">[</span><span class="va">law_attr_pract</span> <span class="op">==</span> <span class="fl">2</span>, <span class="va">law_attr_pract</span> <span class="op">==</span> <span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and finally, plot the null distribution and compare with observed value:</p>
+<div id="fig-cug-hom2" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-cug-hom2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">homoph_sim_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>homophilous_ties <span class="op">=</span> <span class="va">homoph_sim_cw</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">homoph_sim_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">homophilous_ties</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">1</span>, fill <span class="op">=</span> <span class="st">"skyblue"</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">homoph_obs_cw</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="va">homoph_obs_cw</span>, y <span class="op">=</span> <span class="cn">Inf</span>, label <span class="op">=</span> <span class="st">"Observed"</span>,</span>
+<span>           vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, hjust <span class="op">=</span> <span class="fl">1.1</span>, angle <span class="op">=</span> <span class="fl">90</span>, color <span class="op">=</span> <span class="st">"firebrick3"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">""</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Number of Homophilous Ties"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Frequency"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="non-parametric_files/figure-html/CUG-hom2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cug-hom2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.8: Distribution of same-practice coworking ties in 1000 random undirected graphs preserving the number of nodes and ties. The red dashed line indicates the observed number of homophilous ties among law firm partners. This test evaluates whether the level of professional homophily (litigation or corporate) is different than what is expected under random tie allocation.
+</figcaption></figure>
+</div>
+<p>As seen in <a href="#fig-cug-hom2" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cug-hom2</span></a>, we are in the right tail, indicating we arfe observing more homophilous ties than expected by chance. To formnally test the hypothesis above we can compute the <span class="math inline">\(p\)</span>-value:</p>
+<div class="cell">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">homoph_sim_cw</span> <span class="op">&gt;=</span> <span class="va">homoph_obs_cw</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.002</code></pre>
+</div>
+</div>
+<p>Thus, there is statistically significant evidence of practice-based homophily among the firm’s partners.</p>
+</section></section><section id="references" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-coleman1964data" class="csl-entry" role="listitem">
+Coleman, James Samuel. 1964. <em>Introduction to Mathematical Sociology.</em>
+</div>
+<div id="ref-lazega2001collegial" class="csl-entry" role="listitem">
+Lazega, Emmanuel. 2001. <em>The Collegial Phenomenon: The Social Mechanisms of Cooperation Among Peers in a Corporate Law Partnership</em>. Oxford University Press, USA.
+</div>
+</div>
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/schochastics\.io\/R4SNA");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../inferential/introduction.html" class="pagination-link" aria-label="Introduction">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Introduction</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../inferential/rgm.html" class="pagination-link" aria-label="Random Graph Models">
+        <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Random Graph Models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>R for Social Network Analysis was written by David Schoch, and Termeh Shafie.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/non-parametric.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+</body></html>
