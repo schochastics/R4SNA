@@ -1,4 +1,4 @@
-# Non-Parametric Methods
+# Non-Parametric Methods {#sec-nonparam}
 
 A common non-parametric technique is permutation testing, where the observed network is systematically altered—typically by shuffling ties while preserving certain properties, such as the number of connections each node has. This process creates a reference distribution under the null hypothesis, allowing researchers to assess whether observed patterns (like high clustering or assortativity) are statistically significant or could have arisen by chance.
 
@@ -114,7 +114,7 @@ Conditional Uniform Graph (CUG) test of a network statistic of interest.
 
 
 ## Running Example
-We will use a running example, namely `Coleman` [@coleman1964data] which is available as graph object in the **networkdata** package and as an array in **statnet** (or more specifically **sna**). We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring).  We will only focus on the fall network here, which we load and visualize:
+We will use a running example, namely `Coleman` [@coleman1964data] which is available as graph object in the `networkdata` package and as an array in `statnet` (or more specifically `sna`). We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring).  We will only focus on the fall network here, which we load and visualize:
 
 
 ```{r}
@@ -146,7 +146,7 @@ dyad_census(coleman_g)
 # alterantiver one can also use the below
 sum(which_mutual(coleman_g)) / 2 
 ```
-The number of reciprocal ties is equal to `r dyad_census(coleman_g)$mut`. In order to compute this density, we can use the **igraph** function `edge_density()`.
+The number of reciprocal ties is equal to `r dyad_census(coleman_g)$mut`. In order to compute this density, we can use the `igraph` function `edge_density()`.
 
 ```{r}
 density_obs <- edge_density(coleman_g)
@@ -156,7 +156,7 @@ Further we save number of nodes and edges of the observed network:
 n_nodes <- vcount(coleman_g)
 ```
 
-To simulate the null distribution we use the function **igraph** from the `sample_gnp` package. We simulate 1000 random networks with the parameters specified above.
+To simulate the null distribution we use the function `igraph` from the `sample_gnp` package. We simulate 1000 random networks with the parameters specified above.
 
 ```{r}
 # Simulate 1000 random graphs with same density
@@ -230,7 +230,7 @@ Unsurprisingly, this value is equal to zero, as we do not have any part of the d
 
 ::: {.callout-note collapse=false}
 ## Note
-The `rgraph()` function from the **sna** (or **statnet**) package can also be used to simulate random networks with a specified expected density. However, note that its output consists of adjacency matrices (as a 3D array or list), rather than `igraph` graph objects. This requires additional conversion before applying `igraph`-based analyses.
+The `rgraph()` function from the `sna` (or `statnet`) package can also be used to simulate random networks with a specified expected density. However, note that its output consists of adjacency matrices (as a 3D array or list), rather than `igraph` graph objects. This requires additional conversion before applying `igraph`-based analyses.
 :::
 
 ## Uniform Graph Distribution Given Number of Edges
@@ -298,7 +298,7 @@ The results are very similar to earlier; the observed number of mutual ties lies
 
 ::: {.callout-note collapse=false}
 ## Note
-The `rgnm()` function from the **sna** (or **statnet**) package can also be used to simulate random networks with a specified expected density. However, note again that its output consists of adjacency matrices (as a 3D array or list).
+The `rgnm()` function from the `sna` (or `statnet`) package can also be used to simulate random networks with a specified expected density. However, note again that its output consists of adjacency matrices (as a 3D array or list).
 :::
 
 ## Uniform Graph Distribution Given Dyad Census
@@ -316,7 +316,7 @@ Can we then say that there are more complete triangles than we expect by chance?
 
 ::: {.callout-note collapse=false}
 ## Note
-Since **igraph** does not currently provide a function to generate random graphs with a fixed dyad census, we make use of `rguman()` from the **sna** package, and then convert them to graph objects, and use `igraph::triad_census()` to compute the triad-level statistics.
+Since `igraph` does not currently provide a function to generate random graphs with a fixed dyad census, we make use of `rguman()` from the `sna` package, and then convert them to graph objects, and use `igraph::triad_census()` to compute the triad-level statistics.
 :::
 
 In directed netowrks, there are two triad types cprresponding to closed triads MAN-030 and MAN-300.
@@ -410,7 +410,7 @@ obs_dist <- mean_distance(coleman_g, directed = TRUE, unconnected = TRUE)
 set.seed(123)
 sim_deg_graphs <- replicate(1000, sample_degseq(out.deg = out_deg, 
                                                 in.deg = in_deg,
-                                                method = "configuration"), 
+                                                method = "fast.heur.simple"), 
                                                 simplify = FALSE)  
 
 # Compute average geodesic distance for each simulation
@@ -515,7 +515,7 @@ Bottom: The symmetrized coworking network among the 36 law firm partners, with n
 :::
 
 ### Test 1: Friendship based on gender {.unnumbered}
-First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset. We load the data as a graph object from  the package **networkdata** and vizualize it, with node color representing gender:
+First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset. We load the data as a graph object from  the package `networkdata` and vizualize it, with node color representing gender:
 ```{r}
 law_friends_g <-  networkdata::law_friends
 ```
@@ -594,7 +594,7 @@ which implies that we reject the null hypothesis, concluding that gender-based h
 ### Test 2: Cowork among partners based on law practice {.unnumbered}
 Our second test is whether partners in the law firm are more likely to collaborate (cowork) with others who share the same practice area (litigation or corporate) than we would expect by chance. This is a test of homophily based on professional specialization.
 
-We begin by loading the `law_cowork` network from the **networkdata** package:
+We begin by loading the `law_cowork` network from the `networkdata` package:
 
 ```{r}
 #| label: lawyer-plot2
@@ -690,7 +690,8 @@ As seen in @fig-cug-hom2, we are in the right tail, indicating we arfe observing
 ```{r}
 mean(homoph_sim_cw >= homoph_obs_cw)
 ```
-Thus,  there is statistically significant evidence of practice-based homophily among the firm’s partners.
+Thus, there is statistically significant evidence of practice-based homophily among the firm’s partners.
+
 
 
 
