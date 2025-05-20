@@ -487,19 +487,18 @@ window.Quarto = {
 </header>
 
 
+<p>A random graph model is a probability distribution over a set of possible networks, defined by a set of parameters that control how likely different graph structures are to occur. Instead of producing a single deterministic network, the model generates an ensemble of networks, each drawn according to specific rules or constraints. These models allow us to explore what kinds of network structures arise by chance and to test whether observed features, such as clustering or degree patterns, are more or less likely than expected under a given set of assumptions.</p>
 <p>This chapter introduces a range of models used to represent and understand the structure of social and relational networks. We begin with the classic <span class="math inline">\(G(n,p)\)</span> random graph model, in which each pair of nodes is connected independently with a fixed probability. While analytically tractable and conceptually simple, <span class="math inline">\(G(n,p)\)</span> falls short in capturing the structural complexity of real-world networks; it fails to account for common features such as clustering, skewed degree distributions, or short average path lengths.</p>
 <p>To address these shortcomings, we explore several alternative models that incorporate more realistic structural constraints. The small-world model captures the coexistence of high local clustering and global reachability observed in many social systems. The configuration model enables the generation of random graphs with a fixed degree sequence, offering more control over node-level connectivity patterns. For each model, we discuss its definition, how to simulate or estimate it, and its relevance for modeling real network data.</p>
-<p>While these models can serve as a simple yet informative baseline for understanding connectivity patterns, they only allow us to control only a single feature (e.g.&nbsp;edge probability and degree sequence) at a time, limiting its usefulness for modeling richer network patterns. This leads the way to out next chapter where we introduce exponential random graph models (ERGMs), which is a powerful and flexible framework that allows for the specification of multiple dependencies between ties simultaneously; such as reciprocity, triadic closure, and attribute-based mixing.</p>
+<p>While these basic random graph models can serve as a simple yet informative baseline for understanding connectivity patterns, they only allow us to control only a single feature (e.g.&nbsp;edge probability and degree sequence) at a time, limiting its usefulness for modeling richer network patterns. This leads the way to out next chapter where we introduce exponential random graph models (ERGMs), which is a powerful and flexible framework that allows for the specification of multiple dependencies between ties simultaneously; such as reciprocity, triadic closure, and attribute-based mixing.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="16.1">
 <h2 data-number="16.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">16.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(statnet)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(graphlayouts)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(graphlayouts)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="the-erdősrényi-model-gn-p" class="level2" data-number="16.2">
