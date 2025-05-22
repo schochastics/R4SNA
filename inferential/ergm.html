@@ -456,6 +456,7 @@ window.Quarto = {
   <li><a href="#dyadic-independence-homophily" id="toc-dyadic-independence-homophily" class="nav-link" data-scroll-target="#dyadic-independence-homophily">Dyadic Independence: Homophily</a></li>
   <li><a href="#example-teenage-friends-and-lifestyle-study-data" id="toc-example-teenage-friends-and-lifestyle-study-data" class="nav-link" data-scroll-target="#example-teenage-friends-and-lifestyle-study-data">Example: Teenage Friends and Lifestyle Study data</a></li>
   <li><a href="#dyadic-dependence-reciprocity" id="toc-dyadic-dependence-reciprocity" class="nav-link" data-scroll-target="#dyadic-dependence-reciprocity">Dyadic Dependence: Reciprocity</a></li>
+  <li><a href="#example-coleman-friendship-1" id="toc-example-coleman-friendship-1" class="nav-link" data-scroll-target="#example-coleman-friendship-1">Example: Coleman Friendship</a></li>
   <li><a href="#markov-dependence-triangles-and-stars" id="toc-markov-dependence-triangles-and-stars" class="nav-link" data-scroll-target="#markov-dependence-triangles-and-stars">Markov Dependence: Triangles and Stars</a></li>
   <li><a href="#social-circuit-dependence-gwesp" id="toc-social-circuit-dependence-gwesp" class="nav-link" data-scroll-target="#social-circuit-dependence-gwesp">Social Circuit Dependence: GWESP</a></li>
   </ul></li>
@@ -758,6 +759,41 @@ Note on <code>nodematch()</code>
 </section>
 <section id="dyadic-dependence-reciprocity" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="dyadic-dependence-reciprocity">Dyadic Dependence: Reciprocity</h3>
+<p>In ERGMs, we can explicitly model <strong>dyadic dependence</strong>, that is, the statistical relationship between the presence or absence of ties within pairs of nodes (dyads). This is particularly important in directed networks, where the direction of a tie from node <span class="math inline">\(u\)</span> to node <span class="math inline">\(v\)</span> may be statistically related to the reverse tie from <span class="math inline">\(v\)</span> to <span class="math inline">\(u\)</span>.</p>
+<p>To capture this, we include a <strong>reciprocity</strong> term in the model specification. This term counts the number of mutually connected dyads* i.e., pairs where both <span class="math inline">\(y_{uv} = 1\)</span> and <span class="math inline">\(y_{vu} = 1\)</span>. Including this term allows the model to account for the observed tendency in many social networks for actors to reciprocate ties—such as returning a favor, replying to a message, or forming a mutual friendship.</p>
+<p>An ERGM with both an edge and a reciprocity statistic is specified as:</p>
+<p><span class="math inline">\(P(G) = \frac{1}{\kappa} \exp\left(\theta_1 \cdot L + \theta_2 \cdot R\right)\)</span></p>
+<p>where <span class="math inline">\(L = \sum_{u \neq v} y_{uv}\)</span> is the total number of directed ties (edges) and <span class="math inline">\(R = \sum_{u \neq v} y_{uv} \cdot y_{vu}\)</span>.</p>
+<p>A positive value for <span class="math inline">\(\theta_2\)</span> indicates a tendency toward reciprocation, while a negative value suggests an avoidance of mutual ties. This specification enables ERGMs to model one of the most common forms of structural dependence observed in social networks.</p>
+</section>
+<section id="example-coleman-friendship-1" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="example-coleman-friendship-1">Example: Coleman Friendship</h3>
+<p>We use the <code>coleman</code> data from earlier to specify an ERGM including reciprocity as statistic.The fitted ERGM includes two terms: a baseline <code>edges</code> term and a <code>mutual</code> term that captures reciprocity (i.e., the tendency for ties to be reciprocated):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with reciprocity term</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>model_rec <span class="ot">&lt;-</span> <span class="fu">ergm</span>(coleman_mat <span class="sc">~</span> edges <span class="sc">+</span> mutual)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_rec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = coleman_mat ~ edges + mutual)
+
+Monte Carlo Maximum Likelihood Results:
+
+       Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges  -3.71736    0.08933      0  -41.61   &lt;1e-04 ***
+mutual  3.74070    0.21625      0   17.30   &lt;1e-04 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+     Null Deviance: 7286  on 5256  degrees of freedom
+ Residual Deviance: 1714  on 5254  degrees of freedom
+ 
+AIC: 1718  BIC: 1731  (Smaller is better. MC Std. Err. = 1.628)</code></pre>
+</div>
+</div>
+<p>The edge term** has a strong negative estimate (<span class="math inline">\(\hat{\theta}_{\text{edges}} = -3.72\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), indicating that ties are generally infrequent in the network. This negative coefficient reflects the baseline log-odds of a directed tie existing between two nodes in the absence of any reciprocation or other structural tendencies.</p>
+<p>In contrast, the mutual term has a strong positive estimate (<span class="math inline">\(\hat{\theta}_{\text{mutual}} = 3.77\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), which suggests a highly significant tendency for reciprocated ties. In other words, when a tie exists from node <span class="math inline">\(u\)</span> to node <span class="math inline">\(v\)</span>, the likelihood that node <span class="math inline">\(u\)</span> also ties back to node <span class="math inline">\(v\)</span> is much greater than would be expected by chance, controlling for overall network sparsity.</p>
+<p>This combination of results suggests that while directed ties are rare in general, when ties do form, they are very likely to be mutual; a common feature in social networks. Overall, this ERGM confirms that dyadic dependence in the form of reciprocity is a defining feature of the Coleman data network.</p>
 </section>
 <section id="markov-dependence-triangles-and-stars" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="markov-dependence-triangles-and-stars">Markov Dependence: Triangles and Stars</h3>
