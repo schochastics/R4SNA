@@ -263,7 +263,31 @@ All of those contribute to the same term. It does not tell you whether one group
 :::
 
 ### Dyadic Dependence: Reciprocity {.unnumbered}
+In ERGMs, we can explicitly model **dyadic dependence**, that is, the statistical relationship between the presence or absence of ties within pairs of nodes (dyads). This is particularly important in directed networks, where the direction of a tie from node $u$ to node $v$ may be statistically related to the reverse tie from $v$ to $u$.
 
+To capture this, we include a **reciprocity** term in the model specification. This term counts the number of mutually connected dyads* i.e., pairs where both $y_{uv} = 1$ and $y_{vu} = 1$. Including this term allows the model to account for the observed tendency in many social networks for actors to reciprocate ties—such as returning a favor, replying to a message, or forming a mutual friendship.
+
+An ERGM with both an edge and a reciprocity statistic is specified as:
+
+$P(G) = \frac{1}{\kappa} \exp\left(\theta_1 \cdot L + \theta_2 \cdot R\right)$
+
+where $L = \sum_{u \neq v} y_{uv}$ is the total number of directed ties (edges) and $R = \sum_{u \neq v} y_{uv} \cdot y_{vu}$.
+
+A positive value for $\theta_2$ indicates a tendency toward reciprocation, while a negative value suggests an avoidance of mutual ties. This specification enables ERGMs to model one of the most common forms of structural dependence observed in social networks.
+
+### Example: Coleman Friendship {.unnumbered}
+We use the `coleman` data from earlier to specify an ERGM including reciprocity as statistic.The fitted ERGM includes two terms: a baseline `edges` term and a `mutual` term that captures reciprocity (i.e., the tendency for ties to be reciprocated): 
+```{r}
+#| message: false
+# Fit ERGM with reciprocity term
+model_rec <- ergm(coleman_mat ~ edges + mutual)
+summary(model_rec)
+```
+The edge term** has a strong negative estimate ($\hat{\theta}_{\text{edges}} = -3.72$, $p < 0.0001$), indicating that ties are generally infrequent in the network. This negative coefficient reflects the baseline log-odds of a directed tie existing between two nodes in the absence of any reciprocation or other structural tendencies.
+
+In contrast, the mutual term has a strong positive estimate ($\hat{\theta}_{\text{mutual}} = 3.77$, $p < 0.0001$), which suggests a highly significant tendency for reciprocated ties. In other words, when a tie exists from node $u$ to node $v$, the likelihood that node $u$ also ties back to node $v$ is much greater than would be expected by chance, controlling for overall network sparsity.
+
+This combination of results suggests that while directed ties are rare in general, when ties do form, they are very likely to be mutual; a common feature in social networks. Overall, this ERGM confirms that dyadic dependence in the form of reciprocity is a defining feature of the Coleman data network.
 
 ### Markov Dependence: Triangles and Stars {.unnumbered}
 
