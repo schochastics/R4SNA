@@ -451,8 +451,8 @@ window.Quarto = {
   <li><a href="#ergm-modeling-outline" id="toc-ergm-modeling-outline" class="nav-link" data-scroll-target="#ergm-modeling-outline"><span class="header-section-number">17.2</span> ERGM Modeling Outline</a>
   <ul class="collapse">
   <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification"><span class="header-section-number">17.2.1</span> Model Specification</a></li>
+  <li><a href="#model-estimation-and-simulation" id="toc-model-estimation-and-simulation" class="nav-link" data-scroll-target="#model-estimation-and-simulation"><span class="header-section-number">17.2.2</span> Model Estimation and Simulation</a></li>
   </ul></li>
-  <li><a href="#model-estimation-and-simulation" id="toc-model-estimation-and-simulation" class="nav-link" data-scroll-target="#model-estimation-and-simulation"><span class="header-section-number">17.3</span> Model Estimation and Simulation</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/ergm.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -768,15 +768,15 @@ ergm(formula = coleman_mat ~ edges + mutual)
 Monte Carlo Maximum Likelihood Results:
 
        Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges   -3.7194     0.0938      0  -39.65   &lt;1e-04 ***
-mutual   3.7463     0.2155      0   17.39   &lt;1e-04 ***
+edges  -3.71697    0.09939      0   -37.4   &lt;1e-04 ***
+mutual  3.76381    0.22678      0    16.6   &lt;1e-04 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 7286  on 5256  degrees of freedom
- Residual Deviance: 1716  on 5254  degrees of freedom
+ Residual Deviance: 1714  on 5254  degrees of freedom
  
-AIC: 1720  BIC: 1733  (Smaller is better. MC Std. Err. = 1.149)</code></pre>
+AIC: 1718  BIC: 1731  (Smaller is better. MC Std. Err. = 1.007)</code></pre>
 </div>
 </div>
 <p>The edge term has a strong negative estimate (<span class="math inline">\(\hat{\theta}_{\text{edges}} = -3.72\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), indicating that ties are generally infrequent in the network. This negative coefficient reflects the baseline log-odds of a directed tie existing between two nodes in the absence of any reciprocation or other structural tendencies.</p>
@@ -979,7 +979,13 @@ Note on choice of <span class="math inline">\(\alpha\)</span> in GWESP
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"law_cowork"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We then create an adjacency matrix from the directed graph for the first 36 lawyers in the network corresponding to the partners of the firm (see attribute ‘status’). Note that we this time create the network object ourselves from the symmetrized adjacency matrix.</p>
-<p>This example includes: - A baseline <code>edges</code> term, - A node-level covariate effect via <code>nodecov("practice")</code>, - A homophily effect via <code>nodematch("practice")</code>, - And a <code>gwesp()</code> term to model transitive closure (triadic clustering).</p>
+<p>This example includes:</p>
+<ul>
+<li>A baseline <code>edges</code> term,</li>
+<li>A node-level covariate effect via <code>nodecov("practice")</code>,</li>
+<li>A homophily effect via <code>nodematch("practice")</code>,</li>
+<li>And a <code>gwesp()</code> term to model transitive closure (triadic clustering).</li>
+</ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1051,27 +1057,64 @@ AIC: 511.3  BIC: 529.1  (Smaller is better. MC Std. Err. = 0.4067)</code></pre>
 </section>
 </section>
 </section>
-</section>
-<section id="model-estimation-and-simulation" class="level2" data-number="17.3">
-<h2 data-number="17.3" class="anchored" data-anchor-id="model-estimation-and-simulation"><span class="header-section-number">17.3</span> Model Estimation and Simulation</h2>
-<p>Estimating the parameters of an ERGM involves finding values for <span class="math inline">\(\boldsymbol{\theta}\)</span> that make the observed network most likely under the specified model. This is done using <strong>maximum likelihood estimation (MLE)</strong>. The goal is to find the parameter vector <span class="math inline">\(\hat{\boldsymbol{\theta}}\)</span> that maximizes the probability of the observed network <span class="math inline">\(G_{\text{obs}}\)</span>:</p>
+<section id="model-estimation-and-simulation" class="level3" data-number="17.2.2">
+<h3 data-number="17.2.2" class="anchored" data-anchor-id="model-estimation-and-simulation"><span class="header-section-number">17.2.2</span> Model Estimation and Simulation</h3>
+<p>Estimating the parameters of an Exponential Random Graph Model (ERGM) involves finding the parameter vector <span class="math inline">\(\boldsymbol{\theta}\)</span> that maximizes the likelihood of observing the network <span class="math inline">\(G_{\text{obs}}\)</span> under the specified model:</p>
 <p><span class="math display">\[
 \hat{\boldsymbol{\theta}} = \arg\max_{\boldsymbol{\theta}} \, P(G_{\text{obs}} \mid \boldsymbol{\theta}) = \frac{\exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G_{\text{obs}}) \right)}{\kappa(\boldsymbol{\theta})}
 \]</span></p>
-<p>Here, <span class="math inline">\(\mathbf{s}(G)\)</span> is the vector of network statistics (e.g., number of edges, mutual ties, triangles), and <span class="math inline">\(\kappa(\boldsymbol{\theta})\)</span> is the normalizing constant that sums the exponential term over all possible networks:</p>
+<p>Here, <span class="math inline">\(\mathbf{s}(G)\)</span> is a vector of network statistics (e.g., number of edges, mutual ties, triangles), and <span class="math inline">\(\kappa(\boldsymbol{\theta})\)</span> is a normalizing constant that sums the exponential terms over all possible networks with the same number of nodes:</p>
 <p><span class="math display">\[
 \kappa(\boldsymbol{\theta}) = \sum_{G'} \exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G') \right)
-\]</span> The main difficulty in estimating ERGMs lies in the fact that <span class="math inline">\(\kappa(\boldsymbol{\theta})\)</span> involves a sum over all possible networks with the same number of nodes; an astronomically large space. This makes direct likelihood maximization intractable for any network of realistic size.</p>
+\]</span></p>
+<p>This computation is analytically intractable for all but the smallest networks due to the exponential number of possible configurations.</p>
 <p>To overcome this, ERGMs use <strong>Markov Chain Monte Carlo Maximum Likelihood Estimation (MCMCMLE)</strong>. The idea is to simulate many networks from the current estimate of the model and compare their statistics to those of the observed network. The process iteratively updates the parameter estimates so that the simulated statistics converge toward the observed ones.</p>
-<p>This simulation-based procedure involves two key steps:</p>
+<p>The estimation process, as implemented in the <code>ergm</code> package, proceeds as follows:</p>
+<ol type="1">
+<li><p><strong>Initial Parameter Estimation (MPLE):</strong><br>
+The process begins with a <strong>Maximum Pseudo-Likelihood Estimate (MPLE)</strong>, which provides a fast but approximate estimate of <span class="math inline">\(\boldsymbol{\theta}\)</span>. This serves as the starting point for simulation.</p></li>
+<li><p><strong>MCMC Simulation:</strong><br>
+Given the current parameter estimates, networks are simulated from the model using <strong>Markov Chain Monte Carlo (MCMC)</strong> methods; typically a form of <strong>Metropolis-Hastings</strong> sampling.</p></li>
+<li><p><strong>Likelihood Approximation and Parameter Updating:</strong><br>
+The simulated networks are used to approximate the <strong>log-likelihood gradient</strong>, which informs updates to <span class="math inline">\(\boldsymbol{\theta}\)</span>. These updates move the model toward parameter values that better reproduce the observed network statistics.</p></li>
+<li><p><strong>Iteration:</strong><br>
+Steps 2 and 3 are repeated iteratively. At each round, the model simulates networks, compares the simulated statistics to the observed ones, and updates the parameters. The goal is to minimize the difference between observed and expected statistics under the model.</p></li>
+</ol>
+<p>This process continues until convergence is reached, i.e., when the simulated network statistics closely match those of the observed network and parameter updates stabilize.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on <strong>Metropolis-Hastings</strong> sampling
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the <code>ergm</code> package, the Metropolis–Hastings (MH) algorithm is used for MCMC simulation. It evaluates how a proposed tie change affects the <strong>network statistics</strong> (e.g., edges, triangles) and adjusts the <strong>likelihood ratio</strong> accordingly. This makes MH well-suited for models with <strong>dyad dependence</strong>, where toggling one tie may alter the configuration of multiple others. Specifically, the algorithm works as follows:</p>
+<ul>
+<li><strong>Propose a change</strong> to the current network state, typically by randomly toggling a tie (i.e., adding or removing an edge between two nodes).</li>
+<li><strong>Compute an acceptance probability</strong>, based on the change in the model’s sufficient statistics and the corresponding change in likelihood.</li>
+<li><strong>Accept or reject</strong> the proposed change with that probability, ensuring the Markov chain samples from the correct distribution.</li>
+</ul>
+<p>Over many iterations, this process produces a sample of networks from the ERGM’s specified distribution, which is then used for parameter estimation and simulation.</p>
+</div>
+</div>
+<p>In summary, the simulation-based procedure involves two key steps:</p>
 <ol type="1">
 <li><strong>MCMC Sampling</strong>: Generate random networks from the current parameter estimates using a Markov chain.</li>
 <li><strong>Score Updating</strong>: Adjust the parameter values to reduce the difference between simulated and observed network statistics.</li>
 </ol>
-<p>This process continues until convergence is achieved, when the model parameters yield simulations whose average statistics closely match those of the observed network.</p>
-<p>Because ERGMs rely on MCMC simulation to estimate model parameters, it is crucial to check whether the estimation process has properly converged. <strong>MCMC diagnostics</strong> help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include trace plots (to check stability of simulated statistics over time), autocorrelation plots (to assess dependence between samples), and comparisons between observed and simulated statistics. A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process.</p>
+<p>Because ERGMs rely on MCMC simulation to estimate model parameters, it is crucial to check whether the estimation process has properly converged. <strong>MCMC diagnostics</strong> help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include</p>
+<ul>
+<li>trace plots (to check stability of simulated statistics over time)</li>
+<li>autocorrelation plots (to assess dependence between samples)</li>
+<li>and comparisons between observed and simulated statistics.</li>
+</ul>
+<p>A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process.</p>
 <p>While MCMC diagnostics are useful in general, they are especially critical when estimating dyad-dependent ERGMs; models in which the probability of a tie depends on the presence or absence of other ties in the network. This includes models with terms like triangles, <span class="math inline">\(k\)</span>-stars, or other structural dependencies. In these cases, the network space becomes highly constrained and interdependent, making it more challenging for the Markov chain to explore effectively. As a result, convergence issues are more common, and MCMC diagnostics play a key role in ensuring that the simulation-based estimation has produced reliable parameter values.</p>
 <p>For dyad-independent models (e.g., those using only nodal covariates like homophily), estimation is generally simpler and may not require full MCMC sampling or diagnostics. Thus, careful diagnostic checks are particularly essential when modeling endogenous network structure.</p>
+</section>
 </section>
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
