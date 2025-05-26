@@ -534,33 +534,71 @@ Let's interpret the output: The fitted model includes four terms: `edges`, `node
 
 Taken together, the results indicate that processes of **attribute-related activity**, **assortative mixing by attribute (homophily)**, and **structural closure** (via triadic dependence) operate concurrently in shaping tie formation within the Lazega co-working network.
 
-## Model Estimation and Simulation
-Estimating the parameters of an ERGM involves finding values for $\boldsymbol{\theta}$ that make the observed network most likely under the specified model. This is done using **maximum likelihood estimation (MLE)**. The goal is to find the parameter vector $\hat{\boldsymbol{\theta}}$ that maximizes the probability of the observed network $G_{\text{obs}}$:
+### Model Estimation and Simulation
+Estimating the parameters of an Exponential Random Graph Model (ERGM) involves finding the parameter vector $\boldsymbol{\theta}$ that maximizes the likelihood of observing the network $G_{\text{obs}}$ under the specified model:
 
 $$
 \hat{\boldsymbol{\theta}} = \arg\max_{\boldsymbol{\theta}} \, P(G_{\text{obs}} \mid \boldsymbol{\theta}) = \frac{\exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G_{\text{obs}}) \right)}{\kappa(\boldsymbol{\theta})}
 $$
 
-Here, $\mathbf{s}(G)$ is the vector of network statistics (e.g., number of edges, mutual ties, triangles), and $\kappa(\boldsymbol{\theta})$ is the normalizing constant that sums the exponential term over all possible networks:
+Here, $\mathbf{s}(G)$ is a vector of network statistics (e.g., number of edges, mutual ties, triangles), and $\kappa(\boldsymbol{\theta})$ is a normalizing constant that sums the exponential terms over all possible networks with the same number of nodes:
 
 $$
 \kappa(\boldsymbol{\theta}) = \sum_{G'} \exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G') \right)
 $$
-The main difficulty in estimating ERGMs lies in the fact that $\kappa(\boldsymbol{\theta})$ involves a sum over all possible networks with the same number of nodes; an astronomically large space. This makes direct likelihood maximization intractable for any network of realistic size.
+
+This computation is analytically intractable for all but the smallest networks due to the exponential number of possible configurations. 
+
 
 To overcome this, ERGMs use **Markov Chain Monte Carlo Maximum Likelihood Estimation (MCMCMLE)**. The idea is to simulate many networks from the current estimate of the model and compare their statistics to those of the observed network. The process iteratively updates the parameter estimates so that the simulated statistics converge toward the observed ones.
 
-This simulation-based procedure involves two key steps:
+The estimation process, as implemented in the `ergm` package, proceeds as follows:
+
+1. **Initial Parameter Estimation (MPLE):**  
+   The process begins with a **Maximum Pseudo-Likelihood Estimate (MPLE)**, which provides a fast but approximate estimate of $\boldsymbol{\theta}$. This serves as the starting point for simulation.
+
+2. **MCMC Simulation:**  
+   Given the current parameter estimates, networks are simulated from the model using **Markov Chain Monte Carlo (MCMC)** methods; typically a form of **Metropolis-Hastings** sampling.
+
+3. **Likelihood Approximation and Parameter Updating:**  
+   The simulated networks are used to approximate the **log-likelihood gradient**, which informs updates to $\boldsymbol{\theta}$. These updates move the model toward parameter values that better reproduce the observed network statistics.
+
+4. **Iteration:**  
+   Steps 2 and 3 are repeated iteratively. At each round, the model simulates networks, compares the simulated statistics to the observed ones, and updates the parameters. The goal is to minimize the difference between observed and expected statistics under the model.
+
+This process continues until convergence is reached, i.e., when the simulated network statistics closely match those of the observed network and parameter updates stabilize.
+
+   
+::: {.callout-note}
+#  Note on **Metropolis-Hastings** sampling  
+In the `ergm` package, the Metropolis–Hastings (MH) algorithm is used for MCMC simulation. It evaluates how a proposed tie change affects the **network statistics** (e.g., edges, triangles) and adjusts the **likelihood ratio** accordingly. This makes MH well-suited for models with **dyad dependence**, where toggling one tie may alter the configuration of multiple others. Specifically, the algorithm works as follows:
+
+- **Propose a change** to the current network state, typically by randomly toggling a tie (i.e., adding or removing an edge between two nodes).
+ - **Compute an acceptance probability**, based on the change in the model’s sufficient statistics and the corresponding change in likelihood.
+ - **Accept or reject** the proposed change with that probability, ensuring the Markov chain samples from the correct distribution.
+
+Over many iterations, this process produces a sample of networks from the ERGM’s specified distribution, which is then used for parameter estimation and simulation.
+:::
+
+
+In summary, the simulation-based procedure involves two key steps:
 
 1. **MCMC Sampling**: Generate random networks from the current parameter estimates using a Markov chain.
 2. **Score Updating**: Adjust the parameter values to reduce the difference between simulated and observed network statistics.
 
-This process continues until convergence is achieved, when the model parameters yield simulations whose average statistics closely match those of the observed network.
+Because ERGMs rely on MCMC simulation to estimate model parameters, it is crucial to check whether the estimation process has properly converged. **MCMC diagnostics** help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include 
 
-Because ERGMs rely on MCMC simulation to estimate model parameters, it is crucial to check whether the estimation process has properly converged. **MCMC diagnostics** help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include trace plots (to check stability of simulated statistics over time), autocorrelation plots (to assess dependence between samples), and comparisons between observed and simulated statistics. A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process. 
+- trace plots (to check stability of simulated statistics over time)
+- autocorrelation plots (to assess dependence between samples)
+- and comparisons between observed and simulated statistics. 
+
+A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process. 
 
 While MCMC diagnostics are useful in general, they are especially critical when estimating dyad-dependent ERGMs; models in which the probability of a tie depends on the presence or absence of other ties in the network. This includes models with terms like triangles, $k$-stars, or other structural dependencies. In these cases, the network space becomes highly constrained and interdependent, making it more challenging for the Markov chain to explore effectively. As a result, convergence issues are more common, and MCMC diagnostics play a key role in ensuring that the simulation-based estimation has produced reliable parameter values. 
 
 For dyad-independent models (e.g., those using only nodal covariates like homophily), estimation is generally simpler and may not require full MCMC sampling or diagnostics. Thus, careful diagnostic checks are particularly essential when modeling endogenous network structure.
+
+
+
 
 ## References {.unnumbered}
