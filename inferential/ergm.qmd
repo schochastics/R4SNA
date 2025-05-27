@@ -294,7 +294,7 @@ This combination of results suggests that while directed ties are rare in genera
 #### 3. Markov Dependence: Triangles and Stars {.unnumbered}
 **Markov random graphs** are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes depends only on ties that are "locally adjacent"—specifically, those that share a node. This assumption, known as **Markov dependence**, implies that edges are conditionally independent unless they share a common node. This implies that the presence or absence of a tie between two nodes may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.
 
-Formally introduced by Frank and Strauss (1986), Markov random graphs were inspired by analogous models in spatial statistics (e.g., the Ising model and Besag’s auto-logistic models). The key insight is that network ties can exhibit local dependencies—like clustering or centralization—that can be modeled using well-defined building blocks. 
+Formally introduced by @frank1986markov, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions [@besag1972nearest]. The key insight is that network ties can exhibit local dependencies—like clustering or centralization—that can be modeled using well-defined building blocks. 
 
 Under Markov dependence, ERGMs are typically specified using **edges, $k$-stars, and triangle terms**, since these configurations reflect dependencies between adjacent ties. Examples of such configurations are shown in @fig-markov.
 
@@ -378,11 +378,11 @@ class(flob_net)  # Confirms it's a 'network' class object
 
 # Fit ERGM with Markov dependence terms
 set.seed(77)
-model <- ergm(flob_net ~ edges + kstar(2) + kstar(3) + triangle)
+model_markov <- ergm(flob_net ~ edges + kstar(2) + kstar(3) + triangle)
 
 
 # Display summary of the model
-summary(model)
+summary(model_markov)
 ```
 
 The model output provides coefficients for each configuration:
@@ -397,8 +397,6 @@ This suggests the Florentine business network is locally clustered (triadic), bu
 The good news is that by including triangle and star terms in an ERGM, we can move beyond modeling just dyadic interactions and begin to account for local clustering, degree distributions, and complex relational tendencies. The bad news is that they don't always work.
 
 
-#### Model Degeneracy in ERGMs {.unnumbered}
-
 While Markov random graph models offer a powerful way to represent local dependence through structures like edges, stars, and triangles, they come with a significant challenge: **model degeneracy**.
 
 Model degeneracy occurs when an ERGM assigns overwhelming probability to a small set of unrealistic graph configurations—such as the empty graph (no ties) or the complete graph (every possible tie), even though the observed network lies somewhere in between. This typically manifests during estimation as:
@@ -407,13 +405,13 @@ Model degeneracy occurs when an ERGM assigns overwhelming probability to a small
 - Implausible simulated networks that look nothing like the observed data,
 - A breakdown in model fit across key structural statistics (e.g., triad census, degree distribution).
 
-For example, when fitting a model to the Florentine business network, a model with edges, stars, and triangles may produce simulated networks that deviate substantially from the observed triad census despite having reasonable parameter estimates. This discrepancy arises because certain parameter combinations (especially involving triangles and high-order stars) can push the model into degenerate territory, where the likelihood surface becomes unstable or flat.
+For example, when fitting a model to the Florentine business network, a model with edges, stars, and triangles may produce simulated networks that deviate substantially from the observed triad census despite having reasonable parameter estimates. This discrepancy arises because certain parameter combinations (especially involving triangles and high-order stars) can push the model into degenerate territory, where the likelihood surface becomes unstable or flat. Thus, careful diagnostic checks are essential when modeling endogenous network structure implying dyadic dependence. We will cover this in more detail in  @sec-ergmest.
 
-This degeneracy problem highlights a key limitation of Markov dependence: *not all local dependence assumptions lead to coherent global models*. Particularly when clustering is strong, models relying solely on Markov terms (edges, stars, triangles) can become computationally fragile or even mathematically incoherent. In the next section, we will examine how social circuit dependence offers an alternative approach to modeling complex interdependence while mitigating model degeneracy.
+The degeneracy problem highlights a key limitation of Markov dependence: *not all local dependence assumptions lead to coherent global models*. Particularly when clustering is strong, models relying solely on Markov terms (edges, stars, triangles) can become computationally fragile or even mathematically incoherent. In the next section, we will examine how social circuit dependence offers an alternative approach to modeling complex interdependence while mitigating model degeneracy.
 
 
 #### 4. Social Circuit Dependence: GWESP  {.unnumbered}
-In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on **social circuit dependence** (Pattison & Robins, 2002).
+In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on **social circuit dependence** [@pattison2002neighborhood, @snijders2006new].
 
 Social circuit dependence modifies the way tie dependencies are specified in the model. Instead of assuming that two ties are conditionally dependent simply because they share a node (as in Markov dependence), social circuit dependence restricts dependence to occur only when two ties would complete a **4-cycle** in the network. Under social circuit dependence, network ties are assumed to self-organize through 4-cycles, i.e., closed paths involving four distinct nodes. Two potential ties are considered conditionally dependent only if they would complete a 4-cycle in the network. In other words, the existence of a tie between $(u, v)$ is only dependent on a tie between $(w, z)$ if adding both would close such a circuit.
 
@@ -534,7 +532,7 @@ Let's interpret the output: The fitted model includes four terms: `edges`, `node
 
 Taken together, the results indicate that processes of **attribute-related activity**, **assortative mixing by attribute (homophily)**, and **structural closure** (via triadic dependence) operate concurrently in shaping tie formation within the Lazega co-working network.
 
-### Model Estimation and Simulation
+### Model Estimation and Simulation {#sec-ergmest}
 Estimating the parameters of an Exponential Random Graph Model (ERGM) involves finding the parameter vector $\boldsymbol{\theta}$ that maximizes the likelihood of observing the network $G_{\text{obs}}$ under the specified model:
 
 $$
@@ -586,19 +584,105 @@ In summary, the simulation-based procedure involves two key steps:
 1. **MCMC Sampling**: Generate random networks from the current parameter estimates using a Markov chain.
 2. **Score Updating**: Adjust the parameter values to reduce the difference between simulated and observed network statistics.
 
-Because ERGMs rely on MCMC simulation to estimate model parameters, it is crucial to check whether the estimation process has properly converged. **MCMC diagnostics** help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include 
+Because ERGMs rely on MCMC simulation to estimate model parameters, it is important to check whether the estimation process has properly converged. **MCMC diagnostics** help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include 
 
 - trace plots (to check stability of simulated statistics over time)
 - autocorrelation plots (to assess dependence between samples)
 - and comparisons between observed and simulated statistics. 
 
-A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process. 
+A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process.
 
 While MCMC diagnostics are useful in general, they are especially critical when estimating dyad-dependent ERGMs; models in which the probability of a tie depends on the presence or absence of other ties in the network. This includes models with terms like triangles, $k$-stars, or other structural dependencies. In these cases, the network space becomes highly constrained and interdependent, making it more challenging for the Markov chain to explore effectively. As a result, convergence issues are more common, and MCMC diagnostics play a key role in ensuring that the simulation-based estimation has produced reliable parameter values. 
 
-For dyad-independent models (e.g., those using only nodal covariates like homophily), estimation is generally simpler and may not require full MCMC sampling or diagnostics. Thus, careful diagnostic checks are particularly essential when modeling endogenous network structure.
+For dyad-independent models (e.g., those using only nodal covariates like homophily), estimation is generally simpler and may not require full MCMC sampling or diagnostics. You can actually think of the dyad-independent ERGM as the mathematically equivalent to a logistic regression model applied to all possible dyads in the network. In fact, the `ergm` package uses maximum pseudo-likelihood estimation (MPLE) for dyad-independent models, which is logistic regression under the hood.
 
 
+
+#### Model Instability and Degeneracy {.unnumbered}
+
+While MCMC-based estimation enables flexible ERGM modeling, it also introduces potential pitfalls. In particular, unstable ERGMs can give rise to multi-modal probability distributions over the space of possible networks, where most of the probability mass concentrates on a small and unrealistic subset of configurations.
+
+This phenomenon is known as **model degeneracy**. A degenerate ERGM assigns near-zero probability to most networks in the model space, and high probability only to extreme graphs, such as the completely empty or fully connected one. Since real social networks rarely resemble either of these extremes, such a distribution indicates a serious modeling failure.
+
+Signs of degeneracy include:
+
+- Simulated networks that are always empty or complete, regardless of the observed data.
+- Poor convergence of MCMC chains, or failure to reach a stable equilibrium (stationary distribution).
+- Large gaps between observed and simulated statistics, especially for higher-order configurations like triangles.
+
+More technically, MCMC simulation is particularly vulnerable to problems like instability and degeneracy when:
+
+- **Burn-in period is too short**: The burn-in period refers to the initial phase of MCMC sampling during which the Markov chain has not yet stabilized. Early samples may be heavily influenced by the starting values and not representative of the true model distribution. If this phase is too short, those unrepresentative samples may skew the estimation.
+
+- **Post-burn-in sampling is too sparse**: After burn-in, we collect samples intended to represent the stationary distribution of the model. If too few of these post-burn-in samples are collected, or if they are too highly correlated (e.g., due to short MCMC intervals), the resulting estimates may be unreliable or noisy.
+
+- The model includes **strong dependence terms** (e.g., many triangle-based or star-based statistics) without sufficient balancing components such as edge terms or decay-weighted statistics like `gwesp()`. These terms can make the network space highly constrained and difficult for the MCMC algorithm to explore effectively.
+
+
+We will consider the diagnostics for the `model_sc` on the lawyer data set above:
+
+##### Example: Lawyers Network - Cowork Among Partners {.unnumbered}
+ The `mcmc.diagnostics()` function in the `ergm` package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consists of two parts. The first part is a plot:
+ 
+::: {#fig-mcmcdiag .center}
+ 
+```{r}
+#| label: ergm-mcmc
+#| message: false
+#| cache: true
+#| fig-height: 12
+#| fig-width: 7
+mcmc.diagnostics(model_sc, which = "plots")
+```
+
+:::
+The MCMC diagnostic output includes two main types of plots as seen in @fig-mcmc: **trace plots** and **density plots**, which together help assess whether the Markov chain has properly converged.
+
+The **trace plots** (left panels of @fig-mcmc) display the sampled values of the score function—essentially, the gradient of the log-likelihood—for each model term across the course of the MCMC simulation. In a well-behaved chain, these traces should appear as irregular but stable fluctuations around zero, without discernible trends, drifts, or flat segments. Such patterns indicate good mixing, where the sampler is exploring the parameter space effectively rather than getting stuck.
+
+In the Lazega model, all four trace plots (for `edges`, `nodecov.practice`, `nodematch.practice`, and `gwesp.fixed.0.693`) exhibit the expected noisy, stable behavior. There are no signs of poor mixing or convergence issues.
+
+The **density plots** (right panels of @fig-mcmc) complement this by summarizing the distribution of the sampled scores for each term. A roughly symmetric, bell-shaped curve centered near zero suggests that the chain has reached its stationary distribution. Here too, all four parameters display smooth, unimodal density curves with means close to zero, providing further evidence that the MCMC sampler has stabilized and that the parameter estimates are reliable.
+
+Together, these visual diagnostics indicate that the model has converged appropriately and that the MCMC estimation procedure has produced a stable and interpretable result.
+
+In addition to the trace and density plots, the `mcmc.diagnostics()` function provides a set of detailed numerical diagnostics that assess both the stability of the simulated statistics and the convergence behavior of the Markov chain. These diagnostics offer a more granular view of the estimation process and help confirm whether the model has been reliably estimated. We'll interpret the output in the following.
+
+```{r}
+#| label: ergm-mcmc2
+#| message: false
+#| cache: true
+#| fig-height: 12
+#| fig-width: 7
+mcmc.diagnostics(model_sc, which = "texts")
+```
+
+One key output compares the mean of the simulated statistics to the corresponding observed values. For most terms, including `nodecov.practice`, `nodematch.practice`, and the `gwesp` statistic—there is no significant difference between simulated and observed statistics, indicating a good model fit. The only exception is the `edges` term, which shows a small but statistically significant deviation ($p$ = 0.0389). This suggests a slight misfit on overall tie density, though the magnitude of the difference is modest and not cause for concern.
+
+The **cross-correlations** between simulated statistics are moderately high but consistent with the expected dependencies among model terms. For example, ties that contribute to homophily (`nodematch.practice`) also increase the total number of edges, leading to a natural correlation. None of the observed correlations approach levels (e.g., > 0.95) that would indicate redundancy or raise concerns about model identifiability or degeneracy.
+
+
+Looking at **auto-correlation**, we see that values for all parameters decay steadily with increasing lags. This pattern is typical of a well-mixing MCMC chain and indicates that the sampler is not highly autocorrelated, which would reduce efficiency.
+
+Finally, the **Geweke burn-in diagnostic** compares the means of the early and late segments of the MCMC chain. All terms yield non-significant $p$-values (ranging from 0.15 to 0.27), suggesting that the Markov chain has likely reached stationarity. The joint $p$-value of 0.64 further supports this conclusion.
+
+Taken together, these diagnostics confirm that the MCMC estimation for the ERGM is well-behaved. The parameter estimates appear stable, the chain has mixed adequately, and the model reproduces key features of the observed network. While the slight misfit on the `edges` term is noted, it does not compromise the validity of the overall model, which can be interpreted with confidence.
+
+
+As noted, MCMC requires more care and feeding, meaning users often need to tune control parameters, assess diagnostics, and sometimes revise the model specification to ensure convergence and realism.  Practically, this may involve:
+
+- Increasing `MCMC.burnin` and `MCMC.samplesize` in `control.ergm()`,
+- Replacing raw triangle or star terms with smoother alternatives (e.g., `gwesp()` or `gwdsp()`),
+- Simplifying the model to reduce overfitting or internal tension among terms.
+
+::: {.callout-note}
+# Note on MCMC control parameters
+Control parameters for the MCMC algorithm can be found here `help(control.ergm)`
+:::
+
+For a detailed technical treatment of model instability in ERGMs, see @schweinberger2011instability. Alternative specification strategies that improve stability are discussed in @snijders2006new, while the formulation and rationale behind the `gwesp` term, and curved exponential family models more broadly, are addressed in @hunter2006inference.
+
+## Goodness of Fit
 
 
 ## References {.unnumbered}
