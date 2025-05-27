@@ -226,7 +226,7 @@ p_value
 ```
 Unsurprisingly, this value is equal to zero, as we do not have any part of the distribution ranging over the observed count. However, $p$-values from Monte Carlo tests are never exactly 0, but rather “less than 1 / number of simulations”, so a more correct statement would be that 
 
-> $p$ < 0.001 (based on 1,000 simulations)  providing very strong evidence against the null hypothesis.
+> $p$ < 0.001 (based on 1000 simulations)  providing very strong evidence against the null hypothesis.
 
 ::: {.callout-note collapse=false}
 ## Note
@@ -251,7 +251,6 @@ n_edges <- ecount(coleman_g)
 # Simulate 1000 random directed graphs with fixed number of edges
 sim_g_edges <- replicate(1000, {
   g <- sample_gnm(n = n_nodes, m = n_edges, directed = TRUE, loops = FALSE)
-  as_adjacency_matrix(g, sparse = FALSE)
 }, simplify = FALSE)
 ```
 
@@ -267,8 +266,7 @@ Note that each simulated network has exactly the same number of edges as the obs
 #| fig-align: center
 
 # Define mutual tie counting function
-count_mutual <- function(adj_matrix) {
-  g <- graph_from_adjacency_matrix(adj_matrix, mode = "directed")
+count_mutual <- function(g) {
   sum(which_mutual(g)) / 2
 }
 
@@ -290,7 +288,7 @@ ggplot(mutual_df_edges, aes(x = mutual_ties)) +
   theme_minimal()
 
 ```
-Empirical distribution of reciprocal ties obtained from 1,000 random directed networks generated under the Conditional Uniform Graph (CUG) null model, holding constant the number of nodes and edges. The vertical dashed line shows the number of mutual ties observed in the actual network, highlighting its deviation from the null model.
+Empirical distribution of reciprocal ties obtained from 1000 random directed networks generated under the Conditional Uniform Graph (CUG) null model, holding constant the number of nodes and edges. The vertical dashed line shows the number of mutual ties observed in the actual network, highlighting its deviation from the null model.
 :::
 
 
@@ -436,6 +434,16 @@ Distribution of average geodesic distance across 1000 random directed graphs pre
 :::
 
 This indicates that the observed network is significantly more efficiently connected (in terms of shortest paths) than what would be expected under random edge arrangement, given the same degree distribution. In other words, the network’s structure enables actors to reach one another more quickly than random networks with the same node-level connectivity.
+
+What's the $p$-value? We compare the observed value to the distribution from the simulated null model:
+
+```{r}
+# Empirical p-value (proportion of simulated mutual counts >= observed)
+p_value <- mean(sim_geodist <= obs_dist)
+p_value
+```
+Thus, we would reject the null. This example also highlights that you need to pay attention to which tail the observed value is located when computing the $p$-value (here left).
+
 
 ## Analysing Homophily Using Non-Parametric Null Distribution
 
