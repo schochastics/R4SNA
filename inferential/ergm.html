@@ -451,8 +451,9 @@ window.Quarto = {
   <li><a href="#ergm-modeling-outline" id="toc-ergm-modeling-outline" class="nav-link" data-scroll-target="#ergm-modeling-outline"><span class="header-section-number">17.2</span> ERGM Modeling Outline</a>
   <ul class="collapse">
   <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification"><span class="header-section-number">17.2.1</span> Model Specification</a></li>
-  <li><a href="#model-estimation-and-simulation" id="toc-model-estimation-and-simulation" class="nav-link" data-scroll-target="#model-estimation-and-simulation"><span class="header-section-number">17.2.2</span> Model Estimation and Simulation</a></li>
+  <li><a href="#sec-ergmest" id="toc-sec-ergmest" class="nav-link" data-scroll-target="#sec-ergmest"><span class="header-section-number">17.2.2</span> Model Estimation and Simulation</a></li>
   </ul></li>
+  <li><a href="#goodness-of-fit" id="toc-goodness-of-fit" class="nav-link" data-scroll-target="#goodness-of-fit"><span class="header-section-number">17.3</span> Goodness of Fit</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/ergm.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -768,15 +769,15 @@ ergm(formula = coleman_mat ~ edges + mutual)
 Monte Carlo Maximum Likelihood Results:
 
        Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges  -3.71697    0.09939      0   -37.4   &lt;1e-04 ***
-mutual  3.76381    0.22678      0    16.6   &lt;1e-04 ***
+edges   -3.7147     0.1008      0  -36.85   &lt;1e-04 ***
+mutual   3.7590     0.2392      0   15.71   &lt;1e-04 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 7286  on 5256  degrees of freedom
- Residual Deviance: 1714  on 5254  degrees of freedom
+ Residual Deviance: 1715  on 5254  degrees of freedom
  
-AIC: 1718  BIC: 1731  (Smaller is better. MC Std. Err. = 1.007)</code></pre>
+AIC: 1719  BIC: 1732  (Smaller is better. MC Std. Err. = 0.8783)</code></pre>
 </div>
 </div>
 <p>The edge term has a strong negative estimate (<span class="math inline">\(\hat{\theta}_{\text{edges}} = -3.72\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), indicating that ties are generally infrequent in the network. This negative coefficient reflects the baseline log-odds of a directed tie existing between two nodes in the absence of any reciprocation or other structural tendencies.</p>
@@ -787,7 +788,7 @@ AIC: 1718  BIC: 1731  (Smaller is better. MC Std. Err. = 1.007)</code></pre>
 <section id="markov-dependence-triangles-and-stars" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="markov-dependence-triangles-and-stars">3. Markov Dependence: Triangles and Stars</h4>
 <p><strong>Markov random graphs</strong> are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes depends only on ties that are “locally adjacent”—specifically, those that share a node. This assumption, known as <strong>Markov dependence</strong>, implies that edges are conditionally independent unless they share a common node. This implies that the presence or absence of a tie between two nodes may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.</p>
-<p>Formally introduced by Frank and Strauss (1986), Markov random graphs were inspired by analogous models in spatial statistics (e.g., the Ising model and Besag’s auto-logistic models). The key insight is that network ties can exhibit local dependencies—like clustering or centralization—that can be modeled using well-defined building blocks.</p>
+<p>Formally introduced by <span class="citation" data-cites="frank1986markov">Frank and Strauss (<a href="../references.html#ref-frank1986markov" role="doc-biblioref">1986</a>)</span>, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions <span class="citation" data-cites="besag1972nearest">(<a href="../references.html#ref-besag1972nearest" role="doc-biblioref">Besag 1972</a>)</span>. The key insight is that network ties can exhibit local dependencies—like clustering or centralization—that can be modeled using well-defined building blocks.</p>
 <p>Under Markov dependence, ERGMs are typically specified using <strong>edges, <span class="math inline">\(k\)</span>-stars, and triangle terms</strong>, since these configurations reflect dependencies between adjacent ties. Examples of such configurations are shown in <a href="#fig-markov" class="quarto-xref">Figure&nbsp;<span>17.1</span></a>.</p>
 <div id="fig-markov" class="center quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -864,11 +865,11 @@ Figure&nbsp;17.1: Common network configurations used in Markov-dependent ERGMs. 
 </div>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with Markov dependence terms</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">77</span>)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">ergm</span>(flob_net <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">3</span>) <span class="sc">+</span> triangle)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>model_markov <span class="ot">&lt;-</span> <span class="fu">ergm</span>(flob_net <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">3</span>) <span class="sc">+</span> triangle)</span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Display summary of the model</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_markov)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 ergm(formula = flob_net ~ edges + kstar(2) + kstar(3) + triangle)
@@ -898,10 +899,6 @@ AIC: 87.49  BIC: 98.64  (Smaller is better. MC Std. Err. = 0.2036)</code></pre>
 </ul>
 <p>This suggests the Florentine business network is locally clustered (triadic), but does not support highly centralized hub-like nodes. The network’s structure reflects a preference for mutual interdependence rather than hierarchical dominance.</p>
 <p>The good news is that by including triangle and star terms in an ERGM, we can move beyond modeling just dyadic interactions and begin to account for local clustering, degree distributions, and complex relational tendencies. The bad news is that they don’t always work.</p>
-</section>
-</section>
-<section id="model-degeneracy-in-ergms" class="level4 unnumbered">
-<h4 class="unnumbered anchored" data-anchor-id="model-degeneracy-in-ergms">Model Degeneracy in ERGMs</h4>
 <p>While Markov random graph models offer a powerful way to represent local dependence through structures like edges, stars, and triangles, they come with a significant challenge: <strong>model degeneracy</strong>.</p>
 <p>Model degeneracy occurs when an ERGM assigns overwhelming probability to a small set of unrealistic graph configurations—such as the empty graph (no ties) or the complete graph (every possible tie), even though the observed network lies somewhere in between. This typically manifests during estimation as:</p>
 <ul>
@@ -909,12 +906,13 @@ AIC: 87.49  BIC: 98.64  (Smaller is better. MC Std. Err. = 0.2036)</code></pre>
 <li>Implausible simulated networks that look nothing like the observed data,</li>
 <li>A breakdown in model fit across key structural statistics (e.g., triad census, degree distribution).</li>
 </ul>
-<p>For example, when fitting a model to the Florentine business network, a model with edges, stars, and triangles may produce simulated networks that deviate substantially from the observed triad census despite having reasonable parameter estimates. This discrepancy arises because certain parameter combinations (especially involving triangles and high-order stars) can push the model into degenerate territory, where the likelihood surface becomes unstable or flat.</p>
-<p>This degeneracy problem highlights a key limitation of Markov dependence: <em>not all local dependence assumptions lead to coherent global models</em>. Particularly when clustering is strong, models relying solely on Markov terms (edges, stars, triangles) can become computationally fragile or even mathematically incoherent. In the next section, we will examine how social circuit dependence offers an alternative approach to modeling complex interdependence while mitigating model degeneracy.</p>
+<p>For example, when fitting a model to the Florentine business network, a model with edges, stars, and triangles may produce simulated networks that deviate substantially from the observed triad census despite having reasonable parameter estimates. This discrepancy arises because certain parameter combinations (especially involving triangles and high-order stars) can push the model into degenerate territory, where the likelihood surface becomes unstable or flat. Thus, careful diagnostic checks are essential when modeling endogenous network structure implying dyadic dependence. We will cover this in more detail in <a href="#sec-ergmest" class="quarto-xref"><span>Section 17.2.2</span></a>.</p>
+<p>The degeneracy problem highlights a key limitation of Markov dependence: <em>not all local dependence assumptions lead to coherent global models</em>. Particularly when clustering is strong, models relying solely on Markov terms (edges, stars, triangles) can become computationally fragile or even mathematically incoherent. In the next section, we will examine how social circuit dependence offers an alternative approach to modeling complex interdependence while mitigating model degeneracy.</p>
+</section>
 </section>
 <section id="social-circuit-dependence-gwesp" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="social-circuit-dependence-gwesp">4. Social Circuit Dependence: GWESP</h4>
-<p>In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on <strong>social circuit dependence</strong> (Pattison &amp; Robins, 2002).</p>
+<p>In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on <strong>social circuit dependence</strong> <span class="citation" data-cites="pattison2002neighborhood">Snijders et al. (<a href="../references.html#ref-snijders2006new" role="doc-biblioref">2006</a>)</span>.</p>
 <p>Social circuit dependence modifies the way tie dependencies are specified in the model. Instead of assuming that two ties are conditionally dependent simply because they share a node (as in Markov dependence), social circuit dependence restricts dependence to occur only when two ties would complete a <strong>4-cycle</strong> in the network. Under social circuit dependence, network ties are assumed to self-organize through 4-cycles, i.e., closed paths involving four distinct nodes. Two potential ties are considered conditionally dependent only if they would complete a 4-cycle in the network. In other words, the existence of a tie between <span class="math inline">\((u, v)\)</span> is only dependent on a tie between <span class="math inline">\((w, z)\)</span> if adding both would close such a circuit.</p>
 <p>Examples of configurations based on this depdence assumption are shown in <a href="#fig-soccirc" class="quarto-xref">Figure&nbsp;<span>17.2</span></a>.</p>
 <div id="fig-soccirc" class="center quarto-float quarto-figure quarto-figure-center anchored">
@@ -1057,8 +1055,8 @@ AIC: 511.3  BIC: 529.1  (Smaller is better. MC Std. Err. = 0.4067)</code></pre>
 </section>
 </section>
 </section>
-<section id="model-estimation-and-simulation" class="level3" data-number="17.2.2">
-<h3 data-number="17.2.2" class="anchored" data-anchor-id="model-estimation-and-simulation"><span class="header-section-number">17.2.2</span> Model Estimation and Simulation</h3>
+<section id="sec-ergmest" class="level3" data-number="17.2.2">
+<h3 data-number="17.2.2" class="anchored" data-anchor-id="sec-ergmest"><span class="header-section-number">17.2.2</span> Model Estimation and Simulation</h3>
 <p>Estimating the parameters of an Exponential Random Graph Model (ERGM) involves finding the parameter vector <span class="math inline">\(\boldsymbol{\theta}\)</span> that maximizes the likelihood of observing the network <span class="math inline">\(G_{\text{obs}}\)</span> under the specified model:</p>
 <p><span class="math display">\[
 \hat{\boldsymbol{\theta}} = \arg\max_{\boldsymbol{\theta}} \, P(G_{\text{obs}} \mid \boldsymbol{\theta}) = \frac{\exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G_{\text{obs}}) \right)}{\kappa(\boldsymbol{\theta})}
@@ -1105,7 +1103,7 @@ Note on <strong>Metropolis-Hastings</strong> sampling
 <li><strong>MCMC Sampling</strong>: Generate random networks from the current parameter estimates using a Markov chain.</li>
 <li><strong>Score Updating</strong>: Adjust the parameter values to reduce the difference between simulated and observed network statistics.</li>
 </ol>
-<p>Because ERGMs rely on MCMC simulation to estimate model parameters, it is crucial to check whether the estimation process has properly converged. <strong>MCMC diagnostics</strong> help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include</p>
+<p>Because ERGMs rely on MCMC simulation to estimate model parameters, it is important to check whether the estimation process has properly converged. <strong>MCMC diagnostics</strong> help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include</p>
 <ul>
 <li>trace plots (to check stability of simulated statistics over time)</li>
 <li>autocorrelation plots (to assess dependence between samples)</li>
@@ -1113,14 +1111,200 @@ Note on <strong>Metropolis-Hastings</strong> sampling
 </ul>
 <p>A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process.</p>
 <p>While MCMC diagnostics are useful in general, they are especially critical when estimating dyad-dependent ERGMs; models in which the probability of a tie depends on the presence or absence of other ties in the network. This includes models with terms like triangles, <span class="math inline">\(k\)</span>-stars, or other structural dependencies. In these cases, the network space becomes highly constrained and interdependent, making it more challenging for the Markov chain to explore effectively. As a result, convergence issues are more common, and MCMC diagnostics play a key role in ensuring that the simulation-based estimation has produced reliable parameter values.</p>
-<p>For dyad-independent models (e.g., those using only nodal covariates like homophily), estimation is generally simpler and may not require full MCMC sampling or diagnostics. Thus, careful diagnostic checks are particularly essential when modeling endogenous network structure.</p>
+<p>For dyad-independent models (e.g., those using only nodal covariates like homophily), estimation is generally simpler and may not require full MCMC sampling or diagnostics. You can actually think of the dyad-independent ERGM as the mathematically equivalent to a logistic regression model applied to all possible dyads in the network. In fact, the <code>ergm</code> package uses maximum pseudo-likelihood estimation (MPLE) for dyad-independent models, which is logistic regression under the hood.</p>
+<section id="model-instability-and-degeneracy" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="model-instability-and-degeneracy">Model Instability and Degeneracy</h4>
+<p>While MCMC-based estimation enables flexible ERGM modeling, it also introduces potential pitfalls. In particular, unstable ERGMs can give rise to multi-modal probability distributions over the space of possible networks, where most of the probability mass concentrates on a small and unrealistic subset of configurations.</p>
+<p>This phenomenon is known as <strong>model degeneracy</strong>. A degenerate ERGM assigns near-zero probability to most networks in the model space, and high probability only to extreme graphs, such as the completely empty or fully connected one. Since real social networks rarely resemble either of these extremes, such a distribution indicates a serious modeling failure.</p>
+<p>Signs of degeneracy include:</p>
+<ul>
+<li>Simulated networks that are always empty or complete, regardless of the observed data.</li>
+<li>Poor convergence of MCMC chains, or failure to reach a stable equilibrium (stationary distribution).</li>
+<li>Large gaps between observed and simulated statistics, especially for higher-order configurations like triangles.</li>
+</ul>
+<p>More technically, MCMC simulation is particularly vulnerable to problems like instability and degeneracy when:</p>
+<ul>
+<li><p><strong>Burn-in period is too short</strong>: The burn-in period refers to the initial phase of MCMC sampling during which the Markov chain has not yet stabilized. Early samples may be heavily influenced by the starting values and not representative of the true model distribution. If this phase is too short, those unrepresentative samples may skew the estimation.</p></li>
+<li><p><strong>Post-burn-in sampling is too sparse</strong>: After burn-in, we collect samples intended to represent the stationary distribution of the model. If too few of these post-burn-in samples are collected, or if they are too highly correlated (e.g., due to short MCMC intervals), the resulting estimates may be unreliable or noisy.</p></li>
+<li><p>The model includes <strong>strong dependence terms</strong> (e.g., many triangle-based or star-based statistics) without sufficient balancing components such as edge terms or decay-weighted statistics like <code>gwesp()</code>. These terms can make the network space highly constrained and difficult for the MCMC algorithm to explore effectively.</p></li>
+</ul>
+<p>We will consider the diagnostics for the <code>model_sc</code> on the lawyer data set above:</p>
+<section id="example-lawyers-network---cowork-among-partners-1" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="example-lawyers-network---cowork-among-partners-1">Example: Lawyers Network - Cowork Among Partners</h5>
+<p>The <code>mcmc.diagnostics()</code> function in the <code>ergm</code> package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consists of two parts. The first part is a plot:</p>
+<div id="fig-mcmcdiag" class="center quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mcmcdiag-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(model_sc, <span class="at">which =</span> <span class="st">"plots"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ergm_files/figure-html/ergm-mcmc-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Note: MCMC diagnostics shown here are from the last round of
+  simulation, prior to computation of final parameter estimates.
+  Because the final estimates are refinements of those used for this
+  simulation run, these diagnostics may understate model performance.
+  To directly assess the performance of the final model on in-model
+  statistics, please use the GOF command: gof(ergmFitObject,
+  GOF=~model).</code></pre>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-mcmcdiag-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.4
+</figcaption>
+</figure>
+</div>
+<p>The MCMC diagnostic output includes two main types of plots as seen in <span class="quarto-unresolved-ref">?fig-mcmc</span>: <strong>trace plots</strong> and <strong>density plots</strong>, which together help assess whether the Markov chain has properly converged.</p>
+<p>The <strong>trace plots</strong> (left panels of <span class="quarto-unresolved-ref">?fig-mcmc</span>) display the sampled values of the score function—essentially, the gradient of the log-likelihood—for each model term across the course of the MCMC simulation. In a well-behaved chain, these traces should appear as irregular but stable fluctuations around zero, without discernible trends, drifts, or flat segments. Such patterns indicate good mixing, where the sampler is exploring the parameter space effectively rather than getting stuck.</p>
+<p>In the Lazega model, all four trace plots (for <code>edges</code>, <code>nodecov.practice</code>, <code>nodematch.practice</code>, and <code>gwesp.fixed.0.693</code>) exhibit the expected noisy, stable behavior. There are no signs of poor mixing or convergence issues.</p>
+<p>The <strong>density plots</strong> (right panels of <span class="quarto-unresolved-ref">?fig-mcmc</span>) complement this by summarizing the distribution of the sampled scores for each term. A roughly symmetric, bell-shaped curve centered near zero suggests that the chain has reached its stationary distribution. Here too, all four parameters display smooth, unimodal density curves with means close to zero, providing further evidence that the MCMC sampler has stabilized and that the parameter estimates are reliable.</p>
+<p>Together, these visual diagnostics indicate that the model has converged appropriately and that the MCMC estimation procedure has produced a stable and interpretable result.</p>
+<p>In addition to the trace and density plots, the <code>mcmc.diagnostics()</code> function provides a set of detailed numerical diagnostics that assess both the stability of the simulated statistics and the convergence behavior of the Markov chain. These diagnostics offer a more granular view of the estimation process and help confirm whether the model has been reliably estimated. We’ll interpret the output in the following.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(model_sc, <span class="at">which =</span> <span class="st">"texts"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sample statistics summary:
+
+Iterations = 82944:1648640
+Thinning interval = 1024 
+Number of chains = 1 
+Sample size per chain = 1530 
+
+1. Empirical mean and standard deviation for each variable,
+   plus standard error of the mean:
+
+                    Mean    SD Naive SE Time-series SE
+edges              4.193 27.69   0.7079          2.030
+nodecov.practice   3.084 27.03   0.6911          1.699
+nodematch.practice 2.555 17.11   0.4374          1.312
+gwesp.fixed.0.693  7.441 54.95   1.4048          3.982
+
+2. Quantiles for each variable:
+
+                      2.5%    25%   50%   75%  97.5%
+edges               -58.00 -13.00  7.00 24.00  50.00
+nodecov.practice    -62.00 -11.75  7.00 22.00  44.77
+nodematch.practice  -34.77  -7.75  4.00 15.00  32.00
+gwesp.fixed.0.693  -112.95 -27.27 11.86 46.56 105.24
+
+
+Are sample statistics significantly different from observed?
+              edges nodecov.practice nodematch.practice gwesp.fixed.0.693
+diff.      4.193464       3.08431373         2.55490196        7.44060041
+test stat. 2.065603       1.81503409         1.94692678        1.86876829
+P-val.     0.038866       0.06951867         0.05154351        0.06165506
+                 (Omni)
+diff.                NA
+test stat. 2.018915e+01
+P-val.     5.549297e-04
+
+Sample statistics cross-correlations:
+                       edges nodecov.practice nodematch.practice
+edges              1.0000000        0.8661702          0.9385818
+nodecov.practice   0.8661702        1.0000000          0.8058032
+nodematch.practice 0.9385818        0.8058032          1.0000000
+gwesp.fixed.0.693  0.9930583        0.8706234          0.9326873
+                   gwesp.fixed.0.693
+edges                      0.9930583
+nodecov.practice           0.8706234
+nodematch.practice         0.9326873
+gwesp.fixed.0.693          1.0000000
+
+Sample statistics auto-correlation:
+Chain 1 
+             edges nodecov.practice nodematch.practice gwesp.fixed.0.693
+Lag 0    1.0000000        1.0000000          1.0000000         1.0000000
+Lag 1024 0.7830828        0.6976898          0.7312736         0.7512523
+Lag 2048 0.6230787        0.5053844          0.5691328         0.5927850
+Lag 3072 0.5060997        0.3787281          0.4569260         0.4783505
+Lag 4096 0.4117891        0.3017643          0.3746105         0.3901042
+Lag 5120 0.3397918        0.2345665          0.3080189         0.3204952
+
+Sample statistics burn-in diagnostic (Geweke):
+Chain 1 
+
+Fraction in 1st window = 0.1
+Fraction in 2nd window = 0.5 
+
+             edges   nodecov.practice nodematch.practice  gwesp.fixed.0.693 
+          1.183854           1.102967           1.430812           1.202088 
+
+Individual P-values (lower = worse):
+             edges   nodecov.practice nodematch.practice  gwesp.fixed.0.693 
+         0.2364708          0.2700415          0.1524842          0.2293296 
+Joint P-value (lower = worse):  0.646062 
+
+Note: MCMC diagnostics shown here are from the last round of
+  simulation, prior to computation of final parameter estimates.
+  Because the final estimates are refinements of those used for this
+  simulation run, these diagnostics may understate model performance.
+  To directly assess the performance of the final model on in-model
+  statistics, please use the GOF command: gof(ergmFitObject,
+  GOF=~model).</code></pre>
+</div>
+</div>
+<p>One key output compares the mean of the simulated statistics to the corresponding observed values. For most terms, including <code>nodecov.practice</code>, <code>nodematch.practice</code>, and the <code>gwesp</code> statistic—there is no significant difference between simulated and observed statistics, indicating a good model fit. The only exception is the <code>edges</code> term, which shows a small but statistically significant deviation (<span class="math inline">\(p\)</span> = 0.0389). This suggests a slight misfit on overall tie density, though the magnitude of the difference is modest and not cause for concern.</p>
+<p>The <strong>cross-correlations</strong> between simulated statistics are moderately high but consistent with the expected dependencies among model terms. For example, ties that contribute to homophily (<code>nodematch.practice</code>) also increase the total number of edges, leading to a natural correlation. None of the observed correlations approach levels (e.g., &gt; 0.95) that would indicate redundancy or raise concerns about model identifiability or degeneracy.</p>
+<p>Looking at <strong>auto-correlation</strong>, we see that values for all parameters decay steadily with increasing lags. This pattern is typical of a well-mixing MCMC chain and indicates that the sampler is not highly autocorrelated, which would reduce efficiency.</p>
+<p>Finally, the <strong>Geweke burn-in diagnostic</strong> compares the means of the early and late segments of the MCMC chain. All terms yield non-significant <span class="math inline">\(p\)</span>-values (ranging from 0.15 to 0.27), suggesting that the Markov chain has likely reached stationarity. The joint <span class="math inline">\(p\)</span>-value of 0.64 further supports this conclusion.</p>
+<p>Taken together, these diagnostics confirm that the MCMC estimation for the ERGM is well-behaved. The parameter estimates appear stable, the chain has mixed adequately, and the model reproduces key features of the observed network. While the slight misfit on the <code>edges</code> term is noted, it does not compromise the validity of the overall model, which can be interpreted with confidence.</p>
+<p>As noted, MCMC requires more care and feeding, meaning users often need to tune control parameters, assess diagnostics, and sometimes revise the model specification to ensure convergence and realism. Practically, this may involve:</p>
+<ul>
+<li>Increasing <code>MCMC.burnin</code> and <code>MCMC.samplesize</code> in <code>control.ergm()</code>,</li>
+<li>Replacing raw triangle or star terms with smoother alternatives (e.g., <code>gwesp()</code> or <code>gwdsp()</code>),</li>
+<li>Simplifying the model to reduce overfitting or internal tension among terms.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on MCMC control parameters
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Control parameters for the MCMC algorithm can be found here <code>help(control.ergm)</code></p>
+</div>
+</div>
+<p>For a detailed technical treatment of model instability in ERGMs, see <span class="citation" data-cites="schweinberger2011instability">Schweinberger (<a href="../references.html#ref-schweinberger2011instability" role="doc-biblioref">2011</a>)</span>. Alternative specification strategies that improve stability are discussed in <span class="citation" data-cites="snijders2006new">Snijders et al. (<a href="../references.html#ref-snijders2006new" role="doc-biblioref">2006</a>)</span>, while the formulation and rationale behind the <code>gwesp</code> term, and curved exponential family models more broadly, are addressed in <span class="citation" data-cites="hunter2006inference">Hunter and Handcock (<a href="../references.html#ref-hunter2006inference" role="doc-biblioref">2006</a>)</span>.</p>
 </section>
+</section>
+</section>
+</section>
+<section id="goodness-of-fit" class="level2" data-number="17.3">
+<h2 data-number="17.3" class="anchored" data-anchor-id="goodness-of-fit"><span class="header-section-number">17.3</span> Goodness of Fit</h2>
 </section>
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-besag1972nearest" class="csl-entry" role="listitem">
+Besag, Julian E. 1972. <span>“Nearest-Neighbour Systems and the Auto-Logistic Model for Binary Data.”</span> <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 34 (1): 75–83.
+</div>
+<div id="ref-frank1986markov" class="csl-entry" role="listitem">
+Frank, Ove, and David Strauss. 1986. <span>“Markov Graphs.”</span> <em>Journal of the American Statistical Association</em> 81 (395): 832–42.
+</div>
+<div id="ref-hunter2006inference" class="csl-entry" role="listitem">
+Hunter, David R, and Mark S Handcock. 2006. <span>“Inference in Curved Exponential Family Models for Networks.”</span> <em>Journal of Computational and Graphical Statistics</em> 15 (3): 565–83.
+</div>
+<div id="ref-pattison2002neighborhood" class="csl-entry" role="listitem">
+Pattison, Philippa, and Garry Robins. 2002. <span>“Neighborhood–Based Models for Social Networks.”</span> <em>Sociological Methodology</em> 32 (1): 301–37.
+</div>
+<div id="ref-schweinberger2011instability" class="csl-entry" role="listitem">
+Schweinberger, Michael. 2011. <span>“Instability, Sensitivity, and Degeneracy of Discrete Exponential Families.”</span> <em>Journal of the American Statistical Association</em> 106 (496): 1361–70.
+</div>
+<div id="ref-snijders2006new" class="csl-entry" role="listitem">
+Snijders, Tom AB, Philippa E Pattison, Garry L Robins, and Mark S Handcock. 2006. <span>“New Specifications for Exponential Random Graph Models.”</span> <em>Sociological Methodology</em> 36 (1): 99–153.
+</div>
 <div id="ref-west1996s50" class="csl-entry" role="listitem">
 West, P, and H Sweeting. 1996. <span>“Background, Rationale and Design of the West of Scotland 11 to 16 Study.”</span> <em>MRC Medical Sociology Unit Working Paper</em>, no. 52: 1.
 </div>
