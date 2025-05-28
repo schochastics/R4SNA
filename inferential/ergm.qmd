@@ -61,14 +61,32 @@ The statistics $s_i$  are network configurations. As mentioned, ERGMs rely on sm
 - **Stars**: centralization or popularity (many ties to a node)
 - **Homophily**: ties between nodes with similar attributes
 
-Each of these configurations reflects a hypothesized mechanism that may drive the evolution of network structure. We formalize some of the standard statistics in the following but for a full list of available statistics in the `ergm` package you can check:
+Each of these configurations reflects a hypothesized mechanism that may drive the evolution of network structure. We formalize some of the standard statistics in the following. 
+
+
+
+
+
+In the following section, we will move through **four generations of dependence assumptions** yielding different ERGM specifications with statistics (network configurations) that are included in the model.
+
+::: {.callout-tip}
+# Specifying an ERGM
+An ERGM is specified using a formula that defines the network structure and any covariates to be included. The `ergm()` function takes a `network` object on the left-hand side and a set of model terms on the right-hand side.
+
+Here is an example model including edge density, a node-level covariate, homophily on an attribute, and a structural dependency term (`gwesp`):
+
+```{r}
+#| eval: false
+ergm(network_object ~ model_terms)
+```
+where `model_terms` represent structural configurations or covariate effects, e.g., edges, triangles, mutual, etc. For a full list of available statistics in the `ergm` package you can check:
 
 ```{r}
 #| eval: false
 ?ergmTerm
 ```
+:::
 
-In the following section, we will move through **four generations of dependence assumptions** yielding different ERGM specifications with statistics (network configurations) that are included in the model.
 
 ###  Model Specification 
 
@@ -476,12 +494,12 @@ data("law_cowork")
 
 We then create an adjacency matrix from the directed graph for the first 36 lawyers in the network corresponding to the partners of the firm (see attribute 'status'). Note that we this time create the network object ourselves from the symmetrized adjacency matrix. 
 
-This example includes:
+This example includes the following statistics:
 
-- A baseline `edges` term,
-- A node-level covariate effect via `nodecov("practice")`,
-- A homophily effect via `nodematch("practice")`,
-- And a `gwesp()` term to model transitive closure (triadic clustering).
+- `edges`: baseline tie probability,
+- `nodecov("practice")`: effect of practice area on tie activity,
+- `nodematch("practice")`: homophily within practice areas,
+- `gwesp(0.693, fixed = TRUE)`: transitive closure (triadic clustering).
 
 
 ::: {.callout-note}
@@ -618,23 +636,35 @@ More technically, MCMC simulation is particularly vulnerable to problems like in
 
 - The model includes **strong dependence terms** (e.g., many triangle-based or star-based statistics) without sufficient balancing components such as edge terms or decay-weighted statistics like `gwesp()`. These terms can make the network space highly constrained and difficult for the MCMC algorithm to explore effectively.
 
+::: {.callout-tip}
+# Running MCMC Diagnostics for ERGM
+After fitting an ERGM, use `mcmc.diagnostics()` to evaluate whether the MCMC estimation has converged and whether the Markov chain has mixed well. This function provides trace plots, density plots, and numerical summaries for each model parameter:
+
+```{r}
+#| eval: false
+# MCMC convergence check
+mcmc.diagnostics(model)
+```
+:::
+
 
 We will consider the diagnostics for the `model_sc` on the lawyer data set above:
 
 ##### Example: Lawyers Network - Cowork Among Partners {.unnumbered}
  The `mcmc.diagnostics()` function in the `ergm` package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consists of two parts. The first part is a plot:
  
-::: {#fig-mcmcdiag .center}
- 
+::: {#fig-mcmc .center}
 ```{r}
 #| label: ergm-mcmc
 #| message: false
 #| cache: true
 #| fig-height: 12
 #| fig-width: 7
+#| fig-align: center
 mcmc.diagnostics(model_sc, which = "plots")
 ```
 
+MCMC trace and density plots for ERGM parameter estimates. The trace plots (left) show the sampled values of the score function across iterations for each model term. Good mixing is indicated by irregular, stationary fluctuations around zero. The density plots (right) display the distribution of these values; approximately symmetric and centered curves suggest that the MCMC sampler has reached a stable equilibrium and is drawing from the target distribution.
 :::
 The MCMC diagnostic output includes two main types of plots as seen in @fig-mcmc: **trace plots** and **density plots**, which together help assess whether the Markov chain has properly converged.
 
@@ -652,8 +682,6 @@ In addition to the trace and density plots, the `mcmc.diagnostics()` function pr
 #| label: ergm-mcmc2
 #| message: false
 #| cache: true
-#| fig-height: 12
-#| fig-width: 7
 mcmc.diagnostics(model_sc, which = "texts")
 ```
 
@@ -682,7 +710,138 @@ Control parameters for the MCMC algorithm can be found here `help(control.ergm)`
 
 For a detailed technical treatment of model instability in ERGMs, see @schweinberger2011instability. Alternative specification strategies that improve stability are discussed in @snijders2006new, while the formulation and rationale behind the `gwesp` term, and curved exponential family models more broadly, are addressed in @hunter2006inference.
 
-## Goodness of Fit
+## Assessing Goodness of Fit
+After confirming that the MCMC estimation has converged properly (as diagnosed through trace plots, numerical summaries, and Geweke statistics) the next essential step is to assess the fit of the model to the observed network.
+
+While MCMC diagnostics ensure that parameter estimates are stable and reliable, they do not tell us whether the model is substantively adequate, that is, whether it captures the essential structure of the network. For this, we turn to **goodness-of-fit (GOF) diagnostics**.
+
+There are two complementary questions in ERGM model checking:
+
+1. **Did the model reproduce the terms included in the formula?**  
+   This is effectively ensured by the maximum likelihood estimation procedure. If convergence has been achieved, the model will reproduce the sufficient statistics (e.g., number of edges, triangles) used in the specification.
+
+2. **Does the model reproduce broader structural properties of the network?**  
+   This is the more important and revealing test. GOF checks compare simulated networks to the observed one on key network features not explicitly included in the model. These typically include:
+
+   - **Degree distribution** (node-level centrality)
+   - **Edgewise shared partners (ESP)** (local clustering)
+   - **Geodesic distances** (overall reachability)
+
+This second category helps detect **model misspecification**, i.e., features of the network that the model fails to account for.
+
+::: {.callout-tip}
+# Running Goodness-of-Fit Checks in ERGM
+The `ergm` package provides the `gof()` function, which performs a **simulation-based goodness-of-fit assessment**. This function compares the observed network to a distribution of networks simulated from the fitted model, focusing on structural features not directly modeled.
+
+The typical workflow is:
+
+```{r}
+#| eval: false
+
+# Run GOF assessment
+gof_model <- gof(model)
+
+# View numeric summary
+summary(gof_model)
+
+# Plot GOF results
+plot(gof_model)
+```
+:::
+
+##### Example: Lawyers Network - Cowork Among Partners {.unnumbered}
+We now assess the fit of the ERGM specified for Lazega's co-working network, which included:
+
+- `edges`: baseline tie probability,
+- `nodecov("practice")`: effect of practice area on tie activity,
+- `nodematch("practice")`: homophily within practice areas,
+- `gwesp(0.693, fixed = TRUE)`: transitive closure (triadic clustering).
+
+The goal is to evaluate whether the model, beyond reproducing the modeled statistics, also captures broader structural features of the observed network.
+
+We use the `gof()` function from the `ergm` package to simulate networks under the fitted model and compare them to the observed network on several unmodeled statistics:
+
+::: {#fig-gof .center}
+```{r}
+#| fig-width: 10
+#| fig-height: 8
+#| fig-align: center
+#| message: false
+#| warning: false
+#| # Run GOF diagnostics
+gof_sc <- gof(model_sc, plotlogodds=TRUE) # this will produce 4 plots
+par(mfrow = c(2, 2)) # figure orientation with 2 rows and 2 columns
+plot(gof_sc)
+```
+Goodness-of-fit (GOF) diagnostics for the ERGM fitted to the Lazega lawyers co-working network. Each plot compares statistics from networks simulated under the model to those observed in the empirical network (blue diamonds). The top-left panel confirms that the model reproduces the sufficient statistics (model terms). The other panels assess fit to un-modeled structural features: the degree distribution, edgewise shared partners (not used as it is explicitly controlled for in the model), and geodesic distances. The observed values fall mostly within the distribution of simulated networks, indicating that the model captures key features of the network's local and global structure.
+:::
+
+This goodness-of-fit check produces plots for several structural features, including both modeled and un-modeled terms:
+
+- **Model statistics**: the sufficient statistics explicitly specified in the model formula (e.g., `edges`, `nodematch`, `gwesp`).
+- **Degree distribution**: the number of ties per node,
+- **Geodesic distances**: shortest paths between nodes,
+- **Edgewise shared partners (ESP)**: the number of common neighbors shared by directly connected pairs of nodes.
 
 
+ESP should not be interpreted as a fit criterion in this case, since it is directly modeled via the `gwesp` term. Including it in GOF checks may simply reflect that the model was designed to reproduce it.
+
+The GOF plots (see @fig-gof) compare statistics from the observed network (black lines or blue diamonds) to distributions of the same statistics across networks simulated from the model:
+
+- **Model statistics**: This plot shows whether the model reproduces the statistics it was explicitly fit to match. Each boxplot represents the distribution of simulated values for a modeled term (e.g., `edges`, `nodematch.practice`, `gwesp`), and the blue diamond marks the observed value. Good fit is indicated when the diamond lies near the center of the box. This panel essentially checks if maximum likelihood estimation succeeded.
+
+- **Degree distribution**: The model accurately captures the variability in the number of ties per node if the observed degree frequencies fall within the simulated distribution at most points.
+
+- **Geodesic distances**: If the model reflects the observed network's overall connectivity, the distribution of shortest path lengths should align closely with those from the simulations.
+
+- **Edgewise shared partners**: This panel can typically indicate clustering tendencies, but in this case is not meaningful, since `gwesp` was already included to model triadic closure.
+
+::: {.callout-note}
+# Note: Interpreting Black Lines and Blue Diamonds in GOF Plots
+In the GOF plots generated by the `ergm` package, the meaning of the **black line** and **blue diamond** differs slightly depending on the panel:
+
+- Model statistics plot:  
+  - Blue diamond: The observed value of each modeled statistic in the empirical network.  
+  - Black line: The mean value of that statistic across the simulated networks.
+
+- Other GOF plots (e.g., degree, geodesic distance, ESP):  
+  - Black line: The observed distribution of the statistic (e.g., degree counts) in the empirical network.  
+  - Blue diamonds: The mean of the simulated distributions at each value or bin.
+
+Good model fit is indicated when the black line lies within the range of the simulated distributions (shown as boxplots or shaded areas), and aligns closely with the blue diamonds.
+:::
+
+
+::: {.callout-note}
+# Note on using log-odds instead
+
+Normally, GOF plots show the proportion (e.g., of nodes with a given degree) on the y-axis. Using the following and setting `plotlogodds = TRUE` transforms those proportions to log-odds:
+
+$$
+\text{log-odds}(p) = \log\left(\frac{p}{1 - p}\right)
+$$ 
+In other words, you instead run `gof(model, plotlogodds=TRUE)`.
+
+This is useful when you’re interested in small differences in low-probability bins (e.g., rare degrees or long geodesic distances). Values close to 0 (e.g., rare degrees or high distances) are spread out and more visible. Differences between observed and simulated values in the tails become more pronounced. Plots become less intuitive if you’re unfamiliar with log-odds, so interpret with care.
+:::	
+
+
+We can also look at the printed GOF summary:
+
+```{r}
+gof_sc
+```
+
+The numerical output provides a detailed assessment of how well the fitted ERGM reproduces both the modeled terms and modeled structural features of the observed network.
+
+The degree distribution is well captured across nearly all values, with observed counts generally falling within the range of those generated by simulations. Most Monte Carlo $p$-values are high (e.g., > 0.5), indicating no significant deviation between the observed and simulated degree frequencies.
+
+Minimum geodesic distances, a measure of global connectivity, show reasonable agreement between observed and simulated networks. While the fit is slightly weaker at a geodesic distance of 3 ($p = 0.08$), all other distances are well within acceptable bounds, suggesting that the model captures the overall reachability structure effectively.
+
+Lastly, the model terms explicitly included in the formula (`edges`, `nodecov.practice`, `nodematch.practice`, and `gwesp`) are all closely matched by the simulated networks, with very high $p$-values across the board. This confirms that the maximum likelihood estimation successfully reproduced the sufficient statistics.
+
+
+These diagnostics indicate that the model performs well. It reproduces the modeled terms accurately, and also generalizes to capture broader structural features such as degree variation and path lengths. Since the model has also passed MCMC convergence diagnostics, we can conclude that the ERGM is both well-estimated and substantively valid in representing the network-generating processes in the Lazega law firm.
+	
+	
 ## References {.unnumbered}
