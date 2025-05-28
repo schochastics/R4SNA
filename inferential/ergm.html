@@ -451,9 +451,9 @@ window.Quarto = {
   <li><a href="#ergm-modeling-outline" id="toc-ergm-modeling-outline" class="nav-link" data-scroll-target="#ergm-modeling-outline"><span class="header-section-number">17.2</span> ERGM Modeling Outline</a>
   <ul class="collapse">
   <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification"><span class="header-section-number">17.2.1</span> Model Specification</a></li>
-  <li><a href="#sec-ergmest" id="toc-sec-ergmest" class="nav-link" data-scroll-target="#sec-ergmest"><span class="header-section-number">17.2.2</span> Model Estimation and Simulation</a></li>
+  <li><a href="#sec-ergmest" id="toc-sec-ergmest" class="nav-link" data-scroll-target="#sec-ergmest"><span class="header-section-number">17.2.2</span> Model Estimation</a></li>
+  <li><a href="#model-fit" id="toc-model-fit" class="nav-link" data-scroll-target="#model-fit"><span class="header-section-number">17.2.3</span> Model Fit</a></li>
   </ul></li>
-  <li><a href="#assessing-goodness-of-fit" id="toc-assessing-goodness-of-fit" class="nav-link" data-scroll-target="#assessing-goodness-of-fit"><span class="header-section-number">17.3</span> Assessing Goodness of Fit</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/ergm.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -539,7 +539,7 @@ P(G) = \frac{1}{\kappa} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G) \right)
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Specifying an ERGM
+Specifying an ERGM in R
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -787,15 +787,15 @@ ergm(formula = coleman_mat ~ edges + mutual)
 Monte Carlo Maximum Likelihood Results:
 
        Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges  -3.71904    0.09627      0  -38.63   &lt;1e-04 ***
-mutual  3.76576    0.22476      0   16.75   &lt;1e-04 ***
+edges  -3.71800    0.09916      0  -37.49   &lt;1e-04 ***
+mutual  3.76117    0.23608      0   15.93   &lt;1e-04 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 7286  on 5256  degrees of freedom
- Residual Deviance: 1717  on 5254  degrees of freedom
+ Residual Deviance: 1713  on 5254  degrees of freedom
  
-AIC: 1721  BIC: 1734  (Smaller is better. MC Std. Err. = 1.755)</code></pre>
+AIC: 1717  BIC: 1730  (Smaller is better. MC Std. Err. = 1.864)</code></pre>
 </div>
 </div>
 <p>The edge term has a strong negative estimate (<span class="math inline">\(\hat{\theta}_{\text{edges}} = -3.72\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), indicating that ties are generally infrequent in the network. This negative coefficient reflects the baseline log-odds of a directed tie existing between two nodes in the absence of any reciprocation or other structural tendencies.</p>
@@ -1074,7 +1074,7 @@ AIC: 511.3  BIC: 529.1  (Smaller is better. MC Std. Err. = 0.4067)</code></pre>
 </section>
 </section>
 <section id="sec-ergmest" class="level3" data-number="17.2.2">
-<h3 data-number="17.2.2" class="anchored" data-anchor-id="sec-ergmest"><span class="header-section-number">17.2.2</span> Model Estimation and Simulation</h3>
+<h3 data-number="17.2.2" class="anchored" data-anchor-id="sec-ergmest"><span class="header-section-number">17.2.2</span> Model Estimation</h3>
 <p>Estimating the parameters of an Exponential Random Graph Model (ERGM) involves finding the parameter vector <span class="math inline">\(\boldsymbol{\theta}\)</span> that maximizes the likelihood of observing the network <span class="math inline">\(G_{\text{obs}}\)</span> under the specified model:</p>
 <p><span class="math display">\[
 \hat{\boldsymbol{\theta}} = \arg\max_{\boldsymbol{\theta}} \, P(G_{\text{obs}} \mid \boldsymbol{\theta}) = \frac{\exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G_{\text{obs}}) \right)}{\kappa(\boldsymbol{\theta})}
@@ -1152,7 +1152,7 @@ Note on <strong>Metropolis-Hastings</strong> sampling
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Running MCMC Diagnostics for ERGM
+Running MCMC Diagnostics
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1313,9 +1313,8 @@ Note on MCMC control parameters
 </section>
 </section>
 </section>
-</section>
-<section id="assessing-goodness-of-fit" class="level2" data-number="17.3">
-<h2 data-number="17.3" class="anchored" data-anchor-id="assessing-goodness-of-fit"><span class="header-section-number">17.3</span> Assessing Goodness of Fit</h2>
+<section id="model-fit" class="level3" data-number="17.2.3">
+<h3 data-number="17.2.3" class="anchored" data-anchor-id="model-fit"><span class="header-section-number">17.2.3</span> Model Fit</h3>
 <p>After confirming that the MCMC estimation has converged properly (as diagnosed through trace plots, numerical summaries, and Geweke statistics) the next essential step is to assess the fit of the model to the observed network.</p>
 <p>While MCMC diagnostics ensure that parameter estimates are stable and reliable, they do not tell us whether the model is substantively adequate, that is, whether it captures the essential structure of the network. For this, we turn to <strong>goodness-of-fit (GOF) diagnostics</strong>.</p>
 <p>There are two complementary questions in ERGM model checking:</p>
@@ -1387,49 +1386,39 @@ Figure&nbsp;17.5: Goodness-of-fit (GOF) diagnostics for the ERGM fitted to the L
 </figcaption>
 </figure>
 </div>
-<p>This goodness-of-fit check produces plots for several structural features, including both modeled and un-modeled terms:</p>
-<ul>
-<li><strong>Model statistics</strong>: the sufficient statistics explicitly specified in the model formula (e.g., <code>edges</code>, <code>nodematch</code>, <code>gwesp</code>).</li>
-<li><strong>Degree distribution</strong>: the number of ties per node,</li>
-<li><strong>Geodesic distances</strong>: shortest paths between nodes,</li>
-<li><strong>Edgewise shared partners (ESP)</strong>: the number of common neighbors shared by directly connected pairs of nodes.</li>
-</ul>
-<p>ESP should not be interpreted as a fit criterion in this case, since it is directly modeled via the <code>gwesp</code> term. Including it in GOF checks may simply reflect that the model was designed to reproduce it.</p>
-<p>The GOF plots (see <a href="#fig-gof" class="quarto-xref">Figure&nbsp;<span>17.5</span></a>) compare statistics from the observed network (black lines or blue diamonds) to distributions of the same statistics across networks simulated from the model:</p>
-<ul>
-<li><p><strong>Model statistics</strong>: This plot shows whether the model reproduces the statistics it was explicitly fit to match. Each boxplot represents the distribution of simulated values for a modeled term (e.g., <code>edges</code>, <code>nodematch.practice</code>, <code>gwesp</code>), and the blue diamond marks the observed value. Good fit is indicated when the diamond lies near the center of the box. This panel essentially checks if maximum likelihood estimation succeeded.</p></li>
-<li><p><strong>Degree distribution</strong>: The model accurately captures the variability in the number of ties per node if the observed degree frequencies fall within the simulated distribution at most points.</p></li>
-<li><p><strong>Geodesic distances</strong>: If the model reflects the observed network’s overall connectivity, the distribution of shortest path lengths should align closely with those from the simulations.</p></li>
-<li><p><strong>Edgewise shared partners</strong>: This panel can typically indicate clustering tendencies, but in this case is not meaningful, since <code>gwesp</code> was already included to model triadic closure.</p></li>
-</ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note: Interpreting Black Lines and Blue Diamonds in GOF Plots
+Interpreting th GOF plots
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>In the GOF plots generated by the <code>ergm</code> package, the meaning of the <strong>black line</strong> and <strong>blue diamond</strong> differs slightly depending on the panel:</p>
+<p>In the GOF plots generated by the ergm package, the meaning of the black line and blue diamond differs slightly depending on the panel:</p>
 <ul>
 <li>Model statistics plot:
 <ul>
-<li>Blue diamond: The observed value of each modeled statistic in the empirical network.<br>
-</li>
+<li>Blue diamond: The observed value of each modeled statistic in the empirical network.</li>
 <li>Black line: The mean value of that statistic across the simulated networks.</li>
 </ul></li>
 <li>Other GOF plots (e.g., degree, geodesic distance, ESP):
 <ul>
-<li>Black line: The observed distribution of the statistic (e.g., degree counts) in the empirical network.<br>
-</li>
+<li>Black line: The observed distribution of the statistic (e.g., degree counts) in the empirical network.</li>
 <li>Blue diamonds: The mean of the simulated distributions at each value or bin.</li>
 </ul></li>
 </ul>
 <p>Good model fit is indicated when the black line lies within the range of the simulated distributions (shown as boxplots or shaded areas), and aligns closely with the blue diamonds.</p>
 </div>
 </div>
+<p>This goodness-of-fit check produces plots for several structural features, including both modeled and un-modeled terms. The GOF plots in <a href="#fig-gof" class="quarto-xref">Figure&nbsp;<span>17.5</span></a> compare statistics from the observed network (black lines or blue diamonds) to distributions of the same statistics across networks simulated from the model:</p>
+<ul>
+<li><strong>Model statistics</strong>: the sufficient statistics explicitly specified in the model formula (e.g., <code>edges</code>, <code>nodematch</code>, <code>gwesp</code>). This plot shows whether the model reproduces the statistics it was explicitly fit to match. Each boxplot represents the distribution of simulated values for a modeled term (e.g., <code>edges</code>, <code>nodematch.practice</code>, <code>gwesp</code>), and the blue diamond marks the observed value. Good fit is indicated when the diamond lies near the center of the box. This panel essentially checks if maximum likelihood estimation succeeded.</li>
+<li><strong>Degree distribution</strong>: the number of ties per node. The model accurately captures the variability in the number of ties per node if the observed degree frequencies fall within the simulated distribution at most points.</li>
+<li><strong>Geodesic distances</strong>: shortest paths between nodes. If the model reflects the observed network’s overall connectivity, the distribution of shortest path lengths should align closely with those from the simulations.</li>
+<li><strong>Edgewise shared partners (ESP)</strong>: the number of common neighbors shared by directly connected pairs of nodes. This panel can typically indicate clustering tendencies. Note that ESP should not be interpreted as a fit criterion in the example shown in <a href="#fig-gof" class="quarto-xref">Figure&nbsp;<span>17.5</span></a>, since it is directly modeled via the <code>gwesp</code> term. Including it in GOF checks may simply reflect that the model was designed to reproduce it.</li>
+</ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1447,7 +1436,7 @@ Note on using log-odds instead
 <p>This is useful when you’re interested in small differences in low-probability bins (e.g., rare degrees or long geodesic distances). Values close to 0 (e.g., rare degrees or high distances) are spread out and more visible. Differences between observed and simulated values in the tails become more pronounced. Plots become less intuitive if you’re unfamiliar with log-odds, so interpret with care.</p>
 </div>
 </div>
-<p>We can also look at the printed GOF summary:</p>
+<p>In addition to the plots shown in <a href="#fig-gof" class="quarto-xref">Figure&nbsp;<span>17.5</span></a>, we can also look at the printed GOF summary:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>gof_sc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1520,7 +1509,8 @@ gwesp.fixed.0.693  181.2969 69.40236 177.6489 291.4062       0.76</code></pre>
 <p>The degree distribution is well captured across nearly all values, with observed counts generally falling within the range of those generated by simulations. Most Monte Carlo <span class="math inline">\(p\)</span>-values are high (e.g., &gt; 0.5), indicating no significant deviation between the observed and simulated degree frequencies.</p>
 <p>Minimum geodesic distances, a measure of global connectivity, show reasonable agreement between observed and simulated networks. While the fit is slightly weaker at a geodesic distance of 3 (<span class="math inline">\(p = 0.08\)</span>), all other distances are well within acceptable bounds, suggesting that the model captures the overall reachability structure effectively.</p>
 <p>Lastly, the model terms explicitly included in the formula (<code>edges</code>, <code>nodecov.practice</code>, <code>nodematch.practice</code>, and <code>gwesp</code>) are all closely matched by the simulated networks, with very high <span class="math inline">\(p\)</span>-values across the board. This confirms that the maximum likelihood estimation successfully reproduced the sufficient statistics.</p>
-<p>These diagnostics indicate that the model performs well. It reproduces the modeled terms accurately, and also generalizes to capture broader structural features such as degree variation and path lengths. Since the model has also passed MCMC convergence diagnostics, we can conclude that the ERGM is both well-estimated and substantively valid in representing the network-generating processes in the Lazega law firm.</p>
+<p>These diagnostics together indicate that the model performs well. It reproduces the modeled terms accurately, and also generalizes to capture broader structural features such as degree variation and path lengths. Since the model has also passed MCMC convergence diagnostics, we can conclude that the ERGM is both well-estimated and substantively valid in representing the network-generating processes in the Lazega law firm.</p>
+</section>
 </section>
 </section>
 <section id="references" class="level2 unnumbered">
