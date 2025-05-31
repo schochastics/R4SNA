@@ -1,5 +1,10 @@
 # Cohesive Subgroups
 
+In this chapter, we explore cohesive subgroups within networks, focusing on cliques, community detection, blockmodeling, and core-periphery structures. Each concept offers a different way to examine how nodes cluster based on connectivity, from tightly-knit cliques, where every member is connected, to broader communities grouped by denser internal links. Blockmodeling abstracts these patterns into roles and relationships, while core-periphery structures reveal hierarchical organization with central and peripheral actors.
+
+
+## Packages Needed for this Chapter
+
 ```{r}
 #| label: libraries
 #| message: false
@@ -13,10 +18,6 @@ library(networkdata)
 library(ggraph)
 library(patchwork)
 ```
-
-## Introduction
-
-In this chapter, we explore cohesive subgroups within networks, focusing on cliques, community detection, blockmodeling, and core-periphery structures. Each concept offers a different way to examine how nodes cluster based on connectivity, from tightly-knit cliques, where every member is connected, to broader communities grouped by denser internal links. Blockmodeling abstracts these patterns into roles and relationships, while core-periphery structures reveal hierarchical organization with central and peripheral actors.
 
 ## Cliques 
 
@@ -45,21 +46,34 @@ The figure below shows the network and the found maximal cliques.
 xy <- graphlayouts::layout_with_stress(clique_graph)
 
 cl_df <- as.data.frame(do.call(
-    "rbind",
-    lapply(seq_along(cl), function(x) {
-        cbind(xy[cl[[x]], ], x)
-    })
+  "rbind",
+  lapply(seq_along(cl), function(x) {
+    cbind(xy[cl[[x]], ], x)
+  })
 ))
 
 ggraph(clique_graph, "stress") +
-    geom_edge_link0(edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 8, fill = "grey25") +
-    ggforce::geom_mark_hull(data = cl_df, aes(V1, V2, fill = as.factor(x), group = x), show.legend = FALSE) +
-    scale_fill_manual(values = c(
-        "#E69F00", "#000000", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
-        "#D55E00", "#CC79A7", "#666666"
-    )) +
-    theme_void()
+  geom_edge_link0(edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 8, fill = "grey25") +
+  ggforce::geom_mark_hull(
+    data = cl_df,
+    aes(V1, V2, fill = as.factor(x), group = x),
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(
+    values = c(
+      "#E69F00",
+      "#000000",
+      "#56B4E9",
+      "#009E73",
+      "#F0E442",
+      "#0072B2",
+      "#D55E00",
+      "#CC79A7",
+      "#666666"
+    )
+  ) +
+  theme_void()
 
 ```
 
@@ -77,18 +91,22 @@ kcore
 #| echo: FALSE
 
 cl_df <- as.data.frame(do.call(
-    "rbind",
-    lapply(sort(unique(kcore))[c(2, 3, 4)], function(x) {
-        cbind(xy[kcore >= x, ], x)
-    })
+  "rbind",
+  lapply(sort(unique(kcore))[c(2, 3, 4)], function(x) {
+    cbind(xy[kcore >= x, ], x)
+  })
 ))
 
 ggraph(clique_graph, "stress") +
-    geom_edge_link0(edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 8, fill = "grey25") +
-    ggforce::geom_mark_hull(data = cl_df, aes(V1, V2, fill = as.factor(x), group = x), show.legend = FALSE) +
-    scale_fill_manual(values = c("red", "blue", "green")) +
-    theme_void()
+  geom_edge_link0(edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 8, fill = "grey25") +
+  ggforce::geom_mark_hull(
+    data = cl_df,
+    aes(V1, V2, fill = as.factor(x), group = x),
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("red", "blue", "green")) +
+  theme_void()
 
 ```
 
@@ -110,9 +128,9 @@ g <- sample_islands(n1, n2, 0.9, 5)
 g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
 ggraph(g, "stress") +
-    geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 5, aes(fill = grp), show.legend = FALSE) +
-    theme_void()
+  geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 5, aes(fill = grp), show.legend = FALSE) +
+  theme_void()
 ```
 
 In contrast, the network below does not really seem to have any well defined cluster structure.
@@ -128,9 +146,9 @@ g <- sample_islands(n1, n2, 0.25, 15)
 g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
 ggraph(g, "stress") +
-    geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
-    theme_void()
+  geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
+  theme_void()
 
 ```
 
@@ -155,10 +173,10 @@ data("karate")
 #| label: karate-plot
 #| echo: false
 ggraph(karate, "stress") +
-    geom_edge_link0(edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 5, fill = "grey66") +
-    theme_void() +
-    coord_equal()
+  geom_edge_link0(edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 5, fill = "grey66") +
+  theme_void() +
+  coord_equal()
 ```
 
 ```{r}
@@ -185,11 +203,11 @@ loc <- cluster_louvain(karate)
 sgc <- cluster_spinglass(karate)
 wtc <- cluster_walktrap(karate)
 scores <- c(
-    infomap = modularity(karate, membership(imc)),
-    eigen = modularity(karate, membership(lec)),
-    louvain = modularity(karate, membership(loc)),
-    spinglass = modularity(karate, membership(sgc)),
-    walk = modularity(karate, membership(wtc))
+  infomap = modularity(karate, membership(imc)),
+  eigen = modularity(karate, membership(lec)),
+  louvain = modularity(karate, membership(loc)),
+  spinglass = modularity(karate, membership(sgc)),
+  walk = modularity(karate, membership(wtc))
 )
 scores
 ```
@@ -202,10 +220,15 @@ The corresponding clustering is shown below.
 #| echo: false
 V(karate)$clu <- membership(sgc)
 ggraph(karate, "stress") +
-    geom_edge_link0(edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 5, aes(fill = as.factor(clu)), show.legend = FALSE) +
-    theme_void() +
-    coord_equal()
+  geom_edge_link0(edge_color = "grey66") +
+  geom_node_point(
+    shape = 21,
+    size = 5,
+    aes(fill = as.factor(clu)),
+    show.legend = FALSE
+  ) +
+  theme_void() +
+  coord_equal()
 ```
 
 Modularity maximization is still widely considered as the state-of-the-art clustering method
@@ -224,7 +247,7 @@ lst <- vector("list", n2)
 lst <- lapply(lst, function(x) A)
 AA <- Matrix::bdiag(lst)
 for (i in 1:(n2 - 1)) {
-    AA[i * n1, i * n1 + 1] <- AA[i * n1 + 1, i * n1] <- 1
+  AA[i * n1, i * n1 + 1] <- AA[i * n1 + 1, i * n1] <- 1
 }
 AA[1, n1 * n2] <- AA[n1 * n2, 1] <- 1
 K50 <- graph_from_adjacency_matrix(AA, "undirected", diag = FALSE)
@@ -238,10 +261,10 @@ The figure below shows such a graph, consisting of 50 cliques of size 5.
 #| width: 8
 #| height: 8
 ggraph(K50, "stress") +
-    geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
-    geom_node_point(shape = 21, fill = "grey66", size = 2, show.legend = FALSE) +
-    theme_void() +
-    coord_fixed()
+  geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
+  geom_node_point(shape = 21, fill = "grey66", size = 2, show.legend = FALSE) +
+  theme_void() +
+  coord_fixed()
 ```
 
 Intuitively, any clustering method should return a cluster for each clique.
@@ -257,7 +280,11 @@ A clustering algorithm that fixes this issue is the leiden algorithm.
 
 ```{r}
 #| label: clu-leiden-K50
-clu_leiden <- cluster_leiden(K50, objective_function = "CPM", resolution_parameter = 0.5)
+clu_leiden <- cluster_leiden(
+  K50,
+  objective_function = "CPM",
+  resolution_parameter = 0.5
+)
 table(membership(clu_leiden))
 
 ```
@@ -272,12 +299,27 @@ The figure below shows the clusters computed with the louvain method in grey and
 V(K50)$louvain <- membership(clu_louvain)
 V(K50)$leiden <- membership(clu_leiden)
 ggraph(K50, "stress") +
-    geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
-    geom_node_point(shape = 21, fill = "grey66", size = 1.5, show.legend = FALSE) +
-    ggforce::geom_mark_ellipse(aes(x, y, group = louvain), expand = unit(4.5, "pt"), fill = "black", alpha = 0.25) +
-    ggforce::geom_mark_circle(aes(x, y, group = leiden), expand = unit(4.5, "pt"), col = "firebrick3", size = 1) +
-    theme_void() +
-    coord_fixed()
+  geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
+  geom_node_point(
+    shape = 21,
+    fill = "grey66",
+    size = 1.5,
+    show.legend = FALSE
+  ) +
+  ggforce::geom_mark_ellipse(
+    aes(x, y, group = louvain),
+    expand = unit(4.5, "pt"),
+    fill = "black",
+    alpha = 0.25
+  ) +
+  ggforce::geom_mark_circle(
+    aes(x, y, group = leiden),
+    expand = unit(4.5, "pt"),
+    col = "firebrick3",
+    size = 1
+  ) +
+  theme_void() +
+  coord_fixed()
 
 ```
 
@@ -316,9 +358,9 @@ g <- sample_islands(n1, n2, 0.75, 5)
 g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
 ggraph(g, "stress") +
-    geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
-    theme_void()
+  geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
+  theme_void()
 
 ```
 
@@ -327,17 +369,28 @@ The disadvantage is that we need to specify a lot more parameters than for commu
 #| label: calc-rnd-block
 A <- as_adj(g)
 blk <- matrix(
-    c(
-        "com", "nul", "nul",
-        "nul", "com", "nul",
-        "nul", "nul", "com"
-    ),
-    nrow = 3
+  c(
+    "com",
+    "nul",
+    "nul",
+    "nul",
+    "com",
+    "nul",
+    "nul",
+    "nul",
+    "com"
+  ),
+  nrow = 3
 )
 blk
 res <- optRandomParC(
-    M = A, k = 3, approaches = "bin",
-    blocks = blk, rep = 5, mingr = 20, maxgr = 20
+  M = A,
+  k = 3,
+  approaches = "bin",
+  blocks = blk,
+  rep = 5,
+  mingr = 20,
+  maxgr = 20
 )
 ```
 
@@ -361,10 +414,7 @@ Looking at a more realistic dataset, we load the `baker` dataset from the `block
 data("baker")
 diag(baker) <- 0
 
-plotMat(baker,
-    main = "Baker Network Data",
-    mar = c(1, 1, 3, 1), title.line = 2
-)
+plotMat(baker, main = "Baker Network Data", mar = c(1, 1, 3, 1), title.line = 2)
 ```
 
 First, we run a binary blockmodel. This time we increase the number of repetions to 1000 and instead of giving a lear block structure, we just specify, what type of blocks we want our result to include. How they are distributed, we do not care and let the algorithm decide. We run the optimization in parallel (`nCores = 0`), which requires the packages `doParallel` and `doRNG` to be installed.
@@ -374,8 +424,12 @@ baker_binary <- baker
 baker_binary[baker_binary > 0] <- 1
 
 res_baker_binary <- optRandomParC(
-    M = baker_binary, k = 3, rep = 1000,
-    nCores = 0, blocks = c("nul", "com"), approach = "bin"
+  M = baker_binary,
+  k = 3,
+  rep = 1000,
+  nCores = 0,
+  blocks = c("nul", "com"),
+  approach = "bin"
 )
 ```
 
@@ -390,9 +444,10 @@ The resulting blocks can be visualized via the `plot` function.
 ```{r}
 #| label: baker-bin
 plot(
-    res_baker_binary,
-    main = "Baker Binary Network Data",
-    mar = c(1, 2, 3, 1), title.line = 2
+  res_baker_binary,
+  main = "Baker Binary Network Data",
+  mar = c(1, 2, 3, 1),
+  title.line = 2
 )
 ```
 
@@ -400,9 +455,13 @@ Now we run a valued blockmodel on the original data. The parameter `preSpecM` is
 ```{r}
 #| label: baker_valued
 res_baker_valued <- optRandomParC(
-    M = baker, k = 3, rep = 1000,
-    preSpecM = 13, approach = "val", blocks = c("nul", "com"),
-    nCores = 0
+  M = baker,
+  k = 3,
+  rep = 1000,
+  preSpecM = 13,
+  approach = "val",
+  blocks = c("nul", "com"),
+  nCores = 0
 )
 
 ```
@@ -417,9 +476,10 @@ IM(res_baker_valued)
 ```{r}
 #| label: baker-val
 plot(
-    res_baker_valued,
-    main = "Baker Valued Network Data",
-    mar = c(1, 2, 3, 1), title.line = 2
+  res_baker_valued,
+  main = "Baker Valued Network Data",
+  mar = c(1, 2, 3, 1),
+  title.line = 2
 )
 ```
 
@@ -449,19 +509,23 @@ The created graph has 50 nodes and 30% of all nodes are in the core. The probabi
 #| echo: false
 V(sg)$type <- c("periphery", "core")[V(sg)$core + 1]
 p1 <- ggraph(sg, "stress") +
-    geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
-    geom_node_point(shape = 21, size = 5, aes(fill = type)) +
-    theme_graph() +
-    theme(legend.position = "bottom")
+  geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
+  geom_node_point(shape = 21, size = 5, aes(fill = type)) +
+  theme_graph() +
+  theme(legend.position = "bottom")
 
-E(sg)$col <- apply(matrix(V(sg)$core[as_edgelist(sg, names = FALSE)], ncol = 2), 1, all)
+E(sg)$col <- apply(
+  matrix(V(sg)$core[as_edgelist(sg, names = FALSE)], ncol = 2),
+  1,
+  all
+)
 E(sg)$type <- c("core - periphery", "core - core")[E(sg)$col + 1]
 p2 <- ggraph(sg, "matrix") +
-    geom_edge_point(mirror = TRUE, aes(edge_color = type)) +
-    coord_fixed() +
-    scale_y_reverse() +
-    theme_graph() +
-    theme(legend.position = "bottom")
+  geom_edge_point(mirror = TRUE, aes(edge_color = type)) +
+  coord_fixed() +
+  scale_y_reverse() +
+  theme_graph() +
+  theme(legend.position = "bottom")
 
 p1 + p2
 ```

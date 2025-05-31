@@ -1,5 +1,13 @@
 # Centrality
 
+In this chapter, we learn about network centrality, a key concept for identifying the most influential nodes within networks. 
+In a nutshell, a measure of centrality is an index that assigns a numeric values to the nodes of the network. The higher the value, the more central the node. "Being central" is a very ambiguous term and it is thus no surprise that there exists a large variety of 
+indices that assess centrality with very different structural properties of the network.
+
+[INSERT PERIODIC TABLE]
+
+
+## Packages Needed for this Chapter
 ```{r}
 #| label: libraries
 #| message: false
@@ -14,14 +22,6 @@ library(networkdata)
 #| message: false
 library(ggraph)
 ```
-
-## Introduction
-
-In this chapter, we learn about network centrality, a key concept for identifying the most influential nodes within networks. 
-In a nutshell, a measure of centrality is an index that assigns a numeric values to the nodes of the network. The higher the value, the more central the node. "Being central" is a very ambiguous term and it is thus no surprise that there exists a large variety of 
-indices that assess centrality with very different structural properties of the network.
-
-[INSERT PERIODIC TABLE]
 
 ## Centrality Indices `igraph`
 
@@ -48,11 +48,11 @@ data("dbces11")
 #| label: dbces11_basic_plot
 #| echo: false
 ggraph(dbces11, "stress") +
-    geom_edge_link0() +
-    geom_node_point(shape = 21, size = 10, fill = "grey66") +
-    geom_node_text(aes(label = name)) +
-    theme_void() +
-    coord_equal(clip = "off")
+  geom_edge_link0() +
+  geom_node_point(shape = 21, size = 10, fill = "grey66") +
+  geom_node_text(aes(label = name)) +
+  theme_void() +
+  coord_equal(clip = "off")
 ```
 
 **degree** simply counts the number of neighbors a node has.
@@ -67,13 +67,13 @@ id <- which.max(degree(dbces11))
 E(dbces11)$deg <- "no"
 E(dbces11)$deg[incident(dbces11, 11)] <- "yes"
 ggraph(dbces11, "stress") +
-    geom_edge_link(aes(col = deg, width = deg), show.legend = FALSE) +
-    geom_node_point(shape = 21, size = 10, fill = "grey66") +
-    geom_node_text(aes(label = name)) +
-    scale_edge_color_manual(values = c("grey66", "firebrick3")) +
-    scale_edge_width_manual(values = c(0.5, 1.5)) +
-    theme_void() +
-    coord_equal(clip = "off")
+  geom_edge_link(aes(col = deg, width = deg), show.legend = FALSE) +
+  geom_node_point(shape = 21, size = 10, fill = "grey66") +
+  geom_node_text(aes(label = name)) +
+  scale_edge_color_manual(values = c("grey66", "firebrick3")) +
+  scale_edge_width_manual(values = c(0.5, 1.5)) +
+  theme_void() +
+  coord_equal(clip = "off")
 
 ```
 
@@ -109,10 +109,15 @@ B <- add.vertices(B, 1, attr = list(name = LETTERS[6]))
 B <- add.edges(B, c(5, 11, 6, 11))
 
 ggraph(B, "stress") +
-    geom_edge_link0(edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 8, fill = "grey25") +
-    geom_node_point(shape = 21, size = 8, aes(filter = name == "F"), fill = "firebrick3") +
-    theme_void()
+  geom_edge_link0(edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 8, fill = "grey25") +
+  geom_node_point(
+    shape = 21,
+    size = 8,
+    aes(filter = name == "F"),
+    fill = "firebrick3"
+  ) +
+  theme_void()
 ```
 
 Any shortest path from the right will pass through the red node and vice versa. The 
@@ -148,11 +153,16 @@ V(dbces11)$cent[which.max(eigen_centrality(dbces11)$vector)] <- "EC"
 V(dbces11)$cent[which.max(subgraph_centrality(dbces11))] <- "SC"
 
 ggraph(dbces11, "stress") +
-    geom_edge_link0() +
-    geom_node_point(shape = 21, size = 10, aes(fill = cent), show.legend = FALSE) +
-    geom_node_text(aes(filter = !is.na(cent), label = cent)) +
-    theme_void() +
-    coord_equal(clip = "off")
+  geom_edge_link0() +
+  geom_node_point(
+    shape = 21,
+    size = 10,
+    aes(fill = cent),
+    show.legend = FALSE
+  ) +
+  geom_node_text(aes(filter = !is.na(cent), label = cent)) +
+  theme_void() +
+  coord_equal(clip = "off")
 
 ```
 
@@ -212,10 +222,15 @@ data("flo_marriage")
 #| label: flo_plot
 #| echo: false
 ggraph(flo_marriage, "stress") +
-    geom_edge_link0(edge_color = "grey66") +
-    geom_node_point(shape = 21, aes(size = wealth), fill = "grey66", show.legend = FALSE) +
-    geom_node_text(aes(size = wealth, label = name), show.legend = FALSE) +
-    theme_void()
+  geom_edge_link0(edge_color = "grey66") +
+  geom_node_point(
+    shape = 21,
+    aes(size = wealth),
+    fill = "grey66",
+    show.legend = FALSE
+  ) +
+  geom_node_text(aes(size = wealth, label = name), show.legend = FALSE) +
+  theme_void()
 ```
 
 Th network shows marriage ties among Renaissance Families in Florence. Marriages at that time were
@@ -228,13 +243,13 @@ The table bellow shows the ranking for the four most commonly used centrality in
 #| label: centralities_flo
 #| echo: false
 data.frame(
-    name = V(flo_marriage)$name,
-    degree = rank(-degree(flo_marriage)),
-    betweenness = rank(-betweenness(flo_marriage)),
-    closeness = rank(-closeness(flo_marriage)),
-    eigen = rank(-eigen_centrality(flo_marriage)$vector)
+  name = V(flo_marriage)$name,
+  degree = rank(-degree(flo_marriage)),
+  betweenness = rank(-betweenness(flo_marriage)),
+  closeness = rank(-closeness(flo_marriage)),
+  eigen = rank(-eigen_centrality(flo_marriage)$vector)
 ) |>
-    knitr::kable(row.names = FALSE)
+  knitr::kable(row.names = FALSE)
 ```
 
 No matter what structural feature we consider to be important, the Medici always have the most advantageous position.
