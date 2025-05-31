@@ -427,7 +427,7 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">7.1</span> Introduction</a></li>
+  <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">7.1</span> Packages Needed for this Chapter</a></li>
   <li><a href="#data-structures-for-signed-networks" id="toc-data-structures-for-signed-networks" class="nav-link" data-scroll-target="#data-structures-for-signed-networks"><span class="header-section-number">7.2</span> Data structures for signed networks</a></li>
   <li><a href="#structural-balance" id="toc-structural-balance" class="nav-link" data-scroll-target="#structural-balance"><span class="header-section-number">7.3</span> Structural Balance</a></li>
   <li><a href="#balancedness" id="toc-balancedness" class="nav-link" data-scroll-target="#balancedness"><span class="header-section-number">7.4</span> Balancedness</a></li>
@@ -464,13 +464,6 @@ window.Quarto = {
 </header>
 
 
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(signnet)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<section id="introduction" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">7.1</span> Introduction</h2>
 <p>Traditional SNA usually deals with relations among entities (e.g.&nbsp;people) that are positive, including “friendship”, “advice seeking”, etc. Most network analytic tools are devised under this premise, be that centrality indices, clustering tools and so forth. But of course not all occurring relations are positive. People can be friends but also foes.</p>
 <p>This gives rise to signed networks. These networks are usually composed of both, positive and negative, ties measured among a set of entities. Traditional network analytic tools are not applicable to such networks without adapting for negative ties.</p>
 <p>The <code>signnet</code> package brings together methods that have been developed to analyse signed networks. This includes</p>
@@ -480,6 +473,13 @@ window.Quarto = {
 <li>Centrality</li>
 <li>Signed two-mode networks</li>
 </ul>
+<section id="packages-needed-for-this-chapter" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">7.1</span> Packages Needed for this Chapter</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(signnet)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="data-structures-for-signed-networks" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="data-structures-for-signed-networks"><span class="header-section-number">7.2</span> Data structures for signed networks</h2>
@@ -493,9 +493,9 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(g)<span class="sc">$</span>sign <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>g</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH 0ab0988 U--- 5 10 -- Full graph
+<pre><code>IGRAPH 31180b2 U--- 5 10 -- Full graph
 + attr: name (g/c), loops (g/l), sign (e/n)
-+ edges from 0ab0988:
++ edges from 31180b2:
  [1] 1--2 1--3 1--4 1--5 2--3 2--4 2--5 3--4 3--5 4--5</code></pre>
 </div>
 </div>
@@ -545,7 +545,7 @@ Nagam     1     1   0     0     7</code></pre>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count_signed_triangles</span>(g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+++ ++- +-- --- 
-135   0   2   0 </code></pre>
+ 87   0   4   0 </code></pre>
 </div>
 </div>
 <p>Note the absence of <code>++-</code> and <code>---</code> triangles.</p>
@@ -554,12 +554,12 @@ Nagam     1     1   0     0     7</code></pre>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">signed_triangles</span>(g))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     V1 V2 V3 P
-[1,] 20  4 15 1
-[2,] 20  4 10 1
-[3,] 20 12 11 3
-[4,] 20 12 13 3
-[5,] 20 12 14 3
-[6,] 20 12 15 3</code></pre>
+[1,]  5  1 10 3
+[2,]  5  1  7 3
+[3,]  5  3  4 3
+[4,]  5  3 10 3
+[5,]  5  3  7 3
+[6,]  5  3  8 3</code></pre>
 </div>
 </div>
 <p>The column P indicated the number of positive ties in the triangle. A value of 3 indicates that the triangle is “+++”.</p>
@@ -578,7 +578,7 @@ Nagam     1     1   0     0     7</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g, <span class="at">method =</span> <span class="st">"frustration"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8554217</code></pre>
+<pre><code>[1] 0.8648649</code></pre>
 </div>
 </div>
 <p>“triangles” returns the fraction of balanced triangles.</p>

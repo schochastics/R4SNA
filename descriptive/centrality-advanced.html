@@ -427,7 +427,7 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">4.1</span> Introduction</a></li>
+  <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">4.1</span> Packages Needed for this Chapter</a></li>
   <li><a href="#neighborhood-inclusion" id="toc-neighborhood-inclusion" class="nav-link" data-scroll-target="#neighborhood-inclusion"><span class="header-section-number">4.2</span> Neighborhood-inclusion</a></li>
   <li><a href="#threshold-graphs-and-correlation-among-indices" id="toc-threshold-graphs-and-correlation-among-indices" class="nav-link" data-scroll-target="#threshold-graphs-and-correlation-among-indices"><span class="header-section-number">4.3</span> Threshold graphs and correlation among indices</a></li>
   <li><a href="#partial-centrality" id="toc-partial-centrality" class="nav-link" data-scroll-target="#partial-centrality"><span class="header-section-number">4.4</span> Partial Centrality</a></li>
@@ -461,17 +461,17 @@ window.Quarto = {
 </header>
 
 
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netrankr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<section id="introduction" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">4.1</span> Introduction</h2>
 <p>When looking at the vast amount of centrality indices, it may be reasonable to ask if there is any natural limit for what can be considered a centrality index. Concretely, are there any theoretical properties that an index has to have in order to be called a centrality index? There exist several axiomatic systems for centrality, which define some desirable properties that a proper index should have. While these systems are able to shed some light on specific groups of indices, they are in most cases not comprehensive. That is, it is often possible to construct counterexamples for most indices such that they do not fulfill the properties. Instead of the rather normative axiomatic approach, we explore a more descriptive approach. We will address the following questions:</p>
 <ul>
 <li>Are there any properties that are shared by all (or almost all) indices?</li>
 <li>If so, can they be exploited for a different kind of centrality analysis?</li>
 </ul>
+<section id="packages-needed-for-this-chapter" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">4.1</span> Packages Needed for this Chapter</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netrankr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="neighborhood-inclusion" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="neighborhood-inclusion"><span class="header-section-number">4.2</span> Neighborhood-inclusion</h2>
@@ -546,10 +546,10 @@ For now we convert it on the fly...</code></pre>
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>disc2 <span class="ot">&lt;-</span> <span class="fu">compare_ranks</span>(<span class="fu">betweenness</span>(tg3_noise),<span class="fu">closeness</span>(tg3_noise))<span class="sc">$</span>discordant</span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(disc1,disc2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1]   0 520</code></pre>
+<pre><code>[1]   0 549</code></pre>
 </div>
 </div>
-<p>On the threshold graph we do not observe any discordant pairs for the two indices. However, the little noise we added to the threshold graph was enough to introduce 520 pairs of nodes that are now ranked differently. In general, we can say that</p>
+<p>On the threshold graph we do not observe any discordant pairs for the two indices. However, the little noise we added to the threshold graph was enough to introduce 549 pairs of nodes that are now ranked differently. In general, we can say that</p>
 <p><em>The closer a network is to be a threshold graph, the higher we expect the correlation of any pair of centrality indices to be, independent of their definition.</em></p>
 <p>But how to define <em>being close</em> to a threshold graph? One obvious choice is to use the function <code>comparable_pairs()</code>. The more pairs are comparable, the less possibilities for indices to rank the nodes differently. Hence, we are close to a unique ranking obtained for threshold graphs. A second option is to use an appropriate distance measure for graphs. <code>netrankr</code> implements the so called <em>majorization gap</em> which operates on the degree sequences of graphs. In its essence, it returns the number of edges that need to be rewired, in order to turn an arbitrary graph into a threshold graph.</p>
 <div class="cell">
@@ -557,14 +557,14 @@ For now we convert it on the fly...</code></pre>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mg2 <span class="ot">&lt;-</span> <span class="fu">majorization_gap</span>(tg3_noise)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(mg1,mg2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.00000000 0.02061123</code></pre>
+<pre><code>[1] 0.00000000 0.02525651</code></pre>
 </div>
 </div>
 <p>The result is given as a fraction of the total number of edges. So 12% of edges need to be rewired in the noisy graph to turn it into a threshold graph. To get the raw count, set <code>norm=FALSE</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">majorization_gap</span>(tg3_noise,<span class="at">norm =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 29</code></pre>
+<pre><code>[1] 32</code></pre>
 </div>
 </div>
 </section>
