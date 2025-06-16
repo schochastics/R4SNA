@@ -1,19 +1,29 @@
 # Enhancing Visualizations
+
+## Packages Needed for this Chapter
 ```{r}
 #| label: libraries1
-#| include: false
+#| message: false
 library(igraph)
 library(ggraph)
 library(graphlayouts)
 library(ggforce)
 library(networkdata)
+```
+
+```{r}
 data("got")
 
 gotS1 <- got[[1]]
 
 got_palette <- c(
-    "#1A5878", "#C44237", "#AD8941", "#E99093",
-    "#50594B", "#8968CD", "#9ACD32"
+  "#1A5878",
+  "#C44237",
+  "#AD8941",
+  "#E99093",
+  "#50594B",
+  "#8968CD",
+  "#9ACD32"
 )
 
 ## compute a clustering for node colors
@@ -46,48 +56,50 @@ E(g)$col[bb$backbone] <- T
 
 ```{r}
 #| label:  network-grps-sol
-ggraph(g, #|
-    layout = "manual",
-    x = bb$xy[, 1],
-    y = bb$xy[, 2]
+ggraph(
+  g, #|
+  layout = "manual",
+  x = bb$xy[, 1],
+  y = bb$xy[, 2]
 ) +
-    geom_edge_link0(aes(col = col), width = 0.2) +
-    geom_node_point(aes(fill = grp), shape = 21, size = 3) +
-    geom_mark_hull(
-        aes(x, y, group = grp, fill = grp),
-        concavity = 4,
-        expand = unit(2, "mm"),
-        alpha = 0.25
-    ) +
-    scale_color_brewer(palette = "Set1") +
-    scale_fill_brewer(palette = "Set1") +
-    scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
-    theme_graph() +
-    theme(legend.position = "none")
+  geom_edge_link0(aes(col = col), width = 0.2) +
+  geom_node_point(aes(fill = grp), shape = 21, size = 3) +
+  geom_mark_hull(
+    aes(x, y, group = grp, fill = grp),
+    concavity = 4,
+    expand = unit(2, "mm"),
+    alpha = 0.25
+  ) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
+  theme_graph() +
+  theme(legend.position = "none")
 ```
 
 Of course you can also add a label to your clusters.
 
 ```{r}
 #| label: network-grps-label-sol
-ggraph(g, #|
-    layout = "manual",
-    x = bb$xy[, 1],
-    y = bb$xy[, 2]
+ggraph(
+  g, #|
+  layout = "manual",
+  x = bb$xy[, 1],
+  y = bb$xy[, 2]
 ) +
-    geom_edge_link0(aes(col = col), width = 0.2) +
-    geom_node_point(aes(fill = grp), shape = 21, size = 3) +
-    geom_mark_hull(
-        aes(x, y, group = grp, fill = grp, label = grp),
-        concavity = 4,
-        expand = unit(2, "mm"),
-        alpha = 0.25
-    ) +
-    scale_color_brewer(palette = "Set1") +
-    scale_fill_brewer(palette = "Set1") +
-    scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
-    theme_graph() +
-    theme(legend.position = "none")
+  geom_edge_link0(aes(col = col), width = 0.2) +
+  geom_node_point(aes(fill = grp), shape = 21, size = 3) +
+  geom_mark_hull(
+    aes(x, y, group = grp, fill = grp, label = grp),
+    concavity = 4,
+    expand = unit(2, "mm"),
+    alpha = 0.25
+  ) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
+  theme_graph() +
+  theme(legend.position = "none")
 ```
 
 If you want to avoid node overlaps, you can use `geom_node_voronoi()`.
@@ -95,29 +107,25 @@ So this is actually already implemented in `ggraph`, but originates from `geom_v
 
 ```{r}
 #| label: network-voronoi
-ggraph(g,
-    layout = "manual",
-    x = bb$xy[, 1],
-    y = bb$xy[, 2]
-) +
-    geom_edge_link0(aes(filter = !col, col = col), width = 0.2) +
-    geom_node_voronoi(
-        aes(x, y, fill = grp),
-        max.radius = 0.4,
-        expand = unit(-0.5, "mm"),
-        colour = "black"
-    ) +
-    scale_color_brewer(palette = "Set1") +
-    scale_fill_brewer(palette = "Set1") +
-    scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
-    theme(
-        legend.position = "none",
-        panel.grid = element_blank(),
-        axis.ticks = element_blank(),
-        axis.text = element_blank()
-    ) +
-    theme_graph() +
-    theme(legend.position = "none")
+ggraph(g, layout = "manual", x = bb$xy[, 1], y = bb$xy[, 2]) +
+  geom_edge_link0(aes(filter = !col, col = col), width = 0.2) +
+  geom_node_voronoi(
+    aes(x, y, fill = grp),
+    max.radius = 0.4,
+    expand = unit(-0.5, "mm"),
+    colour = "black"
+  ) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+  ) +
+  theme_graph() +
+  theme(legend.position = "none")
 ```
 
 
@@ -136,19 +144,19 @@ g <- sample_pa(30, 1)
 V(g)$degree <- degree(g, mode = "in")
 
 ggraph(g, "stress") +
-    geom_edge_link(
-        aes(end_cap = circle(node2.degree + 2, "pt")),
-        edge_colour = "black",
-        arrow = arrow(
-            angle = 10,
-            length = unit(0.15, "inches"),
-            ends = "last",
-            type = "closed"
-        )
-    ) +
-    geom_node_point(aes(size = degree), col = "grey66", show.legend = FALSE) +
-    scale_size(range = c(3, 11)) +
-    theme_graph()
+  geom_edge_link(
+    aes(end_cap = circle(node2.degree + 2, "pt")),
+    edge_colour = "black",
+    arrow = arrow(
+      angle = 10,
+      length = unit(0.15, "inches"),
+      ends = "last",
+      type = "closed"
+    )
+  ) +
+  geom_node_point(aes(size = degree), col = "grey66", show.legend = FALSE) +
+  scale_size(range = c(3, 11)) +
+  theme_graph()
 ```
 
 The overlap can be avoided by using the `I()` function from base R, which
@@ -160,29 +168,29 @@ you need to do that beforehand.
 #| label: arrows-size-sol
 ## this function is borrowed from the ambient package
 normalise <- function(x, from = range(x), to = c(0, 1)) {
-    x <- (x - from[1]) / (from[2] - from[1])
-    if (!identical(to, c(0, 1))) {
-        x <- x * (to[2] - to[1]) + to[1]
-    }
-    x
+  x <- (x - from[1]) / (from[2] - from[1])
+  if (!identical(to, c(0, 1))) {
+    x <- x * (to[2] - to[1]) + to[1]
+  }
+  x
 }
 
 ## map to the range you want
 V(g)$degree <- normalise(V(g)$degree, to = c(3, 11))
 
 ggraph(g, "stress") +
-    geom_edge_link(
-        aes(end_cap = circle(node2.degree + 2, "pt")),
-        edge_colour = "grey25",
-        arrow = arrow(
-            angle = 10,
-            length = unit(0.15, "inches"),
-            ends = "last",
-            type = "closed"
-        )
-    ) +
-    geom_node_point(aes(size = I(degree)), col = "grey66") +
-    theme_graph()
+  geom_edge_link(
+    aes(end_cap = circle(node2.degree + 2, "pt")),
+    edge_colour = "grey25",
+    arrow = arrow(
+      angle = 10,
+      length = unit(0.15, "inches"),
+      ends = "last",
+      type = "closed"
+    )
+  ) +
+  geom_node_point(aes(size = I(degree)), col = "grey66") +
+  theme_graph()
 ```
 
 I would not be surprised though if there is an even easier fix for this problem.
@@ -199,14 +207,14 @@ g <- sample_gnp(20, 0.5)
 V(g)$degree <- degree(g)
 
 ggraph(g, "stress") +
-    geom_edge_link(edge_colour = "grey66") +
-    geom_node_point(
-        size = 8,
-        aes(alpha = degree),
-        col = "red",
-        show.legend = FALSE
-    ) +
-    theme_graph()
+  geom_edge_link(edge_colour = "grey66") +
+  geom_node_point(
+    size = 8,
+    aes(alpha = degree),
+    col = "red",
+    show.legend = FALSE
+  ) +
+  theme_graph()
 ```
 
 The solution is rather simple. Just add a node layer with the same aesthetics below with
@@ -214,15 +222,15 @@ The solution is rather simple. Just add a node layer with the same aesthetics be
 ```{r}
 #| label: alpha-nodes-sol
 ggraph(g, "stress") +
-    geom_edge_link(edge_colour = "grey66") +
-    geom_node_point(size = 8, col = "white") +
-    geom_node_point(
-        aes(alpha = degree),
-        size = 8,
-        col = "red",
-        show.legend = FALSE
-    ) +
-    theme_graph()
+  geom_edge_link(edge_colour = "grey66") +
+  geom_node_point(size = 8, col = "white") +
+  geom_node_point(
+    aes(alpha = degree),
+    size = 8,
+    col = "red",
+    show.legend = FALSE
+  ) +
+  theme_graph()
 ```
 
 Of course you could also use `start_cap` and `end_cap` here, but you may have to fiddle again as in the last example. 
@@ -240,13 +248,16 @@ V(g)$name <- sapply(1:50, function(x) paste0(sample(LETTERS, 4), collapse = ""))
 E(g)$weight <- runif(ecount(g))
 
 ggraph(g) +
-    geom_edge_link0(aes(edge_color = weight, edge_linewidth = weight), show.legend = FALSE) +
-    geom_node_point(size = 8, color = "#44a6c6") +
-    geom_node_text(aes(label = name), fontface = "bold") +
-    scale_edge_color_continuous(low = "grey66", high = "black") +
-    scale_edge_width(range = c(0.1, 0.5)) +
-    theme_graph() +
-    coord_fixed()
+  geom_edge_link0(
+    aes(edge_color = weight, edge_linewidth = weight),
+    show.legend = FALSE
+  ) +
+  geom_node_point(size = 8, color = "#44a6c6") +
+  geom_node_text(aes(label = name), fontface = "bold") +
+  scale_edge_color_continuous(low = "grey66", high = "black") +
+  scale_edge_width(range = c(0.1, 0.5)) +
+  theme_graph() +
+  coord_fixed()
 ```
 
 Here you can make use of the fact that the layout of the nodes are stored in a "hidden" data frame when a `ggraph` object is constructed. That means you can use other geoms from other packages. In this case, the `shadowtext` package as shown below.
@@ -257,13 +268,21 @@ Here you can make use of the fact that the layout of the nodes are stored in a "
 #| fig-height: 8
 
 ggraph(g, "stress") +
-    geom_edge_link0(aes(edge_color = weight, edge_linewidth = weight), show.legend = FALSE) +
-    geom_node_point(size = 8, color = "#44a6c6") +
-    shadowtext::geom_shadowtext(aes(x, y, label = name), color = "black", size = 4, bg.colour = "white") +
-    scale_edge_color_continuous(low = "grey66", high = "black") +
-    scale_edge_width(range = c(0.1, 0.5)) +
-    theme_graph() +
-    coord_fixed()
+  geom_edge_link0(
+    aes(edge_color = weight, edge_linewidth = weight),
+    show.legend = FALSE
+  ) +
+  geom_node_point(size = 8, color = "#44a6c6") +
+  shadowtext::geom_shadowtext(
+    aes(x, y, label = name),
+    color = "black",
+    size = 4,
+    bg.colour = "white"
+  ) +
+  scale_edge_color_continuous(low = "grey66", high = "black") +
+  scale_edge_width(range = c(0.1, 0.5)) +
+  theme_graph() +
+  coord_fixed()
 ```
 
 ## Edge bundling
@@ -274,17 +293,27 @@ gr <- edgebundle::us_flights
 states <- map_data("state")
 
 ggraph(gr, x = longitude, y = latitude) +
-    geom_polygon(aes(long, lat, group = group), states, color = "white", linewidth = 0.2) +
-    coord_sf(crs = "NAD83", default_crs = sf::st_crs(4326)) +
-    geom_edge_bundle_force(color = "white", width = 0.05)
+  geom_polygon(
+    aes(long, lat, group = group),
+    states,
+    color = "white",
+    linewidth = 0.2
+  ) +
+  coord_sf(crs = "NAD83", default_crs = sf::st_crs(4326)) +
+  geom_edge_bundle_force(color = "white", width = 0.05)
 ```
 
 ```{r}
 #| label: fig-path-bundle
 ggraph(gr, x = longitude, y = latitude) +
-    geom_polygon(aes(long, lat, group = group), states, color = "white", linewidth = 0.2) +
-    coord_sf(crs = "NAD83", default_crs = sf::st_crs(4326)) +
-    geom_edge_bundle_path(color = "white", width = 0.05)
+  geom_polygon(
+    aes(long, lat, group = group),
+    states,
+    color = "white",
+    linewidth = 0.2
+  ) +
+  coord_sf(crs = "NAD83", default_crs = sf::st_crs(4326)) +
+  geom_edge_bundle_path(color = "white", width = 0.05)
 ```
 
 ## snahelper

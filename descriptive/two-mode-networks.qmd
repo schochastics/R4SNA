@@ -1,5 +1,17 @@
 # Two-Mode Networks
 
+A **two-mode network** is a network that consists of two disjoint sets of nodes (like people and events). Ties connect the two sets, for example participation of people in events. Other examples are 
+
+- Affiliation networks (Membership in institutions/clubs)
+- Voting/Sponsorship networks (politicians and bills)
+- Citation network (authors and papers)
+- Co-Authorship networks (also authors and papers)
+
+There are two ways of analysing a two-mode network. Either directly by using methods specifically created for such networks, or by projecting it to a regular one-mode network. The advantage of the former is that there is no information loss and the advantage of the latter is that we are working with more familiar data structures. The projection approach is more popular these days, but we will still introduce some direct methods to analyse two-mode networks. The main part of this chapter will however deal with the projection approach.
+
+
+## Packages Needed for this Chapter
+
 ```{r}
 #| label: libraries
 #| message: false
@@ -12,17 +24,6 @@ library(networkdata)
 #| include: false
 library(ggraph)
 ```
-
-## Introduction
-
-A **two-mode network** is a network that consists of two disjoint sets of nodes (like people and events). Ties connect the two sets, for example participation of people in events. Other examples are 
-
-- Affiliation networks (Membership in institutions/clubs)
-- Voting/Sponsorship networks (politicians and bills)
-- Citation network (authors and papers)
-- Co-Authorship networks (also authors and papers)
-
-There are two ways of analysing a two-mode network. Either directly by using methods specifically created for such networks, or by projecting it to a regular one-mode network. The advantage of the former is that there is no information loss and the advantage of the latter is that we are working with more familiar data structures. The projection approach is more popular these days, but we will still introduce some direct methods to analyse two-mode networks. The main part of this chapter will however deal with the projection approach.
 
 ## Two-mode data structure
 We will discuss some methods tailored for two-mode networks via the famous "southern women" dataset consisting of 18 women who attended a series of 14 events. The network is included in the `networkdata` package.
@@ -42,11 +43,15 @@ table(V(southern_women)$type)
 #| label: southern-women-plot
 #| echo: false
 ggraph(southern_women, "stress") +
-    geom_edge_link(edge_color = "grey66") +
-    geom_node_point(aes(fill = type, shape = type), size = 8, show.legend = FALSE) +
-    geom_node_text(aes(label = name)) +
-    scale_shape_manual(values = c(21, 22)) +
-    theme_void()
+  geom_edge_link(edge_color = "grey66") +
+  geom_node_point(
+    aes(fill = type, shape = type),
+    size = 8,
+    show.legend = FALSE
+  ) +
+  geom_node_text(aes(label = name)) +
+  scale_shape_manual(values = c(21, 22)) +
+  theme_void()
 ```
 
 The adjacency matrix of a two-mode network is referred to as  **biadjacency matrix** and can be obtained via `as_biadjacency_matrix()`.
@@ -118,15 +123,24 @@ projs
 ```{r}
 #| label: plot_weighted_proj
 #| echo: FALSE
-proj <- graph_from_adjacency_matrix(B, weighted = TRUE, diag = FALSE, mode = "undirected")
+proj <- graph_from_adjacency_matrix(
+  B,
+  weighted = TRUE,
+  diag = FALSE,
+  mode = "undirected"
+)
 
 ggraph(proj, "stress") +
-    geom_edge_link(aes(edge_linewidth = weight), edge_color = "grey66", show.legend = FALSE) +
-    geom_node_point(shape = 21, fill = "grey66", size = 8, show.legend = FALSE) +
-    geom_node_text(aes(label = name)) +
-    scale_edge_width(range = c(1, 4)) +
-    theme_void() +
-    coord_cartesian(clip = "off")
+  geom_edge_link(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66",
+    show.legend = FALSE
+  ) +
+  geom_node_point(shape = 21, fill = "grey66", size = 8, show.legend = FALSE) +
+  geom_node_text(aes(label = name)) +
+  scale_edge_width(range = c(1, 4)) +
+  theme_void() +
+  coord_cartesian(clip = "off")
 
 ```
 
@@ -149,11 +163,11 @@ women_bin
 #| label: southern-women-bin-plot
 #| echo: false
 ggraph(women_bin, "stress", bbox = 5) +
-    geom_edge_link(edge_color = "grey66") +
-    geom_node_point(shape = 21, fill = "grey66", size = 8) +
-    geom_node_text(aes(label = name)) +
-    theme_void() +
-    coord_cartesian(clip = "off")
+  geom_edge_link(edge_color = "grey66") +
+  geom_node_point(shape = 21, fill = "grey66", size = 8) +
+  geom_node_text(aes(label = name)) +
+  theme_void() +
+  coord_cartesian(clip = "off")
 ```
 
 ### Model-based Binary Projections
@@ -213,16 +227,19 @@ The figure below shows the not so surprising result that Democrats and Republica
 ```{r}
 #| label: cosponsor-plot
 #| echo: false
-V(senators)$party <- V(cosponsor)$party[match(V(senators)$name, V(cosponsor)$name)]
+V(senators)$party <- V(cosponsor)$party[match(
+  V(senators)$name,
+  V(cosponsor)$name
+)]
 senators <- largest_component(senators)
 party_cols <-
-    c(D = "#104E8B", R = "#CD3333", I = "#EEB422")
+  c(D = "#104E8B", R = "#CD3333", I = "#EEB422")
 ggraph(senators, "stress") +
-    geom_edge_link0(edge_linewidth = 0.1, edge_color = "grey66") +
-    geom_node_point(shape = 21, aes(fill = party), size = 4) +
-    scale_fill_manual(values = party_cols) +
-    theme_graph() +
-    theme(legend.position = "bottom")
+  geom_edge_link0(edge_linewidth = 0.1, edge_color = "grey66") +
+  geom_node_point(shape = 21, aes(fill = party), size = 4) +
+  scale_fill_manual(values = party_cols) +
+  theme_graph() +
+  theme(legend.position = "bottom")
 ```
 
 ## Notable Packages

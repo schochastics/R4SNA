@@ -1,5 +1,7 @@
 # Advanced Layouts 
 
+
+## Packages Needed for this Chapter
 ```{r}
 #| label: libraries
 #| message: false
@@ -7,22 +9,23 @@ library(igraph)
 library(ggraph)
 library(graphlayouts)
 library(networkdata)
+library(ggforce)
 ```
 
 ```{r}
-#| label: libraries1
-library(igraph)
-library(ggraph)
-library(graphlayouts)
-library(ggforce)
-library(networkdata)
+#| label: data
 data("got")
 
 gotS1 <- got[[1]]
 
 got_palette <- c(
-    "#1A5878", "#C44237", "#AD8941", "#E99093",
-    "#50594B", "#8968CD", "#9ACD32"
+  "#1A5878",
+  "#C44237",
+  "#AD8941",
+  "#E99093",
+  "#50594B",
+  "#8968CD",
+  "#9ACD32"
 )
 
 ## compute a clustering for node colors
@@ -57,17 +60,18 @@ The first one allows to focus the network on a specific node and arrange all oth
 #| fig-width: 8
 #| fig-height: 8
 ggraph(gotS1, layout = "focus", focus = 1) +
-    geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
-    geom_node_point(aes(fill = clu, size = size), shape = 21) +
-    geom_node_text(aes(filter = (name == "Ned"), size = size, label = name),
-        family = "serif"
-    ) +
-    scale_edge_width_continuous(range = c(0.2, 1.2)) +
-    scale_size_continuous(range = c(1, 5)) +
-    scale_fill_manual(values = got_palette) +
-    coord_fixed() +
-    theme_graph() +
-    theme(legend.position = "none")
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(
+    aes(filter = (name == "Ned"), size = size, label = name),
+    family = "serif"
+  ) +
+  scale_edge_width_continuous(range = c(0.2, 1.2)) +
+  scale_size_continuous(range = c(1, 5)) +
+  scale_fill_manual(values = got_palette) +
+  coord_fixed() +
+  theme_graph() +
+  theme(legend.position = "none")
 ```
 
 The parameter `focus` in the first line is used to choose the node id of the focal node. The function `coord_fixed()` is used to always keep the aspect ratio at one (i.e. the circles are always displayed as a circle and not an ellipse). 
@@ -78,18 +82,19 @@ The function `draw_circle()` can be used to add the circles explicitly.
 #| fig-width: 8
 #| fig-height: 8
 ggraph(gotS1, layout = "focus", focus = 1) +
-    draw_circle(col = "#00BFFF", use = "focus", max.circle = 3) +
-    geom_edge_link0(aes(width = weight), edge_colour = "grey66") +
-    geom_node_point(aes(fill = clu, size = size), shape = 21) +
-    geom_node_text(aes(filter = (name == "Ned"), size = size, label = name),
-        family = "serif"
-    ) +
-    scale_edge_width_continuous(range = c(0.2, 1.2)) +
-    scale_size_continuous(range = c(1, 5)) +
-    scale_fill_manual(values = got_palette) +
-    coord_fixed() +
-    theme_graph() +
-    theme(legend.position = "none")
+  draw_circle(col = "#00BFFF", use = "focus", max.circle = 3) +
+  geom_edge_link0(aes(width = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(
+    aes(filter = (name == "Ned"), size = size, label = name),
+    family = "serif"
+  ) +
+  scale_edge_width_continuous(range = c(0.2, 1.2)) +
+  scale_size_continuous(range = c(1, 5)) +
+  scale_fill_manual(values = got_palette) +
+  coord_fixed() +
+  theme_graph() +
+  theme(legend.position = "none")
 ```
 
 `layout_with_centrality()` works in a similar way. You can specify any centrality index (or any numeric vector for that matter), and create a concentric layout where the most central nodes are put in the center and the most peripheral nodes in the biggest circle. The numeric attribute used for the layout is specified with the `cent` parameter. Here, we use the weighted degree
@@ -99,15 +104,15 @@ of the characters.
 #| fig-width: 8
 #| fig-height: 8
 ggraph(gotS1, layout = "centrality", cent = graph.strength(gotS1)) +
-    geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
-    geom_node_point(aes(fill = clu, size = size), shape = 21) +
-    geom_node_text(aes(size = size, label = name), family = "serif") +
-    scale_edge_width_continuous(range = c(0.2, 0.9)) +
-    scale_size_continuous(range = c(1, 8)) +
-    scale_fill_manual(values = got_palette) +
-    coord_fixed() +
-    theme_graph() +
-    theme(legend.position = "none")
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(size = size, label = name), family = "serif") +
+  scale_edge_width_continuous(range = c(0.2, 0.9)) +
+  scale_size_continuous(range = c(1, 8)) +
+  scale_fill_manual(values = got_palette) +
+  coord_fixed() +
+  theme_graph() +
+  theme(legend.position = "none")
 ```
 
 (*Concentric layouts are not only helpful to focus on specific nodes, but also make for a 
@@ -133,11 +138,15 @@ visualize the network with what we have learned so far.
 #| fig-width: 8
 #| fig-height: 8
 ggraph(g, layout = "stress") +
-    geom_edge_link0(edge_colour = "black", edge_linewidth = 0.1, edge_alpha = 0.5) +
-    geom_node_point(aes(fill = grp), shape = 21) +
-    scale_fill_brewer(palette = "Set1") +
-    theme_graph() +
-    theme(legend.position = "none")
+  geom_edge_link0(
+    edge_colour = "black",
+    edge_linewidth = 0.1,
+    edge_alpha = 0.5
+  ) +
+  geom_node_point(aes(fill = grp), shape = 21) +
+  scale_fill_brewer(palette = "Set1") +
+  theme_graph() +
+  theme(legend.position = "none")
 ```
 
 As you can see, the graph seems to be a proper "hairball" without any special 
@@ -163,12 +172,12 @@ edges in the backbone network. In the code above, we use this vector to create a
 #| fig-width: 8
 #| fig-height: 6
 ggraph(g, layout = "backbone", keep = 0.4) +
-    geom_edge_link0(aes(edge_colour = backbone), edge_linewidth = 0.1) +
-    geom_node_point(aes(fill = grp), shape = 21) +
-    scale_fill_brewer(palette = "Set1") +
-    scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
-    theme_graph() +
-    theme(legend.position = "none")
+  geom_edge_link0(aes(edge_colour = backbone), edge_linewidth = 0.1) +
+  geom_node_point(aes(fill = grp), shape = 21) +
+  scale_fill_brewer(palette = "Set1") +
+  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
+  theme_graph() +
+  theme(legend.position = "none")
 ```
 
 The groups are now clearly visible! Of course the network used in the example is specifically tailored to illustrate the power of the algorithm. Using the backbone layout in real world networks may not always result in such a clear division of groups.
@@ -217,19 +226,24 @@ Now you could use `ggraph` in conjunction with `patchwork` to produce a static p
 pList <- vector("list", length(s50))
 
 for (i in 1:length(s50)) {
-    pList[[i]] <- ggraph(s50[[i]], layout = "manual", x = xy[[i]][, 1], y = xy[[i]][, 2]) +
-        geom_edge_link0(edge_linewidth = 0.6, edge_colour = "grey66") +
-        geom_node_point(shape = 21, aes(fill = as.factor(smoke)), size = 6) +
-        geom_node_text(label = 1:50, repel = FALSE, color = "white", size = 4) +
-        scale_fill_manual(
-            values = c("forestgreen", "grey25", "firebrick"),
-            guide = ifelse(i != 2, "none", "legend"),
-            name = "smoking",
-            labels = c("never", "occasionally", "regularly")
-        ) +
-        theme_graph() +
-        theme(legend.position = "bottom") +
-        labs(title = paste0("Wave ", i))
+  pList[[i]] <- ggraph(
+    s50[[i]],
+    layout = "manual",
+    x = xy[[i]][, 1],
+    y = xy[[i]][, 2]
+  ) +
+    geom_edge_link0(edge_linewidth = 0.6, edge_colour = "grey66") +
+    geom_node_point(shape = 21, aes(fill = as.factor(smoke)), size = 6) +
+    geom_node_text(label = 1:50, repel = FALSE, color = "white", size = 4) +
+    scale_fill_manual(
+      values = c("forestgreen", "grey25", "firebrick"),
+      guide = ifelse(i != 2, "none", "legend"),
+      name = "smoking",
+      labels = c("never", "occasionally", "regularly")
+    ) +
+    theme_graph() +
+    theme(legend.position = "bottom") +
+    labs(title = paste0("Wave ", i))
 }
 
 wrap_plots(pList)
@@ -240,79 +254,112 @@ have to get inventive, because ggraph does not (yet) work with `gganimate` out o
 ```{r}
 #| label: node-lst
 aninet_data <- function(gList, alpha = 0.2, nodes = NULL) {
-    # check for absent nodes and add them
-    if (is.null(nodes)) {
-        all_nodes <- unique(unlist(sapply(gList, function(x) vertex_attr(x, "name"))))
-        for (i in 1:length(gList)) {
-            idx <- which(!all_nodes %in% V(gList[[i]])$name)
-            if (length(idx) > 0) {
-                gList[[i]] <- add_vertices(gList[[i]], length(idx), attr = list(name = all_nodes[idx]))
-            }
-        }
-    } else if (nodes >= 0) {
-        all_nodes <- unlist(sapply(gList, function(x) vertex_attr(x, "name")))
-        all_nodes <- names(which(table(all_nodes) >= nodes * length(gList)))
+  # check for absent nodes and add them
+  if (is.null(nodes)) {
+    all_nodes <- unique(unlist(sapply(
+      gList,
+      function(x) vertex_attr(x, "name")
+    )))
+    for (i in 1:length(gList)) {
+      idx <- which(!all_nodes %in% V(gList[[i]])$name)
+      if (length(idx) > 0) {
+        gList[[i]] <- add_vertices(
+          gList[[i]],
+          length(idx),
+          attr = list(name = all_nodes[idx])
+        )
+      }
+    }
+  } else if (nodes >= 0) {
+    all_nodes <- unlist(sapply(gList, function(x) vertex_attr(x, "name")))
+    all_nodes <- names(which(table(all_nodes) >= nodes * length(gList)))
 
-        for (i in 1:length(gList)) {
-            idx <- which(!all_nodes %in% V(gList[[i]])$name)
-            if (length(idx) > 0) {
-                gList[[i]] <- add_vertices(gList[[i]], length(idx), attr = list(name = all_nodes[idx]))
-            }
-        }
-
-        for (i in 1:length(gList)) {
-            idx <- which(!V(gList[[i]])$name %in% all_nodes)
-            if (length(idx) > 0) {
-                gList[[i]] <- delete_vertices(gList[[i]], idx)
-            }
-        }
+    for (i in 1:length(gList)) {
+      idx <- which(!all_nodes %in% V(gList[[i]])$name)
+      if (length(idx) > 0) {
+        gList[[i]] <- add_vertices(
+          gList[[i]],
+          length(idx),
+          attr = list(name = all_nodes[idx])
+        )
+      }
     }
 
-    xy <- graphlayouts::layout_as_dynamic(gList, alpha = alpha)
-    nodes_lst <- lapply(1:length(gList), function(i) {
-        cbind(igraph::as_data_frame(gList[[i]], "vertices"),
-            x = xy[[i]][, 1], y = xy[[i]][, 2], frame = i
-        )
-    })
+    for (i in 1:length(gList)) {
+      idx <- which(!V(gList[[i]])$name %in% all_nodes)
+      if (length(idx) > 0) {
+        gList[[i]] <- delete_vertices(gList[[i]], idx)
+      }
+    }
+  }
 
-    edges_lst <- lapply(1:length(gList), function(i) cbind(igraph::as_data_frame(gList[[i]], "edges"), frame = i))
+  xy <- graphlayouts::layout_as_dynamic(gList, alpha = alpha)
+  nodes_lst <- lapply(1:length(gList), function(i) {
+    cbind(
+      igraph::as_data_frame(gList[[i]], "vertices"),
+      x = xy[[i]][, 1],
+      y = xy[[i]][, 2],
+      frame = i
+    )
+  })
 
-    edges_lst <- lapply(1:length(gList), function(i) {
-        edges_lst[[i]]$x <- nodes_lst[[i]]$x[match(edges_lst[[i]]$from, nodes_lst[[i]]$name)]
-        edges_lst[[i]]$y <- nodes_lst[[i]]$y[match(edges_lst[[i]]$from, nodes_lst[[i]]$name)]
-        edges_lst[[i]]$xend <- nodes_lst[[i]]$x[match(edges_lst[[i]]$to, nodes_lst[[i]]$name)]
-        edges_lst[[i]]$yend <- nodes_lst[[i]]$y[match(edges_lst[[i]]$to, nodes_lst[[i]]$name)]
-        edges_lst[[i]]$id <- paste0(edges_lst[[i]]$from, "-", edges_lst[[i]]$to)
-        edges_lst[[i]]$status <- TRUE
-        edges_lst[[i]]
-    })
+  edges_lst <- lapply(
+    1:length(gList),
+    function(i) cbind(igraph::as_data_frame(gList[[i]], "edges"), frame = i)
+  )
 
-    all_edges <- do.call("rbind", lapply(gList, get.edgelist))
-    all_edges <- all_edges[!duplicated(all_edges), ]
-    all_edges <- cbind(all_edges, paste0(all_edges[, 1], "-", all_edges[, 2]))
+  edges_lst <- lapply(1:length(gList), function(i) {
+    edges_lst[[i]]$x <- nodes_lst[[i]]$x[match(
+      edges_lst[[i]]$from,
+      nodes_lst[[i]]$name
+    )]
+    edges_lst[[i]]$y <- nodes_lst[[i]]$y[match(
+      edges_lst[[i]]$from,
+      nodes_lst[[i]]$name
+    )]
+    edges_lst[[i]]$xend <- nodes_lst[[i]]$x[match(
+      edges_lst[[i]]$to,
+      nodes_lst[[i]]$name
+    )]
+    edges_lst[[i]]$yend <- nodes_lst[[i]]$y[match(
+      edges_lst[[i]]$to,
+      nodes_lst[[i]]$name
+    )]
+    edges_lst[[i]]$id <- paste0(edges_lst[[i]]$from, "-", edges_lst[[i]]$to)
+    edges_lst[[i]]$status <- TRUE
+    edges_lst[[i]]
+  })
 
-    edges_lst <- lapply(1:length(gList), function(i) {
-        idx <- which(!all_edges[, 3] %in% edges_lst[[i]]$id)
-        if (length(idx != 0)) {
-            tmp <- data.frame(from = all_edges[idx, 1], to = all_edges[idx, 2], id = all_edges[idx, 3])
-            tmp$x <- nodes_lst[[i]]$x[match(tmp$from, nodes_lst[[i]]$name)]
-            tmp$y <- nodes_lst[[i]]$y[match(tmp$from, nodes_lst[[i]]$name)]
-            tmp$xend <- nodes_lst[[i]]$x[match(tmp$to, nodes_lst[[i]]$name)]
-            tmp$yend <- nodes_lst[[i]]$y[match(tmp$to, nodes_lst[[i]]$name)]
-            tmp$frame <- i
-            tmp$status <- FALSE
-            idy <- which(!names(edges_lst[[i]]) %in% names(tmp))
-            if (length(idy) > 0) {
-                tmp[names(edges_lst[[i]])[idy]] <- NA
-            }
-            edges_lst[[i]] <- rbind(edges_lst[[i]], tmp)
-        }
-        edges_lst[[i]]
-    })
+  all_edges <- do.call("rbind", lapply(gList, get.edgelist))
+  all_edges <- all_edges[!duplicated(all_edges), ]
+  all_edges <- cbind(all_edges, paste0(all_edges[, 1], "-", all_edges[, 2]))
 
-    edges_df <- do.call("rbind", edges_lst)
-    nodes_df <- do.call("rbind", nodes_lst)
-    list(nodes = nodes_df, edges = edges_df)
+  edges_lst <- lapply(1:length(gList), function(i) {
+    idx <- which(!all_edges[, 3] %in% edges_lst[[i]]$id)
+    if (length(idx != 0)) {
+      tmp <- data.frame(
+        from = all_edges[idx, 1],
+        to = all_edges[idx, 2],
+        id = all_edges[idx, 3]
+      )
+      tmp$x <- nodes_lst[[i]]$x[match(tmp$from, nodes_lst[[i]]$name)]
+      tmp$y <- nodes_lst[[i]]$y[match(tmp$from, nodes_lst[[i]]$name)]
+      tmp$xend <- nodes_lst[[i]]$x[match(tmp$to, nodes_lst[[i]]$name)]
+      tmp$yend <- nodes_lst[[i]]$y[match(tmp$to, nodes_lst[[i]]$name)]
+      tmp$frame <- i
+      tmp$status <- FALSE
+      idy <- which(!names(edges_lst[[i]]) %in% names(tmp))
+      if (length(idy) > 0) {
+        tmp[names(edges_lst[[i]])[idy]] <- NA
+      }
+      edges_lst[[i]] <- rbind(edges_lst[[i]], tmp)
+    }
+    edges_lst[[i]]
+  })
+
+  edges_df <- do.call("rbind", edges_lst)
+  nodes_df <- do.call("rbind", nodes_lst)
+  list(nodes = nodes_df, edges = edges_df)
 }
 ```
 
@@ -393,30 +440,32 @@ with a filter.
 #| label: multi-all-example
 #| fig-height: 7
 ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
-    geom_edge_link0(
-        aes(filter = (node1.lvl == 1 & node2.lvl == 1)),
-        edge_colour = "firebrick3",
-        alpha = 0.5,
-        edge_linewidth = 0.3
-    ) +
-    geom_edge_link0(
-        aes(filter = (node1.lvl != node2.lvl)),
-        alpha = 0.3,
-        edge_linewidth = 0.1,
-        edge_colour = "black"
-    ) +
-    geom_edge_link0(
-        aes(filter = (node1.lvl == 2 &
-            node2.lvl == 2)),
-        edge_colour = "goldenrod3",
-        edge_linewidth = 0.3,
-        alpha = 0.5
-    ) +
-    geom_node_point(aes(shape = as.factor(lvl)), fill = "grey25", size = 3) +
-    scale_shape_manual(values = c(21, 22)) +
-    theme_graph() +
-    coord_cartesian(clip = "off", expand = TRUE) +
-    theme(legend.position = "none")
+  geom_edge_link0(
+    aes(filter = (node1.lvl == 1 & node2.lvl == 1)),
+    edge_colour = "firebrick3",
+    alpha = 0.5,
+    edge_linewidth = 0.3
+  ) +
+  geom_edge_link0(
+    aes(filter = (node1.lvl != node2.lvl)),
+    alpha = 0.3,
+    edge_linewidth = 0.1,
+    edge_colour = "black"
+  ) +
+  geom_edge_link0(
+    aes(
+      filter = (node1.lvl == 2 &
+        node2.lvl == 2)
+    ),
+    edge_colour = "goldenrod3",
+    edge_linewidth = 0.3,
+    alpha = 0.5
+  ) +
+  geom_node_point(aes(shape = as.factor(lvl)), fill = "grey25", size = 3) +
+  scale_shape_manual(values = c(21, 22)) +
+  theme_graph() +
+  coord_cartesian(clip = "off", expand = TRUE) +
+  theme(legend.position = "none")
 ```
 
 ### Separate layouts for both levels
@@ -433,11 +482,13 @@ intra-level structures.
 
 ```{r}
 #| lbel: separate-layout
-xy <- layout_as_multilevel(multilvl_ex,
-    type = "separate",
-    FUN1 = layout_as_backbone,
-    FUN2 = layout_with_stress,
-    alpha = 25, beta = 45
+xy <- layout_as_multilevel(
+  multilvl_ex,
+  type = "separate",
+  FUN1 = layout_as_backbone,
+  FUN2 = layout_with_stress,
+  alpha = 25,
+  beta = 45
 )
 ```
 
@@ -447,44 +498,52 @@ Again, try to include an edge geom for each level.
 #| label: multi-separate-example
 #| fig-height: 7
 cols2 <- c(
-    "#3A5FCD", "#CD00CD", "#EE30A7", "#EE6363",
-    "#CD2626", "#458B00", "#EEB422", "#EE7600"
+  "#3A5FCD",
+  "#CD00CD",
+  "#EE30A7",
+  "#EE6363",
+  "#CD2626",
+  "#458B00",
+  "#EEB422",
+  "#EE7600"
 )
 
 ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
-    geom_edge_link0(
-        aes(
-            filter = (node1.lvl == 1 & node2.lvl == 1),
-            edge_colour = col
-        ),
-        alpha = 0.5, edge_linewidth = 0.3
-    ) +
-    geom_edge_link0(
-        aes(filter = (node1.lvl != node2.lvl)),
-        alpha = 0.3,
-        edge_linewidth = 0.1,
-        edge_colour = "black"
-    ) +
-    geom_edge_link0(
-        aes(
-            filter = (node1.lvl == 2 & node2.lvl == 2),
-            edge_colour = col
-        ),
-        edge_linewidth = 0.3, alpha = 0.5
-    ) +
-    geom_node_point(aes(
-        fill = as.factor(grp),
-        shape = as.factor(lvl),
-        size = nsize
-    )) +
-    scale_shape_manual(values = c(21, 22)) +
-    scale_size_continuous(range = c(1.5, 4.5)) +
-    scale_fill_manual(values = cols2) +
-    scale_edge_color_manual(values = cols2, na.value = "grey12") +
-    scale_edge_alpha_manual(values = c(0.1, 0.7)) +
-    theme_graph() +
-    coord_cartesian(clip = "off", expand = TRUE) +
-    theme(legend.position = "none")
+  geom_edge_link0(
+    aes(
+      filter = (node1.lvl == 1 & node2.lvl == 1),
+      edge_colour = col
+    ),
+    alpha = 0.5,
+    edge_linewidth = 0.3
+  ) +
+  geom_edge_link0(
+    aes(filter = (node1.lvl != node2.lvl)),
+    alpha = 0.3,
+    edge_linewidth = 0.1,
+    edge_colour = "black"
+  ) +
+  geom_edge_link0(
+    aes(
+      filter = (node1.lvl == 2 & node2.lvl == 2),
+      edge_colour = col
+    ),
+    edge_linewidth = 0.3,
+    alpha = 0.5
+  ) +
+  geom_node_point(aes(
+    fill = as.factor(grp),
+    shape = as.factor(lvl),
+    size = nsize
+  )) +
+  scale_shape_manual(values = c(21, 22)) +
+  scale_size_continuous(range = c(1.5, 4.5)) +
+  scale_fill_manual(values = cols2) +
+  scale_edge_color_manual(values = cols2, na.value = "grey12") +
+  scale_edge_alpha_manual(values = c(0.1, 0.7)) +
+  theme_graph() +
+  coord_cartesian(clip = "off", expand = TRUE) +
+  theme(legend.position = "none")
 ```
 
 ### Fix only one level
@@ -497,46 +556,50 @@ Set `type = "fix1"` and specify  `FUN1` and possibly `params1` to fix level 1 or
 ```{r}
 #| label: multi-fix2-example
 #| fig-height: 7
-xy <- layout_as_multilevel(multilvl_ex,
-    type = "fix2",
-    FUN2 = layout_with_stress,
-    alpha = 25, beta = 45
+xy <- layout_as_multilevel(
+  multilvl_ex,
+  type = "fix2",
+  FUN2 = layout_with_stress,
+  alpha = 25,
+  beta = 45
 )
 
 ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
-    geom_edge_link0(
-        aes(
-            filter = (node1.lvl == 1 & node2.lvl == 1),
-            edge_colour = col
-        ),
-        alpha = 0.5, edge_linewidth = 0.3
-    ) +
-    geom_edge_link0(
-        aes(filter = (node1.lvl != node2.lvl)),
-        alpha = 0.3,
-        edge_linewidth = 0.1,
-        edge_colour = "black"
-    ) +
-    geom_edge_link0(
-        aes(
-            filter = (node1.lvl == 2 & node2.lvl == 2),
-            edge_colour = col
-        ),
-        edge_linewidth = 0.3, alpha = 0.5
-    ) +
-    geom_node_point(aes(
-        fill = as.factor(grp),
-        shape = as.factor(lvl),
-        size = nsize
-    )) +
-    scale_shape_manual(values = c(21, 22)) +
-    scale_size_continuous(range = c(1.5, 4.5)) +
-    scale_fill_manual(values = cols2) +
-    scale_edge_color_manual(values = cols2, na.value = "grey12") +
-    scale_edge_alpha_manual(values = c(0.1, 0.7)) +
-    theme_graph() +
-    coord_cartesian(clip = "off", expand = TRUE) +
-    theme(legend.position = "none")
+  geom_edge_link0(
+    aes(
+      filter = (node1.lvl == 1 & node2.lvl == 1),
+      edge_colour = col
+    ),
+    alpha = 0.5,
+    edge_linewidth = 0.3
+  ) +
+  geom_edge_link0(
+    aes(filter = (node1.lvl != node2.lvl)),
+    alpha = 0.3,
+    edge_linewidth = 0.1,
+    edge_colour = "black"
+  ) +
+  geom_edge_link0(
+    aes(
+      filter = (node1.lvl == 2 & node2.lvl == 2),
+      edge_colour = col
+    ),
+    edge_linewidth = 0.3,
+    alpha = 0.5
+  ) +
+  geom_node_point(aes(
+    fill = as.factor(grp),
+    shape = as.factor(lvl),
+    size = nsize
+  )) +
+  scale_shape_manual(values = c(21, 22)) +
+  scale_size_continuous(range = c(1.5, 4.5)) +
+  scale_fill_manual(values = cols2) +
+  scale_edge_color_manual(values = cols2, na.value = "grey12") +
+  scale_edge_alpha_manual(values = c(0.1, 0.7)) +
+  theme_graph() +
+  coord_cartesian(clip = "off", expand = TRUE) +
+  theme(legend.position = "none")
 ```
 
 ### 3D with threejs
@@ -549,11 +612,12 @@ by setting `project2d = FALSE`. The 3D layout can then be used with e.g. `threej
 #| label: threejs-example
 #| fig-height: 7
 library(threejs)
-xyz <- layout_as_multilevel(multilvl_ex,
-    type = "separate",
-    FUN1 = layout_as_backbone,
-    FUN2 = layout_with_stress,
-    project2D = FALSE
+xyz <- layout_as_multilevel(
+  multilvl_ex,
+  type = "separate",
+  FUN1 = layout_as_backbone,
+  FUN2 = layout_with_stress,
+  project2D = FALSE
 )
 multilvl_ex$layout <- xyz
 V(multilvl_ex)$color <- c("#00BFFF", "#FF69B4")[V(multilvl_ex)$lvl]
