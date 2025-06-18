@@ -295,38 +295,139 @@ An example of how a directed network grows step by step as ties are added. Each 
 :::
 
 ### Continuous-time process
-At their core, SAOMs treat network evolution as a **continuous-time Markov process**, where changes to the network occur in small steps (microsteps) and are **actor-driven**. That is, ties are not formed or dissolved randomly or all at once, but rather sequentially by individual actors who react to the current network structure and their own preferences.
+Stochastic Actor-Oriented Models (SAOMs) are based on the assumption that social networks evolve as a continuous-time Markov process. This means the network changes gradually and randomly over time through small, actor-driven steps such as adding or removing ties.
+
+However, in empirical studies, we rarely observe the full trajectory of these changes. Instead, we only see the network at a limited number of discrete observation moments (e.g., survey waves at $t_1$, $t_2$, $\ldots$). The actual tie changes (who added or dropped a connection and when) occur in the unobserved latent process between these time points.
+
+This distinction is critical:
+
+-	Observed process: snapshots of the network at specific time points.
+-	Latent process: the underlying continuous sequence of micro-steps, where actors make sequential, stochastic decisions based on the current state of the network.
+
+SAOMs aim to reconstruct and simulate this hidden evolution process, inferring the actor behaviors that most likely produced the observed transitions.
+
+[image] network states evolve at $t_0$, $t_1$, …, but what we observe are discrete “snapshots” of this hidden continuous-time trajectory.
 
 
-Although the underlying network evolution occurs in continuous time, in practice, we only observe the network at discrete time points (e.g., waves in a longitudinal study). This setup implies that between observations, the network could have changed multiple times, but we only see the snapshots. The true process is latent between waves.
-
-image: network states evolve at $t_0$, $t_1$, …, but what we observe are discrete “snapshots” of this hidden continuous-time trajectory.
-
-In the context of Stochastic Actor-Oriented Models (SAOMs), the network evolution is modeled as a continuous-time Markov chain (CTMC). The Markov property means that:
-
-The future state of the network depends only on the current state, not on the full sequence of past states.
-
-Formally, this can be expressed as:
+### The Markov Property 
+A central assumption of Stochastic Actor-Oriented Models (SAOMs) is that the probability of moving to a new network state depends only on the current state, not on the path taken to get there. This is the Markov property and is formally defined as:
 $$
-P(X(t + \Delta t) = x’ \mid X(t) = x, X(s < t)) = P(X(t + \Delta t) = x’ \mid X(t) = x)
+P(X(t_j) = x_j \mid X(t) = x(t), \, \forall t \leq t_i) = P(X(t_j) = x_j \mid X(t_i) = x_i)
+$$
+where $X(t)$ denotes the state (i.e., network configuration) at time $t$. In other words, the future evolution of the process depends solely on the present state $x_i$ and not on the entire sequence of previous states. The model is memoryless: it "forgets" the past once the current state is known.
+
+In the context of SAOMs, this means that when an actor is given the opportunity to make a change, such as forming or dissolving a tie, they do so based only on the present network structure and covariate information. There is no dependence on the path the network took to reach its current configuration.
+
+This assumption significantly simplifies the modeling of network dynamics. It eliminates the need to track full network histories and allows for tractable simulation-based estimation. Conceptually, it also aligns with many social processes where actors respond to their current social environment rather than recalling a complete relational past.
+
+Nonetheless, the Markov assumption is a modeling abstraction. While it facilitates analysis and interpretation, it may not capture certain behaviors where history matters such as long-term reciprocity, reputation building, or delayed responses. Still, for many applications, it offers a powerful and flexible framework for understanding how networks evolve over time. 
+
+
+### Actor-Oriented Modeling Assumptions
+A central challenge in modeling network dynamics is the vast number of possible future configurations. For a directed network with $n$ actors, there are $2^{n(n-1)}$ possible states—making exhaustive evaluation of all potential transitions computationally infeasible.
+
+SAOMs address this by adopting an **actor-driven approach**. Instead of modeling global changes to the network, SAOMs assume that individual actors make decisions about their outgoing ties through a series of small, sequential updates. This simplifies the modeling process while remaining grounded in a realistic representation of social behavior.
+
+The SAOM framework relies on three core assumptions:
+
+1. *One actor at a time*: At each micro-step, a single actor is randomly selected and given the opportunity to revise their outgoing ties. This reflects individual, sequential decision-making.
+
+2. *One tie at a time*: The selected actor may consider one outgoing tie—either forming it, dissolving it, or choosing to leave it unchanged. Only one tie can be changed per step, which keeps the space of possible transitions manageable.
+
+3. *Actor-controlled change*: Each actor controls only their own outgoing ties. Tie changes arise solely from the actor’s individual evaluation of the network and are not the result of simultaneous or coordinated actions.
+
+Together, these assumptions define a process of sequential micro-steps, each involving:
+
+- Selecting an actor at random,
+- Considering one possible tie change,
+- And waiting a randomly determined time before the next opportunity arises.
+
+This process unfolds in continuous time and follows the structure of a continuous-time Markov chain (CTMC). It consists of two key components:  the holding time; which determines how long the current network state persists,   and the jump chain; which defines the probability of transitioning to a new network state via a single tie change.
+
+
+### The Holding Time and The Jump Chain
+The holding time is the waiting period before an actor is selected to potentially change a tie. In SAOMs, this waiting time is modeled as an **exponentially distributed random variable**, consistent with the properties of a continuous-time Markov chain (CTMC).
+For an actor $i$, the probability density function for the holding time $T_i$ is given by:
+$$
+f_{T_i}(t) = \lambda_i e^{-\lambda_i t}, \quad \lambda_i > 0, \quad t > 0
+$$
+Here, $\lambda_i$ is **the rate parameter**, determining how quickly actor $i$ is expected to receive opportunities to change their ties. The rate function controls the frequency of actor selection:
+
+- **Homogeneous specification**: All actors are equally likely to be selected, meaning:
+  $$
+  \lambda_i = \lambda \quad \text{(for all } i \text{)}
+  $$
+  Under this assumption, each actor has equal probability of being selected at a given step:
+  $$
+  P(i \text{ is selected}) = \frac{1}{n}
+  $$
+
+- **Heterogeneous specification**: The rate may depend on actor attributes or the current network state:
+
+  $$
+  \lambda_i = \lambda_i(\theta, x, v)
+  $$
+
+  where:
+  - $\theta$ is a vector of parameters,
+  - $x$ is the current network configuration,
+  - $v$ are actor-level covariates.
+
+  The probability that actor $i$ is selected becomes:
+
+  $$
+  P(i \text{ is selected}) = \frac{\lambda_i(\theta, x, v)}{\sum_{j=1}^{n} \lambda_j(\theta, x, v)}
+  $$
+
+This flexible specification allows different actors to have different speeds of change, depending on structural or covariate information.
+
+The exponential distribution is **memoryless**: the probability that the actor will change in the next instant does not depend on how long they have already waited. That is:
+
+$$
+P(T_i > s + t \mid T_i > t) = P(T_i > s)
 $$
 
-This simplifies the modeling of dynamic social networks by assuming that all relevant information about the past is captured in the current configuration.
+This means the process does not “remember” how long an actor has been inactive; a property that aligns naturally with the assumptions of continuous-time Markov models.
+So in summary,  the holding time determines when the next micro-step occurs in the SAOM process. It is random, actor-specific (depending on $\lambda_i$ for each actor $i$), and memoryless (due to the exponential distribution).
 
-Interpretation in SAOMs
-	•	The network at time $t$ evolves probabilistically from its current state $x$ to a new state $x’$.
-	•	The set of all possible networks is enormous (there are $2^{n(n-1)}$ possible directed networks with $n$ actors), so modeling the transition probabilities directly for every possible $x \rightarrow x’$ is infeasible.
+By controlling the duration between opportunities for change, the holding time governs the rhythm of the network evolution and is therefore a core component of the stochastic process underlying SAOMs.
 
-How SAOMs Address This Complexity
+The second key component of the model is the jump chain which governs *which tie change* (if any) an actor performs at a given micro-step. It models the probability of moving from the current network configuration to a new one by altering a single outgoing tie.
 
-To make modeling tractable, SAOMs incorporate several simplifying assumptions:
-	•	Actor-oriented changes: At each moment in continuous time, only one actor is considered to have an opportunity to make a change.
-	•	Sequential updates: Only one tie can change at a time—this avoids co-occurring tie changes and reflects the reality of individual-level decisions.
-	•	Sender-determined decisions: The actor sending the tie decides whether to create, maintain, or dissolve it, based on a probabilistic evaluation of the current network.
+Let the current network state be $x$. When actor $i$ is selected, they evaluate a set of possible alternatives $\{x^{(1)}, x^{(2)}, \dots, x^{(J)}\}$, each differing from $x$ by one change to their own outgoing ties (add, drop, or maintain).
 
-⸻
+Each alternative $x^{(j)}$ is assigned a utility:
+$$
+U_{ij} = F_{ij} + \varepsilon_{ij}
+$$
 
-These assumptions, combined with the Markov property, allow SAOMs to model dynamic networks with computational feasibility and theoretical clarity. They focus on micro-level tie changes that, over time, give rise to macro-level network structures.
+- $F_{ij}$ is the deterministic component based on evaluation functions (e.g., reciprocity, transitivity).
+- $\varepsilon_{ij}$ is a Gumbel-distributed error term introducing randomness into the actor’s decision.
+
+This setup corresponds to a **random utility model**, where choices are probabilistic rather than deterministic.
+
+The probability that actor $i$ chooses alternative $j$ is given by the multinomial logit formula:
+$$
+p_{ij} = \frac{\exp(F_{ij})}{\sum_{h=1}^{J} \exp(F_{ih})}
+$$
+This expression defines the **jump probabilities**, or the likelihood of transitioning to a specific next state among the feasible one-tie modifications. This probabilistic rule implies a **jump matrix** $P = (p_{ij})$, which defines the probabilities of transitioning from one state to another. But due to the one-actor-one-tie assumption, most entries in $P$ are zero.
+
+Only configurations reachable by *one tie change* are considered. This makes the transition matrix extremely **sparse**, keeping the model computationally feasible even with large $n$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----
+
 Key features of SAOMs include:
 
 - **Directed, non-reflexive ties**: SAOMs model directed relationships, such as friendship nominations, where actors cannot nominate themselves (no self-loops).
