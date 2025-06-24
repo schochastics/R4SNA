@@ -457,6 +457,9 @@ window.Quarto = {
   <li><a href="#the-markov-property" id="toc-the-markov-property" class="nav-link" data-scroll-target="#the-markov-property"><span class="header-section-number">18.4.3</span> The Markov Property</a></li>
   <li><a href="#actor-oriented-modeling-assumptions" id="toc-actor-oriented-modeling-assumptions" class="nav-link" data-scroll-target="#actor-oriented-modeling-assumptions"><span class="header-section-number">18.4.4</span> Actor-Oriented Modeling Assumptions</a></li>
   <li><a href="#the-holding-time-and-the-jump-chain" id="toc-the-holding-time-and-the-jump-chain" class="nav-link" data-scroll-target="#the-holding-time-and-the-jump-chain"><span class="header-section-number">18.4.5</span> The Holding Time and The Jump Chain</a></li>
+  <li><a href="#endogenous-effects-in-the-objective-function" id="toc-endogenous-effects-in-the-objective-function" class="nav-link" data-scroll-target="#endogenous-effects-in-the-objective-function"><span class="header-section-number">18.4.6</span> Endogenous Effects in the Objective Function</a></li>
+  <li><a href="#exogenous-effects-in-the-objective-function" id="toc-exogenous-effects-in-the-objective-function" class="nav-link" data-scroll-target="#exogenous-effects-in-the-objective-function"><span class="header-section-number">18.4.7</span> Exogenous Effects in the Objective Function</a></li>
+  <li><a href="#choosing-effects-for-the-objective-function" id="toc-choosing-effects-for-the-objective-function" class="nav-link" data-scroll-target="#choosing-effects-for-the-objective-function"><span class="header-section-number">18.4.8</span> Choosing Effects for the Objective Function</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/saom.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -812,67 +815,118 @@ P(X(t_j) = x_j \mid X(t) = x(t), \, \forall t \leq t_i) = P(X(t_j) = x_j \mid X(
 </section>
 <section id="the-holding-time-and-the-jump-chain" class="level3" data-number="18.4.5">
 <h3 data-number="18.4.5" class="anchored" data-anchor-id="the-holding-time-and-the-jump-chain"><span class="header-section-number">18.4.5</span> The Holding Time and The Jump Chain</h3>
-<p>The holding time is the waiting period before an actor is selected to potentially change a tie. In SAOMs, this waiting time is modeled as an <strong>exponentially distributed random variable</strong>, consistent with the properties of a continuous-time Markov chain (CTMC). For an actor <span class="math inline">\(i\)</span>, the probability density function for the holding time <span class="math inline">\(T_i\)</span> is given by: <span class="math display">\[
+<p>The <strong>holding time</strong> in SAOMs refers to the waiting period before an actor is given the opportunity to change one of their outgoing ties. In accordance with the properties of a continuous-time Markov chain (CTMC), this waiting time is modeled as an exponentially distributed random variable.</p>
+<p>For actor <span class="math inline">\(i\)</span>, the holding time <span class="math inline">\(T_i\)</span> has the following probability density function: <span class="math display">\[
 f_{T_i}(t) = \lambda_i e^{-\lambda_i t}, \quad \lambda_i &gt; 0, \quad t &gt; 0
-\]</span> Here, <span class="math inline">\(\lambda_i\)</span> is <strong>the rate parameter</strong>, determining how quickly actor <span class="math inline">\(i\)</span> is expected to receive opportunities to change their ties. The rate function controls the frequency of actor selection:</p>
+\]</span> Here, <span class="math inline">\(\lambda_i\)</span> is the rate parameter, determining how frequently actor <span class="math inline">\(i\)</span> receives opportunities to change their ties. The choice of <span class="math inline">\(\lambda_i\)</span> defines how the actor selection process unfolds:</p>
 <ul>
-<li><p><strong>Homogeneous specification</strong>: All actors are equally likely to be selected, meaning: <span class="math display">\[
-\lambda_i = \lambda \quad \text{(for all } i \text{)}
-\]</span> Under this assumption, each actor has equal probability of being selected at a given step: <span class="math display">\[
-P(i \text{ is selected}) = \frac{1}{n}
-\]</span></p></li>
-<li><p><strong>Heterogeneous specification</strong>: The rate may depend on actor attributes or the current network state:</p>
-<p><span class="math display">\[
+<li>Homogeneous specification: All actors have the same rate <span class="math inline">\(\lambda\)</span>, implying equal opportunity: <span class="math display">\[
+\lambda_i = \lambda \quad \text{for all } i, \qquad P(i \text{ has opportunity for change}) = \frac{1}{n}
+\]</span></li>
+<li>Heterogeneous specification: The rate varies across actors based on covariates or network structure: <span class="math display">\[
 \lambda_i = \lambda_i(\theta, x, v)
+\]</span> where <span class="math inline">\(\theta\)</span> is a parameter vector, <span class="math inline">\(x\)</span> is the current network configuration, and <span class="math inline">\(v\)</span> are actor-specific covariates. In this case: <span class="math display">\[
+P(i \text{ has opportunity for change}) = \frac{\lambda_i(\theta, x, v)}{\sum_{j=1}^{n} \lambda_j(\theta, x, v)}
+\]</span> This flexibility allows the model to reflect actor-level heterogeneity in the speed of network change. However, for simplicity and interpretability, we often assume that all actors have the same average rate of change—that is, <span class="math inline">\(\lambda\)</span> is constant across actors, but may vary over time. In this case, actors are equally likely to be selected at any given moment, though the overall tempo of change can still shift over time depending on the time-varying rate parameter.</li>
+</ul>
+<p>This setup relies on the memoryless property of the exponential distribution: <span class="math display">\[
+P(T_i &gt; s + t \mid T_i &gt; t) = P(T_i &gt; s)
+\]</span> That is, the probability that actor <span class="math inline">\(i\)</span> will be selected in the next instant is unaffected by how long they have already been waiting. This property aligns naturally with the continuous-time Markov assumption and greatly simplifies simulation. In summary, the holding time determines when micro-steps occur. It is random, memoryless, and—depending on the specification—either homogeneous or heterogeneous across actors, shaping the rhythm of network evolution in SAOMs.</p>
+<p>Once an actor has been selected and the waiting time (holding time) has elapsed, the next question becomes: <em>what</em> change (if any) will this actor make to the network? This is where the <strong>jump chain</strong> which governs what change occurs once an actor is selected. At each micro-step, actor <span class="math inline">\(i\)</span> evaluates a set of feasible alternatives <span class="math inline">\(\{x^{(1)}, x^{(2)}, \dots, x^{(J)}\}\)</span>, each differing from the current network <span class="math inline">\(x\)</span> by a change in one of <span class="math inline">\(i\)</span>’s outgoing ties—either forming, dissolving, or maintaining a tie.</p>
+<p>Each alternative <span class="math inline">\(x^{(j)}\)</span> is assigned a utility:</p>
+<p><span class="math display">\[
+U_{ij} = F_{ij} + \varepsilon_{ij}
+\]</span></p>
+<p>Here, <span class="math inline">\(F_{ij}\)</span> represents the deterministic component of the utility function—typically defined through an evaluation function that incorporates structural effects like reciprocity, transitivity, or covariate similarity. The <span class="math inline">\(\varepsilon_{ij}\)</span> term introduces randomness via a Gumbel-distributed disturbance, reflecting unobserved preferences or decision noise.</p>
+<p>This setup defines a <strong>random utility model</strong>, where actor <span class="math inline">\(i\)</span> selects among alternatives probabilistically rather than deterministically. Under the Gumbel assumption, the choice probabilities follow the familiar multinomial logit:</p>
+<p><span class="math display">\[
+p_{ij} = \frac{\exp(F_{ij})}{\sum_{h=1}^{J} \exp(F_{ih})}
+\]</span></p>
+<p>These probabilities form a jump matrix <span class="math inline">\(P = (p_{ij})\)</span>, describing the likelihood of transitioning from one network state to another. Because only one actor can change one tie at each micro-step, the number of feasible transitions is small, and the matrix is extremely sparse; a feature that makes SAOMs computationally tractable even for large networks.</p>
+<p>We can now elaborate more precisely on how this deterministic component <span class="math inline">\(F_{ij}\)</span> is constructed. It is typically written as an <strong>objective function</strong> composed of weighted network statistics:</p>
+<p><span class="math display">\[
+f_i(\theta, x') = \sum_{k=1}^{K} \theta_k \cdot s_k(x', v)
 \]</span></p>
 <p>where:</p>
 <ul>
-<li><span class="math inline">\(\theta\)</span> is a vector of parameters,</li>
-<li><span class="math inline">\(x\)</span> is the current network configuration,</li>
-<li><span class="math inline">\(v\)</span> are actor-level covariates.</li>
+<li><span class="math inline">\(x'\)</span> is the candidate network after a tie change,</li>
+<li><span class="math inline">\(s_k(x', v)\)</span> is the <span class="math inline">\(k\)</span>-th effect evaluated on <span class="math inline">\(x'\)</span> (e.g., number of mutual ties),</li>
+<li><span class="math inline">\(\theta_k\)</span> is the parameter associated with that effect.</li>
 </ul>
-<p>The probability that actor <span class="math inline">\(i\)</span> is selected becomes:</p>
-<p><span class="math display">\[
-P(i \text{ is selected}) = \frac{\lambda_i(\theta, x, v)}{\sum_{j=1}^{n} \lambda_j(\theta, x, v)}
-\]</span></p></li>
-</ul>
-<p>This flexible specification allows different actors to have different speeds of change, depending on structural or covariate information.</p>
-<p>The exponential distribution is <strong>memoryless</strong>: the probability that the actor will change in the next instant does not depend on how long they have already waited. That is:</p>
-<p><span class="math display">\[
-P(T_i &gt; s + t \mid T_i &gt; t) = P(T_i &gt; s)
-\]</span></p>
-<p>This means the process does not “remember” how long an actor has been inactive; a property that aligns naturally with the assumptions of continuous-time Markov models. So in summary, the holding time determines when the next micro-step occurs in the SAOM process. It is random, actor-specific (depending on <span class="math inline">\(\lambda_i\)</span> for each actor <span class="math inline">\(i\)</span>), and memoryless (due to the exponential distribution).</p>
-<p>By controlling the duration between opportunities for change, the holding time governs the rhythm of the network evolution and is therefore a core component of the stochastic process underlying SAOMs.</p>
-<p>The second key component of the model is the jump chain which governs <em>which tie change</em> (if any) an actor performs at a given micro-step. It models the probability of moving from the current network configuration to a new one by altering a single outgoing tie.</p>
-<p>Let the current network state be <span class="math inline">\(x\)</span>. When actor <span class="math inline">\(i\)</span> is selected, they evaluate a set of possible alternatives <span class="math inline">\(\{x^{(1)}, x^{(2)}, \dots, x^{(J)}\}\)</span>, each differing from <span class="math inline">\(x\)</span> by one change to their own outgoing ties (add, drop, or maintain).</p>
-<p>Each alternative <span class="math inline">\(x^{(j)}\)</span> is assigned a utility: <span class="math display">\[
-U_{ij} = F_{ij} + \varepsilon_{ij}
-\]</span></p>
+<p>This formulation provides a clear interpretation: actors evaluate the desirability of possible tie changes based on known network mechanisms and covariates. The random utility formulation introduces variability in behavior while allowing estimation of interpretable model parameters <span class="math inline">\(\theta\)</span>.</p>
+<p>In summary, the jump chain models which network configuration the process will move to, conditional on actor selection. Combined with the holding time, which governs <em>when</em> actors are selected, it defines the dynamics of the SAOM as a continuous-time Markov process. Actor decisions are sequential, stochastic, and based only on the current network—preserving the Markov property and allowing for rich but tractable modeling of network evolution.</p>
+</section>
+<section id="endogenous-effects-in-the-objective-function" class="level3" data-number="18.4.6">
+<h3 data-number="18.4.6" class="anchored" data-anchor-id="endogenous-effects-in-the-objective-function"><span class="header-section-number">18.4.6</span> Endogenous Effects in the Objective Function</h3>
+<p>The objective function introduced above is composed of a linear combination of effects, each capturing a specific structural pattern or social mechanism. These effects are conceptually similar to those used in Exponential Random Graph Models (ERGMs), although they differ in interpretation due to the dynamic and actor-oriented nature of SAOMs.These effects fall into two main categories:</p>
 <ul>
-<li><span class="math inline">\(F_{ij}\)</span> is the deterministic component based on evaluation functions (e.g., reciprocity, transitivity).</li>
-<li><span class="math inline">\(\varepsilon_{ij}\)</span> is a Gumbel-distributed error term introducing randomness into the actor’s decision.</li>
+<li>Endogenous effects: derived from the structure of the network itself.</li>
+<li>Exogenous effects: related to external actor attributes (covered in the next section).</li>
 </ul>
-<p>This setup corresponds to a <strong>random utility model</strong>, where choices are probabilistic rather than deterministic.</p>
-<p>The probability that actor <span class="math inline">\(i\)</span> chooses alternative <span class="math inline">\(j\)</span> is given by the multinomial logit formula: <span class="math display">\[
-p_{ij} = \frac{\exp(F_{ij})}{\sum_{h=1}^{J} \exp(F_{ih})}
-\]</span> This expression defines the <strong>jump probabilities</strong>, or the likelihood of transitioning to a specific next state among the feasible one-tie modifications. This probabilistic rule implies a <strong>jump matrix</strong> <span class="math inline">\(P = (p_{ij})\)</span>, which defines the probabilities of transitioning from one state to another. But due to the one-actor-one-tie assumption, most entries in <span class="math inline">\(P\)</span> are zero.</p>
-<p>Only configurations reachable by <em>one tie change</em> are considered. This makes the transition matrix extremely <strong>sparse</strong>, keeping the model computationally feasible even with large <span class="math inline">\(n\)</span>.</p>
-<hr>
-<p>Key features of SAOMs include:</p>
-<ul>
-<li><strong>Directed, non-reflexive ties</strong>: SAOMs model directed relationships, such as friendship nominations, where actors cannot nominate themselves (no self-loops).</li>
-<li><strong>Ties tend to persist</strong>: The models assume a degree of stability, i.e., ties formed in the past are likely to endure unless actors actively choose to dissolve them.</li>
-<li><strong>Microsteps between observations</strong>: Although we observe networks only at discrete time points (e.g., waves in a panel study), SAOMs assume the underlying process evolves in <strong>continuous time</strong>, with actors making decisions one at a time in between observations.</li>
-<li><strong>Actor agency</strong>: Each actor is assumed to make <strong>sequential and intentional</strong> decisions about adding, dropping, or maintaining ties based on an <strong>objective function</strong> that quantifies their preference over possible network configurations.</li>
-</ul>
-<p>The process is driven by two main components:</p>
+<p>The objective function for actor <span class="math inline">\(i\)</span> evaluating network <span class="math inline">\(x'\)</span> can be written as: <span class="math display">\[
+f_i(x') = \sum_k \theta_k \cdot s_{ik}(x’)
+\]</span> where <span class="math inline">\(\theta_k\)</span> is the parameter for effect <span class="math inline">\(k\)</span>, and <span class="math inline">\(s_{ik}(x')\)</span> is the statistic for effect <span class="math inline">\(k\)</span> as computed for actor <span class="math inline">\(i\)</span> in network <span class="math inline">\(x'\)</span>. Each effect enters the evaluation function with an associated parameter to be estimated from data. The weighted sum of these effects (plus random noise) determines the actor’s utility for each potential tie change. This guides the probabilistic decision-making process at the heart of the SAOM framework.</p>
+<p>This section focuses on a few commonly used endogenous effect; those based solely on the structure of the network (without using external covariates). Many other effects can be modeled, depending on the theoretical focus and complexity of the network under study.</p>
+<section id="outdegree-effect" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="outdegree-effect">Outdegree Effect</h4>
+<p>Similar to the <code>edges</code> term in ERGM, this effect reflects the tendency (or cost) of maintaining ties. It counts the number of outgoing ties from actor <span class="math inline">\(i\)</span> in the new network configuration <span class="math inline">\(x'\)</span>:</p>
+<p><span class="math display">\[
+s_i^{\text{out}}(x’) = \sum_j x’_{ij}
+\]</span> This term typically has a negative coefficient, penalizing actors for having too many ties, and thus introducing a cost to maintaining social relationships.</p>
+</section>
+<section id="reciprocity-effect" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="reciprocity-effect">Reciprocity Effect</h4>
+<p>The reciprocity effect captures the tendency for actors to form mutual ties (equivalent to the <code>mutual</code> term in ERGMs). It counts how many of actor i’s outgoing ties are reciprocated: <span class="math display">\[
+s_i^{\text{rec}}(x') = \sum_j x'{ij} x'{ji}
+\]</span> A positive coefficient for this effect reflects a preference for mutual connections, e.g., <em>“I send a tie to those who also send one to me.”</em></p>
+</section>
+<section id="transitive-triplets-effect" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="transitive-triplets-effect">Transitive Triplets Effect</h4>
+<p>Closely related to the <code>triangles</code> or <code>GWESP</code> terms in ERGMs, this effect models triadic closure. The transitive effect reflects a tendency for triadic closure. If actor <span class="math inline">\(i\)</span> sends a tie to <span class="math inline">\(h\)</span>, and <span class="math inline">\(h\)</span> sends a tie to <span class="math inline">\(j\)</span>, then <span class="math inline">\(i\)</span> is more likely to send a tie to <span class="math inline">\(j\)</span>:</p>
+<p><span class="math display">\[
+s_i^{\text{trans}}(x’) = \sum_{j,h} x’{ij} x’{ih} x’_{hj}
+\]</span> This effect models social closure or hierarchy and contributes to the formation of cohesive subgroups or cliques.</p>
+</section>
+<section id="three-cycle-effect" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="three-cycle-effect">Three-Cycle Effect</h4>
+<p>The three-cycle effect (think cyclic triads in ERGMs) captures the tendency of actors to form circular structures in the network, i.e.&nbsp;it captures feedback loops in the network. Specifically, it counts the number of directed cycles of length three involving actor <span class="math inline">\(i\)</span>: <span class="math display">\[
+s_i^{\text{cyc}}(x') = \sum_{j,h} x'{ij} x'{jh} x'_{hi}
+\]</span> This effect often receives a negative coefficient, discouraging cyclic patterns that may indicate instability or lack of hierarchy.</p>
+<p>Next, we introduce exogenous effects, which link actor behavior to covariates such as attributes or group memberships.</p>
+</section>
+</section>
+<section id="exogenous-effects-in-the-objective-function" class="level3" data-number="18.4.7">
+<h3 data-number="18.4.7" class="anchored" data-anchor-id="exogenous-effects-in-the-objective-function"><span class="header-section-number">18.4.7</span> Exogenous Effects in the Objective Function</h3>
+<p>In addition to modeling endogenous network tendencies, like reciprocity or transitivity, SAOMs allow the inclusion of exogenous covariates that influence tie formation. These covariates may pertain to individual-level attributes (e.g., age, status, gender) or to dyadic relationships (e.g., geographical distance, attribute similarity). Just like in ERGMs, these effects enter the objective function, which represents the utility an actor associates with each possible network configuration.</p>
+<p>Below are common types of exogenous effects.</p>
+<section id="individual-level-covariate-effects" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="individual-level-covariate-effects">Individual-Level Covariate Effects</h4>
+<p>These are based on node-level covariates and can enter the objective function in two ways:</p>
 <ol type="1">
-<li><strong>Rate function</strong>: Determines how often an actor gets the opportunity to make a network change.</li>
-<li><strong>Objective function</strong>: Governs which network change the actor is likely to make, based on structural features (like reciprocity or transitivity) and covariates.</li>
+<li><p>Covariate-Ego Effect<br>
+This effect captures whether actors with a particular covariate value are more (or less) likely to form ties. <span class="math display">\[
+s_i^{\text{ego}}(x', v) = v_i \sum_j x'_{ij}
+\]</span> Here, <span class="math inline">\(v_i\)</span> is the covariate value for actor <span class="math inline">\(i\)</span> (the sender), and the statistic counts how many ties they initiate. If the covariate is binary, this can test whether having a trait (e.g., being in a particular group) is associated with being more active.</p></li>
+<li><p>Covariate-Alter Effect<br>
+This reflects a preference for forming ties to others with certain attribute values. <span class="math display">\[
+s_i^{\text{alter}}(x', v) = \sum_j x'_{ij} v_j
+\]</span> Actors are more likely to send ties to alters with higher (or lower) covariate values, depending on the sign of the corresponding parameter.</p></li>
 </ol>
-<p>Formally, the SAOM framework assumes that actors act <strong>myopically</strong>: they evaluate the immediate consequences of a tie change and choose the one that increases (or is more likely to increase) their objective function. The model does not assume long-term strategic planning.</p>
-<p>This actor-oriented perspective makes SAOMs particularly well-suited for modeling network dynamics in settings where individuals actively manage their ties, such as adolescent friendship networks, organizational communication, or online social platforms.</p>
-<p>The SAOM thus builds directly on the ideas of <strong>continuous-time Markov chains</strong>, using them as a scaffold for representing the unfolding micro-dynamics of network change, with <strong>actor choice and agency</strong> at its core.</p>
+</section>
+<section id="dyadic-covariate-effects" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dyadic-covariate-effects">Dyadic Covariate Effects</h4>
+<p>SAOMs also allow modeling based on dyadic similarity, capturing whether actors prefer to connect with others who are similar in some attribute.</p>
+<p>TRhe statistic for covariate-related similarity <span class="math display">\[
+s_i^{\text{sim}}(x', v) = \sum_j x'_{ij} \left( 1 - \frac{|v_i - v_j|}{\text{Range}(v)} \right)
+\]</span> increases when <span class="math inline">\(i\)</span> sends ties to actors <span class="math inline">\(j\)</span> who are similar in covariate values. The similarity is normalized to a [0,1] scale, where 1 means perfect similarity. For binary covariates, this simplifies to an indicator function: <span class="math display">\[
+s_i^{\text{sim}}(x', v) = \sum_j x'_{ij} \cdot I(v_i = v_j)
+\]</span></p>
+<p>This captures simple homophily; a tendency to connect with others who share the same attribute (e.g., same gender or group membership).</p>
+</section>
+</section>
+<section id="choosing-effects-for-the-objective-function" class="level3" data-number="18.4.8">
+<h3 data-number="18.4.8" class="anchored" data-anchor-id="choosing-effects-for-the-objective-function"><span class="header-section-number">18.4.8</span> Choosing Effects for the Objective Function</h3>
+<p>When specifying a Stochastic Actor-Oriented Model (SAOM), a central task is selecting which effects to include in the actor’s objective function. At a minimum, outdegree (a baseline tendency to form ties) and reciprocity (the preference for mutual ties) must always be included. Beyond these, additional effects should be guided by substantive theory or research hypotheses. For example, if theory suggests that individuals tend to befriend friends of their friends, a transitive triplet effect may be appropriate. If social similarity (homophily) based on covariates like gender is expected, covariate-related similarity effects can be added. These choices tailor the model to reflect specific structural patterns or attribute-driven mechanisms. While only a few examples are shown here, SAOMs offer a broad range of endogenous and exogenous effects that researchers can incorporate to test theoretically meaningful network processes.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
