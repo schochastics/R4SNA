@@ -40,6 +40,11 @@ In what follows, we focus on the SAOM framework, its components, estimation proc
 ## Packages Needed for this Chapter
 ```{r}
 #| message: false
+library(igraph)
+library(ggraph)
+library(graphlayouts)
+library(networkdata)
+library(intergraph)
 library(RSiena)
 ```
 
@@ -398,7 +403,6 @@ We can now elaborate more precisely on how this deterministic component $F_{ij}$
 $$
 f_i(\theta, x') = \sum_{k=1}^{K} \theta_k \cdot s_k(x', v)
 $$
-
 where:
 
 - $x'$ is the candidate network after a tie change,
@@ -457,13 +461,13 @@ This effect often receives a negative coefficient, discouraging cyclic patterns 
 Next, we introduce exogenous effects, which link actor behavior to covariates such as attributes or group memberships.
 
 
-### Exogenous Effects in the Objective Function
+### Exogenous Effects in the Objective Function  {#sec-exeffects}
 In addition to modeling endogenous network tendencies, like reciprocity or transitivity, SAOMs allow the inclusion of exogenous covariates that influence tie formation. These covariates may pertain to individual-level attributes (e.g., age, status, gender) or to dyadic relationships (e.g., geographical distance, attribute similarity). Just like in ERGMs, these effects enter the objective function, which represents the utility an actor associates with each possible network configuration.
 
 Below are common types of exogenous effects.
 
 
-#### Individual-Level Covariate Effects {.unnumbered}
+#### Individual-Level Covariate Effects {.unnumbered} 
 These are based on node-level covariates and can enter the objective function in two ways:
 
 1.	Covariate-Ego Effect\
@@ -484,7 +488,7 @@ Actors are more likely to send ties to alters with higher (or lower) covariate v
 #### Dyadic Covariate Effects {.unnumbered}
 SAOMs also allow modeling based on dyadic similarity, capturing whether actors prefer to connect with others who are similar in some attribute.
 
-TRhe statistic for covariate-related similarity
+The statistic for covariate-related similarity
 $$
 s_i^{\text{sim}}(x', v) = \sum_j x'_{ij} \left( 1 - \frac{|v_i - v_j|}{\text{Range}(v)} \right)
 $$
@@ -497,7 +501,560 @@ This captures simple homophily; a tendency to connect with others who share the 
 
 
 ### Choosing Effects for the Objective Function
-When specifying a Stochastic Actor-Oriented Model (SAOM), a central task is selecting which effects to include in the actor's objective function. At a minimum, outdegree (a baseline tendency to form ties) and reciprocity (the preference for mutual ties) must always be included. Beyond these, additional effects should be guided by substantive theory or research hypotheses. For example, if theory suggests that individuals tend to befriend friends of their friends, a transitive triplet effect may be appropriate. If social similarity (homophily) based on covariates like gender is expected, covariate-related similarity effects can be added. These choices tailor the model to reflect specific structural patterns or attribute-driven mechanisms. While only a few examples are shown here, SAOMs offer a broad range of endogenous and exogenous effects that researchers can incorporate to test theoretically meaningful network processes.
+When specifying a Stochastic Actor-Oriented Model (SAOM),  selecting which effects to include in the actor's objective function is the first step. At a minimum, outdegree (a baseline tendency to form ties) and reciprocity (the preference for mutual ties) must always be included. Beyond these, additional effects should be guided by substantive theory or research hypotheses. For example, if theory suggests that individuals tend to befriend friends of their friends, a transitive triplet effect may be appropriate. If social similarity (homophily) based on covariates like gender is expected, covariate-related similarity effects can be added. These choices tailor the model to reflect specific structural patterns or attribute-driven mechanisms. While only a few examples are shown here, SAOMs offer a broad range of endogenous and exogenous effects that researchers can incorporate to test theoretically meaningful network processes.
+
+
+## Parameter Estimation and Interpration 
+In Stochastic Actor-Oriented Models (SAOMs), each parameter $\beta_k$ quantifies the importance of a specific effect $s_{ik}(x')$ in the actor’s decision-making process during network evolution. These parameters help us understand how different structural or covariate-based features influence the likelihood of a network configuration.
+
+The interpretation of $\beta_k$ is as follows:
+
+- If $\theta_k = 0$, the statistic $s_{ik}(x')$ has no effect on the transition probabilities and thus plays no role in the network dynamics.
+- If $\theta_k > 0$, actor $i$ is more likely to move toward a network configuration $x'$ with a higher value of $s_{ik}(x')$.
+- If $\beta_k < 0$, configurations with lower values of $s_{ik}(x')$ are more attractive to the actor.
+
+Importantly, these preferences are assumed to be stable over time. That is, the entire set of model parameters $\{\theta_1, \dots, \theta_K\}$ is constant, meaning the way actors evaluate alternatives does not change during the observation window.
+$$
+\theta_1, \dots, \theta_K \text{ are constant over time}
+$$
+Parameter estimation in SAOMs is performed using simulation-based methods, as implemented in the `RSiena` R package (SIENA: Simulation Investigation for Empirical Network Analysis).
+
+The core idea is to simulate the network evolution process under the assumed model, compare the simulated outcomes with observed data, and iteratively adjust parameters to improve the fit. This is known as the **method of moments**, where the simulated statistics are aligned with their empirical counterparts.
+
+The estimation process typically involves:
+
+- Defining the observed networks at multiple time points.
+- Specifying effects (endogenous and exogenous) to include in the model.
+- Running simulations to estimate parameters via iterative optimization.
+
+To assess whether a particular effect significantly contributes to the network dynamics, we can conduct a hypothesis test for each parameter $\theta_k$. We test the following:
+
+- Null Hypothesis ($H_0$): The observed network patterns related to effect $k$ are due to chance.
+  $$
+  H_0 : \theta_k = 0
+  $$
+- Alternative Hypothesis ($H_1$): The effect has a systematic, non-random influence on tie changes.
+  $$
+  H_1 : \theta_k \ne 0
+  $$
+Under standard conditions, we use the ratio of the parameter estimate to its standard error (i.e., a t-score) as a test statistic:
+
+$$
+\left| \frac{\theta_k}{\text{s.e.}(\theta_k)} \right| \ge 2 \Rightarrow \text{Reject } H_0
+$$
+
+If the absolute t-score exceeds 2, we consider the parameter significantly different from 0 at approximately the 5% significance level.
+
+
+## RSiena
+
+RSiena is an R package for estimating and simulating SAOMs for network and behavior dynamics. It is specifically designed to model longitudinal network data, where social ties and actor attributes evolve over time. 
+
+In RSiena, the distinction between modeling the evolution of networks and the co-evolution of networks and behavior begins with how the dependent variable is defined.
+
+If only the network is included as a dependent variable, the model focuses on network evolution. This framework captures how actors form, maintain, or dissolve ties over time, and it can include covariates (such as gender or smoking status) to explain social selection. In this case, individual attributes influence the likelihood of tie formation or dissolution, but actors' own behaviors remain fixed over time.
+
+Alternatively, RSiena allows for co-evolution models by including both a network and a behavioral variable as dependent variables. This setup enables the simultaneous modeling of two processes: how networks evolve and how actors' behaviors change. This makes it possible to study social influence, where individuals may adopt behaviors similar to those of their network peers. The model thus estimates both the selection of network ties based on covariates and the influence of peers on individual behavior over time.
+
+
+Below, we consider a few models that are run in RSiena,  and for each model we consider the following:
+
+1. Preparing the data\
+   Import and format the network and covariate data into the appropriate structure. This includes creating adjacency matrices for networks over time and vectors or matrices for actor-level covariates. These are then converted into `sienaDependent`, `coCovar`, or `varCovar` objects.
+
+2. Specifying the model\
+   Define the model structure by selecting the effects to include. Use `getEffects()` to retrieve the default effects object and `includeEffects()` to specify additional endogenous and covariate-related effects.
+
+3. Estimating the model\ 
+   Set up the estimation procedure using `sienaAlgorithmCreate()` and run the model with `siena07()`. Evaluate model convergence and estimation diagnostics to ensure reliable results.
+
+4. Interpreting the results\
+   Analyze the estimated parameters to understand the underlying social processes. This involves examining effect directions, magnitudes, and statistical significance to interpret mechanisms of network change or co-evolution.
+
+
+#### Example: Teenage Friends and Lifestyle Study {.unnumbered}
+We use a running example with data from the “Teenage Friends and Lifestyle Study”  [@west1996s50], which was also used in the previous chapter on ERGMs. In contrast to the earlier example that focused on a single time point and only the subset of 50 pupils, we here  model the dynamics of friendship ties across all three observed waves and with the 129 pupils over all three time points, and including relevant actor-level covariates such as gender and smoking behavior. The dataset is called `glasgow129` in the `networkdata` package, which includes the following:
+
+- Networks: Binary, directed friendship ties measured at three time points.
+- Actors: 129 pupils measured at three time points.
+- Many covariates, but we focus on 
+  - Sex: 1 = Male, 2 = Female
+  - Smoking: 1 = No, 2 = Occasional, 3 = Regular
+	
+We load the data from the `networkdata` package and extract a graph object for each time peiod:
+
+```{r}
+#| message: false
+
+# Load data as graph object from networkdata and extract all three wave networks
+glasgow_g1 <- networkdata::glasgow129[[1]]
+glasgow_g2 <- networkdata::glasgow129[[2]]
+glasgow_g3 <- networkdata::glasgow129[[3]]
+```
+These `igraph` objects are our network snapshots and consider various SAOMs.
+We begin by converting each network snapshot into a binary adjacency matrix. These matrices represent the presence or absence of directed ties between actors at each time point.
+
+```{r}
+#| message: false
+
+# Convert to adjacency matrices
+net1 <- as.matrix(as_adjacency_matrix(glasgow_g1, sparse = FALSE))
+net2 <- as.matrix(as_adjacency_matrix(glasgow_g2, sparse = FALSE))
+net3 <- as.matrix(as_adjacency_matrix(glasgow_g3, sparse = FALSE))
+```
+
+
+We then combine them into a 3-dimensional array with dimensions `[actor × actor × wave]`, which is the required format for longitudinal network data in `RSiena`:
+
+```{r}
+#| message: false
+# Combine into 3D array [actor x actor x wave]
+net_array <- array(c(net1, net2, net3), dim = c(129, 129, 3))
+```
+
+### Network Dynamics
+
+#### Model 1: Structural Effects 
+We start by estimating a simple model specification that includes only two effects: an outdegree (density) term and a reciprocity term, capturing baseline tie propensity and mutual tie preference without incorporating more complex structural or covariate-based influences. In other words, we are not including any covariates, so the model is specified purely in terms of endogenous network dynamics.
+
+
+We convert the 3D network array `net_array` into a `sienaDependent` object using the `sienaDependent()` function. This step tells `RSiena` that the array represents a dependent network variable observed over multiple waves. The resulting object will be used as input in the model definition and estimation.
+
+```{r}
+#| message: false
+
+# Convert array into RSiena dependent object
+siena_net <- sienaDependent(net_array)
+```
+
+After defining the network as a `sienaDependent` object, we now wrap it into a complete `RSiena` data object using `sienaDataCreate()`. This function prepares the data for model specification and estimation by bundling all input variables (here just the network) into a structure that the estimation algorithm can use.
+
+Since we are modeling only the network (and no actor covariates yet), we simply pass `siena_net` as the argument.
+
+```{r}
+#| message: false
+
+# Create a Siena data object
+data_mod1 <- sienaDataCreate(siena_net)
+```
+
+
+In RSiena, model specification is driven by the concept of "effects" which represent the structural features, covariate influences, and behavioral mechanisms that are hypothesized to drive network or behavioral change.  By default, `getEffects()` lists all possible effects available for the data structure (e.g., network dynamics, covariates, behaviors).  It doesn’t add any effects to the model yet though, it just initializes the structure that will hold them.
+
+We begin by calling `getEffects()` on our `friend_data` object to create a default effects object. This object holds all possible effects for the given data structure and is used as a base for customization. You can have a look at these effects directly by calling it: 
+
+```{r}
+#| message: false
+
+# Define the effects: start with default effect object
+my_effects <- getEffects(data_mod1)
+my_effects
+```
+
+These are the exact effects included by default:
+
+- Rate parameters for each wave transition (e.g., Period 1 and Period 2)
+- Outdegree (density): capturing the baseline propensity to send ties
+- Reciprocity: modeling the tendency to reciprocate received ties
+
+Since our simple model includes only these two structural effects, there is no need to add further effects using `includeEffects()` at this stage.
+
+Before running the estimation, we need to define the estimation algorithm that RSiena will use. This is done with the function `sienaAlgorithmCreate()`, which sets up the computational parameters for the simulation-based estimation process.
+
+In the example below, we assign the algorithm to the object `my_algorithm`. The `projname` argument specifies a name for the project; RSiena will use this name to organize temporary output files and logs related to the estimation.
+
+```{r}
+#| message: false
+
+# Define the estimation algorithm
+my_algorithm <- sienaAlgorithmCreate(projname = "saom_1", seed = 123)
+```
+
+::: {.callout-note}
+# Note on setting the seed
+Setting a seed as argument ensures reproducible results across runs given same R setup. Due to the stochastic nature of the algorithm and differences in computational environments, minor variations may still occur across:
+
+-	different versions of R or RSiena,
+-	different operating systems,
+-	or when using parallel processing.
+:::
+
+
+This algorithm object is later passed into the `siena07()` function to control how the estimation is performed. You can customize various settings like number of iterations, convergence thresholds, or use defaults (as we do here) for a basic estimation.
+
+
+Now that we’ve set up the data, specified the effects, and defined the estimation algorithm, we can estimate the Stochastic Actor-Oriented Model using the `siena07()` function. This function runs the RSiena estimation procedure. It takes the following inputs:
+
+- `my_algorithm`: the algorithm settings we defined earlier.
+- `data = friend_data`: the network data in RSiena format.
+- `effects = my_effects`: the specified model effects (in this case, outdegree and reciprocity).
+- `batch = TRUE`: suppresses user prompts during the estimation, making it suitable for scripted or automated runs.
+
+```{r}
+#| message: false
+#| output: false
+#| cache: true
+ 
+# Estimate the SAOM
+saom_1 <- siena07(
+  my_algorithm,
+  data = data_mod1,
+  effects = my_effects,
+  batch = TRUE
+)
+```
+
+To print a summary of the estimation results:
+```{r}
+#| message: false
+ 
+# View results
+saom_1
+```
+
+A nicer summary of the model is obtained by running the following which saves the  table of results as an html file (including significance stars for easy interpretation):
+```{r}
+#| output: FALSE
+#| message: FALSE
+siena.table(saom_1, type="html", sig=TRUE)
+```
+<iframe src="saom_1.html" width="100%" height="210px" style="border:none;"></iframe>
+
+**So, how do we interpret the parameter estimates?**
+
+
+Before interpreting parameter estimates, it's essential to assess whether the estimation has converged adequately. In RSiena, convergence is assessed using two main criteria:
+
+1. Overall maximum convergence ratio:\  
+   This value summarizes how far the simulated statistics deviate from the observed ones. A value below 0.25 is generally considered acceptable, with values below 0.15 indicating very good convergence.
+
+2. Individual convergence t-ratios:  
+   For each effect, the t-ratio compares the observed statistic to the average from the simulated networks. If the estimation has converged, these t-ratios should be close to zero. Values below 0.10 are ideal, and below 0.20 is generally acceptable.
+
+
+##### Convergence Assessment {.unnumbered}
+
+All convergence t-ratios in our Model 1 ouput are below 0.03, which suggests that the simulated statistics align closely with the observed network statistics for each parameter. This implies that the estimated model reproduces the key structural features of the observed data with high precision. Additionally, the overall maximum convergence ratio is 0.04, which is well below the commonly used threshold of 0.10, and even under the more conservative cutoff of 0.05. This means that none of the parameters are associated with poor convergence behavior. Taken together, these diagnostics confirm that the SAOM estimation process has stabilized, and the parameter estimates can be interpreted with confidence.
+
+##### Rate Parameters  {.unnumbered}
+The rate parameters capture how frequently actors are given the opportunity to change their outgoing ties between two consecutive observation moments. These are modeled as Poisson-like intensities in a continuous-time Markov framework. The table below provides the estimates and their interpretation:
+
+- **Rate 1**: Estimate = 8.580 (SE = 0.698)  
+  On average, each actor had around 9 opportunities to change a tie between waves 1 and 2.
+
+- **Rate 2**: Estimate = 7.238 (SE = 0.605)  
+  On average, each actor had around 7 opportunities to change a tie between waves 2 and 3.
+
+These values do not indicate how many changes were actually made, but how often actors *could have* made a change. Since actors may choose not to change a tie (i.e., they maintain the current state), the actual number of changes is usually lower than the number of opportunities. This is why rate parameters typically exceed the observed average number of tie changes per actor.
+
+#### Network Dynamics {.unnumbered}
+Once an actor has the opportunity to change, their decision is guided by an objective function that evaluates possible alternative network states. Each effect included in the model represents a social mechanism or hypothesis about actor preferences. The estimated coefficients reflect the direction and strength of these preferences. The table below summarizes the main effects from the model:
+
+- **Outdegree (density)**: Estimate = –2.411 (SE = 0.041)
+  Strong negative effect: actors are generally reluctant to form many ties.
+
+- **Reciprocity**: Estimate = 2.705 (SE = 0.086)  
+  Strong positive effect: actors strongly prefer to reciprocate existing ties.          |
+
+The interpretation of each parameter is as follows:
+
+Outdegree (density) parameter: $\theta_\text{out} = -2.411$ \ 
+A strong negative value suggests that actors prefer *sparser networks*. Forming new ties is costly or undesirable unless balanced by other effects. The more ties an actor has, the lower their objective function, making additional ties increasingly unlikely.
+
+Reciprocity parameter: $\theta_\text{rec} = 2.705$  \
+This strong positive value reflects a strong preference for **reciprocating existing ties**. If another actor has already sent a tie to ego, ego is much more likely to return the tie.
+
+Both estimates are statistically significant, as their t-ratios are well above 2. This supports the conclusion that density aversion and reciprocity are key mechanisms shaping the network.
+
+These effects form part of each actor’s utility function when evaluating potential changes. For actor $i$, the objective function can be written as:
+
+$$
+f_i(x') = \theta_\text{out} \sum_{j=1}^n x'_{ij} + \theta_\text{rec} \sum_{j=1}^n x'_{ij} x'_{ji}
+$$
+
+Let’s consider two scenarios:
+
+1. Adding a reciprocated tie\
+Suppose $x_{ji} = 1$ (the other actor already sent a tie), and ego adds $x_{ij} = 1$ to reciprocate. The utility change is:
+
+$$
+-2.411 + 2.705 = 0.294
+$$
+
+This results in a *positive utility*, indicating that the move is likely.
+
+2. Adding a non-reciprocated tie\ 
+If $x_{ji} = 0$, the tie is unreciprocated. The utility is:
+
+$$
+-2.411
+$$
+
+This is *negative utility*, indicating that the change is unlikely.
+
+Overall, the estimation results reveal that actors prefer to reciprocate existing ties and are generally cautious about forming many new ties. Reciprocated ties offer positive utility, while unreciprocated ties are penalized. These preferences are consistent with well-known social mechanisms: a desire for mutual relationships and an aversion to the costs of maintaining numerous social ties.
 
 
 
+
+#### Model 2: Structural + Covariate Effects
+Sociological theory suggests that, beyond general tendencies for reciprocity and transitivity, actors are influenced by individual characteristics when forming or maintaining ties. In adolescent friendship networks, one of the most important predictors of tie formation is behavioral similarity, such as shared lifestyle choices or habits.
+
+Having established the basic SAOM using only endogenous structural effects above (like outdegree and reciprocity), we now extend the model to account for actor-level covariates. By incorporating exogenous attributes such as sex and smoking behavior, we can investigate how individual characteristics shape tie formation in addition to the structural patterns already captured. This richer specification allows us to test more nuanced hypotheses about social selection and influence mechanisms working within the network.
+
+
+As mentioned in @sec-exeffects,  incorporating covariates into the objective function means we  need to differentiate between:
+
+- Ego effects: How an actor's own covariate value influences their tendency to form or maintain ties (e.g., do smokers send more ties?).
+- Alter effects: How the recipient's covariate value affects the likelihood of receiving a tie (e.g., are smokers more likely to be chosen as friends?).
+- Similarity effects: Whether actors prefer to form ties with others who are similar to themselves in a given attribute (e.g., are adolescents more likely to befriend others with similar smoking behavior?).
+
+This new specification remains actor-oriented and stochastic, but adds an important layer of covariate-based preference, allowing us to distinguish between purely structural mechanisms and individual-level traits influencing network evolution. It also aligns more closely with theoretical insights from social psychology and adolescent health research.
+
+Building on the simple structural model (Model 1) that included only the outdegree (density) and reciprocity effects, we now extend our specification to incorporate exogenous covariate information resulting in a more nuanced model of friendship dynamics.
+
+In our Model 2 here, we treat sex as a fixed covariate and smoking as a changing covariate, measured at each wave. We now include the following effects in addition to the structural ones:
+
+- Ego effect of smoking: Does an adolescent's smoking status affect how many ties they send?
+- Alter effect of smoking: Are smokers more popular in the network?
+- Similarity in smoking: Are adolescents more likely to form ties with others who smoke similarly?
+- Sex effects: These can be included to examine tie formation with respect to the sex of the pupil.
+
+In sum, Model 2 captures not only who adolescents choose to befriend structurally, but also how individual traits shape social dynamics providing a more realistic and theoretically grounded model of network evolution.
+
+We begin by converting the 3D network array we created above into a `sienaDependent` object:
+```{r}
+#| message: false
+
+# Convert array into RSiena dependent object
+siena_net <- sienaDependent(net_array)
+```
+
+Like before, this object represents the longitudinal network that serves as the dependent variable in the SAOM. Different from before, we extract covariate values from the network’s node attributes. Sex (`sex.F`) is treated as a time-invariant covariate, while smoking behavior (`familysmoking`) is treated as time-varying across the three network waves. 
+
+```{r}
+#| message: false
+# THIS NEEDS CHANGING IN NEETWORK DATA!
+# Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male
+sex_char <- V(glasgow_g3)$sex.F
+sex_num <- ifelse(sex_char == "F", 1,
+                  ifelse(sex_char == "M", 0, NA))
+# convert to fixed covariate object                  
+sex_cov <- coCovar(sex_num)
+
+# Extract smoking behavior (assumed changing)
+smoke1 <- as.numeric(V(glasgow_g1)$tobacco)
+smoke2 <- as.numeric(V(glasgow_g2)$tobacco)
+smoke3 <- as.numeric(V(glasgow_g3)$tobacco)
+smoking_array <- cbind(smoke1, smoke2, smoke3)
+# convert to changing covariate object
+smoking_cov <- varCovar(smoking_array)
+```
+
+
+Next we combine the network and covariates into a single Siena data object that will be used for estimation.
+
+```{r}
+#| message: false
+data_mod2 <- sienaDataCreate(siena_net, sex_cov, smoking_cov)
+```
+
+We define the effects to be included in the model. This includes structural effects (like outdegree, reciprocity, and transitive triplets) as well as ego, alter, and similarity effects for both sex and smoking covariates.
+
+
+```{r}
+#| message: false
+# Start with the default effect set
+my_effects <- getEffects(data_mod2)
+
+# Add structural effects
+my_effects <- includeEffects(my_effects, outdegree, recip, transTrip)
+
+# Add effects for sex
+my_effects <- includeEffects(my_effects, egoX, altX, simX, interaction1 = "sex_cov")
+
+# Add effects for smoking
+my_effects <- includeEffects(my_effects, egoX, altX, simX, interaction1 = "smoking_cov")
+```
+
+We define the estimation settings using `sienaAlgorithmCreate()`. A seed is included to support reproducibility of the results.
+
+```{r}
+#| message: false
+my_algorithm <-  sienaAlgorithmCreate(projname = "saom_2", seed = 123)
+```
+
+We now estimate the model using the `siena07()` function, which runs the simulation-based estimation procedure.
+```{r}
+#| message: false
+#| output: false
+#| cache: true
+saom_2 <- siena07(
+  my_algorithm,
+  data = data_mod2,
+  effects = my_effects,
+  batch = TRUE
+)
+```
+
+Finally, as before, we display the model results as an HTML table:
+
+```{r}
+#| output: FALSE
+#| message: FALSE
+siena.table(saom_2, type="html", sig=TRUE)
+```
+<iframe src="saom_2.html" width="100%" height="350px" style="border:none;"></iframe>
+
+
+We now interpret the results from Model 2, starting with an assessment of convergence, followed by the interpretation of parameter estimates.
+
+##### Convergence Assessment {.unnumbered}
+In Model 2, all convergence t-ratios are below 0.07, and the overall maximum convergence ratio is 0.11. This indicates good convergence, and we can safely interpret the estimated parameters.
+
+##### Rate Parameters  {.unnumbered}
+
+Rate parameters determine how frequently actors are allowed to change their outgoing ties between time periods. These are estimated as:
+
+- Period 1: 10.761 (SE = 1.054)
+- Period 2: 8.981 (SE = 0.850)
+
+These values suggest that, on average, each actor had about 10 opportunities to change a tie between wave 1 and 2, and about 9 opportunities between wave 2 and 3. These values reflect the speed of network change over time but do not represent the number of actual changes.
+
+#### Network Dynamics {.unnumbered}
+
+- **Outdegree (Density)**: $-2.859$ (SE = 0.053)  
+  This strong negative value reflects a general reluctance to form many ties, leading to sparse networks.
+
+- **Reciprocity**: $1.991$ (SE = 0.089)  
+  Indicates a strong tendency for actors to reciprocate existing ties.
+
+- **Transitive Triplets**: $0.448$ (SE = 0.026)  
+  Suggests a preference for transitive closure; if $i$ is tied to $j$, and $j$ is tied to $k$, then $i$ is more likely to tie to $k$.
+
+These three effects together capture core structural properties of the network dynamics: sparsity, mutuality, and local clustering. We now look at the covariate related structural effects and start with the covariate sex:
+
+- **Sex Alter**: $-0.154$ (SE = 0.097, not significant)  
+  There is no clear evidence that actors avoid or prefer alters based on their sex.
+
+- **Sex Ego**: $0.159$ (SE = 0.103, not significant)  
+  Indicates no significant difference in tie formation activity between male and female actors.
+
+- **Sex Similarity**: $0.912$ (SE = 0.093)  
+  Shows a strong and significant tendency for actors to form ties with others of the same sex which is a clear sign of sex-based homophily.
+
+
+
+The SAOM estimation includes three effects based on the covariate `sex`, coded as `0` for boys and `1` for girls, and centered around the mean value
+```{r}
+mean(sex_cov)
+```
+i.e., $\bar{s} = 0.434$.
+So approximately 43.4% of actors are girls in this dataset. Centering covariates is a default behavior in RSiena, ensuring that estimated effects are interpreted relative to the average actor. After centering, the transformed covariate values become:
+
+Because all covariates are mean-centered, the contribution of a tie from actor $i$ to $j$ to the actor's objective function is:
+$$
+s_i - \bar{s} =
+\begin{cases}
+-0.434 & \text{for boys} \\
+0.566 & \text{for girls}
+\end{cases}
+$$
+This transformation affects how the ego and alter effects are applied to the objective function. The objective function for actor $i$ includes covariate effects as follows:
+
+$$
+f_i(x’) = \theta_{\text{ego}}(s_i - \bar{s}) + \theta_{\text{alter}}(s_j - \bar{s}) + \theta_{\text{sim}} \cdot I(s_i = s_j)
+$$
+
+
+where
+
+- $s_i$ and $s_j$ are the actor’s sex values (0 or 1),
+-	$\bar{s} = 0.434$ is the sample mean,
+- $I(s_i = s_j)$ is an indicator variable which equals to 1 if $i$ and $j$ share the same sex, and 0 otherwise.
+
+
+@tbl-sexeff below lists some example contributions to the objective function
+
+::: {#tbl-sexeff}
+| Ego    | Alter  | Ego Term                    | Alter Term                  | Similarity Term   | Total Contribution |
+|--------|--------|---------|----------|----------|---------------------|
+| Male   | Male   | $0.159 \times (-0.434) = -0.069$   | $-0.154 \times (-0.434) = +0.067$    | $+0.912$          | $0.910$             |
+| Male   | Female | $-0.069$                           | $-0.154 \times 0.566 = -0.087$       | $0$               | $-0.156$            |
+| Female | Male   | $0.159 \times 0.566 = +0.090$      | $+0.067$                             | $0$               | $0.157$             |
+| Female | Female | $+0.090$                           | $-0.087$                             | $+0.912$          | $0.915$             |
+
+Sex-based contributions to the objective function under different ego-alter combinations. {.striped}
+:::
+
+
+These values show that same-sex ties, especially between girls, are more likely due to the strong similarity effect. Cross-sex ties are less likely, receiving lower utility in the objective function.
+
+
+Next, we look at the behavioral covariate smoking. From the above output we note the following:
+
+- **Smoking Alter**: $0.109$ (SE = 0.061, not significant)  
+  Suggests no evidence that smoking status affects how attractive an actor is as a tie recipient.
+
+- **Smoking Ego**: $0.077$ (SE = 0.063, not significant)  
+  No effect of smoking behavior on how active an actor is in sending ties.
+
+- **Smoking Similarity**: $0.380$ (SE = 0.117)  
+  This positive and significant parameter indicates a clear tendency toward homophily with respect to smoking behavior: actors are more likely to form or maintain friendships with others who share a similar smoking status.
+  
+
+Based on the model output and the centered smoking covariate, we interpret the smoking-related effects in the SAOM model. The smoking variable is ordinal with three categories: 1 = no smoking, 2 = occasional smoking, and 3 = regular smoking. The covariate is centered by subtracting its mean. In this case, the mean value is computed in R as:
+```{r}
+mean(smoking_cov)
+```
+
+We now interpret the covariate effects related to smoking behavior. In this model, smoking is treated as a three-level categorical covariate: 1 = Non-smoker, 2 = Occasional, 3 = Regular. The mean of the covariate, computed via `mean(smoke_cov)`, is approximately $\bar{s} = 1.377$.
+
+The centered values become:
+
+$$
+s_i - \bar{s} =
+\begin{cases}
+-0.377 & \text{if } s_i = 1 \quad \text{(Non-smoker)} \\
+0.623  & \text{if } s_i = 2 \quad \text{(Occasional smoker)} \\
+1.623  & \text{if } s_i = 3 \quad \text{(Regular smoker)}
+\end{cases}
+$$
+
+The contribution of $x_{ij}$ (a tie from actor $i$ to actor $j$) to the objective function is given by:
+
+$$
+\theta_{\text{ego}}(s_i - \bar{s}) + \theta_{\text{alter}}(s_j - \bar{s}) + \theta_{\text{sim}} \left(1 - \frac{|s_i - s_j|}{R_s}\right)
+$$
+whree $R_s$ refers to the range of the covariate $s$. Substituting the estimated values from the model:
+
+$$
+0.077(s_i - 1.377) + 0.109(s_j - 1.377) + 0.380 \left(1 - \frac{|s_i - s_j|}{2} \right)
+$$
+
+This function combines ego and alter contributions based on smoking level, and adds a similarity effect that rewards ties between actors with similar smoking levels.
+
+@tbl-smokeeff shows how smoking-related covariate effects contribute to the objective function in SAOM. Each cell computes the total effect of a potential tie from ego to alter based on their respective smoking levels. The function combines ego and alter contributions based on smoking level, and adds a similarity effect that rewards ties between actors with similar smoking levels.
+
+::: {#tbl-smokeeff}
+
+| Ego    | Alter  | Ego Term    | Alter Term    | Similarity Term   | Total Contribution |
+|--------|--------|---------|---------------|----------|---------------|
+| Non-smoker    | Non-smoker        | $0.077 \cdot (-0.377) = -0.029$ | $0.109 \cdot (-0.377) = -0.041$   | $0.380 \cdot 1 = 0.380$                         | $0.310$             |
+| Non-smoker    | Occasional       | $-0.029$                         | $0.109 \cdot 0.623 = 0.068$        | $0.380 \cdot (1 - 0.5) = 0.190$                 | $0.229$             |
+| Non-smoker    | Regular          | $-0.029$                         | $0.109 \cdot 1.623 = 0.177$        | $0.380 \cdot (1 - 1) = 0$                       | $0.148$             |
+| Occasional   | Non-smoker        | $0.077 \cdot 0.623 = 0.048$     | $-0.041$                           | $0.190$                                         | $0.197$             |
+| Occasional   | Occasional       | $0.048$                          | $0.068$                            | $0.380$                                         | $0.496$             |
+| Occasional   | Regular          | $0.048$                          | $0.177$                            | $0.190$                                         | $0.415$             |
+| Regular      | Non-smoker        | $0.077 \cdot 1.623 = 0.125$     | $-0.041$                           | $0$                                            | $0.084$             |
+| Regular      | Occasional       | $0.125$                          | $0.068$                            | $0.190$                                         | $0.383$             |
+| Regular      | Regular          | $0.125$                          | $0.177$                            | $0.380$                                         | $0.682$             |
+
+Smoking-related contributions to the objective function under different ego-alter combinations. {.striped}
+:::
+
+We see from @tbl-smokeeff that actors with similar smoking behavior are more likely to form ties, especially regular-to-regular smokers, indicating a strong homophily pattern. The ego and alter terms slightly amplify or reduce this tendency depending on individual smoking levels.
+
+### Network and Behavioral Dynamics
+
+#### Model 3: 
