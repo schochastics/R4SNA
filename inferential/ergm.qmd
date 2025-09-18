@@ -90,7 +90,7 @@ where `model_terms` represent structural configurations or covariate effects, e.
 
 ###  Model Specification 
 
-#### 1. Dyadic Independence: Edges and Homophily {.unnumbered}
+#### Dyadic Independence: Edges and Homophily 
 
 To begin working with exponential random graph models (ERGMs), we first need to understand how models are specified and what kinds of network structures they describe. In this section, we introduce the simplest possible ERGM, one that assumes Bernoulli dependence, and show how it connects to the familiar $G(n, p)$ model. This first step lays the foundation for more complex ERGMs that incorporate structural dependencies.
 
@@ -157,7 +157,7 @@ Put differently, the $G(n, p)$ random graph model is actually a special case of 
 
 In ERGMs, a parameter estimate is considered statistically significant (by convention) if the absolute value of the estimate is greater than approximately twice its standard error (i.e., $|\hat{\theta}| > 2 \cdot \text{SE}$). This rule of thumb suggests that the corresponding network feature (such as homophily or reciprocity) is unlikely to have arisen by chance, and is therefore meaningfully associated with the observed pattern of tie formation.
 
-#### Example: Coleman Friendship {.unnumbered}
+##### Example: Coleman Friendship {.unnumbered}
 
 To demonstrate the Bernoulli ERGM, we fit the model to the Coleman high school friendship network used in @sec-nonparam. However, here we convert ther graph object into an adjacency matrix since the `ergm` response argument needs to be a network object or a matrix that can be coerced to a network object. 
 
@@ -232,7 +232,7 @@ This formulation assumes that the tendency for similarity-based tie formation is
 Thus, including a homophily term allows us to model nodal covariate effects; how actor characteristics affect tie formation—while keeping the model simple and tractable.
 
 
-#### Example: Teenage Friends and Lifestyle Study data {.unnumbered}
+##### Example: Teenage Friends and Lifestyle Study data  {.unnumbered}
 For an example including the homophily statistic, we use the the "Teenage Friends and Lifestyle Study" data called `s50` in the `networkdata` package. The `s50` dataset is a subset of 50 pupils over a three-year panel study of adolescent friendship networks and health behaviors conducted in a school in the West of Scotland [@west1996s50]. This excerpt was created for illustrative purposes and includes dynamic friendship data over three waves, capturing changes in social ties alongside attributes like gender, sport participation, and substance use. We will focus on the homophily based on smoking behavior.
 
 We only consider cross-sectional network data here so we only focus on the third wave network (we will in later chapters look at modeling longitudinal network data). Let's prepare the data for the `ergm` specification. Note that we here instead convert the graph object inot a network one using the package `integraph` in order to preserve the node attribute of interest
@@ -282,7 +282,7 @@ So in our case, it would count:
 All of those contribute to the same term. It does not tell you whether one group is more homophilous than another. If we want more detail, we can instead use `nodemix("smoke")` as it can separate estimates for each combination of categories (e.g., smoker-smoker, smoker-non-smoker, etc.), that is you get detailed between-group dynamics.
 :::
 
-#### 2. Dyadic Dependence: Reciprocity {.unnumbered}
+#### Dyadic Dependence: Reciprocity 
 In ERGMs, we can explicitly model **dyadic dependence**, that is, the statistical relationship between the presence or absence of ties within pairs of nodes (dyads). This is particularly important in directed networks, where the direction of a tie from node $u$ to node $v$ may be statistically related to the reverse tie from $v$ to $u$.
 
 To capture this, we include a **reciprocity** term in the model specification. This term counts the number of mutually connected dyads* i.e., pairs where both $y_{uv} = 1$ and $y_{vu} = 1$. Including this term allows the model to account for the observed tendency in many social networks for actors to reciprocate ties—such as returning a favor, replying to a message, or forming a mutual friendship.
@@ -295,7 +295,7 @@ where $L = \sum_{u \neq v} y_{uv}$ is the total number of directed ties (edges) 
 
 A positive value for $\theta_2$ indicates a tendency toward reciprocation, while a negative value suggests an avoidance of mutual ties. 
 
-##### Example: Coleman Friendship {.unnumbered}
+##### Example: Coleman Friendship   {.unnumbered}
 We use the `coleman` data from earlier to specify an ERGM including reciprocity as statistic.The fitted ERGM includes two terms: a baseline `edges` term and a `mutual` term that captures reciprocity (i.e., the tendency for ties to be reciprocated): 
 ```{r}
 #| message: false
@@ -309,7 +309,7 @@ In contrast, the mutual term has a strong positive estimate ($\hat{\theta}_{\tex
 
 This combination of results suggests that while directed ties are rare in general, when ties do form, they are very likely to be mutual; a common feature in social networks. Overall, this ERGM confirms that dyadic dependence in the form of reciprocity is a defining feature of the Coleman data network.
 
-#### 3. Markov Dependence: Triangles and Stars {.unnumbered}
+#### Markov Dependence: Triangles and Stars 
 **Markov random graphs** are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes depends only on ties that are "locally adjacent"—specifically, those that share a node. This assumption, known as **Markov dependence**, implies that edges are conditionally independent unless they share a common node. This implies that the presence or absence of a tie between two nodes may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.
 
 Formally introduced by @frank1986markov, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions [@besag1972nearest]. The key insight is that network ties can exhibit local dependencies—like clustering or centralization—that can be modeled using well-defined building blocks. 
@@ -347,7 +347,7 @@ Including star terms allows the model to capture degree heterogeneity, reflectin
 
 A positive parameter on star terms suggests that nodes with many connections are more likely to gain additional ties—a form of preferential attachment or “rich-get-richer” dynamics.
 
-##### Example: Florentine Business Network {.unnumbered}
+##### Example: Florentine Business Network   {.unnumbered}
 To illustrate the use of Markov-dependent configurations in ERGMs, we fit a model to the Florentine business network, the classic dataset representing marriage and business ties among Renaissance-era families in Florence. Whie rather small, this undirected network contains important social patterns such as clustering and centralization, making it an ideal candidate for modeling local dependence structures such as edges, stars, and triangles.
 
 The goal of this example is to assess how these network structures contribute to the overall topology of the network using an ERGM based on Markov dependence. 
@@ -428,7 +428,7 @@ For example, when fitting a model to the Florentine business network, a model wi
 The degeneracy problem highlights a key limitation of Markov dependence: *not all local dependence assumptions lead to coherent global models*. Particularly when clustering is strong, models relying solely on Markov terms (edges, stars, triangles) can become computationally fragile or even mathematically incoherent. In the next section, we will examine how social circuit dependence offers an alternative approach to modeling complex interdependence while mitigating model degeneracy.
 
 
-#### 4. Social Circuit Dependence: GWESP  {.unnumbered}
+#### Social Circuit Dependence: GWESP 
 In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on **social circuit dependence** [@pattison2002neighborhood, @snijders2006new].
 
 Social circuit dependence modifies the way tie dependencies are specified in the model. Instead of assuming that two ties are conditionally dependent simply because they share a node (as in Markov dependence), social circuit dependence restricts dependence to occur only when two ties would complete a **4-cycle** in the network. Under social circuit dependence, network ties are assumed to self-organize through 4-cycles, i.e., closed paths involving four distinct nodes. Two potential ties are considered conditionally dependent only if they would complete a 4-cycle in the network. In other words, the existence of a tie between $(u, v)$ is only dependent on a tie between $(w, z)$ if adding both would close such a circuit.
@@ -485,7 +485,7 @@ In some models, it may be beneficial to fix $\alpha$ to a value based on theory 
 
 Next we demonstrate how to fit an ERGM using GWESP and interpret the results.
 
-##### Example: Lawyers Network - Cowork Among Partners {.unnumbered}
+##### Example: Lawyers Network - Cowork Among Partners   {.unnumbered}
 To demonstrate how ERGMs capture social circuit dependence, we will use the same subset of this network as earlier: we want to check whether or not the partners of the firm more frequently work together with other partners having the same practice, whilst also including a statistic related to triadic clustering. We import the data as a graph object from the `networkdata` package:
 
 ```{r}
@@ -616,7 +616,7 @@ For dyad-independent models (e.g., those using only nodal covariates like homoph
 
 
 
-#### Model Instability and Degeneracy {.unnumbered}
+#### Model Instability and Degeneracy
 
 While MCMC-based estimation enables flexible ERGM modeling, it also introduces potential pitfalls. In particular, unstable ERGMs can give rise to multi-modal probability distributions over the space of possible networks, where most of the probability mass concentrates on a small and unrealistic subset of configurations.
 
@@ -650,7 +650,7 @@ mcmc.diagnostics(model)
 
 We will consider the diagnostics for the `model_sc` on the lawyer data set above:
 
-##### Example: Lawyers Network - Cowork Among Partners {.unnumbered}
+##### Example: Lawyers Network - Cowork Among Partners  {.unnumbered}
  The `mcmc.diagnostics()` function in the `ergm` package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consists of two parts. The first part is a plot:
  
 ::: {#fig-mcmc .center}
@@ -749,7 +749,7 @@ plot(gof_model)
 ```
 :::
 
-##### Example: Lawyers Network - Cowork Among Partners {.unnumbered}
+##### Example: Lawyers Network - Cowork Among Partners  {.unnumbered}
 We now assess the fit of the ERGM specified for Lazega's co-working network, which included:
 
 - `edges`: baseline tie probability,
