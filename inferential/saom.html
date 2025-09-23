@@ -1258,21 +1258,20 @@ Suppose <span class="math inline">\(x_{ji} = 1\)</span> (the other actor already
 </div>
 <p>Like before, this object represents the longitudinal network that serves as the dependent variable in the SAOM. Different from before, we extract covariate values from the network’s node attributes. Sex (<code>sex.F</code>) is treated as a time-invariant covariate, while smoking behavior (<code>familysmoking</code>) is treated as time-varying across the three network waves.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># THIS NEEDS CHANGING IN NEETWORK DATA!</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>sex_char <span class="ot">&lt;-</span> <span class="fu">V</span>(glasgow_g3)<span class="sc">$</span>sex.F</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>sex_num <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"F"</span>, <span class="dv">1</span>,</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"M"</span>, <span class="dv">0</span>, <span class="cn">NA</span>))</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to fixed covariate object                  </span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>sex_cov <span class="ot">&lt;-</span> <span class="fu">coCovar</span>(sex_num)</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract smoking behavior (assumed changing)</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>smoke1 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g1)<span class="sc">$</span>tobacco)</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>smoke2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>tobacco)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>smoke3 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g3)<span class="sc">$</span>tobacco)</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>smoking_array <span class="ot">&lt;-</span> <span class="fu">cbind</span>(smoke1, smoke2, smoke3)</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to changing covariate object</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>smoking_cov <span class="ot">&lt;-</span> <span class="fu">varCovar</span>(smoking_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>sex_char <span class="ot">&lt;-</span> <span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>sex.F</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>sex_num <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"F"</span>, <span class="dv">1</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"M"</span>, <span class="dv">0</span>, <span class="cn">NA</span>))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to fixed covariate object                  </span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>sex_cov <span class="ot">&lt;-</span> <span class="fu">coCovar</span>(sex_num)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract smoking behavior (assumed changing)</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>smoke1 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g1)<span class="sc">$</span>tobacco)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>smoke2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>tobacco)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>smoke3 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g3)<span class="sc">$</span>tobacco)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>smoking_array <span class="ot">&lt;-</span> <span class="fu">cbind</span>(smoke1, smoke2, smoke3)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to changing covariate object</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>smoking_cov <span class="ot">&lt;-</span> <span class="fu">varCovar</span>(smoking_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Next we combine the network and covariates into a single Siena data object that will be used for estimation.</p>
 <div class="cell">
@@ -1732,11 +1731,11 @@ f_i^{\text{beh}}(z', x, v, z) = \sum_k \theta_k s_{ik}^{\text{beh}}(z', x, v, z)
 <ul>
 <li><p>Linear shape effect Encourages increase or decrease in behavior depending on the sign of the parameter:</p>
 <p><span class="math display">\[
-s_i^{\text{linear}}(x, z, v) = z_i
+s^\text{beh}_{i,\text{linear}}(x, z, v) = z_i
 \]</span> If <span class="math inline">\(\theta_{\text{lin}} &gt; 0\)</span>, higher behavior values are favored.</p></li>
 <li><p>Quadratic shape effect Penalizes extreme behavioral values (high or low), favoring moderation:</p>
 <p><span class="math display">\[
-s_i^{\text{quadratic}}(x, z, v) = z_i^2
+s^\text{beh}_{i,\text{quadratic}}(x, z, v) = z_i^2
 \]</span></p>
 <p>A negative estimate for this effect leads to stabilization around the middle values of the behavioral scale, i.e., favors moderate behavior (e.g., smoking occasionally rather than regularly).</p></li>
 </ul>
@@ -1744,27 +1743,29 @@ s_i^{\text{quadratic}}(x, z, v) = z_i^2
 </section>
 <section id="social-influence-effects" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="social-influence-effects">2. Social Influence Effects</h5>
-<p>These effects capture the idea that individuals adjust their behavior based on their peers:</p>
+<p>The behavioral similarity effects in SAOMs allow us to model how actors adjust their behavior to become more similar to their peers. These effects assume that individuals are influenced by the behavioral attributes of those they are connected to.</p>
 <ul>
-<li><p>Average Similarity This effect promotes alignment of an actor’s behavior with that of their network alters:</p>
+<li><p>Average Similarity<br>
+This effect captures how similar an actor’s behavior is to their alters’ behaviors, averaged across all outgoing ties. It reflects per-peer influence. The statistic is defined as:</p>
 <p><span class="math display">\[
+s^\text{beh}_{i,\text{avsim}}(x, z, v) = \frac{1}{x_{i+}} \sum_{j=1}^n x_{ij} \left( \text{sim}_z(ij) - \overline{\text{sim}_z} \right)
+\]</span> where:</p>
+<ul>
+<li><span class="math inline">\(x_{ij}\)</span> is 1 if actor <span class="math inline">\(i\)</span> has a tie to actor <span class="math inline">\(j\)</span>, and 0 otherwise.</li>
+<li><span class="math inline">\(x_{i+}\)</span> is the number of outgoing ties for actor <span class="math inline">\(i\)</span>.</li>
+<li><span class="math inline">\(\text{sim}_z(ij)\)</span> is the behavioral similarity between actor <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> defined as <span class="math display">\[
 \text{sim}_z(ij) = 1 - \frac{|z_i - z_j|}{R_z}
-\]</span></p>
+\]</span> where <span class="math inline">\(R_z\)</span> is the range of the behavior variable</li>
+<li><span class="math inline">\(\overline{\text{sim}_z}\)</span> is the average similarity across all dyads in the network and acts as a centering constant. This centering ensures that the statistic has an interpretable baseline, distinguishing whether actors are more similar or less similar to their peers compared to the overall average.</li>
+</ul></li>
+<li><p>Total Similarity<br>
+This variant captures the total amount of similarity, not normalized by the number of ties. It gives more weight to actors with more alters:</p>
 <p><span class="math display">\[
-s_i^{\text{avsim}}(x, z, v) = \frac{1}{x_{i+}} \sum_{j=1}^n x_{ij} (\text{sim}_z(ij) - \overline{\text{sim}_z})
-\]</span></p>
-<p>Here, <span class="math inline">\(R_z\)</span> is the range of the behavior variable, and <span class="math inline">\(x_{i+}\)</span> is the number of ties ego sends.</p></li>
-<li><p>Total Similarity Similar to the average similarity effect but weighted by number of alters:</p>
-<p><span class="math display">\[
-s_i^{\text{totsim}}(x, z, v) = \sum_{j=1}^n x_{ij} (\text{sim}_z(ij) - \overline{\text{sim}_z})
-\]</span></p>
-<p>This emphasizes the overall strength of behavioral alignment with peers.</p></li>
+s^\text{beh}_{i,\text{totsim}}(x, z, v) = \sum_{j=1}^n x_{ij} \left( \text{sim}_z(ij) - \overline{\text{sim}_z} \right)
+\]</span></p></li>
 </ul>
-<p>For both the average and total effects, the estimated parameter reflects the strength and direction of social influence, that is, how actors adjust their behavior in relation to the behaviors of their connected peers.</p>
-<ul>
-<li><p>A positive parameter estimate means that actors are more likely to adjust their behavior to become more similar to those they are connected to. In other words, the model captures conformity or peer influence. The higher the similarity between ego and alters, the higher the objective function, making such changes more likely.</p></li>
-<li><p>A negative parameter estimate would indicate that actors tend to diverge from their peers, becoming less similar over time. This could suggest differentiation or opposition in behavior, although negative influence parameters are rare and often theoretically unexpected.</p></li>
-</ul>
+<p>Both versions reflect social influence. A positive parameter estimate means that actors are more likely to adjust their behavior to become more similar to those they are connected to. In other words, the model captures conformity or peer influence. The higher the similarity between ego and alters, the higher the objective function, making such changes more likely. A negative parameter estimate would indicate that actors tend to diverge from their peers, becoming less similar over time. This could suggest differentiation or opposition in behavior, although negative influence parameters are rare and often theoretically unexpected.</p>
+<p>The difference between the two lies in how the influence is scaled: average similarity treats each alter equally (per tie), while total similarity accumulates influence, potentially making actors with more peers more susceptible to conformity.</p>
 </section>
 <section id="network-position-effects" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="network-position-effects">3. Network Position Effects</h5>
@@ -1772,11 +1773,11 @@ s_i^{\text{totsim}}(x, z, v) = \sum_{j=1}^n x_{ij} (\text{sim}_z(ij) - \overline
 <ul>
 <li><p>Outdegree effect Investigates whether actors with more outgoing ties behave differently:</p>
 <p><span class="math display">\[
-s_i^{\text{out}}(x, z, v) = z_i \sum_{j=1}^n x_{ij}
+s^\text{beh}_{i,\text{out}}(x, z, v) = z_i \sum_{j=1}^n x_{ij}
 \]</span></p></li>
 <li><p>Indegree effect Models whether being popular (having many incoming ties) is related to behavior:</p>
 <p><span class="math display">\[
-s_i^{\text{ind}}(x, z, v) = z_i \sum_{j=1}^n x_{ji}
+s^\text{beh}_{i,\text{ind}}(x, z, v) = z_i \sum_{j=1}^n x_{ji}
 \]</span></p></li>
 </ul>
 <p>A positive parameter estimate for a position effect means that actors tend to form more ties to alters with higher behavioral values. For instance, if the behavior is smoking, a positive estimate suggests a preference for connecting to individuals who smoke more.</p>
@@ -1789,7 +1790,7 @@ s_i^{\text{ind}}(x, z, v) = z_i \sum_{j=1}^n x_{ji}
 <ul>
 <li><p>Covariate effect Actor attributes (covariates) can be included in the behavioral objective function as main effects and will indicate whether an attribute <span class="math inline">\(v_i\)</span> is associated with higher or lower behavior values:</p>
 <p><span class="math display">\[
-s_i^{\text{covariate}}(x, z, v) = v_i
+s^\text{beh}_{i,\text{covariate}}(x, z, v) = v_i
 \]</span></p></li>
 </ul>
 <p>These effects capture how an actor’s covariate value influences their tendency to increase or decrease their behavioral score. For example, we might ask: Are males more likely to adopt a risky behavior? Do older students tend to reduce smoking over time?</p>
