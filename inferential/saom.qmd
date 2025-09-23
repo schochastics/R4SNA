@@ -836,9 +836,9 @@ Like before, this object represents the longitudinal network that serves as the 
 
 ```{r}
 #| message: false
-# THIS NEEDS CHANGING IN NEETWORK DATA!
+
 # Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male
-sex_char <- V(glasgow_g3)$sex.F
+sex_char <- V(glasgow_g2)$sex.F
 sex_num <- ifelse(sex_char == "F", 1,
                   ifelse(sex_char == "M", 0, NA))
 # convert to fixed covariate object                  
@@ -1204,7 +1204,7 @@ These effects govern the overall shape or distribution of the behavior:
   Encourages increase or decrease in behavior depending on the sign of the parameter:
 
   $$
-  s_i^{\text{linear}}(x, z, v) = z_i
+  s^\text{beh}_{i,\text{linear}}(x, z, v) = z_i
   $$
  If $\theta_{\text{lin}} > 0$, higher behavior values are favored.
 
@@ -1212,7 +1212,7 @@ These effects govern the overall shape or distribution of the behavior:
   Penalizes extreme behavioral values (high or low), favoring moderation:
 
   $$
-  s_i^{\text{quadratic}}(x, z, v) = z_i^2
+  s^\text{beh}_{i,\text{quadratic}}(x, z, v) = z_i^2
   $$
 
   A negative estimate for this effect leads to stabilization around the middle values of the behavioral scale, i.e., favors moderate behavior (e.g., smoking occasionally rather than regularly).
@@ -1228,38 +1228,35 @@ Note that the basic shape eﬀects must be always included in the model specific
 
 ##### 2. Social Influence Effects  {.unnumbered}
 
-These effects capture the idea that individuals adjust their behavior based on their peers:
+The behavioral similarity effects in SAOMs allow us to model how actors adjust their behavior to become more similar to their peers. These effects assume that individuals are influenced by the behavioral attributes of those they are connected to.
 
-- Average Similarity
-  This effect promotes alignment of an actor’s behavior with that of their network alters:
-
-  $$
-  \text{sim}_z(ij) = 1 - \frac{|z_i - z_j|}{R_z}
-  $$
+- Average Similarity  
+  This effect captures how similar an actor’s behavior is to their alters’ behaviors, averaged across all outgoing ties. It reflects per-peer influence. The statistic is defined as:
 
   $$
-  s_i^{\text{avsim}}(x, z, v) = \frac{1}{x_{i+}} \sum_{j=1}^n x_{ij} (\text{sim}_z(ij) - \overline{\text{sim}_z})
+  s^\text{beh}_{i,\text{avsim}}(x, z, v) = \frac{1}{x_{i+}} \sum_{j=1}^n x_{ij} \left( \text{sim}_z(ij) - \overline{\text{sim}_z} \right)
+  $$
+  where:
+  - $x_{ij}$ is 1 if actor $i$ has a tie to actor $j$, and 0 otherwise.
+  - $x_{i+}$ is the number of outgoing ties for actor $i$.
+  - $\text{sim}_z(ij)$ is the behavioral similarity between actor $i$ and $j$ defined as
+    $$
+    \text{sim}_z(ij) = 1 - \frac{|z_i - z_j|}{R_z}
+    $$
+    where  $R_z$ is the range of the behavior variable
+  - $\overline{\text{sim}_z}$ is the average similarity across all dyads in the network and acts as a centering constant. This centering ensures that the statistic has an interpretable baseline, distinguishing whether actors are more similar or less similar to their peers compared to the overall average.
+
+- Total Similarity  
+  This variant captures the total amount of similarity, not normalized by the number of ties. It gives more weight to actors with more alters:
+
+  $$
+  s^\text{beh}_{i,\text{totsim}}(x, z, v) = \sum_{j=1}^n x_{ij} \left( \text{sim}_z(ij) - \overline{\text{sim}_z} \right)
   $$
 
-  Here, $R_z$ is the range of the behavior variable, and $x_{i+}$ is the number of ties ego sends.
-
-- Total Similarity 
-  Similar to the average similarity effect but weighted by number of alters:
-
-  $$
-  s_i^{\text{totsim}}(x, z, v) = \sum_{j=1}^n x_{ij} (\text{sim}_z(ij) - \overline{\text{sim}_z})
-  $$
-
-  This emphasizes the overall strength of behavioral alignment with peers.
-
-For both the average  and total effects, the estimated parameter reflects the strength and direction of social influence, that is, how actors adjust their behavior in relation to the behaviors of their connected peers.
-
-- A positive parameter estimate means that actors are more likely to adjust their behavior to become more similar to those they are connected to. In other words, the model captures conformity or peer influence. The higher the similarity between ego and alters, the higher the objective function, making such changes more likely.
-
-- A negative parameter estimate would indicate that actors tend to diverge from their peers, becoming less similar over time. This could suggest differentiation or opposition in behavior, although negative influence parameters are rare and often theoretically unexpected.
+Both versions reflect social influence. A positive parameter estimate means that actors are more likely to adjust their behavior to become more similar to those they are connected to. In other words, the model captures conformity or peer influence. The higher the similarity between ego and alters, the higher the objective function, making such changes more likely. A negative parameter estimate would indicate that actors tend to diverge from their peers, becoming less similar over time. This could suggest differentiation or opposition in behavior, although negative influence parameters are rare and often theoretically unexpected.
 
 
-
+The difference between the two lies in how the influence is scaled: average similarity treats each alter equally (per tie), while total similarity accumulates influence, potentially making actors with more peers more susceptible to conformity.
 
 
 ##### 3. Network Position Effects  {.unnumbered}
@@ -1271,14 +1268,14 @@ Position effects are used in SAOMs to model social selection based on behavior. 
   Investigates whether actors with more outgoing ties behave differently:
 
   $$
-  s_i^{\text{out}}(x, z, v) = z_i \sum_{j=1}^n x_{ij}
+  s^\text{beh}_{i,\text{out}}(x, z, v) = z_i \sum_{j=1}^n x_{ij}
   $$
 
 - Indegree effect 
   Models whether being popular (having many incoming ties) is related to behavior:
 
   $$
-  s_i^{\text{ind}}(x, z, v) = z_i \sum_{j=1}^n x_{ji}
+  s^\text{beh}_{i,\text{ind}}(x, z, v) = z_i \sum_{j=1}^n x_{ji}
   $$
 
 
@@ -1296,7 +1293,7 @@ Covariates (e.g., sex, SES) can directly influence behavior, independent of the 
   Actor attributes (covariates) can be included in the behavioral objective function as main effects and will indicate whether an attribute $v_i$ is associated with higher or lower behavior values:
 
   $$
-  s_i^{\text{covariate}}(x, z, v) = v_i
+  s^\text{beh}_{i,\text{covariate}}(x, z, v) = v_i
   $$
 
 
