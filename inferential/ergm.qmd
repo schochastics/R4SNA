@@ -2,7 +2,7 @@
 
 So far, the models we’ve considered have treated tie formation as mostly random or locally constrained: ties are formed with fixed probabilities ($G(n, p)$), rewired at random (small-world), or arranged to match node degrees (configuration model). However, real-world networks are shaped by richer and more structured processes. People don’t form ties independently or at random, they’re influenced by patterns like mutual friendships, popularity, shared group membership, and social norms like reciprocity and transitivity. For example, two people who share a common friend may be more likely to form a tie themselves (triadic closure), or individuals may be more likely to reciprocate a connection that is initiated by someone else. These kinds of dependencies are central to many social theories, and they give rise to complex patterns of self-organization in networks.
 
-To capture these processes, we need a more flexible modeling framework—one that allows for:
+To capture these processes, we need a more flexible modeling framework that allows for:
 
 - Multiple network features to be modeled simultaneously
 - Direct specification of tie dependencies
@@ -28,7 +28,7 @@ library(tidyverse)
 ```
 
 ## ERGM Modeling Outline
-Exponential Random Graph Models (ERGMs) are a powerful family of statistical models for analyzing and simulating social networks. Unlike simpler random graph models, ERGMs are designed to capture the complex dependencies that often characterize real-world networks, such as reciprocity, transitivity, or clustering—by explicitly modeling how the presence of one tie can affect the likelihood of others.
+Exponential Random Graph Models (ERGMs) are a powerful family of statistical models for analyzing and simulating social networks. Unlike simpler random graph models, ERGMs are designed to capture the complex dependencies that often characterize real-world networks, (such as reciprocity, transitivity, or clustering) by explicitly modeling how the presence of one tie can affect the likelihood of others.
 
 The core idea is as follows. ERGMs specify a probability distribution over the set of all possible networks with a given number of nodes. The probability of observing a particular graph $G$ is defined as:
 
@@ -94,7 +94,7 @@ where `model_terms` represent structural configurations or covariate effects, e.
 
 To begin working with exponential random graph models (ERGMs), we first need to understand how models are specified and what kinds of network structures they describe. In this section, we introduce the simplest possible ERGM, one that assumes Bernoulli dependence, and show how it connects to the familiar $G(n, p)$ model. This first step lays the foundation for more complex ERGMs that incorporate structural dependencies.
 
-The Bernoulli ERGM assumes that all possible edges form independently of one another. In other words, the probability that a tie exists between nodes $u$ and $v$ is unrelated to whether other ties are present elsewhere in the network. This is a very strong assumption—and one that is often unrealistic in practice—but it is useful as a baseline.
+The Bernoulli ERGM assumes that all possible edges form independently of one another. In other words, the probability that a tie exists between nodes $u$ and $v$ is unrelated to whether other ties are present elsewhere in the network. This is a very strong assumption and one that is often unrealistic in practice, but it is useful as a baseline.
 
 Let $Y_{uv}$ be a binary random variable indicating the presence ($1$) or absence ($0$) of a tie between nodes $u$ and $v$. The full graph $G$ can then be represented by its adjacency matrix $Y$, where $Y_{uv}$ encodes the tie between $u$ and $v$.
 
@@ -104,7 +104,7 @@ $$
 P(G) = \frac{1}{\kappa} \exp\left( \sum_{u<v} \theta_{uv} y_{uv} \right)
 $$
 
-However, this model quickly becomes infeasible because it would require estimating a separate parameter for every possible edge—a number that grows quadratically with the number of nodes.
+However, this model quickly becomes infeasible because it would require estimating a separate parameter for every possible edge, a number that grows quadratically with the number of nodes.
 
 To make the model estimable and interpretable, ERGMs rely on the **homogeneity assumption**: the effect of a given configuration (such as an edge, triangle, or mutual tie) is the same wherever it appears in the network. That is, all instances of the same configuration share a single global parameter. For the Bernoulli ERGM, this means:
 
@@ -229,7 +229,7 @@ We interpret the homophily parameter as follows:
 
 This formulation assumes that the tendency for similarity-based tie formation is uniform across all dyads, consistent with the homogeneity assumption discussed earlier. Moreover, since the statistic depends only on the attributes of the two actors in a dyad and not on any other ties in the network, it also maintains dyadic independence. That is, the presence or absence of one tie does not influence the probability of others, unless additional structural terms (like triangles or mutual ties) are included in the model.
 
-Thus, including a homophily term allows us to model nodal covariate effects; how actor characteristics affect tie formation—while keeping the model simple and tractable.
+Thus, including a homophily term allows us to model nodal covariate effects; how actor characteristics affect tie formation while keeping the model simple and tractable.
 
 
 ##### Example: Teenage Friends and Lifestyle Study data  {.unnumbered}
@@ -285,7 +285,7 @@ All of those contribute to the same term. It does not tell you whether one group
 #### Dyadic Dependence: Reciprocity 
 In ERGMs, we can explicitly model **dyadic dependence**, that is, the statistical relationship between the presence or absence of ties within pairs of nodes (dyads). This is particularly important in directed networks, where the direction of a tie from node $u$ to node $v$ may be statistically related to the reverse tie from $v$ to $u$.
 
-To capture this, we include a **reciprocity** term in the model specification. This term counts the number of mutually connected dyads* i.e., pairs where both $y_{uv} = 1$ and $y_{vu} = 1$. Including this term allows the model to account for the observed tendency in many social networks for actors to reciprocate ties—such as returning a favor, replying to a message, or forming a mutual friendship.
+To capture this, we include a **reciprocity** term in the model specification. This term counts the number of mutually connected dyads* i.e., pairs where both $y_{uv} = 1$ and $y_{vu} = 1$. Including this term allows the model to account for the observed tendency in many social networks for actors to reciprocate ties (such as returning a favor, replying to a message, or forming a mutual friendship).
 
 An ERGM with both an edge and a reciprocity statistic is specified as:
 
@@ -310,9 +310,9 @@ In contrast, the mutual term has a strong positive estimate ($\hat{\theta}_{\tex
 This combination of results suggests that while directed ties are rare in general, when ties do form, they are very likely to be mutual; a common feature in social networks. Overall, this ERGM confirms that dyadic dependence in the form of reciprocity is a defining feature of the Coleman data network.
 
 #### Markov Dependence: Triangles and Stars 
-**Markov random graphs** are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes depends only on ties that are "locally adjacent"—specifically, those that share a node. This assumption, known as **Markov dependence**, implies that edges are conditionally independent unless they share a common node. This implies that the presence or absence of a tie between two nodes may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.
+**Markov random graphs** are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes depends only on ties that are "locally adjacent", specifically, those that share a node. This assumption, known as **Markov dependence**, implies that edges are conditionally independent unless they share a common node. This implies that the presence or absence of a tie between two nodes may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.
 
-Formally introduced by @frank1986markov, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions [@besag1972nearest]. The key insight is that network ties can exhibit local dependencies—like clustering or centralization—that can be modeled using well-defined building blocks. 
+Formally introduced by @frank1986markov, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions [@besag1972nearest]. The key insight is that network ties can exhibit local dependencies (like clustering or centralization) that can be modeled using well-defined building blocks. 
 
 Under Markov dependence, ERGMs are typically specified using **edges, $k$-stars, and triangle terms**, since these configurations reflect dependencies between adjacent ties. Examples of such configurations are shown in @fig-markov.
 
@@ -345,7 +345,7 @@ Including star terms allows the model to capture degree heterogeneity, reflectin
 - **Out-stars** (activity): a node sending many ties
 - **In-stars** (popularity): a node receiving many ties
 
-A positive parameter on star terms suggests that nodes with many connections are more likely to gain additional ties—a form of preferential attachment or “rich-get-richer” dynamics.
+A positive parameter on star terms suggests that nodes with many connections are more likely to gain additional ties, a form of preferential attachment or “rich-get-richer” dynamics.
 
 ##### Example: Florentine Business Network   {.unnumbered}
 To illustrate the use of Markov-dependent configurations in ERGMs, we fit a model to the Florentine business network, the classic dataset representing marriage and business ties among Renaissance-era families in Florence. Whie rather small, this undirected network contains important social patterns such as clustering and centralization, making it an ideal candidate for modeling local dependence structures such as edges, stars, and triangles.
@@ -417,7 +417,7 @@ The good news is that by including triangle and star terms in an ERGM, we can mo
 
 While Markov random graph models offer a powerful way to represent local dependence through structures like edges, stars, and triangles, they come with a significant challenge: **model degeneracy**.
 
-Model degeneracy occurs when an ERGM assigns overwhelming probability to a small set of unrealistic graph configurations—such as the empty graph (no ties) or the complete graph (every possible tie), even though the observed network lies somewhere in between. This typically manifests during estimation as:
+Model degeneracy occurs when an ERGM assigns overwhelming probability to a small set of unrealistic graph configurations, such as the empty graph (no ties) or the complete graph (every possible tie), even though the observed network lies somewhere in between. This typically manifests during estimation as:
 
 - Extremely poor convergence of the MCMC algorithm,
 - Implausible simulated networks that look nothing like the observed data,
@@ -546,7 +546,7 @@ Let's interpret the output: The fitted model includes four terms: `edges`, `node
 - `edges` ($\hat\theta = -4.41$, *p* < 0.001): Ties are rare overall; the network is sparse.
 - `nodecov("practice")` ($\hat\theta = 0.18$, *p* < 0.05): Lawyers from a given practice area (e.g., corporate) are slightly more likely to form ties overall.
 - `nodematch("practice")` ($\hat\theta = 0.61$, *p* < 0.001): Strong evidence of  homophily, lawyers are significantly more likely to collaborate within their own practice area.
-- `gwesp(0.693)` ($\hat\theta = 1.15$, *p* < 0.001): High and significant triadic closure effect, indicating a strong tendency for collaboration among those with shared partners—consistent with social circuit dependence.
+- `gwesp(0.693)` ($\hat\theta = 1.15$, *p* < 0.001): High and significant triadic closure effect, indicating a strong tendency for collaboration among those with shared partners consistent with social circuit dependence.
 
 Taken together, the results indicate that processes of **attribute-related activity**, **assortative mixing by attribute (homophily)**, and **structural closure** (via triadic dependence) operate concurrently in shaping tie formation within the Lazega co-working network.
 
@@ -668,7 +668,7 @@ MCMC trace and density plots for ERGM parameter estimates. The trace plots (left
 :::
 The MCMC diagnostic output includes two main types of plots as seen in @fig-mcmc: **trace plots** and **density plots**, which together help assess whether the Markov chain has properly converged.
 
-The **trace plots** (left panels of @fig-mcmc) display the sampled values of the score function—essentially, the gradient of the log-likelihood—for each model term across the course of the MCMC simulation. In a well-behaved chain, these traces should appear as irregular but stable fluctuations around zero, without discernible trends, drifts, or flat segments. Such patterns indicate good mixing, where the sampler is exploring the parameter space effectively rather than getting stuck.
+The **trace plots** (left panels of @fig-mcmc) display the sampled values of the score function (essentially, the gradient of the log-likelihood) for each model term across the course of the MCMC simulation. In a well-behaved chain, these traces should appear as irregular but stable fluctuations around zero, without discernible trends, drifts, or flat segments. Such patterns indicate good mixing, where the sampler is exploring the parameter space effectively rather than getting stuck.
 
 In the Lazega model, all four trace plots (for `edges`, `nodecov.practice`, `nodematch.practice`, and `gwesp.fixed.0.693`) exhibit the expected noisy, stable behavior. There are no signs of poor mixing or convergence issues.
 
@@ -685,7 +685,7 @@ In addition to the trace and density plots, the `mcmc.diagnostics()` function pr
 mcmc.diagnostics(model_sc, which = "texts")
 ```
 
-One key output compares the mean of the simulated statistics to the corresponding observed values. For most terms, including `nodecov.practice`, `nodematch.practice`, and the `gwesp` statistic—there is no significant difference between simulated and observed statistics, indicating a good model fit. The only exception is the `edges` term, which shows a small but statistically significant deviation ($p$ = 0.0389). This suggests a slight misfit on overall tie density, though the magnitude of the difference is modest and not cause for concern.
+One key output compares the mean of the simulated statistics to the corresponding observed values. For most terms, including `nodecov.practice`, `nodematch.practice`, and the `gwesp` statistic, there is no significant difference between simulated and observed statistics, indicating a good model fit. The only exception is the `edges` term, which shows a small but statistically significant deviation ($p$ = 0.0389). This suggests a slight misfit on overall tie density, though the magnitude of the difference is modest and not cause for concern.
 
 The **cross-correlations** between simulated statistics are moderately high but consistent with the expected dependencies among model terms. For example, ties that contribute to homophily (`nodematch.practice`) also increase the total number of edges, leading to a natural correlation. None of the observed correlations approach levels (e.g., > 0.95) that would indicate redundancy or raise concerns about model identifiability or degeneracy.
 
