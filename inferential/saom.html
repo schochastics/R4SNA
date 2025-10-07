@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.24">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -96,10 +96,10 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d58359eb3ecc31d3bec1ed479c2cbb3a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0dd2bd5de344125cf763a379ddc3eb04.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -702,8 +702,8 @@ P(X(t_j) = x_j \mid X(t) = x(t), \, \forall t \leq t_i) = P(X(t_j) = x_j \mid X(
 </ol>
 <p>The CTMC evolves through a sequence of randomly timed transitions. Each state is held for a random duration, and transitions to the next state are governed by probability. More formally, a CTMC is characterized by:</p>
 <ul>
-<li>When a change occurs — governed by the holding time, typically modeled with an exponential distribution.</li>
-<li>What the next state is — determined by the jump matrix, which specifies the transition probabilities between states.</li>
+<li>When a change occurs: governed by the holding time, typically modeled with an exponential distribution.</li>
+<li>What the next state is: determined by the jump matrix, which specifies the transition probabilities between states.</li>
 </ul>
 <p>Together, <strong>holding time</strong> and <strong>jump probabilities</strong> define the full behavior of the CTMC.</p>
 <section id="example-a-cats-daily-activities" class="level4 unnumbered">
@@ -884,12 +884,12 @@ P(X(t_j) = x_j \mid X(t) = x(t), \, \forall t \leq t_i) = P(X(t_j) = x_j \mid X(
 </section>
 <section id="actor-oriented-modeling-assumptions" class="level4" data-number="18.2.2.4">
 <h4 data-number="18.2.2.4" class="anchored" data-anchor-id="actor-oriented-modeling-assumptions"><span class="header-section-number">18.2.2.4</span> Actor-Oriented Modeling Assumptions</h4>
-<p>A central challenge in modeling network dynamics is the vast number of possible future configurations. For a directed network with <span class="math inline">\(n\)</span> actors, there are <span class="math inline">\(2^{n(n-1)}\)</span> possible states—making exhaustive evaluation of all potential transitions computationally infeasible.</p>
+<p>A central challenge in modeling network dynamics is the vast number of possible future configurations. For a directed network with <span class="math inline">\(n\)</span> actors, there are <span class="math inline">\(2^{n(n-1)}\)</span> possible states, making exhaustive evaluation of all potential transitions computationally infeasible.</p>
 <p>SAOMs address this by adopting an <strong>actor-driven approach</strong>. Instead of modeling global changes to the network, SAOMs assume that individual actors make decisions about their outgoing ties through a series of small, sequential updates. This simplifies the modeling process while remaining grounded in a realistic representation of social behavior.</p>
 <p>The SAOM framework relies on three core assumptions:</p>
 <ol type="1">
 <li><p><em>One actor at a time</em>: At each micro-step, a single actor is randomly selected and given the opportunity to revise their outgoing ties. This reflects individual, sequential decision-making.</p></li>
-<li><p><em>One tie at a time</em>: The selected actor may consider one outgoing tie—either forming it, dissolving it, or choosing to leave it unchanged. Only one tie can be changed per step, which keeps the space of possible transitions manageable.</p></li>
+<li><p><em>One tie at a time</em>: The selected actor may consider one outgoing tie; either forming it, dissolving it, or choosing to leave it unchanged. Only one tie can be changed per step, which keeps the space of possible transitions manageable.</p></li>
 <li><p><em>Actor-controlled change</em>: Each actor controls only their own outgoing ties. Tie changes arise solely from the actor’s individual evaluation of the network and are not the result of simultaneous or coordinated actions.</p></li>
 </ol>
 <p>Together, these assumptions define a process of sequential micro-steps, each involving:</p>
@@ -914,17 +914,17 @@ f_{T_i}(t) = \lambda_i e^{-\lambda_i t}, \quad \lambda_i &gt; 0, \quad t &gt; 0
 \lambda_i = \lambda_i(\theta, x, v)
 \]</span> where <span class="math inline">\(\theta\)</span> is a parameter vector, <span class="math inline">\(x\)</span> is the current network configuration, and <span class="math inline">\(v\)</span> are actor-specific covariates. In this case: <span class="math display">\[
 P(i \text{ has opportunity for change}) = \frac{\lambda_i(\theta, x, v)}{\sum_{j=1}^{n} \lambda_j(\theta, x, v)}
-\]</span> This flexibility allows the model to reflect actor-level heterogeneity in the speed of network change. However, for simplicity and interpretability, we often assume that all actors have the same average rate of change—that is, <span class="math inline">\(\lambda\)</span> is constant across actors, but may vary over time. In this case, actors are equally likely to be selected at any given moment, though the overall tempo of change can still shift over time depending on the time-varying rate parameter.</li>
+\]</span> This flexibility allows the model to reflect actor-level heterogeneity in the speed of network change. However, for simplicity and interpretability, we often assume that all actors have the same average rate of change, that is, <span class="math inline">\(\lambda\)</span> is constant across actors, but may vary over time. In this case, actors are equally likely to be selected at any given moment, though the overall tempo of change can still shift over time depending on the time-varying rate parameter.</li>
 </ul>
 <p>This setup relies on the memoryless property of the exponential distribution: <span class="math display">\[
 P(T_i &gt; s + t \mid T_i &gt; t) = P(T_i &gt; s)
-\]</span> That is, the probability that actor <span class="math inline">\(i\)</span> will be selected in the next instant is unaffected by how long they have already been waiting. This property aligns naturally with the continuous-time Markov assumption and greatly simplifies simulation. In summary, the holding time determines when micro-steps occur. It is random, memoryless, and—depending on the specification—either homogeneous or heterogeneous across actors, shaping the rhythm of network evolution in SAOMs.</p>
-<p>Once an actor has been selected and the waiting time (holding time) has elapsed, the next question becomes: <em>what</em> change (if any) will this actor make to the network? This is where the <strong>jump chain</strong> which governs what change occurs once an actor is selected. At each micro-step, actor <span class="math inline">\(i\)</span> evaluates a set of feasible alternatives <span class="math inline">\(\{x^{(1)}, x^{(2)}, \dots, x^{(J)}\}\)</span>, each differing from the current network <span class="math inline">\(x\)</span> by a change in one of <span class="math inline">\(i\)</span>’s outgoing ties—either forming, dissolving, or maintaining a tie.</p>
+\]</span> That is, the probability that actor <span class="math inline">\(i\)</span> will be selected in the next instant is unaffected by how long they have already been waiting. This property aligns naturally with the continuous-time Markov assumption and greatly simplifies simulation. In summary, the holding time determines when micro-steps occur. It is random, memoryless, and depending on the specification; either homogeneous or heterogeneous across actors, shaping the rhythm of network evolution in SAOMs.</p>
+<p>Once an actor has been selected and the waiting time (holding time) has elapsed, the next question becomes: <em>what</em> change (if any) will this actor make to the network? This is where the <strong>jump chain</strong> which governs what change occurs once an actor is selected. At each micro-step, actor <span class="math inline">\(i\)</span> evaluates a set of feasible alternatives <span class="math inline">\(\{x^{(1)}, x^{(2)}, \dots, x^{(J)}\}\)</span>, each differing from the current network <span class="math inline">\(x\)</span> by a change in one of <span class="math inline">\(i\)</span>’s outgoing ties; either forming, dissolving, or maintaining a tie.</p>
 <p>Each alternative <span class="math inline">\(x^{(j)}\)</span> is assigned a utility:</p>
 <p><span class="math display">\[
 U_{ij} = F_{ij} + \varepsilon_{ij}
 \]</span></p>
-<p>Here, <span class="math inline">\(F_{ij}\)</span> represents the deterministic component of the utility function—typically defined through an evaluation function that incorporates structural effects like reciprocity, transitivity, or covariate similarity. The <span class="math inline">\(\varepsilon_{ij}\)</span> term introduces randomness via a Gumbel-distributed disturbance, reflecting unobserved preferences or decision noise.</p>
+<p>Here, <span class="math inline">\(F_{ij}\)</span> represents the deterministic component of the utility function typically defined through an evaluation function that incorporates structural effects like reciprocity, transitivity, or covariate similarity. The <span class="math inline">\(\varepsilon_{ij}\)</span> term introduces randomness via a Gumbel-distributed disturbance, reflecting unobserved preferences or decision noise.</p>
 <p>This setup defines a <strong>random utility model</strong>, where actor <span class="math inline">\(i\)</span> selects among alternatives probabilistically rather than deterministically. Under the Gumbel assumption, the choice probabilities follow the familiar multinomial logit:</p>
 <p><span class="math display">\[
 p_{ij} = \frac{\exp(F_{ij})}{\sum_{h=1}^{J} \exp(F_{ih})}
@@ -940,7 +940,7 @@ f_i(\theta, x') = \sum_{k=1}^{K} \theta_k \cdot s_k(x', v)
 <li><span class="math inline">\(\theta_k\)</span> is the parameter associated with that effect.</li>
 </ul>
 <p>This formulation provides a clear interpretation: actors evaluate the desirability of possible tie changes based on known network mechanisms and covariates. The random utility formulation introduces variability in behavior while allowing estimation of interpretable model parameters <span class="math inline">\(\theta\)</span>.</p>
-<p>In summary, the jump chain models which network configuration the process will move to, conditional on actor selection. Combined with the holding time, which governs <em>when</em> actors are selected, it defines the dynamics of the SAOM as a continuous-time Markov process. Actor decisions are sequential, stochastic, and based only on the current network—preserving the Markov property and allowing for rich but tractable modeling of network evolution.</p>
+<p>In summary, the jump chain models which network configuration the process will move to, conditional on actor selection. Combined with the holding time, which governs <em>when</em> actors are selected, it defines the dynamics of the SAOM as a continuous-time Markov process. Actor decisions are sequential, stochastic, and based only on the current network, thus preserving the Markov property and allowing for rich but tractable modeling of network evolution.</p>
 </section>
 <section id="endogenous-effects-in-the-objective-function" class="level4" data-number="18.2.2.6">
 <h4 data-number="18.2.2.6" class="anchored" data-anchor-id="endogenous-effects-in-the-objective-function"><span class="header-section-number">18.2.2.6</span> Endogenous Effects in the Objective Function</h4>
@@ -1617,7 +1617,7 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 |\mathcal{C}| = 2^{n(n-1)} \times C^n
 \]</span></p>
 <p>This exponential growth in the state space reflects the combinatorial complexity of jointly modeling ties and behaviors. The Markovian assumption still holds though, meaning the probability of a change depends only on the current configuration, not the full history. The process unfolds in continuous time, through small micro-steps: at each point, a randomly chosen actor may either change a tie or adjust their behavior by one unit.</p>
-<p>Importantly, actors are assumed to control both their social ties and their behavior, making decisions based on immediate gains in a personal objective function. This results in two separate utility functions: one governing network decisions (e.g., tie formation or dissolution), and the other governing behavioral adaptation (e.g., increasing or decreasing smoking). These functions are defined over the full state of the system—actors are assumed to have perfect knowledge of the network and the behavior of all others, though they act myopically (i.e., optimizing only immediate returns). This joint process is governed by separate but parallel mechanisms for network and behavioral dynamics is summarized in <a href="#tbl-coevol" class="quarto-xref">Table&nbsp;<span>18.4</span></a>. Each micro-step thus has two components:</p>
+<p>Importantly, actors are assumed to control both their social ties and their behavior, making decisions based on immediate gains in a personal objective function. This results in two separate utility functions: one governing network decisions (e.g., tie formation or dissolution), and the other governing behavioral adaptation (e.g., increasing or decreasing smoking). These functions are defined over the full state of the system; actors are assumed to have perfect knowledge of the network and the behavior of all others, though they act myopically (i.e., optimizing only immediate returns). This joint process is governed by separate but parallel mechanisms for network and behavioral dynamics is summarized in <a href="#tbl-coevol" class="quarto-xref">Table&nbsp;<span>18.4</span></a>. Each micro-step thus has two components:</p>
 <ol type="1">
 <li>Occurrence: determining what kind of change is considered (network or behavior) and who the focal actor is.</li>
 <li>Preference: evaluating the desirability of each possible change, governed by objective functions.</li>
