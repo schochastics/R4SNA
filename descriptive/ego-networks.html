@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -41,10 +76,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0dd2bd5de344125cf763a379ddc3eb04.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-00ccf60c28c3bdf2d57f5131fbf16f11.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -73,6 +108,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -98,9 +162,7 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="../index.html" class="sidebar-logo-link">
-      </a>
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">R for Social Network Analysis</a> 
         <div class="sidebar-tools-main">
@@ -366,7 +428,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">8.1</span> Packages needed for this Chapter</a></li>
+  <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">8.1</span> Packages Needed for this Chapter</a></li>
+  <li><a href="#ego-network-data" id="toc-ego-network-data" class="nav-link" data-scroll-target="#ego-network-data"><span class="header-section-number">8.2</span> Ego Network Data</a>
+  <ul>
+  <li><a href="#constructing-an-ego-network-with-egor" id="toc-constructing-an-ego-network-with-egor" class="nav-link" data-scroll-target="#constructing-an-ego-network-with-egor"><span class="header-section-number">8.2.1</span> Constructing an Ego Network with <code>egor</code></a></li>
+  </ul></li>
+  <li><a href="#plotting-ego-nets" id="toc-plotting-ego-nets" class="nav-link" data-scroll-target="#plotting-ego-nets"><span class="header-section-number">8.3</span> Plotting Ego Nets</a></li>
+  <li><a href="#descriptive-statistics-for-ego-networks" id="toc-descriptive-statistics-for-ego-networks" class="nav-link" data-scroll-target="#descriptive-statistics-for-ego-networks"><span class="header-section-number">8.4</span> Descriptive Statistics for Ego Networks</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/descriptive/ego-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -392,8 +460,246 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p><strong>Ego networks</strong> refer to the personal network surrounding a single focal individual, known as the <em>ego</em>. An ego network includes the ego, the people directly connected to them, so called <em>alters</em>, and the relationships among those alters. Rather than examining an entire community or organization, ego network analysis focuses on the immediate social environment of one person, allowing researchers to understand how information, resources, influence, or support flow through that individual’s connections. By analyzing the size of the network, the strength of ties, the diversity of contacts, and the level of interconnectedness among alters, scholars can assess factors such as social capital, access to opportunities, and resilience. Ego networks are especially useful in studying phenomena like job searching, knowledge sharing, health behaviors, and online social interaction, where an individual’s direct relationships play a critical role in shaping outcomes.</p>
+<p>In this chapter, we will begin by introducing the fundamentals of ego network data and learning how to use the <code>egor</code> package to manipulate, construct, and visualize ego networks. We will then examine substantive research questions related to homophily; the tendency for similar individuals to associate with one another more frequently than with dissimilar others, across various demographic dimensions. Finally, we will explore an applied example in which properties of ego networks are used to predict important outcomes of interest.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">8.1</span> Packages needed for this Chapter</h2>
+<h2 data-number="8.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">8.1</span> Packages Needed for this Chapter</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(egor)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note on Data Structure
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>egor</code> package works with ego network data in <em>tidy</em> format, meaning it follows tidy data principles. In tidy data, each row represents one observation and each column represents one variable. Instead of storing everything in a single large matrix, ego network data are separated into three linked tables: one containing information about egos, one containing information about alters, and one containing the ties among alters. These tables are connected through ID variables that indicate which alters belong to which ego and which alters are tied to one another. This structure makes the data easier to understand, manipulate, and analyze using tools from the tidyverse, while still preserving the relational nature of network data.</p>
+</div>
+</div>
+</section>
+<section id="ego-network-data" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="ego-network-data"><span class="header-section-number">8.2</span> Ego Network Data</h2>
+<p>Ego network data are typically generated through survey-based approaches that capture information about individuals and their immediate social surroundings. In one common design, respondents (<em>egos</em>) are asked to name the people with whom they have specific types of relationships and to describe the connections among those named individuals (<em>alters</em>), thereby providing both node-level and tie-level information from a single informant. A more elaborate strategy uses a two-stage snowball approach: after the initial respondent identifies their contacts, those contacts are subsequently surveyed about their relationships with one another, allowing for more detailed mapping of ties within the ego’s local network. Although data collected in these ways do not reveal how these personal networks are embedded within the broader population structure, they enable researchers to estimate the distribution and characteristics of ego network forms across even very large populations. Methodologically, such data consist of multiple distinct networks—each centered on a different ego and typically composed of different actors—meaning that each ego network should be stored and analyzed as a separate actor-by-actor matrix rather than combined into a single stacked dataset, since the matrices do not represent multiple relations among the same set of individuals.</p>
+<p>A second common source of ego network data involves deriving them from complete network datasets that already contain information about all actors and ties within a bounded population. In this case, researchers can extract the local network surrounding a focal actor directly from the larger structure. Simple extraction procedures allow analysts to isolate an ego and their direct ties, though these methods may omit information about relationships among the alters themselves. More comprehensive approaches rely on identifying a defined neighborhood, such as through a previously constructed attribute or partition that marks members of a particular ego’s local environment, and then generating a subgraph that preserves both ego–alter and alter–alter ties. Unlike survey-generated ego networks, these extracted ego networks remain embedded within a known global structure, enabling comparisons between local and whole-network properties.</p>
+<section id="constructing-an-ego-network-with-egor" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="constructing-an-ego-network-with-egor"><span class="header-section-number">8.2.1</span> Constructing an Ego Network with <code>egor</code></h3>
+<p>An <code>egor</code> object contains all data levels associated with ego-centered network analysis, those levels are: ego, alter, alter-alter ties. We will work with the built-in example datasets provided by the <code>egor</code> package: <code>data("egos32")</code>, <code>data("alters32")</code>, and <code>data("aaties32")</code>. These internal data frames contain information at the three core levels of ego-centered network analysis—ego attributes, alter attributes, and alter–alter ties; allowing us to construct a complete <code>egor</code> object without needing to import external data. Using these datasets ensures that everyone is working with the same structured example while learning how the different data levels are linked together and prepared for analysis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"alters32"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"egos32"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"aaties32"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>egos32</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 × 6
+   .EGOID sex   age      age.years country   income
+    &lt;dbl&gt; &lt;chr&gt; &lt;fct&gt;        &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;
+ 1      1 m     56 - 65         63 Australia  29930
+ 2      2 m     26 - 35         33 Germany    17885
+ 3      3 m     66 - 100        74 Germany    20805
+ 4      4 w     18 - 25         21 Poland     29565
+ 5      5 m     0 - 17           9 Germany    15330
+ 6      6 m     0 - 17           6 Australia  23360
+ 7      7 m     66 - 100        84 Australia  19345
+ 8      8 w     66 - 100       100 Poland     35040
+ 9      9 m     36 - 45         38 USA        64605
+10     10 m     0 - 17          14 Australia  49275
+# ℹ 22 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>alters32</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 384 × 7
+   .ALTID .EGOID sex   age      age.years country   income
+    &lt;int&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;fct&gt;        &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;
+ 1      1      1 m     46 - 55         48 USA        45625
+ 2      2      1 m     0 - 17           5 Germany    52925
+ 3      3      1 w     26 - 35         35 Australia  60225
+ 4      4      1 w     0 - 17           3 Poland     25550
+ 5      5      1 m     66 - 100        97 Australia  45260
+ 6      6      1 w     26 - 35         29 Germany     8395
+ 7      7      1 m     26 - 35         32 USA        54020
+ 8      8      1 w     46 - 55         49 USA        60955
+ 9      9      1 m     56 - 65         60 Germany    39055
+10     10      1 w     46 - 55         52 Australia   7300
+# ℹ 374 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>aaties32</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,056 × 4
+   .EGOID .SRCID .TGTID weight
+    &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt;
+ 1     20      1      2  0.667
+ 2     25      6     10  0.667
+ 3      9      6      8  0.667
+ 4     31      2     10  0.667
+ 5     24      1     12  0.333
+ 6     11      9     11  0.333
+ 7      7      3      6  0.667
+ 8      8      6      7  0.667
+ 9     32      3      7  0.667
+10     26      2     10  1    
+# ℹ 1,046 more rows</code></pre>
+</div>
+</div>
+<p>As seen, each of the three data frames is linked through unique identifier variables that ensure the different levels of information correspond to the correct individuals. The <code>egoID</code> variable appears in all three datasets and serves as the key that ties each ego’s attributes to their respective alters and the ties among those alters. Within the alter-level dataset, each contact is assigned an <code>alterID</code>, which is then referenced again in the alter–alter tie dataset through the <code>Source</code> and <code>Target</code> columns to indicate which specific alters are connected. With these identifiers in place to preserve the relational structure across data levels, we can now combine the datasets into a single <code>egor</code> object:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ego32 <span class="ot">&lt;-</span> <span class="fu">egor</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">egos   =</span> egos32,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">alters =</span> alters32,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">aaties =</span> aaties32,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID.vars =</span> <span class="fu">list</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">ego    =</span> <span class="st">".EGOID"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alter  =</span> <span class="st">".ALTID"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">source =</span> <span class="st">".SRCID"</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">target =</span> <span class="st">".TGTID"</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>ego32</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># EGO data (active): 32 × 6
+  .egoID sex   age      age.years country   income
+*  &lt;dbl&gt; &lt;chr&gt; &lt;fct&gt;        &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;
+1      1 m     56 - 65         63 Australia  29930
+2      2 m     26 - 35         33 Germany    17885
+3      3 m     66 - 100        74 Germany    20805
+4      4 w     18 - 25         21 Poland     29565
+5      5 m     0 - 17           9 Germany    15330
+# ℹ 27 more rows
+# ALTER data: 384 × 7
+  .altID .egoID sex   age     age.years country   income
+*  &lt;int&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;fct&gt;       &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;
+1      1      1 m     46 - 55        48 USA        45625
+2      2      1 m     0 - 17          5 Germany    52925
+3      3      1 w     26 - 35        35 Australia  60225
+# ℹ 381 more rows
+# AATIE data: 1,056 × 4
+  .egoID .srcID .tgtID weight
+*  &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt;
+1     20      1      2  0.667
+2     25      6     10  0.667
+3      9      6      8  0.667
+# ℹ 1,053 more rows</code></pre>
+</div>
+</div>
+<p>When we print <code>ego32</code>, the output confirms that we successfully combined the three data levels—egos, alters, and alter–alter ties—into a single <code>egor</code> object. The first block, “EGO data (active): 32 × 6”, indicates that the object contains data on 32 egos (one per row) and six ego-level variables (e.g., sex, age group, age in years, country, and income). The asterisk next to the header marks this as the currently <em>active</em> data level being displayed. The second block, “ALTER data: 384 × 7”, shows that the egos collectively named 384 alters in total, each linked back to a specific ego via the <code>.egoID</code> column, and described by their own attributes; <code>.altID</code> uniquely identifies alters within ego networks. Finally, the “AATIE data: 1,056 × 4” section lists the alter–alter ties: each row is a connection between two alters within the same ego network, where <code>.egoID</code> specifies the ego network and <code>.srcID</code>/<code>.tgtID</code> identify the two alters involved; the <code>weight</code> column records the value or strength of the tie.</p>
+</section>
+</section>
+<section id="plotting-ego-nets" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="plotting-ego-nets"><span class="header-section-number">8.3</span> Plotting Ego Nets</h2>
+<p>We now plot the networks using <code>igraph</code>. The first step is to convert the <code>egor</code> object into a list of <code>igraph</code> objects using <code>as_igraph()</code>. Below, we create the list and inspect the first three ego networks.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert egor object to a list of igraph ego networks</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ego_nets32 <span class="ot">&lt;-</span> <span class="fu">as_igraph</span>(ego32)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect the first three ego networks</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>ego_nets32[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$`1`
+IGRAPH 646458c UNW- 12 32 -- 
++ attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
+| (v/n), country (v/c), income (v/n), weight (e/n)
++ edges from 646458c (vertex names):
+ [1] 3 --6  5 --7  4 --7  4 --6  6 --9  5 --10 2 --8  2 --3  2 --4  3 --4 
+[11] 2 --5  1 --6  1 --2  4 --10 2 --10 7 --12 10--12 2 --12 6 --12 2 --9 
+[21] 5 --8  6 --10 8 --12 6 --11 1 --9  2 --11 5 --11 2 --6  5 --6  1 --7 
+[31] 4 --12 3 --10
+
+$`2`
+IGRAPH 1ec110c UNW- 12 33 -- 
++ attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
+| (v/n), country (v/c), income (v/n), weight (e/n)
++ edges from 1ec110c (vertex names):
+ [1] 1 --7  8 --9  3 --11 6 --10 1 --5  6 --9  1 --11 3 --4  7 --8  6 --12
+[11] 1 --4  5 --9  2 --11 4 --7  5 --12 2 --5  4 --5  3 --12 3 --6  3 --5 
+[21] 7 --11 8 --11 9 --10 11--12 6 --11 2 --9  2 --12 1 --12 1 --2  1 --9 
+[31] 1 --6  4 --9  4 --11
+
+$`3`
+IGRAPH b10692e UNW- 12 33 -- 
++ attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
+| (v/n), country (v/c), income (v/n), weight (e/n)
++ edges from b10692e (vertex names):
+ [1] 5--12 9--10 5--9  2--10 4--10 4--12 6--7  3--6  7--8  3--4  4--11 2--4 
+[13] 4--6  9--12 2--9  8--10 3--7  1--6  2--7  5--7  1--2  3--12 4--7  1--8 
+[25] 6--9  6--10 1--3  2--6  3--10 7--12 7--10 6--8  1--12</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If we instead wanted to work within the <code>statnet</code> framework, we could use <code>as_network()</code> to convert the data into objects of class <code>network</code>.</p>
+</div>
+</div>
+<p>After running <code>as_igraph()</code>, we obtain a list of ego networks in igraph format, where each element of the list corresponds to one ego’s personal network. The attributes stored at the alter level are automatically transferred as vertex attributes, and the alter–alter tie information (including edge weights) is preserved as edge attributes. By default, the ego node itself is not included in these igraph representations. This is common practice because ego is, by definition, connected to all alters, and therefore contributes little additional structural variation in many visualizations or structural measures. In later sections, we will examine statistics that explicitly incorporate both ego and alter information.</p>
+<p>We now visualize a subset of the data by plotting the first 9 ego networks in the list using <code>ggraph</code>. This is shown in <a href="#fig-egos" class="quarto-xref">Figure&nbsp;<span>8.1</span></a>.</p>
+<div id="fig-egos" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-egos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create plots for first 9 ego networks</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(ego_nets32[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>], <span class="cf">function</span>(g) {</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(g, <span class="at">layout =</span> <span class="st">"kk"</span>) <span class="sc">+</span>   </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">repel =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="dv">3</span>,  <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange in 3 x 3 grid</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ego-networks_files/figure-html/plot-egos-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-egos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.1: The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego’s personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="descriptive-statistics-for-ego-networks" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="descriptive-statistics-for-ego-networks"><span class="header-section-number">8.4</span> Descriptive Statistics for Ego Networks</h2>
+<p>One of the most commonly used structural measures in ego network analysis is <strong>density</strong>. Density captures the proportion of all possible alter–alter ties that are actually present in an ego network. In other words, it tells us how interconnected an ego’s alters are with one another. For example, if an ego has 5 alters, there are <span class="math display">\[
+\frac{5 \times (5 - 1)}{2} = 10
+\]</span> possible undirected ties among those alters. If all 10 ties are present, density equals 1 (a fully connected clique). If only 8 of the 10 possible ties are present, density equals 0.8.</p>
+<p>Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to <strong>structural hole theory</strong> (Burt 92), dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. In contrast, low-density networks contain structural holes: gaps between otherwise disconnected alters. When ego bridges these gaps, they occupy a brokerage position that can provide access to more diverse, non-redundant information and potential strategic advantages. Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.</p>
+<p>We can calculate density for each ego network using the <code>ego_density()</code> function applied to our <code>ego32</code> object. Note that ego networks with 0 or 1 alters will have <code>NA</code> values for density, because density is undefined when no alter–alter ties are possible.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dens32 <span class="ot">&lt;-</span> <span class="fu">ego_density</span>(ego32)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dens32)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  .egoID density
+   &lt;dbl&gt;   &lt;dbl&gt;
+1      1   0.485
+2      2   0.5  
+3      3   0.5  
+4      4   0.409
+5      5   0.561
+6      6   0.455</code></pre>
+</div>
+</div>
 
 
 </section>
