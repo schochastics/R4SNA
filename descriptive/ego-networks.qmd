@@ -1,3 +1,126 @@
 # Ego Networks
+**Ego networks** refer to the personal network surrounding a single focal individual, known as the *ego*. An ego network includes the ego, the people directly connected to them, so called *alters*, and the relationships among those alters. Rather than examining an entire community or organization, ego network analysis focuses on the immediate social environment of one person, allowing researchers to understand how information, resources, influence, or support flow through that individual’s connections. By analyzing the size of the network, the strength of ties, the diversity of contacts, and the level of interconnectedness among alters, scholars can assess factors such as social capital, access to opportunities, and resilience. Ego networks are especially useful in studying phenomena like job searching, knowledge sharing, health behaviors, and online social interaction, where an individual’s direct relationships play a critical role in shaping outcomes.
 
-## Packages needed for this Chapter
+
+In this chapter, we will begin by introducing the fundamentals of ego network data and learning how to use the `egor` package to manipulate, construct, and visualize ego networks. We will then examine substantive research questions related to homophily; the tendency for similar individuals to associate with one another more frequently than with dissimilar others, across various demographic dimensions. Finally, we will explore an applied example in which properties of ego networks are used to predict important outcomes of interest.
+
+## Packages Needed for this Chapter
+```{r}
+#| message: false
+library(igraph)
+library(egor)
+library(ggraph)
+library(patchwork)
+library(tidyverse)
+```
+
+::: {.callout-note}
+## Note on Data Structure
+
+The `egor` package works with ego network data in *tidy* format, meaning it follows tidy data principles. In tidy data, each row represents one observation and each column represents one variable. Instead of storing everything in a single large matrix, ego network data are separated into three linked tables: one containing information about egos, one containing information about alters, and one containing the ties among alters. These tables are connected through ID variables that indicate which alters belong to which ego and which alters are tied to one another. This structure makes the data easier to understand, manipulate, and analyze using tools from the tidyverse, while still preserving the relational nature of network data.
+:::
+
+## Ego Network Data
+Ego network data are typically generated through survey-based approaches that capture information about individuals and their immediate social surroundings. In one common design, respondents (*egos*) are asked to name the people with whom they have specific types of relationships and to describe the connections among those named individuals (*alters*), thereby providing both node-level and tie-level information from a single informant. A more elaborate strategy uses a two-stage snowball approach: after the initial respondent identifies their contacts, those contacts are subsequently surveyed about their relationships with one another, allowing for more detailed mapping of ties within the ego’s local network. Although data collected in these ways do not reveal how these personal networks are embedded within the broader population structure, they enable researchers to estimate the distribution and characteristics of ego network forms across even very large populations. Methodologically, such data consist of multiple distinct networks—each centered on a different ego and typically composed of different actors—meaning that each ego network should be stored and analyzed as a separate actor-by-actor matrix rather than combined into a single stacked dataset, since the matrices do not represent multiple relations among the same set of individuals.
+
+A second common source of ego network data involves deriving them from complete network datasets that already contain information about all actors and ties within a bounded population. In this case, researchers can extract the local network surrounding a focal actor directly from the larger structure. Simple extraction procedures allow analysts to isolate an ego and their direct ties, though these methods may omit information about relationships among the alters themselves. More comprehensive approaches rely on identifying a defined neighborhood, such as through a previously constructed attribute or partition that marks members of a particular ego’s local environment, and then generating a subgraph that preserves both ego–alter and alter–alter ties. Unlike survey-generated ego networks, these extracted ego networks remain embedded within a known global structure, enabling comparisons between local and whole-network properties.
+
+
+### Constructing an Ego Network with `egor`
+An `egor` object contains all data levels associated with ego-centered network analysis, those levels are: ego, alter, alter-alter ties.  We will work with the built-in example datasets provided by the `egor` package: `data("egos32")`, `data("alters32")`, and `data("aaties32")`. These internal data frames contain information at the three core levels of ego-centered network analysis—ego attributes, alter attributes, and alter–alter ties; allowing us to construct a complete `egor` object without needing to import external data. Using these datasets ensures that everyone is working with the same structured example while learning how the different data levels are linked together and prepared for analysis.
+
+
+```{r}
+#| label: load-ego-data
+
+data("alters32")
+data("egos32")
+data("aaties32")
+egos32
+alters32
+aaties32
+```
+
+
+As seen, each of the three data frames is linked through unique identifier variables that ensure the different levels of information correspond to the correct individuals. The `egoID` variable appears in all three datasets and serves as the key that ties each ego’s attributes to their respective alters and the ties among those alters. Within the alter-level dataset, each contact is assigned an `alterID`, which is then referenced again in the alter–alter tie dataset through the `Source` and `Target` columns to indicate which specific alters are connected. With these identifiers in place to preserve the relational structure across data levels, we can now combine the datasets into a single `egor` object:
+
+
+```{r}
+#| label: egor-object
+ego32 <- egor(
+  egos   = egos32,
+  alters = alters32,
+  aaties = aaties32,
+  ID.vars = list(
+    ego    = ".EGOID",
+    alter  = ".ALTID",
+    source = ".SRCID",
+    target = ".TGTID"
+  )
+)
+
+ego32
+```
+
+When we print `ego32`, the output confirms that we successfully combined the three data levels—egos, alters, and alter–alter ties—into a single `egor` object. The first block, “EGO data (active): 32 × 6”, indicates that the object contains data on 32 egos (one per row) and six ego-level variables (e.g., sex, age group, age in years, country, and income). The asterisk next to the header marks this as the currently *active* data level being displayed. The second block, “ALTER data: 384 × 7”, shows that the egos collectively named 384 alters in total, each linked back to a specific ego via the `.egoID` column, and described by their own attributes; `.altID` uniquely identifies alters within ego networks. Finally, the “AATIE data: 1,056 × 4” section lists the alter–alter ties: each row is a connection between two alters within the same ego network, where `.egoID` specifies the ego network and `.srcID`/`.tgtID` identify the two alters involved; the `weight` column records the value or strength of the tie.
+
+## Plotting Ego Nets
+
+We now plot the networks using `igraph`. The first step is to convert the `egor` object into a list of `igraph` objects using `as_igraph()`. Below, we create the list and inspect the first three ego networks.
+
+```{r}
+#| label: egor-2-igraph
+# Convert egor object to a list of igraph ego networks
+ego_nets32 <- as_igraph(ego32)
+
+# Inspect the first three ego networks
+ego_nets32[1:3]
+```
+
+::: {.callout-note}
+If we instead wanted to work within the `statnet` framework, we could use `as_network()` to convert the data into objects of class `network`.
+:::
+
+After running `as_igraph()`, we obtain a list of ego networks in igraph format, where each element of the list corresponds to one ego's personal network. The attributes stored at the alter level are automatically transferred as vertex attributes, and the alter–alter tie information (including edge weights) is preserved as edge attributes. By default, the ego node itself is not included in these igraph representations. This is common practice because ego is, by definition, connected to all alters, and therefore contributes little additional structural variation in many visualizations or structural measures. In later sections, we will examine statistics that explicitly incorporate both ego and alter information.
+
+We now visualize a subset of the data by plotting the first 9 ego networks in the list using `ggraph`. This is shown in @fig-egos.
+
+::: {#fig-egos}
+```{r}
+#| label: plot-egos
+#| message: false
+#| fig-height: 9
+#| fig-width: 9
+
+# Create plots for first 9 ego networks
+plots <- lapply(ego_nets32[1:9], function(g) {
+  
+  ggraph(g, layout = "kk") +   
+    geom_edge_link(alpha = 0.4) +
+    geom_node_point(size = 6, color = "steelblue") +
+    geom_node_text(aes(label = name), repel = FALSE, size = 3,  color = "white") +
+    theme_graph()
+})
+
+# Arrange in 3 x 3 grid
+wrap_plots(plots, ncol = 3)
+```
+The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego’s personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks.
+:::
+
+## Descriptive Statistics for Ego Networks
+One of the most commonly used structural measures in ego network analysis is **density**. Density captures the proportion of all possible alter–alter ties that are actually present in an ego network. In other words, it tells us how interconnected an ego’s alters are with one another.  For example, if an ego has 5 alters, there are
+$$
+\frac{5 \times (5 - 1)}{2} = 10
+$$
+possible undirected ties among those alters. If all 10 ties are present, density equals 1 (a fully connected clique). If only 8 of the 10 possible ties are present, density equals 0.8.
+
+Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to **structural hole theory** (Burt 92), dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. In contrast, low-density networks contain structural holes: gaps between otherwise disconnected alters. When ego bridges these gaps, they occupy a brokerage position that can provide access to more diverse, non-redundant information and potential strategic advantages. Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.
+
+We can calculate density for each ego network using the `ego_density()` function applied to our `ego32` object. Note that ego networks with 0 or 1 alters will have `NA` values for density, because density is undefined when no alter–alter ties are possible.
+
+```{r}
+#| label: ego-dens
+dens32 <- ego_density(ego32)
+head(dens32)
+```
