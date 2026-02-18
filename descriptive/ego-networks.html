@@ -56,7 +56,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -603,30 +623,30 @@ window.Quarto = {
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>ego_nets32[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`1`
-IGRAPH 646458c UNW- 12 32 -- 
+IGRAPH 2c9d1c8 UNW- 12 32 -- 
 + attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
 | (v/n), country (v/c), income (v/n), weight (e/n)
-+ edges from 646458c (vertex names):
++ edges from 2c9d1c8 (vertex names):
  [1] 3 --6  5 --7  4 --7  4 --6  6 --9  5 --10 2 --8  2 --3  2 --4  3 --4 
 [11] 2 --5  1 --6  1 --2  4 --10 2 --10 7 --12 10--12 2 --12 6 --12 2 --9 
 [21] 5 --8  6 --10 8 --12 6 --11 1 --9  2 --11 5 --11 2 --6  5 --6  1 --7 
 [31] 4 --12 3 --10
 
 $`2`
-IGRAPH 1ec110c UNW- 12 33 -- 
+IGRAPH 63d0cea UNW- 12 33 -- 
 + attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
 | (v/n), country (v/c), income (v/n), weight (e/n)
-+ edges from 1ec110c (vertex names):
++ edges from 63d0cea (vertex names):
  [1] 1 --7  8 --9  3 --11 6 --10 1 --5  6 --9  1 --11 3 --4  7 --8  6 --12
 [11] 1 --4  5 --9  2 --11 4 --7  5 --12 2 --5  4 --5  3 --12 3 --6  3 --5 
 [21] 7 --11 8 --11 9 --10 11--12 6 --11 2 --9  2 --12 1 --12 1 --2  1 --9 
 [31] 1 --6  4 --9  4 --11
 
 $`3`
-IGRAPH b10692e UNW- 12 33 -- 
+IGRAPH 0ec9ac0 UNW- 12 33 -- 
 + attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
 | (v/n), country (v/c), income (v/n), weight (e/n)
-+ edges from b10692e (vertex names):
++ edges from 0ec9ac0 (vertex names):
  [1] 5--12 9--10 5--9  2--10 4--10 4--12 6--7  3--6  7--8  3--4  4--11 2--4 
 [13] 4--6  9--12 2--9  8--10 3--7  1--6  2--7  5--7  1--2  3--12 4--7  1--8 
 [25] 6--9  6--10 1--3  2--6  3--10 7--12 7--10 6--8  1--12</code></pre>
@@ -683,7 +703,7 @@ Figure&nbsp;8.1: The first nine ego networks derived from the egor object based 
 <p>One of the most commonly used structural measures in ego network analysis is <strong>density</strong>. Density captures the proportion of all possible alter–alter ties that are actually present in an ego network. In other words, it tells us how interconnected an ego’s alters are with one another. For example, if an ego has 5 alters, there are <span class="math display">\[
 \frac{5 \times (5 - 1)}{2} = 10
 \]</span> possible undirected ties among those alters. If all 10 ties are present, density equals 1 (a fully connected clique). If only 8 of the 10 possible ties are present, density equals 0.8.</p>
-<p>Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to <strong>structural hole theory</strong> (Burt 92), dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. In contrast, low-density networks contain structural holes: gaps between otherwise disconnected alters. When ego bridges these gaps, they occupy a brokerage position that can provide access to more diverse, non-redundant information and potential strategic advantages. Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.</p>
+<p>Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to <strong>structural hole theory</strong> <span class="citation" data-cites="burt1992structural">(<a href="../references.html#ref-burt1992structural" role="doc-biblioref">Burt 1992</a>)</span>, dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. In contrast, low-density networks contain structural holes: gaps between otherwise disconnected alters. When ego bridges these gaps, they occupy a brokerage position that can provide access to more diverse, non-redundant information and potential strategic advantages. Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.</p>
 <p>We can calculate density for each ego network using the <code>ego_density()</code> function applied to our <code>ego32</code> object. Note that ego networks with 0 or 1 alters will have <code>NA</code> values for density, because density is undefined when no alter–alter ties are possible.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dens32 <span class="ot">&lt;-</span> <span class="fu">ego_density</span>(ego32)</span>
@@ -702,6 +722,11 @@ Figure&nbsp;8.1: The first nine ego networks derived from the egor object based 
 </div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-burt1992structural" class="csl-entry" role="listitem">
+Burt, Ronald. 1992. <em>Structural Holes: The Social Structure of Competition</em>. Harvard University Press.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
