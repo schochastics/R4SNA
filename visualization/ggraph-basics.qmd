@@ -1,5 +1,7 @@
 # Basics of ggraph
 
+
+
 ## Packages Needed for this Chapter
 ```{r}
 #| label: libraries
@@ -9,6 +11,10 @@ library(ggraph)
 library(graphlayouts)
 library(networkdata)
 ```
+
+## Data Preparation
+
+As a running example, we use the network of characters in the first season of Game of Thrones (GoT). The dataset is included in the `networkdata` package.
 
 ```{r}
 data("got")
@@ -32,10 +38,15 @@ V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 V(gotS1)$size <- degree(gotS1)
 ```
 
-To champion `ggraph` you need to understand the basics of, or at least develop a feeling for, the grammar of graphics. Instead of explaining the grammar, let us directly jump into some code and work through it one line at a time.
+## Grammar of graphics
+
+To master `ggraph` you need to understand the basics of, or at least develop a feeling for, the **grammar of graphics**. 
+The grammar is implemented in R through `ggplot2` and provides a systematic framework for constructing visualizations by combining independent components. Rather than thinking of plots as pre-defined chart types, the grammar decomposes graphics into fundamental elements: data, aesthetic mappings, geometric objects, scales, and coordinate systems. This approach allows to build complex visualizations layer by layer, making it easier to customize and extend plots. For networks, `ggraph` extends this grammar to handle the unique structure of graph data, treating nodes and edges as separate geometric layers that can be styled and composed independently.
+
+The code and figure below shows a standard network plot created with `ggraph`. We will go through the code step-by-step in the following sections to understand how to use each component effectively.
 
 ```{r}
-#| label: got-plot
+#| label: fig-got-plot
 #| fig-width: 10
 #| fig-height: 6
 
@@ -50,7 +61,6 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "none")
 ```
 
-`ggraph` works with layers. Each layer adds a new feature to the plot and thus builds the figure step-by-step. We will work through each of the layers separately in the following sections.  
 
 ## Layout
 
@@ -58,12 +68,10 @@ ggraph(gotS1, layout = "stress") +
 ggraph(gotS1, layout = "stress")
 ```
 
-The first step is to compute a layout. The layout parameter specifies the algorithm to use. 
-The "stress" layout is part of the `graphlayouts` package and is always a safe choice 
-since it is deterministic and produces nice layouts for almost any graph.
-I would recommend to use it as your default choice. Other algorithms for, e.g., concentric layouts and clustered networks
-are described further down in this tutorial. For the sake of completeness, here is a list of layout algorithms of 
-`igraph`.
+The first layer includes the calculation of a **layout**. Unlike traditional data visualization where variables naturally map to x and y coordinates, networks usually lack inherent spatial positions. This makes choosing a layout algorithm the most fundamental decision in network visualization. Layout algorithms assign coordinates to 
+nodes based on the network's structure, aiming to reveal patterns and relationships that support your analytical goals. 
+
+The package `graphlayouts` provides a wide range of layout algorithms that can be used with `ggraph`. The "stress" layout for example is always a safe choice since it is deterministic and produces *nice* layouts for almost any graph. Beyond this fairly general layout, there are many more specialized algorithms included in `graphlayouts` that may be better suited for specific types of networks or analytical goals. These algorithms will be discussed later. The `igraph` package also provides a variety of standard layout algorithms, that can be used with `ggraph`. 
 
 ```r
 c(
@@ -74,17 +82,75 @@ c(
 )
 ```
 
-To use them, you just need the last part of the name.
+To use any of these, you just need to use the last part of the name.
 ```r
 ggraph(gotS1, layout = "dh") +
   ...
 ```
 
+```{r}
+#| label: fig-got-plot-layouts
+#| fig-width: 10
+#| fig-height: 10
+#| echo: false
+
+library(patchwork)
+
+p1 <- ggraph(gotS1, layout = "dh") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_manual(values = got_palette) +
+  scale_edge_width(range = c(0.2, 3)) +
+  scale_size(range = c(1, 6)) +
+  theme_graph() +
+  theme(legend.position = "none")+
+  labs(title = "layout = 'dh'")
+
+p2 <- ggraph(gotS1, layout = "kk") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_manual(values = got_palette) +
+  scale_edge_width(range = c(0.2, 3)) +
+  scale_size(range = c(1, 6)) +
+  theme_graph() +
+  theme(legend.position = "none")+
+  labs(title = "layout = 'kk'")
+
+p3 <- ggraph(gotS1, layout = "fr") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_manual(values = got_palette) +
+  scale_edge_width(range = c(0.2, 3)) +
+  scale_size(range = c(1, 6)) +
+  theme_graph() +
+  theme(legend.position = "none")+
+  labs(title = "layout = 'fr'")
+
+p4 <- ggraph(gotS1, layout = "mds") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_node_point(aes(fill = clu, size = size), shape = 21) +
+  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  scale_fill_manual(values = got_palette) +
+  scale_edge_width(range = c(0.2, 3)) +
+  scale_size(range = c(1, 6)) +
+  theme_graph() +
+  theme(legend.position = "none")+
+  labs(title = "layout = 'mds'")
+
+
+p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
+```
+
+
 Note that there technically is no right or wrong choice. All layout algorithms are in a sense arbitrary since 
-we can choose x and y coordinates freely (compare this to ordinary data!). It is all mostly about aesthetics.
+we can choose x and y coordinates freely as compared to ordinary data visualization where the "layout" is guided by existing "coordinates". For networks, it is mostly, but not exclusively, about aesthetics.
 
 You can also precompute the layout with the `create_layout()` function. This makes sense in cases where the calculation
 of the layout takes very long and you want to play around with other visual aspects. 
+
 ```r
 gotS1_layout <- create_layout(gotS1 = "stress")
 
@@ -98,7 +164,7 @@ ggraph(gotS1_layout) +
 geom_edge_link0(aes(width = weight), edge_colour = "grey66")
 ```
 
-The second layer specifies how to draw the edges. Edges can be drawn in many different ways as the list below shows.
+The second layer specifies how edges are drawn. To do so, we use one of the many edge geoms available in `ggraph`.
 ```r
 c(
   "geom_edge_arc", "geom_edge_arc0", "geom_edge_arc2", "geom_edge_density",
@@ -109,13 +175,38 @@ c(
   "geom_edge_loop", "geom_edge_loop0"
 )
 ```
-You can do a lot of fancy things with these `geoms` but for a standard network plot, you should almost always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it reduces readability. Always go with straight lines! If your network has multiple edges between two nodes, then you can switch to `geom_edge_parallel()`.
-
-In case you are wondering what the "0" stands for: The standard `geom_edge_link()` draws 100 dots on each edge compared to only two dots (the endpoints) in `geom_edge_link0()`.
-This is done to allow, e.g., gradients along the edge. 
+You can do a lot of fancy things with these geoms but for a standard network plot, you should almost always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it also reduces readability. It is best to always go with straight lines. If a network has multiple edges between two nodes, one can switch to `geom_edge_parallel()`.
 
 ```{r}
-#| label: got-plot-grad
+#| label: fig-parallel
+#| fig-width: 10
+#| fig-height: 6
+
+g <- make_graph(c(1, 2, 1, 2, 1, 2))
+
+ggraph(g, layout = "stress") +
+  geom_edge_parallel(edge_colour = "grey66", edge_linewidth = 0.5) +
+  geom_node_point(size = 5) +
+  theme_graph()
+```
+
+The curved equivalent of `geom_edge_parallel()` is `geom_edge_fan()`. The figure below shows the difference between the two.
+
+```{r}
+#| label: fig-fan
+#| fig-width: 10
+#| fig-height: 6
+
+ggraph(g, layout = "stress") +
+  geom_edge_fan(edge_colour = "grey66", edge_linewidth = 0.5) +
+  geom_node_point(size = 5) +
+  theme_graph()
+```
+
+Most edge geoms come in three flavors. The standard `geom_edge_link()` draws 100 dots on each edge compared to only two dots (the endpoints) in `geom_edge_link0()`. This is done to allow gradients along the edge. 
+
+```{r}
+#| label: fig-got-plot-grad
 #| fig-width: 10
 #| fig-height: 6
 ggraph(gotS1, layout = "stress") +
@@ -129,8 +220,7 @@ ggraph(gotS1, layout = "stress") +
 ```
 
 The drawback of using `geom_edge_link()` is that the time to render the plot increases and so 
-does the size of the file if you export the plot ([example](https://twitter.com/schochastics/status/1091355396265201664))
-Typically, you do not need gradients along an edge. Hence, `geom_edge_link0()` should be your default choice to draw edges.
+does the size of the file if you export the plot. Typically, you do not need gradients along an edge. Hence, `geom_edge_link0()` should be the default choice to draw edges.
 
 Within `geom_edge_link0`, you can specify the appearance of the edge, either by mapping edge attributes to aesthetics
 or setting them globally for the graph. Mapping attributes to aesthetics is done within `aes()`.
@@ -156,6 +246,26 @@ geom_edge_link0(aes(...), ...,
 ```
 
 The default arrowhead type is "open", yet "closed" usually has a nicer appearance.
+
+```{r}
+#| label: fig-arrow
+#| fig-width: 10
+#| fig-height: 6
+
+g <- make_graph(c(1, 2, 2, 3), directed = TRUE)
+
+ggraph(g, layout = "stress") +
+  geom_edge_link0(
+    edge_colour = "grey66", edge_linewidth = 0.5,
+    arrow = arrow(
+      angle = 30, length = unit(0.15, "inches"),
+      ends = "last", type = "closed"
+    )
+  ) +
+  geom_node_point(size = 5) +
+  theme_graph()
+```
+
 
 ## Nodes
 
