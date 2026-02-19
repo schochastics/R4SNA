@@ -7,7 +7,7 @@ A **two-mode network** is a network that consists of two disjoint sets of nodes 
 - Citation network (authors and papers)
 - Co-Authorship networks (also authors and papers)
 
-There are two ways of analysing a two-mode network. Either directly by using methods specifically created for such networks, or by projecting it to a regular one-mode network. The advantage of the former is that there is no information loss and the advantage of the latter is that we are working with more familiar data structures. The projection approach is more popular these days, but we will still introduce some direct methods to analyse two-mode networks. The main part of this chapter will however deal with the projection approach.
+There are two ways of analysing a two-mode network. Either directly by using methods specifically created for such networks, or by projecting it to a regular one-mode network [@everett2013dual]. The advantage of the former is that there is no information loss and the advantage of the latter is that we are working with more familiar data structures. The projection approach is more popular these days, but we will still introduce some direct methods to analyse two-mode networks. The main part of this chapter will however deal with the projection approach.
 
 
 ## Packages Needed for this Chapter
@@ -17,6 +17,8 @@ There are two ways of analysing a two-mode network. Either directly by using met
 #| message: false
 library(igraph)
 library(networkdata)
+library(tnet)
+library(backbone)
 ```
 
 ```{r}
@@ -25,23 +27,76 @@ library(networkdata)
 library(ggraph)
 ```
 
-## Two-mode data structure
-We will discuss some methods tailored for two-mode networks via the famous "southern women" dataset consisting of 18 women who attended a series of 14 events. The network is included in the `networkdata` package.
+## Two-Mode Data Structure
+Two-mode network data (also called bipartite network data) represent relationships between two distinct types of entities rather than ties among members of a single set. Typical examples include individuals and organizations, students and courses, or authors and publications. Instead of being represented as a standard actor-by-actor adjacency matrix, two-mode networks are stored as an **incidence matrix** or **biadjacency matrix**, in which rows represent one type of node (e.g., individuals) and columns represent the other type (e.g., events or organizations). The entries in the matrix indicate whether a tie exists across the two sets—for instance, whether a person attended an event or belongs to an organization. This incidence matrix structure makes it possible to analyze affiliation patterns, shared participation, and broader forms of social or institutional embeddedness.
+
+Two-mode networks are especially useful for analyzing how connections emerge indirectly, for example, when two individuals are linked because they attend the same event or belong to the same organization.
+
+To illustrate methods tailored for two-mode networks, we will use the well-known *Southern Women* dataset [@davis2009deep]. This classic dataset records the attendance patterns of 18 women at 14 social events in the American South, and has become a foundational example in network analysis.  The network is included in the `networkdata` package and provides a canonical example of an affiliation (incidence) matrix suitable for demonstrating two-mode network methods and one-mode projections. 
+The biadjacency matrix and can be obtained via `as_biadjacency_matrix()`. This matrix is visualized in @fig-incmat. 
+
+
 ```{r}
 #| label: southern-dat-load
 data("southern_women")
 southern_women
+
+# get biadjacency matrix
+A <- as_biadjacency_matrix(southern_women)
+A
 ```
 
-`igraph` interprets a network as a two-mode network if it has a logical node attribute called `type`.
+::: {#fig-incmat}
+```{r}
+#| label: southern-dat-mat-plot
+#| echo: false
+#| message: false
+
+library(tidyverse)
+# Convert to tidy format
+df <- as.data.frame(A) |>
+  rownames_to_column("woman") |>
+  pivot_longer(-woman, names_to = "event", values_to = "attend") |>
+  mutate(
+    attend = as.integer(attend > 0),
+    # Reverse row order so first woman appears at top
+    woman = factor(woman, levels = rev(unique(woman))),
+    event = factor(event, levels = unique(event))
+  )
+
+# Plot incidence matrix (black = tie, white = no tie)
+ggplot(df, aes(x = event, y = woman, fill = factor(attend))) +
+  geom_tile(color = "grey70", linewidth = 0.3) +
+  scale_fill_manual(values = c("0" = "white", "1" = "black"), guide = "none") +
+  coord_fixed() +
+  labs(
+    x = NULL,
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+Incidence matrix representation of the Southern Women two-mode network. Rows correspond to the 18 women and columns to the 14 social events; black cells indicate attendance at an event, and white cells indicate non-attendance. The block structure visible in the matrix reflects patterns of shared participation that later analyses identify as cohesive subgroups and overlapping social circles within the community.
+
+::: 
+
+In `igraph`, a graph is recognized as a two-mode (bipartite) network when its vertices contain a logical attribute named `type`. This attribute distinguishes the two node sets: typically, one mode is coded as `FALSE` and the other as `TRUE`. Rather than relying on separate data structures, `igraph` uses this vertex-level attribute to determine how functions for bipartite graphs, such as projections or incidence matrix extraction, should behave.
+
+We can inspect how many vertices belong to each mode using:
+
 ```{r}
 #| label: two-mode-type
 table(V(southern_women)$type)
 ```
 
+
+The logical `type` attribute is also used directly in visualization. Because `igraph` stores information about which nodes belong to which mode, we can map this attribute to visual aesthetics in `ggraph`. In the plot below, `type` determines both the shape and fill color of the nodes, allowing us to clearly distinguish between women and events in the bipartite network.
+
 ```{r}
 #| label: southern-women-plot
-#| echo: false
+#| fig-height: 7
+#| fig-width: 9
+
 ggraph(southern_women, "stress") +
   geom_edge_link(edge_color = "grey66") +
   geom_node_point(
@@ -54,56 +109,49 @@ ggraph(southern_women, "stress") +
   theme_void()
 ```
 
-The adjacency matrix of a two-mode network is referred to as  **biadjacency matrix** and can be obtained via `as_biadjacency_matrix()`.
-
-```{r}
-#| label: incidence_southern
-A <- as_biadjacency_matrix(southern_women)
-A
-```
+In the following sections, we will examine both analytical strategies introduced above. First, we briefly consider direct approaches that analyze the two-mode (incidence) structure without transforming it, thereby preserving the full information contained in the bipartite network. We then turn to the more commonly used projection approach, in which the two-mode network is converted into one-mode networks (e.g., women-to-women or event-to-event). While projections rely on more familiar network representations and measures, they inevitably involve some information loss. For this reason, we introduce both perspectives, though the main focus of this chapter will be on the projection-based analysis.
 
 ## Direct Approach
-The `tnet` and `bipartite` packages offer some methods to analyse two mode networks directly, by adapting tools for standard (one-mode) networks, like the methods described in previous sections.
+Several packages provide methods for analyzing two-mode networks directly, without first projecting them into one-mode structures. In particular, the `tnet` and `bipartite` packages extend familiar one-mode concepts (such as clustering or centrality) to bipartite settings.
 
-```{r}
-#| label: load-tnet
-#| message: false
-library(tnet)
-```
+For example, recall that the standard (one-mode) clustering coefficient is based on counting triangles, i.e. closed triplets of nodes. However, triangles cannot exist in a two-mode network because ties only occur between the two distinct node sets (e.g., women $\leftrightarrow$ events), not within them. This means the usual definition of transitivity must be adapted [@opsahl2013triadic].
 
-`tnet` implements a version of the clustering coefficient for two-mode networks. Remember that its one-mode equivalent is based on triangle counts, a structure that cannot exist in two-mode networks (think about it for a second).
+If we naively apply `igraph`’s transitivity function to the bipartite graph, it will return zero (or undefined local values), precisely because triangles are structurally impossible:
 
 ```{r}
 #| label: transitivity-sw
 transitivity(southern_women)
 transitivity(southern_women, type = "local")
 ```
+To address this limitation, the `tnet` package defines a two-mode clustering coefficient based on cycles of length six, which involve three nodes from each mode (e.g., woman $\rightarrow$ event  $\rightarrow$  woman  $\rightarrow$  event  $\rightarrow$  woman  $\rightarrow$  event  $\rightarrow$  back to the first woman). These six-step cycles are the bipartite analogue of triangles in one-mode networks.
 
-The version implemented in `tnet` is based on cycles of length 6, which involves three nodes of each mode.
+
 ```{r}
 #| label: transitivity-sw-tm
+library(tnet)
+
 el_women <- as_edgelist(southern_women, names = FALSE)
 
-clustering_tm(el_women)
-# coefficient for first mode
-clustering_local_tm(el_women)
-# coefficient for second mode
-clustering_local_tm(el_women[, 2:1])
-
+clustering_tm(el_women)              # global clustering (first mode)
+clustering_local_tm(el_women)        # local clustering (first mode)
+clustering_local_tm(el_women[,2:1])  # local clustering (second mode)
 ```
+The `NaN` values indicate that for those nodes the two-mode clustering coefficient is undefined, because they do not participate in any valid six-cycle (the bipartite equivalent of a triangle).
 
-Note that it is very cumbersome to count these cycles. It is advisable to run this function only on fairly small networks.
-
-The package does include some more two-mode specific functions (look for `*_tm()`), but the outcomes are equivalent to using its counterpart in igraph. 
+Because counting such six-cycles is computationally intensive, these measures are best applied to relatively small networks. The `tnet` package includes additional two-mode–specific functions (look for `*_tm()`), though in many cases similar insights can be obtained via standard igraph tools
 
 The `bipartite` package is tailored towards ecological network analysis. Relevant functions for standard two-mode networks are the same as in `tnet`.
 
+
 ## Projection Approach
+An alternative to analyzing a two-mode network directly is to transform it into a one-mode network through **projection**. In a projection, nodes from one mode are connected if they share ties to the same nodes in the other mode. For example, in the *Southern Women* network, two women are connected if they attended at least one common event. Projections can be constructed in either a weighted or binary form. 
+
 
 ### Weighted Projection
-Besides analyzing a two-mode network as-is, there is also the possibility to project it to one mode. 
-Mathematically, this is done by calculating $AA^T$ or $A^TA$, depending which mode we project on.
-As an example, consider the southern women dataset again.
+This operation is performed using matrix multiplication on the incidence matrix $A$. Projecting onto the first mode (e.g., women) is obtained by computing $AA^T$, while projecting onto the second mode (e.g., events) is obtained via $A^TA$. The resulting matrix is a weighted adjacency matrix, where entries indicate the number of shared affiliations between pairs of nodes.
+
+As an illustration, we project the Southern Women incidence matrix onto the women:
+
 ```{r}
 #| label: proj-women
 B <- A %*% t(A)
@@ -112,17 +160,18 @@ B
 
 This matrix can now be interpreted as a weighted network among the 18 women. Each entry corresponds to the number of times two women went to the same event.
 
-The same can be achieved with the function `bipartite_projection()`, which returns both projections.
+We can obtain the same projections directly from the bipartite `igraph` object using `bipartite_projection()`, which returns both one-mode projections (women–women and event–event):
 
 ```{r}
 #| label: proj-women_direct
 projs <- bipartite_projection(southern_women)
 projs
 ```
-
+To visualize the weighted women–women projection, we convert $B$ into an `igraph` object and plot it, scaling edge widths by the tie weights:
 ```{r}
 #| label: plot_weighted_proj
-#| echo: FALSE
+#| fig-height: 7
+#| fig-width: 9
 proj <- graph_from_adjacency_matrix(
   B,
   weighted = TRUE,
@@ -144,11 +193,17 @@ ggraph(proj, "stress") +
 
 ```
 
-As you can see, the network is weighted and very dense. In principle it is possible to analyze the network as is, but a very common step is to binarize the
-network. In doing so, we basically turn the network into a simple undirected one-mode network. This makes all methods we described in the first few sections applicable to the network (at least in theory).
+As the plot makes clear, the projected network is both weighted and typically very dense, since many pairs of women share at least one event. While it is possible to analyze this weighted projection as-is, a common next step is to binarize the projection, treating any positive weight as a tie (1) and zero as no tie (0). This transforms the projection into a simple undirected one-mode network, making the standard tools from earlier sections directly applicable (at least in theory).
 
 ### Simple Binary Projections
-The simplest way of binarizing a weighted projection is to define a global threshold and remove a tie if its weight is below the global threshold. A popular choice is to take the mean edge weight (sometimes also plus the 1-2 times the standard deviation).
+The simplest way to binarize a weighted projection is to define a global threshold and remove all ties whose weights fall below that threshold. A commonly used benchmark is the mean edge weight, sometimes adjusted upward by adding one or two standard deviations.
+
+The rationale for using the mean (or the mean plus 1–2 standard deviations) is statistical and substantive. In many projected networks, especially those derived from affiliation data, the distribution of edge weights is highly skewed: most pairs share only one or two affiliations, while a smaller number share many. Using the mean as a cutoff removes very weak and potentially incidental connections. Adding one or two standard deviations makes the criterion stricter, retaining only ties that are substantially stronger than average. In effect, this approach filters out background noise and highlights particularly cohesive relationships.
+
+However, this choice is heuristic rather than theoretically mandated. The appropriate threshold depends on the research question: lower thresholds preserve more information but may produce very dense graphs, while higher thresholds emphasize strong ties but risk discarding meaningful structure. Consequently, it is often useful to explore how results change across different threshold values.
+
+
+In the following code, we binarize the weighted women–women projection using the mean edge weight as a global threshold. First, we extract the women’s projection from the list returned by `bipartite_projection()`. We then compute the mean of the edge weights and remove all ties whose weights are less than or equal to this threshold. Finally, we delete the `weight` attribute so that the resulting graph is treated as a simple unweighted (binary) network.
 
 ```{r}
 #| label: southern-rm-proj
@@ -158,10 +213,15 @@ women_bin <- delete_edges(women_proj, which(E(women_proj)$weight <= threshold))
 women_bin <- delete_edge_attr(women_bin, "weight")
 women_bin
 ```
+The resulting object, `women_bin`, is now a binary one-mode network in which only stronger-than-average shared-event ties are retained. In other words, two women are connected only if they attended more events together than the average pair.
+
+The plot below visualizes this thresholded projection. Compared to the fully weighted projection, the network is noticeably sparser, highlighting more cohesive and substantively stronger connections while filtering out weaker, potentially incidental overlaps.
 
 ```{r}
 #| label: southern-women-bin-plot
-#| echo: false
+#| fig-height: 9
+#| fig-width: 9
+
 ggraph(women_bin, "stress", bbox = 5) +
   geom_edge_link(edge_color = "grey66") +
   geom_node_point(shape = 21, fill = "grey66", size = 8) +
@@ -171,12 +231,7 @@ ggraph(women_bin, "stress", bbox = 5) +
 ```
 
 ### Model-based Binary Projections
-The global threshold method is very simple but in many cases leads to undesirable structural features. More sophisticated tools work with statistical models in the background which determine if an edge weight differs enough from the expected value of an underlying null model. If so, the edge is kept in the binary projection. Many of such models are implemented in the `backbone` package.
-```{r}
-#| label: load-backbone
-#| message: false
-library(backbone)
-```
+The global threshold method is very simple but in many cases leads to undesirable structural features. More sophisticated tools work with statistical models in the background [@neal2014backbone] which determine if an edge weight differs enough from the expected value of an underlying null model. If so, the edge is kept in the binary projection. Many of such models are implemented in the `backbone` package.
 
 The idea behind all of the models is always the same:
 
@@ -193,7 +248,7 @@ The only difference in all models is the construction of the random two-mode net
 - **Stochastic Degree Sequence Model** `sdsm()`: Create random two-mode networks with *approximately* the same row and column sums as `A`.
 
 Before we move to an actual use case, you may ask: So which model is the right one for me? That is actually quite a tricky question.
-There is some [guidance](https://doi.org/10.1038/s41598-021-03238-3) available but in general you can follow these rough guidelines:
+There is some guidance available [@neal2021comparing], but in general you can follow these rough guidelines:
 
 1. Use the model that fits you empirical setting or a known link formation process. If that link formation process dictates that row sums are fixed but column sums not, then choose `fixedow()`. 
 2. Use `fdsm()` if your network is small enough. Sampling from the FDSM is quite expensive.
@@ -201,7 +256,7 @@ There is some [guidance](https://doi.org/10.1038/s41598-021-03238-3) available b
 
 Given that there is never a "ground-truth" binary projection, any choice of model is fine as long as it is motivated substantively and not merely because it fits the papers narrative best.
 
-To illustrate the model fitting, we use a bill cosponsorship of the Senate 2015. A link between a senator and a bill exists, if they sponsored it. We are no interested in how the binary projection of Senators looks like.
+To illustrate model fitting in a substantive setting, we use a bill cosponsorship network from the U.S. Senate in 2015 (available in the `networkdata` package). The data form a two-mode network in which one set of nodes represents senators and the other represents bills; a tie between a senator and a bill indicates sponsorship or cosponsorship. We are interested in examining the binary one-mode projection onto senators, i.e. a network in which two senators are connected if they sponsored at least one bill together.
 
 ```{r}
 #| label: data-cosponsor
@@ -209,7 +264,8 @@ data("cosponsor")
 cosponsor
 ```
 
-Given that the network is fairly large, we will use the SDSM. Note that all models create the projection for the mode where `type == FALSE`. If you want to project on the `TRUE` mode, you need to invert the type attribute. 
+Because the resulting network is fairly large, we will rely on the SDSM (Stochastic Degree Sequence Model) for modeling. It is important to note that the implemented projection models automatically generate the one-mode projection for the node set where `type == FALSE`. If the goal is instead to project onto the nodes with `type == TRUE`, the `type` attribute must first be inverted. In other words, the coding of the bipartite membership determines which mode is projected by default, so care must be taken to ensure that the correct node set is being analyzed.
+
 
 ```{r}
 #| label: fit-sdsm
@@ -217,16 +273,18 @@ senators <- sdsm(cosponsor, alpha = 0.05, signed = FALSE)
 senators
 ```
 
-For `signed = FALSE`, a one-tailed test is performed for each edge with a non-zero weight. It yields a projection that preserves edges whose weights are significantly stronger than expected in the null model. 
+With `signed = FALSE`, the procedure performs a one-tailed test for each edge that has a non-zero weight in the weighted projection. The output is a filtered (or “backbone”) projection that retains only those senator–senator ties whose co-sponsorship strength is significantly greater than expected in the null model at the chosen significance level (`alpha = 0.05`). In other words, the projection keeps unusually strong co-sponsorship relationships and discards ties that could plausibly arise from baseline activity levels alone.
 
-When `signed = TRUE`, a two-tailed test is performed for every pair of nodes. It yields a backbone that contains positive edges for edges whose weights are significantly stronger, and negative edges for edges whose weights are significantly weaker, than expected in the chosen null model. The projections thus becomes a signed network (see @sec-signed-networks).
+When `signed = TRUE`, the procedure performs a two-tailed test for every pair of nodes. This yields a signed backbone: positive edges indicate pairs that co-sponsor significantly more than expected, while negative edges indicate pairs that co-sponsor significantly less than expected under the same null model. The resulting projection is therefore a signed network (see @sec-signed-networks).
 
-The figure below shows the not so surprising result that Democrats and Republicans do not tend to significantly cosponsor the same bills.
+The figure below visualizes the backbone projection (restricted to the largest connected component) with nodes colored by party. 
 
 
 ```{r}
 #| label: cosponsor-plot
-#| echo: false
+#| fig-height: 6
+#| fig-width: 8
+#| 
 V(senators)$party <- V(cosponsor)$party[match(
   V(senators)$name,
   V(cosponsor)$name
@@ -242,18 +300,10 @@ ggraph(senators, "stress") +
   theme(legend.position = "bottom")
 ```
 
+The backbone projection reveals a strongly polarized cosponsorship structure. Nodes are senators, colored by party, and the layout places more strongly connected senators closer together. The most salient feature is the clear separation into two large clusters: a predominantly Republican cluster on the left (red) and a predominantly Democratic cluster on the right (blue). Within each party cluster, the network is very dense, indicating that many pairs of same-party senators cosponsor bills together at rates that are *significantly stronger than expected* given their overall cosponsorship activity (as captured by the SDSM null model).
+
+In contrast, there are only a small number of edges spanning the gap between the two clusters. These cross-party ties represent relatively rare cases of unusually strong bipartisan cosponsorship. Senators positioned near the boundary between the clusters, and the few cross-cluster edges attached to them, can be interpreted as potential “broker-like” actors in this backbone, in the sense that they are among the limited set of senators whose cosponsorship patterns connect the two partisan blocs. The Independent senators (yellow) appear closer to one side but near the interface, consistent with the idea that independents often align with one coalition while occasionally participating in cross-party collaborations. Overall, the figure shows that once we filter the projection to retain only statistically meaningful ties, cosponsorship is dominated by within-party collaboration, with comparatively little bipartisan structure.
+
 ## Notable Packages
 
 - `incidentally` to create random two-mode networks with given structural features
-
-## Scientific Reading
-
-Faust, K. (1997). Centrality in affiliation networks. Social networks, 19(2), 157-191.
-
-Everett, M. G., & Borgatti, S. P. (2013). The dual-projection approach for two-mode networks. Social networks, 35(2), 204-210.
-
-Opsahl, T. (2013). Triadic closure in two-mode networks: Redefining the global and local clustering coefficients. Social networks, 35(2), 159-167.
-
-Neal, Z. P. (2014). The backbone of bipartite projections: Inferring relationships from co-authorship, co-sponsorship, co-attendance, and other co-behaviors. Social Networks, 39, 84-97. 
-
-Neal, Z. P., Domagalski, R., and Sagan, B. (2021). Comparing Alternatives to the Fixed Degree Sequence Model for Extracting the Backbone of Bipartite Projections. Scientific Reports, 11, 23929. 

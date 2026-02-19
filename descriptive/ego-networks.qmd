@@ -15,12 +15,13 @@ library(tidyverse)
 ```
 
 ::: {.callout-note}
-## Note on Data Structure
+## Note
 
 The `egor` package works with ego network data in *tidy* format, meaning it follows tidy data principles. In tidy data, each row represents one observation and each column represents one variable. Instead of storing everything in a single large matrix, ego network data are separated into three linked tables: one containing information about egos, one containing information about alters, and one containing the ties among alters. These tables are connected through ID variables that indicate which alters belong to which ego and which alters are tied to one another. This structure makes the data easier to understand, manipulate, and analyze using tools from the tidyverse, while still preserving the relational nature of network data.
 :::
 
-## Ego Network Data
+## Ego Network Data Structure
+
 Ego network data are typically generated through survey-based approaches that capture information about individuals and their immediate social surroundings. In one common design, respondents (*egos*) are asked to name the people with whom they have specific types of relationships and to describe the connections among those named individuals (*alters*), thereby providing both node-level and tie-level information from a single informant. A more elaborate strategy uses a two-stage snowball approach: after the initial respondent identifies their contacts, those contacts are subsequently surveyed about their relationships with one another, allowing for more detailed mapping of ties within the ego’s local network. Although data collected in these ways do not reveal how these personal networks are embedded within the broader population structure, they enable researchers to estimate the distribution and characteristics of ego network forms across even very large populations. Methodologically, such data consist of multiple distinct networks—each centered on a different ego and typically composed of different actors—meaning that each ego network should be stored and analyzed as a separate actor-by-actor matrix rather than combined into a single stacked dataset, since the matrices do not represent multiple relations among the same set of individuals.
 
 A second common source of ego network data involves deriving them from complete network datasets that already contain information about all actors and ties within a bounded population. In this case, researchers can extract the local network surrounding a focal actor directly from the larger structure. Simple extraction procedures allow analysts to isolate an ego and their direct ties, though these methods may omit information about relationships among the alters themselves. More comprehensive approaches rely on identifying a defined neighborhood, such as through a previously constructed attribute or partition that marks members of a particular ego’s local environment, and then generating a subgraph that preserves both ego–alter and alter–alter ties. Unlike survey-generated ego networks, these extracted ego networks remain embedded within a known global structure, enabling comparisons between local and whole-network properties.
@@ -95,7 +96,7 @@ We now visualize a subset of the data by plotting the first 9 ego networks in th
 # Create plots for first 9 ego networks
 plots <- lapply(ego_nets32[1:9], function(g) {
   
-  ggraph(g, layout = "kk") +   
+  ggraph(g, layout = "stress") +   
     geom_edge_link(alpha = 0.4) +
     geom_node_point(size = 6, color = "steelblue") +
     geom_node_text(aes(label = name), repel = FALSE, size = 3,  color = "white") +
