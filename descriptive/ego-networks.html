@@ -449,7 +449,7 @@ window.Quarto = {
    
   <ul>
   <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">8.1</span> Packages Needed for this Chapter</a></li>
-  <li><a href="#ego-network-data" id="toc-ego-network-data" class="nav-link" data-scroll-target="#ego-network-data"><span class="header-section-number">8.2</span> Ego Network Data</a>
+  <li><a href="#ego-network-data-structure" id="toc-ego-network-data-structure" class="nav-link" data-scroll-target="#ego-network-data-structure"><span class="header-section-number">8.2</span> Ego Network Data Structure</a>
   <ul>
   <li><a href="#constructing-an-ego-network-with-egor" id="toc-constructing-an-ego-network-with-egor" class="nav-link" data-scroll-target="#constructing-an-ego-network-with-egor"><span class="header-section-number">8.2.1</span> Constructing an Ego Network with <code>egor</code></a></li>
   </ul></li>
@@ -497,7 +497,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Note on Data Structure
+<span class="screen-reader-only">Note</span>Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -505,8 +505,8 @@ window.Quarto = {
 </div>
 </div>
 </section>
-<section id="ego-network-data" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="ego-network-data"><span class="header-section-number">8.2</span> Ego Network Data</h2>
+<section id="ego-network-data-structure" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="ego-network-data-structure"><span class="header-section-number">8.2</span> Ego Network Data Structure</h2>
 <p>Ego network data are typically generated through survey-based approaches that capture information about individuals and their immediate social surroundings. In one common design, respondents (<em>egos</em>) are asked to name the people with whom they have specific types of relationships and to describe the connections among those named individuals (<em>alters</em>), thereby providing both node-level and tie-level information from a single informant. A more elaborate strategy uses a two-stage snowball approach: after the initial respondent identifies their contacts, those contacts are subsequently surveyed about their relationships with one another, allowing for more detailed mapping of ties within the ego’s local network. Although data collected in these ways do not reveal how these personal networks are embedded within the broader population structure, they enable researchers to estimate the distribution and characteristics of ego network forms across even very large populations. Methodologically, such data consist of multiple distinct networks—each centered on a different ego and typically composed of different actors—meaning that each ego network should be stored and analyzed as a separate actor-by-actor matrix rather than combined into a single stacked dataset, since the matrices do not represent multiple relations among the same set of individuals.</p>
 <p>A second common source of ego network data involves deriving them from complete network datasets that already contain information about all actors and ties within a bounded population. In this case, researchers can extract the local network surrounding a focal actor directly from the larger structure. Simple extraction procedures allow analysts to isolate an ego and their direct ties, though these methods may omit information about relationships among the alters themselves. More comprehensive approaches rely on identifying a defined neighborhood, such as through a previously constructed attribute or partition that marks members of a particular ego’s local environment, and then generating a subgraph that preserves both ego–alter and alter–alter ties. Unlike survey-generated ego networks, these extracted ego networks remain embedded within a known global structure, enabling comparisons between local and whole-network properties.</p>
 <section id="constructing-an-ego-network-with-egor" class="level3" data-number="8.2.1">
@@ -623,30 +623,30 @@ window.Quarto = {
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>ego_nets32[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`1`
-IGRAPH f3fb511 UNW- 12 32 -- 
+IGRAPH e58a366 UNW- 12 32 -- 
 + attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
 | (v/n), country (v/c), income (v/n), weight (e/n)
-+ edges from f3fb511 (vertex names):
++ edges from e58a366 (vertex names):
  [1] 3 --6  5 --7  4 --7  4 --6  6 --9  5 --10 2 --8  2 --3  2 --4  3 --4 
 [11] 2 --5  1 --6  1 --2  4 --10 2 --10 7 --12 10--12 2 --12 6 --12 2 --9 
 [21] 5 --8  6 --10 8 --12 6 --11 1 --9  2 --11 5 --11 2 --6  5 --6  1 --7 
 [31] 4 --12 3 --10
 
 $`2`
-IGRAPH 1172eef UNW- 12 33 -- 
+IGRAPH ec1c0d7 UNW- 12 33 -- 
 + attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
 | (v/n), country (v/c), income (v/n), weight (e/n)
-+ edges from 1172eef (vertex names):
++ edges from ec1c0d7 (vertex names):
  [1] 1 --7  8 --9  3 --11 6 --10 1 --5  6 --9  1 --11 3 --4  7 --8  6 --12
 [11] 1 --4  5 --9  2 --11 4 --7  5 --12 2 --5  4 --5  3 --12 3 --6  3 --5 
 [21] 7 --11 8 --11 9 --10 11--12 6 --11 2 --9  2 --12 1 --12 1 --2  1 --9 
 [31] 1 --6  4 --9  4 --11
 
 $`3`
-IGRAPH 00e75bb UNW- 12 33 -- 
+IGRAPH 4514fb9 UNW- 12 33 -- 
 + attr: .egoID (g/n), name (v/c), sex (v/c), age (v/c), age.years
 | (v/n), country (v/c), income (v/n), weight (e/n)
-+ edges from 00e75bb (vertex names):
++ edges from 4514fb9 (vertex names):
  [1] 5--12 9--10 5--9  2--10 4--10 4--12 6--7  3--6  7--8  3--4  4--11 2--4 
 [13] 4--6  9--12 2--9  8--10 3--7  1--6  2--7  5--7  1--2  3--12 4--7  1--8 
 [25] 6--9  6--10 1--3  2--6  3--10 7--12 7--10 6--8  1--12</code></pre>
@@ -674,7 +674,7 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create plots for first 9 ego networks</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(ego_nets32[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>], <span class="cf">function</span>(g) {</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(g, <span class="at">layout =</span> <span class="st">"kk"</span>) <span class="sc">+</span>   </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(g, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span>   </span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">repel =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="dv">3</span>,  <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
