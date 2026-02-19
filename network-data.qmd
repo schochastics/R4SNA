@@ -1,4 +1,12 @@
 # Network Data {.unnumbered}
+This chapter introduces the fundamental concepts and terminology used in network analysis and explains how network data can be represented. It begins with an overview of what networks are, how they are structured, and the different ways in which relational data can be stored and organized.
+
+The main focus of the chapter is practical: you will learn how to work with network data in R using the igraph package. We cover how to construct network objects from raw data, how to import existing network files, and how to represent nodes, edges, and their attributes within R.
+
+By the end of this chapter, you will understand the basic principles of network data and be able to create and manipulate network objects in R using  `igraph`.
+
+## Packages Needed for this Chapter
+
 
 ```{r}
 #| label: libraries
@@ -6,20 +14,41 @@
 library(igraph)
 ```
 
-## Introduction
 
-This introductory chapter will give a short explanation of key terminology and how network data can be represented. 
-The larger part of the chapter is concerned with representing networks in R using `igraph` and how to construct or read network data. 
 
-After reading this chapter, you should have a basic understanding of what networks and network data is and how to create network objects in R using `igraph`.
-
-## What is a network?
-
+## What is a Network?
 In the context of social network analysis, a network is a conceptual and analytical construct to understand, visualize, and examine the (social) relationships and structures that emerge from the interactions among individuals, groups, organizations, or even entire societies. At its core, a network consists of **nodes** (which represent the actors, whether individuals or organizations) and **edges** (which signify the relationships or connections between these actors). These relationships can embody various types of interactions such as communication, friendship, professional ties, or social influence, among others. 
 
-Networks in the social sciences are tools for mapping and quantifying the patterns of social connections, helping to reveal the underlying dynamics of social cohesion, influence, and information flow within a community or society. Through the lens of network theory, analysts can explore how social structures influence behaviors, opportunities, and outcomes for individuals and groups, making it an invaluable approach in sociology, anthropology, political science, and many other disciplines that study social systems and interactions.
+In the social sciences, networks are tools for mapping and quantifying patterns of social connections. They help reveal the underlying dynamics of social cohesion, influence, and information flow within communities and societies. Rather than focusing solely on individual characteristics, network analysis examines how ties between actors (whether individuals, organizations, or other entities) form structures that shape opportunities and constraints.
 
-## Network representations
+Social network analysis is guided by a structural intuition: social life is organized through relationships. It is grounded in systematic empirical data, relying on observed and measured connections between actors. At the same time, it draws heavily on graphical representations, using network diagrams to visualize nodes (actors) and edges (ties) and to make structural patterns such as clusters, central positions, or bridging roles visible.
+
+Beyond visualization, network analysis employs mathematical and computational models to quantify structural properties, test hypotheses about relational processes, and model how networks form and evolve. Through the lens of network theory, researchers can explore how social structures influence behaviors, access to resources, diffusion of information, and life chances. For this reason, social network analysis has become an invaluable approach in sociology, anthropology, political science, and many other disciplines concerned with social systems and interactions.
+
+
+
+## Why Study Networks?
+Conventional research methods are often individual-based, and our models typically focus on relationships between variables rather than relationships between people. However, much of the world around us is fundamentally structured as networks. This is true not only for society, but also for brains (neural networks), organizations (who reports to whom), economies (who sells to whom), and ecologies (who eats whom). In each of these domains, outcomes are shaped not just by the attributes of individual units, but by the pattern of connections among them.
+
+Classical social theorists emphasized this relational foundation of social life. Georg Simmel argued that society exists where individuals enter into interaction. Émile Durkheim described society as a system formed by associated individuals and their channels of communication. Karl Marx similarly stressed that society does not consist of isolated individuals, but expresses the sum of interrelations within which individuals stand. These perspectives share a central insight: social structure is relational.
+
+Despite this, much empirical research continues to privilege individual-level explanations. For example, if David predominantly eats vegetarian food, we might explain this in terms of his ethical beliefs, economic situation, health concerns, or taste preferences. A network perspective, however, would also consider whether David has a vegetarian partner or close friends who influence his dietary choices. Instead of focusing solely on internal attributes, we examine the relational context in which decisions are embedded.
+
+Network effects also shape emotions and well-being. If someone close to you is unhappy, are you likely to remain unaffected? Feelings, behaviors, and norms often spread through social ties. What happens to one person can influence others in their immediate network and beyond.
+
+Similarly, access to opportunities may depend not only on individual merit but also on personal networks. Jobs, information, and resources are frequently obtained through social connections. Life chances are therefore shaped not just by who we are, but by how we are connected and where we are positioned within a network.
+
+Studying networks allows us to move beyond isolated individuals and to analyze the patterns of relationships that structure behavior, outcomes, and inequality. A network perspective makes these relational structures visible and provides tools to systematically investigate their consequences.
+
+
+## From “Ordinary” to Network Data
+
+Traditional research often treats individuals or entities as independent units of analysis. Even when the focus is on pairs of individuals, such as couples, these dyads are frequently treated as if they were independent from one another. However, in many social settings, relationships are interdependent and overlapping. A person can be part of multiple dyads simultaneously, and these connections influence one another.
+
+As a result, the usual statistical assumption of independence does not hold in networked settings. Observations are not isolated: ties between actors create dependencies. What happens in one relationship may affect others, and individuals are embedded in broader relational structures that shape their behavior and outcomes. Recognizing this interdependence is one of the key motivations for adopting a network perspective.
+
+
+## Network Representations
 
 There are several possible ways to express network data. All come with a set of advantages and disadvantages.
 
