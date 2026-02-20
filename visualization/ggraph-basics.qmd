@@ -274,8 +274,8 @@ geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif")
 ```
 
-On top of the edge layer, we draw the node layer. Always draw the node layer above 
-the edge layer. Otherwise, edges will be visible on top of nodes.
+On top of the edge layer, the node layer is drawn. Always draw the node layer above 
+the edge layer. Otherwise, edges will be visible on top of nodes which leads to a messy and less readable plot.
 There are slightly less geoms available for nodes.
 
 ```r
@@ -286,7 +286,7 @@ c(
 ```
 
 The most important ones here are `geom_node_point()` to draw nodes as simple geometric objects (circles, squares,...)
-and `geom_node_text()` to add node labels. You can also use `geom_node_label()`, but this draws labels within a box.
+and `geom_node_text()` to add node labels. You can also use `geom_node_label()`, which draws labels within a box.
 
 The mapping of node attributes to aesthetics is similar to edge attributes. In the example code, we map the fill attribute of the node shape to the "clu" attribute, which holds the result of a clustering, and the size of the nodes to the attribute "size". The shape of the node is globally set to 21.
 
@@ -324,8 +324,8 @@ In the example, we only display the node label if the size attribute is larger t
 
 ```r
 scale_fill_manual(values = got_palette) +
-  scale_edge_width_continuous(range = c(0.2, 3)) +
-  scale_size_continuous(range = c(1, 6))
+scale_edge_width_continuous(range = c(0.2, 3)) +
+scale_size_continuous(range = c(1, 6))
 ```
 
 The `scale_*` functions are used to control aesthetics that are mapped within `aes()`.
@@ -447,8 +447,6 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "none")
 ```
 
-(*Check out this [github repo](https://github.com/EmilHvitfeldt/r-color-palettes) from Emil Hvitfeldt for a comprehensive list of color palettes available in R*)
-
 ## Themes
 
 ```r
@@ -479,7 +477,7 @@ ggraph(gotS1, layout = "stress") +
 
 This covers all the necessary steps to produce a standard network plot with `ggraph`. More advanced techniques will be covered in the next sections. We conclude the introductory part by recreating a quite famous network visualization 
 
-## Extended Example
+## Another full example
 
 In this section, we do a little code through to recreate the figure shown below.
 
@@ -495,7 +493,7 @@ data("polblogs")
 V(polblogs)$deg <- degree(polblogs, mode = "in")
 ```
 
-Let us start with a simple plot without any styling.
+We start with a simple plot without any styling.
 ```{r}
 #| label: polblogs1
 #| fig-width: 10
@@ -519,7 +517,7 @@ There is obviously a lot missing. First, we delete all isolates and plot again.
 #| label: polblogs2
 #| fig-width: 10
 #| fig-height: 8
-polblogs <- delete.vertices(polblogs, which(degree(polblogs) == 0))
+polblogs <- delete_vertices(polblogs, which(degree(polblogs) == 0))
 lay <- create_layout(polblogs, "stress")
 
 ggraph(lay) +
@@ -540,7 +538,7 @@ The original does feature a small disconnected component, but we remove this her
 #| fig-width: 10
 #| fig-height: 8
 comps <- components(polblogs)
-polblogs <- delete.vertices(polblogs, which(comps$membership == which.min(comps$csize)))
+polblogs <- delete_vertices(polblogs, which(comps$membership == which.min(comps$csize)))
 
 lay <- create_layout(polblogs, "stress")
 ggraph(lay) +
@@ -555,7 +553,7 @@ ggraph(lay) +
 ```
 
 
-Better, let's start with some styling of the nodes.
+Let us now start with some styling of the nodes.
 
 ```{r}
 #| label: polblogs3
@@ -618,7 +616,7 @@ This new variable is mapped to the edge color.
 #| label: polblogs6
 #| fig-width: 10
 #| fig-height: 8
-el <- get.edgelist(polblogs, names = FALSE)
+el <- as_edgelist(polblogs, names = FALSE)
 el_pol <- cbind(V(polblogs)$pol[el[, 1]], V(polblogs)$pol[el[, 2]])
 E(polblogs)$col <- ifelse(el_pol[, 1] == el_pol[, 2], el_pol[, 1], "mixed")
 
@@ -687,7 +685,7 @@ ggraph(lay) +
     scale_size(range = c(0.5, 7))
 ```
 
-Now lets just add the `theme_graph()`.
+Now let us just add the `theme_graph()` to finalize the plot
 ```{r}
 #| label: polblogs9
 #| fig-width: 10
