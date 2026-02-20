@@ -1,64 +1,9 @@
 # Introduction
-Most network analytic tasks are fairly straightforward to do in R. But when it comes to visualizing
-networks, R may lack behind some standalone software tools. Not because it is not possible to produce nice
-figures, but rather because it requires some time to obtain pleasing results.
-Just take a look at the default output when plotting a network with the `plot()` function.
-```{r}
-#| label: silent_igraph
-#| include: false
 
-library(igraph)
-library(patchwork)
-```
+Network visualization is a powerful tool for exploring and communicating the structure of relational data. While many software packages can produce aesthetically appealing network graphs, effective visualization requires more than visual appeal. It demands a deep understanding of layout algorithms, visual encoding strategies, and the specific characteristics of the network being studied.
 
-```{r}
-#| label: plot_ugly
-#| message: false
-library(networkdata)
-library(igraph)
-data("got")
+R offers a rich ecosystem of packages for network visualization, with `ggraph` emerging as a particularly flexible and powerful option. Built on top of `ggplot2`, `ggraph` brings the **grammar of graphics** to network visualization, allowing for fine-grained control over every aspect of a plot while maintaining a consistent and intuitive syntax.
 
-gotS1 <- got[[1]]
-plot(gotS1)
-```
+In this part, we explore the fundamentals of network visualization in R, with a primary focus on `ggraph`. We examine different layout algorithms which determine how nodes are positioned in space. We also discuss how to effectively encode node and edge attributes using visual properties such as size, color, and shape. 
 
-It is definitely possible to produce nice figures with the igraph package (Check out [this](https://kateto.net/networks-r-igraph) wonderful tutorial), yet it may take some time
-to familiarize yourself with the syntax. Additionally, most of the layout algorithms of `igraph` 
-are non-deterministic. This means that running the same plot call twice may produce different results.
-
-In this part, you will learn the basics of `ggraph`, the "`ggplot2` of networks", together with
-the `graphlayouts` package, which introduces additional useful layout algorithms to R. 
-Arguably, using `ggraph` is not really easier than `igraph`. But once the underlying 
-principle of the *grammar of graphics* is understood, you'll see that it is actually quite intuitive to work with. 
-
-## Required libraries
-
-To run all the code in this tutorial, you need to install and load several packages.
-```{r}
-#| label: install_libraries
-#| eval: false
-install.packages(c("igraph", "graphlayouts", "ggraph", "ggforce"))
-devtools::install_github("schochastics/networkdata")
-```
-
-Make sure you have at least the version given below. Some of the examples may not be backward compatible.
-
-```{r}
-#| label: pkg_version_check
-packageVersion("igraph")
-packageVersion("graphlayouts")
-packageVersion("ggraph")
-packageVersion("networkdata")
-packageVersion("ggforce")
-```
-
-`igraph` is mostly used for its data structures and `graphlayouts` and `ggraph` for visualizations.
-The `networkdata` package contains a huge amount of example network data that always comes in handy for learning new visualization techniques.
-
-```{r}
-#| label: libraries
-library(igraph)
-library(ggraph)
-library(graphlayouts)
-library(ggforce)
-```
+Note that `igraph`, while primarily a network analysis package, also provides powerful plotting capabilities. However, the way plots are constructed fundamentally differs from `ggraph`. In `igraph`, plotting is more procedural, where you directly specify the layout and visual properties in a single function call. In contrast, `ggraph` follows a layered approach, allowing you to build up your plot incrementally, which can lead to more complex and customized visualizations.
