@@ -1,5 +1,8 @@
 # Enhancing Visualizations
 
+Everything that was covered so far should be enough to produce standard high-quality network visualizations. However, `ggraph` offers a lot more advanced functions and parameter settings to further enhance network plots. 
+
+
 ## Packages Needed for this Chapter
 ```{r}
 #| label: libraries1
@@ -10,6 +13,8 @@ library(graphlayouts)
 library(ggforce)
 library(networkdata)
 ```
+
+As before, we use the Game of Thrones dataset, which is part of the `networkdata` package.
 
 ```{r}
 data("got")
@@ -33,11 +38,9 @@ V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 V(gotS1)$size <- degree(gotS1)
 ```
 
-Everything that was covered so far should be enough to produce nice network visualizations, especially for scientific publications. However, `ggraph` has a lot more advanced functions/parameter settings to further enhance your visualization.  If you are looking for something specific, it is always a good idea to read the documentation of the geoms. 
+## Combining `ggraph` and `ggforce`
 
-## use the ggforce
-
-The `ggforce` package works pretty nicely with `ggraph`. You can, for instance, use
+The `ggforce` package works and `ggraph` work pretty nicely together. For example, you can use
 the `geom_mark_*()` functions to highlight clusters.
 
 ```{r}
@@ -49,20 +52,12 @@ g <- sample_islands(9, 40, 0.4, 15)
 g <- igraph::simplify(g)
 V(g)$grp <- as.character(rep(1:9, each = 40))
 
-bb <- layout_as_backbone(g, keep = 0.4)
-E(g)$col <- F
-E(g)$col[bb$backbone] <- T
 ```
 
 ```{r}
-#| label:  network-grps-sol
-ggraph(
-  g, #|
-  layout = "manual",
-  x = bb$xy[, 1],
-  y = bb$xy[, 2]
-) +
-  geom_edge_link0(aes(col = col), width = 0.2) +
+#| label:  fig-network-grps-sol
+ggraph(g, layout = "backbone", keep = 0.4) +
+  geom_edge_link0(edge_color = "grey66", edge_width = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
   geom_mark_hull(
     aes(x, y, group = grp, fill = grp),
@@ -77,17 +72,12 @@ ggraph(
   theme(legend.position = "none")
 ```
 
-Of course you can also add a label to your clusters.
+It is also possible to add labels to the clusters.
 
 ```{r}
-#| label: network-grps-label-sol
-ggraph(
-  g, #|
-  layout = "manual",
-  x = bb$xy[, 1],
-  y = bb$xy[, 2]
-) +
-  geom_edge_link0(aes(col = col), width = 0.2) +
+#| label: fig-network-grps-label-sol
+ggraph(g, layout = "backbone", keep = 0.4) +
+  geom_edge_link0(edge_color = "grey66", edge_width = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
   geom_mark_hull(
     aes(x, y, group = grp, fill = grp, label = grp),
@@ -101,33 +91,6 @@ ggraph(
   theme_graph() +
   theme(legend.position = "none")
 ```
-
-If you want to avoid node overlaps, you can use `geom_node_voronoi()`.
-So this is actually already implemented in `ggraph`, but originates from `geom_voronoi_tile()`.
-
-```{r}
-#| label: network-voronoi
-ggraph(g, layout = "manual", x = bb$xy[, 1], y = bb$xy[, 2]) +
-  geom_edge_link0(aes(filter = !col, col = col), width = 0.2) +
-  geom_node_voronoi(
-    aes(x, y, fill = grp),
-    max.radius = 0.4,
-    expand = unit(-0.5, "mm"),
-    colour = "black"
-  ) +
-  scale_color_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
-  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
-  theme(
-    legend.position = "none",
-    panel.grid = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank()
-  ) +
-  theme_graph() +
-  theme(legend.position = "none")
-```
-
 
 ## Small tricks for common problems 
 
