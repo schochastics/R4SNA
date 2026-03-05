@@ -42,6 +42,21 @@ Through this approach, we will see how REM provides a rigorous and flexible fram
 library(relevent)
 ```
 
+::: {.callout-note}
+
+
+### Note on Alternative Software for Relational Event Models
+
+In this chapter we use the `relevent` package to estimate relational event models. The package implements the framework introduced by @butts2008 and provides a straightforward and widely used approach for estimating REMs from sequences of dyadic interactions.
+
+Several alternative implementations are also available. The `goldfish` package provides a more modern and flexible framework for relational event modeling. In contrast to `relevent`, which requires users to manually construct event statistics and covariates, `goldfish` offers a formula-based interface that allows endogenous effects and actor attributes to be specified directly within the model. The package also supports a broader range of structural effects and is designed to scale more efficiently to larger event datasets.
+
+Another option is the `rem` package, which provides a simplified implementation of relational event models with a more modern interface than `relevent`. In particular, `rem` integrates more naturally with tidyverse-style workflows, making it convenient for researchers who prefer a tidy data structure and formula-based model specification. While it supports many core REM features, it is currently less widely used in applied research than `relevent` or `goldfish`.
+
+Despite these differences in implementation, the underlying statistical logic remains the same across packages: relational event models estimate the intensity of possible interactions and compare competing events within a risk set. For introductory applications and teaching purposes, `relevent` remains a convenient and transparent tool, while `goldfish` or `rem` may be preferable in more complex or larger-scale analyses.
+
+:::
+
 ## Model Specification
 
 When relational event data contain information about the *order* of events (but not their precise timestamps),  the modeling problem can be framed in terms of relative event hazards. This situation is mathematically equivalent to estimating a Cox proportional hazards model (or Cox regression) over a sequence of discrete event opportunities [@butts2008]. Rather than modeling the exact timing of events, we instead model the relative rate (or intensity) at which a particular interaction occurs next, given the prior history of events.
@@ -191,7 +206,7 @@ Finally, we estimate the relational event model using a Cox proportional hazards
 
 Estimation relies on the partial likelihood, which compares the intensity of the observed event with the intensities of all other possible events within the same risk set.
 
-## Endogenous Statistics
+### Endogenous Statistics
 
 Relational event models allow us to incorporate **endogenous statistics**, which capture patterns that arise from the history of interactions itself. These statistics represent mechanisms through which past events influence the likelihood of future events. Some of these endogenous statistics are summarized in the following and in @tbl-endstats.
 
@@ -278,7 +293,7 @@ $$
 Summary of some endogenous statistics used in relational event models.  {.striped}
 :::
 
-## Exogenous Covariates
+### Exogenous Covariates
 
 In addition to endogenous statistics derived from the event history, relational event models can also incorporate **exogenous covariates**. These variables capture attributes of actors or dyads that may influence the likelihood of interactions but are not themselves determined by the evolving sequence of events.
 
@@ -313,3 +328,17 @@ The exogenous covariates included in the model are summarized in @tbl-exstats.
 
 Summary of exogenous covariates  used in relational event models.   {.striped}
 :::
+
+## REM in R
+
+Here we estimate a relational event model for the dialogue interactions among characters in *Frozen*. In the `relevent` package, relational event models are estimated using the function `rem.dyad()`, which fits a dyadic relational event model based on the observed sequence of interactions.
+
+The main arguments of the `rem.dyad()` function are:
+
+- **`edgelist`**: the event sequence, provided as a matrix or data frame containing the time (or order) of each event, the sender, and the receiver.
+- **`n`**: the number of actors in the network.
+- **`effects`**: a vector specifying the endogenous effects to include in the model (e.g., reciprocity, repetition, or activity effects).
+- **`covar`**: a list of covariate matrices corresponding to the exogenous effects specified in `effects`.
+- **`ordinal`**: a logical argument indicating whether the event data are ordinal. Set `TRUE` if the data only record the order of events (without exact timestamps), and `FALSE` if precise event times are available.
+
+In our case, the dataset consists of a sequence of dialogue interactions between characters in *Frozen*, where each event records which character speaks to another and the order in which the interaction occurs. Because the data contain only the ordering of events rather than precise timestamps, we specify `ordinal = TRUE` when estimating the model.
