@@ -470,12 +470,16 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
 
 ## Edge bundling
 
+Edge bundling is a technique to reduce visual clutter in dense networks. The idea is to group edges together into bundles, which can help to reveal underlying structures and patterns that may be hidden in a traditional edge representation. The `ggraph` package provides two functions for edge bundling: `geom_edge_bundle_force()` and `geom_edge_bundle_path()`. The first one uses a force-directed algorithm to create bundles, while the second one creates bundles based on the shortest path between nodes. 
+
+To illustrate the difference between the two algorithms, we use the network of US flights from the `networkdata` package. 
+
 ```{r}
 #| label: fig-force-bundle
-gr <- edgebundle::us_flights
-states <- map_data("state")
+data("us_flights")
+states <- ggplot::map_data("state")
 
-ggraph(gr, x = longitude, y = latitude) +
+ggraph(us_flights, x = longitude, y = latitude) +
   geom_polygon(
     aes(long, lat, group = group),
     states,
@@ -488,7 +492,7 @@ ggraph(gr, x = longitude, y = latitude) +
 
 ```{r}
 #| label: fig-path-bundle
-ggraph(gr, x = longitude, y = latitude) +
+ggraph(us_flights, x = longitude, y = latitude) +
   geom_polygon(
     aes(long, lat, group = group),
     states,
