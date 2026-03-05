@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="quarto-1.7.29" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+<meta name="author" content="Termeh Shafie and David Schoch" />
+
+<title>17  Exponential Random Graph Models (ERGMs) – R for Social Network Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+<!-- htmldependencies:E3FAD763 -->
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn"
+      data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" 
+      aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation"
+      onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <h1 class="quarto-secondary-nav-title no-breadcrumbs"></h1>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" role="link"
+        aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation"
+        onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="/">
+      R for Social Network Analysis
+      </a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/schochastics/R4sna"  title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/network-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Network Data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1"  role="navigation" aria-expanded="true">
+ <span class="menu-text">Descriptive Network Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/descriptive/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/descriptive/descriptives-basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>2</span>  <span class='chapter-title'>Basic Network Statistics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/descriptive/centrality-basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>3</span>  <span class='chapter-title'>Centrality</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/descriptive/centrality-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>4</span>  <span class='chapter-title'>Advanced Centrality Concepts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/descriptive/clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>5</span>  <span class='chapter-title'>Cohesive Subgroups</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/descriptive/two-mode-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>6</span>  <span class='chapter-title'>Two-Mode Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/descriptive/signed-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>7</span>  <span class='chapter-title'>Signed Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/descriptive/ego-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>8</span>  <span class='chapter-title'>Ego Networks</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2"  role="navigation" aria-expanded="true">
+ <span class="menu-text">Network Visualization</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/visualization/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>9</span>  <span class='chapter-title'>Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/visualization/ggraph-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>10</span>  <span class='chapter-title'>Basics of ggraph</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/visualization/ggraph-advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>11</span>  <span class='chapter-title'>Advanced Layouts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/visualization/enhance-viz.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>12</span>  <span class='chapter-title'>Enhancing Visualizations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/visualization/interactive-viz.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>13</span>  <span class='chapter-title'>Interactive Visualization</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3"  role="navigation" aria-expanded="true">
+ <span class="menu-text">Inferential Network Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/inferential/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>14</span>  <span class='chapter-title'>Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/inferential/non-parametric.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>15</span>  <span class='chapter-title'>Non-Parametric Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/inferential/rgm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>16</span>  <span class='chapter-title'>Random Graph Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/inferential/ergm.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class='chapter-number'>17</span>  <span class='chapter-title'>Exponential Random Graph Models (ERGMs)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/inferential/saom.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>18</span>  <span class='chapter-title'>Stochastic Actor Oriented Models (SAOMs)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/inferential/rem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>19</span>  <span class='chapter-title'>Relational event Models (REMs)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4"  role="navigation" aria-expanded="true">
+ <span class="menu-text">Tidy Network Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/tidy/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>20</span>  <span class='chapter-title'>Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/tidy/tidygraph-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>21</span>  <span class='chapter-title'>Basics of tidygraph</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/tidy/tidygraph-descriptive.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>22</span>  <span class='chapter-title'>Descriptive Network Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/tidy/tidygraph-summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>23</span>  <span class='chapter-title'>Summary</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5"  role="navigation" aria-expanded="true">
+ <span class="menu-text">Additional Tools</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/additional/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>24</span>  <span class='chapter-title'>Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/additional/netropy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>25</span>  <span class='chapter-title'>Entropy Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/additional/multigraphr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>26</span>  <span class='chapter-title'>Multigraph Approach</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class='chapter-number'>27</span>  <span class='chapter-title'>Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" ></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <div id="quarto-toc-target"></div>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ergm" class="quarto-section-identifier"><span class="chapter-number">17</span>  <span class="chapter-title">Exponential Random Graph Models (ERGMs)</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+<nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter"><span class="header-section-number">17.1</span> Packages Needed for this Chapter</a></li>
+  <li><a href="#ergm-modeling-outline" id="toc-ergm-modeling-outline"><span class="header-section-number">17.2</span> ERGM Modeling Outline</a>
+  <ul>
+  <li><a href="#model-specification" id="toc-model-specification"><span class="header-section-number">17.2.1</span> Model Specification</a>
+  <ul>
+  <li><a href="#dyadic-independence-edges-and-homophily" id="toc-dyadic-independence-edges-and-homophily"><span class="header-section-number">17.2.1.1</span> Dyadic Independence: Edges and Homophily</a>
+  <ul>
+  <li><a href="#example-coleman-friendship" id="toc-example-coleman-friendship">Example: Coleman Friendship</a></li>
+  <li><a href="#example-teenage-friends-and-lifestyle-study-data" id="toc-example-teenage-friends-and-lifestyle-study-data">Example: Teenage Friends and Lifestyle Study data</a></li>
+  </ul></li>
+  <li><a href="#dyadic-dependence-reciprocity" id="toc-dyadic-dependence-reciprocity"><span class="header-section-number">17.2.1.2</span> Dyadic Dependence: Reciprocity</a>
+  <ul>
+  <li><a href="#example-coleman-friendship-1" id="toc-example-coleman-friendship-1">Example: Coleman Friendship</a></li>
+  </ul></li>
+  <li><a href="#markov-dependence-triangles-and-stars" id="toc-markov-dependence-triangles-and-stars"><span class="header-section-number">17.2.1.3</span> Markov Dependence: Triangles and Stars</a>
+  <ul>
+  <li><a href="#example-florentine-business-network" id="toc-example-florentine-business-network">Example: Florentine Business Network</a></li>
+  </ul></li>
+  <li><a href="#social-circuit-dependence-gwesp" id="toc-social-circuit-dependence-gwesp"><span class="header-section-number">17.2.1.4</span> Social Circuit Dependence: GWESP</a>
+  <ul>
+  <li><a href="#example-lawyers-network---cowork-among-partners" id="toc-example-lawyers-network---cowork-among-partners">Example: Lawyers Network - Cowork Among Partners</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sec-ergmest" id="toc-sec-ergmest"><span class="header-section-number">17.2.2</span> Model Estimation</a>
+  <ul>
+  <li><a href="#model-instability-and-degeneracy" id="toc-model-instability-and-degeneracy"><span class="header-section-number">17.2.2.1</span> Model Instability and Degeneracy</a>
+  <ul>
+  <li><a href="#example-lawyers-network---cowork-among-partners-1" id="toc-example-lawyers-network---cowork-among-partners-1">Example: Lawyers Network - Cowork Among Partners</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#model-fit" id="toc-model-fit"><span class="header-section-number">17.2.3</span> Model Fit</a>
+  <ul>
+  <li><a href="#example-lawyers-network---cowork-among-partners-2" id="toc-example-lawyers-network---cowork-among-partners-2">Example: Lawyers Network - Cowork Among Partners</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references">References</a></li>
+  </ul>
+</nav>
+<p>So far, the models we’ve considered have treated tie formation as mostly random or locally constrained: ties are formed with fixed probabilities (<span class="math inline">\(G(n, p)\)</span>), rewired at random (small-world), or arranged to match node degrees (configuration model). However, real-world networks are shaped by richer and more structured processes. People don’t form ties independently or at random, they’re influenced by patterns like mutual friendships, popularity, shared group membership, and social norms like reciprocity and transitivity. For example, two people who share a common friend may be more likely to form a tie themselves (triadic closure), or individuals may be more likely to reciprocate a connection that is initiated by someone else. These kinds of dependencies are central to many social theories, and they give rise to complex patterns of self-organization in networks.</p>
+<p>To capture these processes, we need a more flexible modeling framework that allows for:</p>
+<ul>
+<li>Multiple network features to be modeled simultaneously</li>
+<li>Direct specification of tie dependencies</li>
+<li>Testing of competing social mechanisms</li>
+</ul>
+<p>This leads us to models that are built around network configurations, i.e. small, interpretable patterns of ties (such as mutual ties, stars, and triangles) that collectively describe the structure of the network. These configurations are often nested, meaning they build on one another hierarchically, and they can represent competing explanations for the observed structure. For instance, both reciprocity and popularity could explain why a node has many incoming tie, but these explanations imply different underlying processes.</p>
+<p><strong>Exponential Random Graph Models (ERGMs)</strong> provide a flexible way to model these kinds of patterns. Instead of assuming each edge forms independently, ERGMs allow the probability of a tie to depend on what else is happening in the network. For example, the likelihood of a tie forming between two nodes may increase if they share mutual connections (triadic closure), or decrease if one node is already connected to many others (crowding out).</p>
+<p>By explicitly modeling such configurations, we gain not only better empirical fit but also the ability to test theoretical hypotheses about the generative processes that shape real-world networks.</p>
+<section id="packages-needed-for-this-chapter" class="level2" data-number="17.1">
+<h2 data-number="17.1"><span class="header-section-number">17.1</span> Packages Needed for this Chapter</h2>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(statnet)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(intergraph)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(graphlayouts)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+</div>
+</section>
+<section id="ergm-modeling-outline" class="level2" data-number="17.2">
+<h2 data-number="17.2"><span class="header-section-number">17.2</span> ERGM Modeling Outline</h2>
+<p>Exponential Random Graph Models (ERGMs) are a powerful family of statistical models for analyzing and simulating social networks. Unlike simpler random graph models, ERGMs are designed to capture the complex dependencies that often characterize real-world networks, (such as reciprocity, transitivity, or clustering) by explicitly modeling how the presence of one tie can affect the likelihood of others.</p>
+<p>The core idea is as follows. ERGMs specify a probability distribution over the set of all possible networks with a given number of nodes. The probability of observing a particular graph <span class="math inline">\(G\)</span> is defined as:</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G) \right)
+\]</span> where</p>
+<ul>
+<li><span class="math inline">\(s_i(G)\)</span> is a network statistic that counts a specific configuration (e.g., number of edges, mutual ties, triangles).</li>
+<li><span class="math inline">\(\theta_i\)</span> is the parameter associated with statistic <span class="math inline">\(s_i(G)\)</span>; it tells us how strongly that configuration influences tie formation.</li>
+<li><span class="math inline">\(\kappa\)</span> is a normalizing constant ensuring that all possible graphs sum to a probability of 1: <span class="math display">\[
+\kappa = \sum_{G&#39;} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G&#39;) \right)
+\]</span></li>
+</ul>
+<p>This formulation makes clear that networks with more of the structures positively weighted by <span class="math inline">\(\theta\)</span> are more probable. For instance, a large positive <span class="math inline">\(\theta_{\text{mutual}}\)</span> implies that the observed network contains more reciprocated ties than expected by chance.</p>
+<p>In general, we interpret the parameters as follows:</p>
+<ul>
+<li>A positive <span class="math inline">\(\theta_i\)</span> means that the corresponding configuration (e.g., triangles) is overrepresented in the observed network than what is expected by pure chance.</li>
+<li>A negative <span class="math inline">\(\theta_i\)</span> indicates that the configuration is underrepresented than what is expected by pure chance.</li>
+<li>A zero value implies that the configuration occurs at chance levels.</li>
+</ul>
+<p>The statistics <span class="math inline">\(s_i\)</span> are network configurations. As mentioned, ERGMs rely on small, interpretable network configurations to explain structure. These include:</p>
+<ul>
+<li><strong>Edges</strong>: baseline tendency for tie formation (controls overall density)</li>
+<li><strong>Mutual</strong>: reciprocity in directed networks</li>
+<li><strong>Triangles</strong>: clustering or transitivity (friends of friends)</li>
+<li><strong>Stars</strong>: centralization or popularity (many ties to a node)</li>
+<li><strong>Homophily</strong>: ties between nodes with similar attributes</li>
+</ul>
+<p>Each of these configurations reflects a hypothesized mechanism that may drive the evolution of network structure. We formalize some of the standard statistics in the following.</p>
+<p>In the following section, we will move through <strong>four generations of dependence assumptions</strong> yielding different ERGM specifications with statistics (network configurations) that are included in the model.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Specifying an ERGM in R
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An ERGM is specified using a formula that defines the network structure and any covariates to be included. The <code>ergm()</code> function takes a <code>network</code> object on the left-hand side and a set of model terms on the right-hand side.</p>
+<p>Here is an example model including edge density, a node-level covariate, homophily on an attribute, and a structural dependency term (<code>gwesp</code>):</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ergm</span>(network_object <span class="sc">~</span> model_terms)</span></code></pre></div>
+</div>
+<p>where <code>model_terms</code> represent structural configurations or covariate effects, e.g., edges, triangles, mutual, etc. For a full list of available statistics in the <code>ergm</code> package you can check:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>?ergmTerm</span></code></pre></div>
+</div>
+</div>
+</div>
+<section id="model-specification" class="level3" data-number="17.2.1">
+<h3 data-number="17.2.1"><span class="header-section-number">17.2.1</span> Model Specification</h3>
+<section id="dyadic-independence-edges-and-homophily" class="level4" data-number="17.2.1.1">
+<h4 data-number="17.2.1.1"><span class="header-section-number">17.2.1.1</span> Dyadic Independence: Edges and Homophily</h4>
+<p>To begin working with exponential random graph models (ERGMs), we first need to understand how models are specified and what kinds of network structures they describe. In this section, we introduce the simplest possible ERGM, one that assumes Bernoulli dependence, and show how it connects to the familiar <span class="math inline">\(G(n, p)\)</span> model. This first step lays the foundation for more complex ERGMs that incorporate structural dependencies.</p>
+<p>The Bernoulli ERGM assumes that all possible edges form independently of one another. In other words, the probability that a tie exists between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> is unrelated to whether other ties are present elsewhere in the network. This is a very strong assumption and one that is often unrealistic in practice, but it is useful as a baseline.</p>
+<p>Let <span class="math inline">\(Y_{uv}\)</span> be a binary random variable indicating the presence (<span class="math inline">\(1\)</span>) or absence (<span class="math inline">\(0\)</span>) of a tie between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>. The full graph <span class="math inline">\(G\)</span> can then be represented by its adjacency matrix <span class="math inline">\(Y\)</span>, where <span class="math inline">\(Y_{uv}\)</span> encodes the tie between <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>.</p>
+<p>In the general formulation of an exponential random graph model, one could imagine assigning a different parameter <span class="math inline">\(\theta_{uv}\)</span> to every possible tie <span class="math inline">\((u, v)\)</span> in the network. This would allow the model to express highly specific tendencies for each dyad. The probability of observing a network <span class="math inline">\(G\)</span> under this formulation would be:</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left( \sum_{u&lt;v} \theta_{uv} y_{uv} \right)
+\]</span></p>
+<p>However, this model quickly becomes infeasible because it would require estimating a separate parameter for every possible edge, a number that grows quadratically with the number of nodes.</p>
+<p>To make the model estimable and interpretable, ERGMs rely on the <strong>homogeneity assumption</strong>: the effect of a given configuration (such as an edge, triangle, or mutual tie) is the same wherever it appears in the network. That is, all instances of the same configuration share a single global parameter. For the Bernoulli ERGM, this means:</p>
+<p><span class="math display">\[
+\theta_{uv} = \theta \quad \text{for all } (u, v)
+\]</span></p>
+<p>Applying this assumption simplifies the model considerably:</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left( \theta \sum_{u&lt;v} y_{uv} \right) = \frac{1}{\kappa} \exp(\theta \cdot L)
+\]</span></p>
+<p>Here, <span class="math inline">\(L\)</span> is the total number of edges in the network, <span class="math inline">\(\theta\)</span> is a single parameter that governs the overall probability of tie formation, and <span class="math inline">\(\kappa\)</span> is the normalizing constant ensuring all probabilities sum to 1.</p>
+<p>This structure implies that each potential tie forms independently with the same probability, much like in a <span class="math inline">\(G(n, p)\)</span> random graph. Here, the parameter <span class="math inline">\(\theta\)</span> governs the log-odds of a tie between any two nodes. More formally, the relationship between <span class="math inline">\(\theta\)</span> and the tie probability <span class="math inline">\(p\)</span> (i.e., the density of the network) is:</p>
+<p><span class="math display">\[
+\theta = \log\left( \frac{p}{1 - p} \right) \quad \Leftrightarrow \quad p = \frac{e^\theta}{1 + e^\theta}
+\]</span></p>
+<p>This means that:</p>
+<ul>
+<li>When <span class="math inline">\(\theta = 0\)</span>, the expected density is <span class="math inline">\(p\)</span> = 0.5</li>
+<li>When <span class="math inline">\(\theta &lt; 0\)</span>, the expected density is less than 0.5 (a sparse network)</li>
+<li>When <span class="math inline">\(\theta &gt; 0\)</span>, the expected density is greater than 0.5</li>
+</ul>
+<p>So, the edge parameter directly controls the overall density of the network. In practice, real-world social networks tend to be sparse, so <span class="math inline">\(\theta\)</span> is typically negative. This relationship also means that if you estimate a Bernoulli ERGM and obtain an edge coefficient <span class="math inline">\(\hat{\theta}\)</span>, you can compute the implied expected density using:</p>
+<p><span class="math display">\[
+\hat{p} = \frac{e^{\hat{\theta}}}{1 + e^{\hat{\theta}}}
+\]</span></p>
+<p>This makes the edge parameter easy to interpret: it is just the logit-transformed density.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note: <span class="math inline">\(G(n, p)\)</span> as a Special Case of ERGM
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Bernoulli ERGM is structurally identical to the <span class="math inline">\(G(n, p)\)</span> model, with the relationship:</p>
+<ul>
+<li><span class="math inline">\(\theta = 0\)</span> → expected density <span class="math inline">\(p = 0.5\)</span></li>
+<li><span class="math inline">\(\theta &gt; 0\)</span> → expected density <span class="math inline">\(p &gt; 0.5\)</span></li>
+<li><span class="math inline">\(\theta &lt; 0\)</span> → expected density <span class="math inline">\(p &lt; 0.5\)</span></li>
+</ul>
+<p>However, this does not hold in general (if the ERGM contains other statistics).</p>
+<p>Put differently, the <span class="math inline">\(G(n, p)\)</span> random graph model is actually a special case of an ERGM. It includes only one term: the number of edges.</p>
+</div>
+</div>
+<p>In ERGMs, a parameter estimate is considered statistically significant (by convention) if the absolute value of the estimate is greater than approximately twice its standard error (i.e., <span class="math inline">\(|\hat{\theta}| &gt; 2 \cdot \text{SE}\)</span>). This rule of thumb suggests that the corresponding network feature (such as homophily or reciprocity) is unlikely to have arisen by chance, and is therefore meaningfully associated with the observed pattern of tie formation.</p>
+<section id="example-coleman-friendship" class="level5 unnumbered">
+<h5 class="unnumbered">Example: Coleman Friendship</h5>
+<p>To demonstrate the Bernoulli ERGM, we fit the model to the Coleman high school friendship network used in <a href="#sec-nonparam" class="quarto-xref"><span class="quarto-unresolved-ref">sec-nonparam</span></a>. However, here we convert ther graph object into an adjacency matrix since the <code>ergm</code> response argument needs to be a network object or a matrix that can be coerced to a network object.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract the fall network</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>coleman_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>coleman[[<span class="dv">1</span>]]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to adjacency matrix</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>coleman_mat <span class="ot">&lt;-</span> <span class="fu">as_adjacency_matrix</span>(coleman_g, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Bernoulli ERGM with only the edge term</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>model_bern <span class="ot">&lt;-</span> <span class="fu">ergm</span>(coleman_mat <span class="sc">~</span> edges)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_bern)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = coleman_mat ~ edges)
+
+Maximum Likelihood Results:
+
+      Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges -3.02673    0.06569      0  -46.08   &lt;1e-04 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+     Null Deviance: 7286  on 5256  degrees of freedom
+ Residual Deviance: 1969  on 5255  degrees of freedom
+ 
+AIC: 1971  BIC: 1977  (Smaller is better. MC Std. Err. = 0)</code></pre>
+</div>
+</div>
+<p>The output provides the estimated <span class="math inline">\(\theta\)</span> parameter for the edge term. A strongly negative value suggests that the probability of a tie between any two students is low, which is typical of real-world social networks that are sparse.</p>
+<p>The estimated edge parameter from the Bernoulli ERGM is: <span class="math display">\[
+\hat{\theta}_{\text{edges}} = -3.02673
+\]</span></p>
+<p>This value reflects the log-odds of a tie forming between any two nodes in the network. To convert this into an expected tie probability (i.e., network density), we apply the inverse logit function:</p>
+<p><span class="math display">\[
+p = \frac{e^{\hat{\theta}}}{1 + e^{\hat{\theta}}}
+\]</span></p>
+<p>Substituting the estimated value:</p>
+<p><span class="math display">\[
+p = \frac{e^{-3.02673}}{1 + e^{-3.02673}} \approx 0.046
+\]</span></p>
+<p>This result implies that the expected density of the network under this model is approximately 4.6%. This is in fact the density of the observed network which you can verify:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">edge_density</span>(coleman_g)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.04623288</code></pre>
+</div>
+</div>
+<p>Another class of network statistics in ERGMs captures <strong>homophily</strong>: the tendency of individuals to form ties with others who are similar to themselves in a particular attribute, such as gender, age, race, or occupation.</p>
+<p>Let each node in the network have a categorical attribute, denoted:</p>
+<p><span class="math display">\[
+a : V \rightarrow \{1, \dots, c\}
+\]</span></p>
+<p>This maps each actor to one of <span class="math inline">\(c\)</span> categories. To model homophily, we define a statistic that counts the number of ties between actors who share the same attribute value:</p>
+<p><span class="math display">\[
+m_a(G) = \left| \left\{ \{u, v\} \in E : a(u) = a(v) \right\} \right|
+\]</span></p>
+<p>That is, <span class="math inline">\(m_a(G)\)</span> is the number of edges where both endpoints belong to the same category. Adding this statistic to the ERGM, the model becomes:</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left( \theta_1 \cdot L + \theta_2 \cdot m_a(G) \right)
+\]</span></p>
+<p>We interpret the homophily parameter as follows:</p>
+<ul>
+<li><span class="math inline">\(\theta_2 &gt; 0\)</span>: Ties between similar nodes are more likely (homophily)</li>
+<li><span class="math inline">\(\theta_2 &lt; 0\)</span>: Ties between dissimilar nodes are more likely (heterophily)</li>
+<li><span class="math inline">\(\theta_2 = 0\)</span>: No effect of similarity</li>
+</ul>
+<p>This formulation assumes that the tendency for similarity-based tie formation is uniform across all dyads, consistent with the homogeneity assumption discussed earlier. Moreover, since the statistic depends only on the attributes of the two actors in a dyad and not on any other ties in the network, it also maintains dyadic independence. That is, the presence or absence of one tie does not influence the probability of others, unless additional structural terms (like triangles or mutual ties) are included in the model.</p>
+<p>Thus, including a homophily term allows us to model nodal covariate effects; how actor characteristics affect tie formation while keeping the model simple and tractable.</p>
+</section>
+<section id="example-teenage-friends-and-lifestyle-study-data" class="level5 unnumbered">
+<h5 class="unnumbered">Example: Teenage Friends and Lifestyle Study data</h5>
+<p>For an example including the homophily statistic, we use the the “Teenage Friends and Lifestyle Study” data called <code>s50</code> in the <code>networkdata</code> package. The <code>s50</code> dataset is a subset of 50 pupils over a three-year panel study of adolescent friendship networks and health behaviors conducted in a school in the West of Scotland <span class="citation" data-cites="west1996s50">(<a href="#ref-west1996s50" role="doc-biblioref">West and Sweeting 1996</a>)</span>. This excerpt was created for illustrative purposes and includes dynamic friendship data over three waves, capturing changes in social ties alongside attributes like gender, sport participation, and substance use. We will focus on the homophily based on smoking behavior.</p>
+<p>We only consider cross-sectional network data here so we only focus on the third wave network (we will in later chapters look at modeling longitudinal network data). Let’s prepare the data for the <code>ergm</code> specification. Note that we here instead convert the graph object inot a network one using the package <code>integraph</code> in order to preserve the node attribute of interest</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract the third wave network</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>s50_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>s50[[<span class="dv">3</span>]]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to network object using intergraph</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>s50_net <span class="ot">&lt;-</span> <span class="fu">asNetwork</span>(s50_g)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># check network obejct and stored attributes</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>s50_net</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Network attributes:
+  vertices = 50 
+  directed = FALSE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 77 
+    missing edges= 0 
+    non-missing edges= 77 
+
+ Vertex attribute names: 
+    smoke vertex.names 
+
+No edge attributes</code></pre>
+</div>
+</div>
+<p>We now test whether students tend to form friendships with others who have the same smoking behavior. The <code>s50</code> dataset includes a categorical node attribute called <code>smoke</code>, with three levels: non-smoker (1), occasional smoker (2), and regular smoker (3). To test for smoking-based homophily, we fit an ERGM that includes an edge term and a <code>nodematch("smoke")</code> term.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with homophily on smoking status</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>model_smoke <span class="ot">&lt;-</span> <span class="fu">ergm</span>(s50_net <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">nodematch</span>(<span class="st">&quot;smoke&quot;</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_smoke)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = s50_net ~ edges + nodematch(&quot;smoke&quot;))
+
+Maximum Likelihood Results:
+
+                Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges            -3.0196     0.1902      0 -15.878   &lt;1e-04 ***
+nodematch.smoke   0.5736     0.2425      0   2.365    0.018 *  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+     Null Deviance: 1698.2  on 1225  degrees of freedom
+ Residual Deviance:  569.4  on 1223  degrees of freedom
+ 
+AIC: 573.4  BIC: 583.6  (Smaller is better. MC Std. Err. = 0)</code></pre>
+</div>
+</div>
+<p>The model includes two terms:</p>
+<ul>
+<li><code>edges</code>: controls for the overall density of the network (should always be included)</li>
+<li><code>nodematch("smoke")</code>: counts the number of ties where both nodes have the same smoking status.</li>
+</ul>
+<p>This specification assumes that the tendency to form ties is homogeneous across dyads, and the homophily term preserves dyadic independence, as it depends only on the attributes of the two individuals involved in each potential tie.</p>
+<p>We interpret the output as follows. The <code>edges</code> term gives the baseline log-odds of a tie between two students, regardless of smoking behavior. The <code>nodematch(“smoke”)</code> term estimates the additional log-odds of a tie when two students share the same smoking status.</p>
+<p>Since the coefficient for <code>nodematch("smoke")</code> is positive and significant, we see that students tend to form ties with peers who have similar smoking habits (homophily).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on <code>nodematch()</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that <code>nodematch("smoke")</code> adds one statistic to the model: the total number of edges connecting nodes that share the same value of the smoke attribute. It does not distinguish between which category is shared, it treats all matches equally. So in our case, it would count:</p>
+<ul>
+<li>Ties between two non-smokers</li>
+<li>Ties between two occasional smokers</li>
+<li>Ties between two regular smokers</li>
+</ul>
+<p>All of those contribute to the same term. It does not tell you whether one group is more homophilous than another. If we want more detail, we can instead use <code>nodemix("smoke")</code> as it can separate estimates for each combination of categories (e.g., smoker-smoker, smoker-non-smoker, etc.), that is you get detailed between-group dynamics.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="dyadic-dependence-reciprocity" class="level4" data-number="17.2.1.2">
+<h4 data-number="17.2.1.2"><span class="header-section-number">17.2.1.2</span> Dyadic Dependence: Reciprocity</h4>
+<p>In ERGMs, we can explicitly model <strong>dyadic dependence</strong>, that is, the statistical relationship between the presence or absence of ties within pairs of nodes (dyads). This is particularly important in directed networks, where the direction of a tie from node <span class="math inline">\(u\)</span> to node <span class="math inline">\(v\)</span> may be statistically related to the reverse tie from <span class="math inline">\(v\)</span> to <span class="math inline">\(u\)</span>.</p>
+<p>To capture this, we include a <strong>reciprocity</strong> term in the model specification. This term counts the number of mutually connected dyads* i.e., pairs where both <span class="math inline">\(y_{uv} = 1\)</span> and <span class="math inline">\(y_{vu} = 1\)</span>. Including this term allows the model to account for the observed tendency in many social networks for actors to reciprocate ties (such as returning a favor, replying to a message, or forming a mutual friendship).</p>
+<p>An ERGM with both an edge and a reciprocity statistic is specified as:</p>
+<p><span class="math inline">\(P(G) = \frac{1}{\kappa} \exp\left(\theta_1 \cdot L + \theta_2 \cdot R\right)\)</span></p>
+<p>where <span class="math inline">\(L = \sum_{u \neq v} y_{uv}\)</span> is the total number of directed ties (edges) and <span class="math inline">\(R = \sum_{u \neq v} y_{uv} \cdot y_{vu}\)</span>.</p>
+<p>A positive value for <span class="math inline">\(\theta_2\)</span> indicates a tendency toward reciprocation, while a negative value suggests an avoidance of mutual ties.</p>
+<section id="example-coleman-friendship-1" class="level5 unnumbered">
+<h5 class="unnumbered">Example: Coleman Friendship</h5>
+<p>We use the <code>coleman</code> data from earlier to specify an ERGM including reciprocity as statistic.The fitted ERGM includes two terms: a baseline <code>edges</code> term and a <code>mutual</code> term that captures reciprocity (i.e., the tendency for ties to be reciprocated):</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with reciprocity term </span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>model_rec <span class="ot">&lt;-</span> <span class="fu">ergm</span>(coleman_mat <span class="sc">~</span> edges <span class="sc">+</span> mutual)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_rec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = coleman_mat ~ edges + mutual)
+
+Monte Carlo Maximum Likelihood Results:
+
+       Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges  -3.72318    0.08617      0  -43.21   &lt;1e-04 ***
+mutual  3.78573    0.20631      0   18.35   &lt;1e-04 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+     Null Deviance: 7286  on 5256  degrees of freedom
+ Residual Deviance: 1715  on 5254  degrees of freedom
+ 
+AIC: 1719  BIC: 1733  (Smaller is better. MC Std. Err. = 1.427)</code></pre>
+</div>
+</div>
+<p>The edge term has a strong negative estimate (<span class="math inline">\(\hat{\theta}_{\text{edges}} = -3.72\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), indicating that ties are generally infrequent in the network. This negative coefficient reflects the baseline log-odds of a directed tie existing between two nodes in the absence of any reciprocation or other structural tendencies.</p>
+<p>In contrast, the mutual term has a strong positive estimate (<span class="math inline">\(\hat{\theta}_{\text{mutual}} = 3.77\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), which suggests a highly significant tendency for reciprocated ties. In other words, when a tie exists from node <span class="math inline">\(u\)</span> to node <span class="math inline">\(v\)</span>, the likelihood that node <span class="math inline">\(u\)</span> also ties back to node <span class="math inline">\(v\)</span> is much greater than would be expected by chance, controlling for overall network sparsity.</p>
+<p>This combination of results suggests that while directed ties are rare in general, when ties do form, they are very likely to be mutual; a common feature in social networks. Overall, this ERGM confirms that dyadic dependence in the form of reciprocity is a defining feature of the Coleman data network.</p>
+</section>
+</section>
+<section id="markov-dependence-triangles-and-stars" class="level4" data-number="17.2.1.3">
+<h4 data-number="17.2.1.3"><span class="header-section-number">17.2.1.3</span> Markov Dependence: Triangles and Stars</h4>
+<p><strong>Markov random graphs</strong> are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes depends only on ties that are “locally adjacent”, specifically, those that share a node. This assumption, known as <strong>Markov dependence</strong>, implies that edges are conditionally independent unless they share a common node. This implies that the presence or absence of a tie between two nodes may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.</p>
+<p>Formally introduced by <span class="citation" data-cites="frank1986markov">Frank and Strauss (<a href="#ref-frank1986markov" role="doc-biblioref">1986</a>)</span>, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions <span class="citation" data-cites="besag1972nearest">(<a href="#ref-besag1972nearest" role="doc-biblioref">Besag 1972</a>)</span>. The key insight is that network ties can exhibit local dependencies (like clustering or centralization) that can be modeled using well-defined building blocks.</p>
+<p>Under Markov dependence, ERGMs are typically specified using <strong>edges, <span class="math inline">\(k\)</span>-stars, and triangle terms</strong>, since these configurations reflect dependencies between adjacent ties. Examples of such configurations are shown in <a href="#fig-markov" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-markov</span></a>.</p>
+<div id="fig-markov" class="center quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-markov-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/markov.png" class="img-fluid" style="width:70.0%" />
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-markov-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 17.1: Common network configurations used in Markov-dependent ERGMs. The top row shows star terms (edges, 2-star, 3-star, etc.) capturing degree centralization, while the triangle term reflects triadic closure.
+</figcaption>
+</figure>
+</div>
+<p>A <strong>triangle</strong> occurs when three nodes are all pairwise connected. In undirected networks, this represents a basic unit of <strong>triadic closure</strong>; the idea that “a friend of a friend is likely to become a friend.” In ERGM terms, a triangle statistic is defined as:</p>
+<p><span class="math inline">\(T = \sum_{u &lt; v &lt; w} y_{uv} \cdot y_{uw} \cdot y_{vw}\)</span></p>
+<p>Including a triangle term in the model allows us to test for <strong>transitivity</strong>. A positive coefficient on this term suggests a tendency toward forming closed triads, while a <strong>negative</strong> coefficient implies avoidance of such closure.</p>
+<p>In <strong>directed networks</strong>, we distinguish between:</p>
+<ul>
+<li><strong>Transitive triads</strong>: if <span class="math inline">\(u \to v\)</span> and <span class="math inline">\(v \to w\)</span>, then <span class="math inline">\(u \to w\)</span></li>
+<li><strong>Cyclic triads</strong>: if <span class="math inline">\(u \to v\)</span>, <span class="math inline">\(v \to w\)</span>, and <span class="math inline">\(w \to u\)</span></li>
+</ul>
+<p>Each type can be specified as a separate statistic in an ERGM to assess different triadic dynamics.</p>
+<p><strong>Star configurations</strong> capture the tendency for nodes to have many ties, i.e., to be “popular” or “active” in the network. A <span class="math inline">\(k\)</span>-star is a configuration where a single node is connected to <span class="math inline">\(k\)</span> others. The star statistic of order <span class="math inline">\(k\)</span> is:</p>
+<p><span class="math inline">\(S_k = \sum_u \sum_{v_1 &lt; \dots &lt; v_k \neq u} y_{uv_1} \cdot \dots \cdot y_{uv_k}\)</span></p>
+<p>Including star terms allows the model to capture degree heterogeneity, reflecting whether some individuals tend to form many more ties than others. Note that in directed networks, we can specify:</p>
+<ul>
+<li><strong>Out-stars</strong> (activity): a node sending many ties</li>
+<li><strong>In-stars</strong> (popularity): a node receiving many ties</li>
+</ul>
+<p>A positive parameter on star terms suggests that nodes with many connections are more likely to gain additional ties, a form of preferential attachment or “rich-get-richer” dynamics.</p>
+<section id="example-florentine-business-network" class="level5 unnumbered">
+<h5 class="unnumbered">Example: Florentine Business Network</h5>
+<p>To illustrate the use of Markov-dependent configurations in ERGMs, we fit a model to the Florentine business network, the classic dataset representing marriage and business ties among Renaissance-era families in Florence. Whie rather small, this undirected network contains important social patterns such as clustering and centralization, making it an ideal candidate for modeling local dependence structures such as edges, stars, and triangles.</p>
+<p>The goal of this example is to assess how these network structures contribute to the overall topology of the network using an ERGM based on Markov dependence.</p>
+<p>First we visualize the using by loading the data from the <code>networkdata</code> package to obtain it as graph object and to be able to use <code>ggraph</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>flob_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>flo_business</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(flob_g)  <span class="co"># Confirms it&#39;s a &#39;graph&#39; class object</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;igraph&quot;</code></pre>
+</div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>flob_p <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(flob_g, <span class="at">layout =</span> <span class="st">&quot;stress&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="at">edge_colour =</span> <span class="st">&quot;#666060&quot;</span>, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">edge_width =</span> <span class="fl">0.8</span>, <span class="at">edge_alpha =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="at">fill =</span> <span class="st">&quot;#808080&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;#808080&quot;</span>,  </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">size =</span> <span class="dv">7</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">stroke =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_graph</span>() <span class="sc">+</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Florentine business network&quot;</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>flob_p</span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img src="ergm_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="1440" /></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We specify an ERGM including:</p>
+<ul>
+<li><code>edges</code>: to capture baseline tie propensity (density),</li>
+<li><code>kstar(2)</code> and <code>kstar(3)</code>: to model degree centralization (nodes connected to 2 or 3 others),</li>
+<li><code>triangle</code>: to capture triadic closure (transitivity).</li>
+</ul>
+<p>The data is loaded from the <code>ergm</code> package and stored as a <code>network</code> class object.</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the Florentine business network data</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(florentine)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The object is a network object representing business ties</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>flob_net <span class="ot">&lt;-</span> flobusiness</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(flob_net)  <span class="co"># Confirms it&#39;s a &#39;network&#39; class object</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;network&quot;</code></pre>
+</div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with Markov dependence terms</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">77</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>model_markov <span class="ot">&lt;-</span> <span class="fu">ergm</span>(flob_net <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">3</span>) <span class="sc">+</span> triangle)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Display summary of the model</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_markov)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = flob_net ~ edges + kstar(2) + kstar(3) + triangle)
+
+Monte Carlo Maximum Likelihood Results:
+
+         Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges     -4.3454     1.2406      0  -3.503 0.000461 ***
+kstar2     1.1257     0.7074      0   1.591 0.111535    
+kstar3    -0.6467     0.4120      0  -1.570 0.116440    
+triangle   1.1618     0.6883      0   1.688 0.091416 .  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+     Null Deviance: 166.36  on 120  degrees of freedom
+ Residual Deviance:  79.49  on 116  degrees of freedom
+ 
+AIC: 87.49  BIC: 98.64  (Smaller is better. MC Std. Err. = 0.2036)</code></pre>
+</div>
+</div>
+<p>The model output provides coefficients for each configuration:</p>
+<ul>
+<li><code>edges</code>: Significantly negative indicating that ties are relatively sparse overall.</li>
+<li><code>kstar(2)</code>: Not statistically significant suggesting no strong tendency toward moderate centralization (i.e., nodes connected to two others).</li>
+<li><code>kstar(3)</code>: Also not statistically significant meaning the network does not exhibit a clear preference for or against nodes forming many connections (larger stars).</li>
+<li><code>triangle</code>: Significantly positive indicating a strong tendency for triadic closure; that is, if two families are both connected to a third, they are more likely to also be connected to each other.</li>
+</ul>
+<p>This suggests the Florentine business network is locally clustered (triadic), but does not support highly centralized hub-like nodes. The network’s structure reflects a preference for mutual interdependence rather than hierarchical dominance.</p>
+<p>The good news is that by including triangle and star terms in an ERGM, we can move beyond modeling just dyadic interactions and begin to account for local clustering, degree distributions, and complex relational tendencies. The bad news is that they don’t always work.</p>
+<p>While Markov random graph models offer a powerful way to represent local dependence through structures like edges, stars, and triangles, they come with a significant challenge: <strong>model degeneracy</strong>.</p>
+<p>Model degeneracy occurs when an ERGM assigns overwhelming probability to a small set of unrealistic graph configurations, such as the empty graph (no ties) or the complete graph (every possible tie), even though the observed network lies somewhere in between. This typically manifests during estimation as:</p>
+<ul>
+<li>Extremely poor convergence of the MCMC algorithm,</li>
+<li>Implausible simulated networks that look nothing like the observed data,</li>
+<li>A breakdown in model fit across key structural statistics (e.g., triad census, degree distribution).</li>
+</ul>
+<p>For example, when fitting a model to the Florentine business network, a model with edges, stars, and triangles may produce simulated networks that deviate substantially from the observed triad census despite having reasonable parameter estimates. This discrepancy arises because certain parameter combinations (especially involving triangles and high-order stars) can push the model into degenerate territory, where the likelihood surface becomes unstable or flat. Thus, careful diagnostic checks are essential when modeling endogenous network structure implying dyadic dependence. We will cover this in more detail in <a href="#sec-ergmest" class="quarto-xref"><span class="quarto-unresolved-ref">sec-ergmest</span></a>.</p>
+<p>The degeneracy problem highlights a key limitation of Markov dependence: <em>not all local dependence assumptions lead to coherent global models</em>. Particularly when clustering is strong, models relying solely on Markov terms (edges, stars, triangles) can become computationally fragile or even mathematically incoherent. In the next section, we will examine how social circuit dependence offers an alternative approach to modeling complex interdependence while mitigating model degeneracy.</p>
+</section>
+</section>
+<section id="social-circuit-dependence-gwesp" class="level4" data-number="17.2.1.4">
+<h4 data-number="17.2.1.4"><span class="header-section-number">17.2.1.4</span> Social Circuit Dependence: GWESP</h4>
+<p>In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on <strong>social circuit dependence</strong> <span class="citation" data-cites="pattison2002neighborhood">Snijders et al. (<a href="#ref-snijders2006new" role="doc-biblioref">2006</a>)</span>.</p>
+<p>Social circuit dependence modifies the way tie dependencies are specified in the model. Instead of assuming that two ties are conditionally dependent simply because they share a node (as in Markov dependence), social circuit dependence restricts dependence to occur only when two ties would complete a <strong>4-cycle</strong> in the network. Under social circuit dependence, network ties are assumed to self-organize through 4-cycles, i.e., closed paths involving four distinct nodes. Two potential ties are considered conditionally dependent only if they would complete a 4-cycle in the network. In other words, the existence of a tie between <span class="math inline">\((u, v)\)</span> is only dependent on a tie between <span class="math inline">\((w, z)\)</span> if adding both would close such a circuit.</p>
+<p>Examples of configurations based on this depdence assumption are shown in <a href="#fig-soccirc" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-soccirc</span></a>.</p>
+<div id="fig-soccirc" class="center quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-soccirc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/sc.png" class="img-fluid" style="width:50.0%" />
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-soccirc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 17.2: Common configurations in social circuit–based ERGM specifications. The top row illustrates <span class="math inline">\(k\)</span>-paths, which capture extended local connectivity through shared paths of increasing length. The bottom row depicts <span class="math inline">\(k\)</span>-triangles, representing increasing levels of triadic closure.
+</figcaption>
+</figure>
+</div>
+<p>This more constrained form of local dependence avoids the pitfalls of degeneracy by reducing the likelihood that the model overemphasizes clustering or centralization. It reflects more realistic assumptions about how social ties form: not purely through dyadic exchange or triadic closure, but through broader patterns of interconnection.</p>
+<p>The <strong>Geometrically Weighted Edgewise Shared Partner (GWESP)</strong> statistic is a commonly used term in ERGMs to capture triadic closure, the tendency for connected nodes to have shared partners, as sown in <a href="#fig-gwesp" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-gwesp</span></a>. Unlike a simple triangle count, GWESP down-weights the contribution of additional shared partners to help prevent model degeneracy and improve stability.</p>
+<div id="fig-gwesp" class="center quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-gwesp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/gwesp.png" class="img-fluid" style="width:50.0%" />
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gwesp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 17.3: Visualization of the GWESP (Geometrically Weighted Edgewise Shared Partner) statistic. The tie between nodes <em>a</em> and <em>b</em> is supported by <em>k</em> shared partners, each contributing diminishing weight to the likelihood of that tie being present.
+</figcaption>
+</figure>
+</div>
+<p>To formalize this, we let:</p>
+<ul>
+<li><span class="math inline">\(y_{uv} = 1\)</span> if there is a tie between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>,</li>
+<li><span class="math inline">\(p_{uv}\)</span> be the number of shared partners between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> (i.e., nodes <span class="math inline">\(w\)</span> such that <span class="math inline">\(y_{uw} = y_{vw} = 1\)</span>),</li>
+<li><span class="math inline">\(\alpha\)</span> be a decay parameter (usually a small positive number, e.g., 0.25).</li>
+</ul>
+<p>Then the GWESP statistic is defined as:</p>
+<p><span class="math display">\[
+\text{GWESP}(G; \alpha) = \sum_{u &lt; v} y_{uv} \cdot \left(1 - (1 - e^{-\alpha})^{p_{uv}} \right)
+\]</span></p>
+<ul>
+<li>This formula sums over all existing ties in the graph.</li>
+<li>For each tie <span class="math inline">\((u, v)\)</span>, it calculates a weighted function of the number of their shared partners.</li>
+<li>The decay parameter <span class="math inline">\(\alpha\)</span> controls how quickly the contribution of additional shared partners diminishes.</li>
+</ul>
+<p>When <span class="math inline">\(\alpha\)</span> is close to zero, the statistic approaches a simple count of edges with at least one shared partner. When <span class="math inline">\(\alpha\)</span> is larger, the contribution of each additional shared partner is increasingly discounted.</p>
+<p>GWESP provides a smooth and stable way to model transitivity in networks. It is often used in place of triangle counts to reduce the risk of model degeneracy; where the model produces unrealistic networks concentrated on extremes (e.g., empty or complete graphs).</p>
+<p>In practice, GWESP is typically included in ERGMs with a fixed decay value using the <code>gwesp()</code> term in <code>ergm::ergm()</code>.</p>
+<p>A commonly used value for <span class="math inline">\(\alpha\)</span> is <strong>0.693</strong>, which is approximately <span class="math inline">\(\log(2)\)</span>. This choice has a convenient and interpretable consequence: With <span class="math inline">\(\alpha = \log(2)\)</span>, each additional shared partner contributes about half as much as the one before. For example, the first shared partner contributes ~50% of the max possible increment, the second adds ~25%, the third adds ~12.5%, and so on. This exponential discounting reflects a realistic assumption: <em>having one or two mutual friends greatly increases the chance of tie formation, but the influence of additional mutual friends diminishes quickly</em>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on choice of <span class="math inline">\(\alpha\)</span> in GWESP
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In some models, it may be beneficial to fix <span class="math inline">\(\alpha\)</span> to a value based on theory or prior experience (common in applied work), or estimate <span class="math inline">\(\alpha\)</span> directly from the data (<code>fixed = FALSE</code> in <code>gwesp()</code>), though this can lead to convergence issues or overfitting. In practice, using <code>gwesp(0.693, fixed = TRUE)</code> is often a safe and interpretable starting point.</p>
+</div>
+</div>
+<p>Next we demonstrate how to fit an ERGM using GWESP and interpret the results.</p>
+<section id="example-lawyers-network---cowork-among-partners" class="level5 unnumbered">
+<h5 class="unnumbered">Example: Lawyers Network - Cowork Among Partners</h5>
+<p>To demonstrate how ERGMs capture social circuit dependence, we will use the same subset of this network as earlier: we want to check whether or not the partners of the firm more frequently work together with other partners having the same practice, whilst also including a statistic related to triadic clustering. We import the data as a graph object from the <code>networkdata</code> package:</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;law_cowork&quot;</span>)</span></code></pre></div>
+</div>
+<p>We then create an adjacency matrix from the directed graph for the first 36 lawyers in the network corresponding to the partners of the firm (see attribute ‘status’). Note that we this time create the network object ourselves from the symmetrized adjacency matrix.</p>
+<p>This example includes the following statistics:</p>
+<ul>
+<li><code>edges</code>: baseline tie probability,</li>
+<li><code>nodecov("practice")</code>: effect of practice area on tie activity,</li>
+<li><code>nodematch("practice")</code>: homophily within practice areas,</li>
+<li><code>gwesp(0.693, fixed = TRUE)</code>: transitive closure (triadic clustering).</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on <code>nodecov("...")</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>nodecov("...")</code> term in an ERGM includes a <strong>node-level covariate effect</strong>, where the probability of forming a tie is modeled as a function of the attribute value for each node. Specifically, for an undirected network, it sums the attribute values of both nodes involved in each dyad. A positive coefficient indicates that nodes with higher values on the given attribute are more active in forming ties (i.e., they tend to have higher degree). If you’re modeling a binary categorical attribute (e.g., practice = 0 or 1), then the statistic tests whether being in group 1 (e.g., corporate practice) increases a lawyer’s general tendency to form ties, regardless of whom they connect with.</p>
+</div>
+</div>
+<p>These reflect both attribute-based processes and structural dependencies consistent with social circuit theory.A positive and significant `gwesp coefficient would support the idea of social circuit dependence, where ties are not just formed dyadically or through attributes, but also through embedded collaboration patterns within the firm’s structure.</p>
+<p>The code below creates the co-work network object for the 36 partners, adds the practice attribute as a binary variable and fits the ERGM with the above defined statistics:</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;law_cowork&quot;</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># symmetrize the matrix to create and undirected graph</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>law_mat_cwdir <span class="ot">&lt;-</span> <span class="fu">as_adjacency_matrix</span>(law_cowork, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>law_mat_cwdir <span class="ot">&lt;-</span> law_mat_cwdir[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>] <span class="co"># only partners</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>law_mat_cw <span class="ot">&lt;-</span> (law_mat_cwdir <span class="sc">==</span> <span class="fu">t</span>(law_mat_cwdir) <span class="sc">&amp;</span> law_mat_cwdir <span class="sc">==</span><span class="dv">1</span>) <span class="sc">+</span> <span class="dv">0</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co"># save the binary attribute &#39;practice&#39; (1 = litigation, 2 = corporate) from the graph object as a vector:</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>law_attr.pract <span class="ot">&lt;-</span> <span class="fu">vertex_attr</span>(law_cowork)<span class="sc">$</span>pract[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>] <span class="sc">-</span> <span class="fl">1.</span> <span class="co"># recode attribute from 2/1 to 1/0</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># We create a network object and add the binary node attribute &#39;practice&#39;:</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>law_net <span class="ot">&lt;-</span> <span class="fu">as.network</span>(law_mat_cw, <span class="at">directed =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>law_net <span class="sc">%v%</span> <span class="st">&quot;practice&quot;</span> <span class="ot">&lt;-</span> law_attr.pract</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with attribute and structural terms</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>model_sc <span class="ot">&lt;-</span> <span class="fu">ergm</span>(law_net <span class="sc">~</span> edges</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>                <span class="sc">+</span> <span class="fu">nodecov</span>(<span class="st">&quot;practice&quot;</span>) <span class="sc">+</span> <span class="fu">match</span>(<span class="st">&quot;practice&quot;</span>)</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>                <span class="sc">+</span> <span class="fu">gwesp</span>(<span class="fl">0.693</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_sc)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ergm(formula = law_net ~ edges + nodecov(&quot;practice&quot;) + match(&quot;practice&quot;) + 
+    gwesp(0.693, fixed = TRUE))
+
+Monte Carlo Maximum Likelihood Results:
+
+                   Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+edges              -4.41055    0.32152      0 -13.718  &lt; 1e-04 ***
+nodecov.practice    0.17687    0.07541      0   2.345 0.019012 *  
+nodematch.practice  0.60527    0.16972      0   3.566 0.000362 ***
+gwesp.fixed.0.693   1.15376    0.15739      0   7.331  &lt; 1e-04 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+     Null Deviance: 873.4  on 630  degrees of freedom
+ Residual Deviance: 503.3  on 626  degrees of freedom
+ 
+AIC: 511.3  BIC: 529.1  (Smaller is better. MC Std. Err. = 0.4067)</code></pre>
+</div>
+</div>
+<p>Let’s interpret the output: The fitted model includes four terms: <code>edges</code>, <code>nodecov("practice")</code>, <code>nodematch("practice")</code>, and <code>gwesp(0.693, fixed = TRUE)</code>. Each coefficient represents the log-odds change in the probability of a tie associated with that network statistic, controlling for the others. What do these estimates tell us?</p>
+<ul>
+<li><code>edges</code> (<span class="math inline">\(\hat\theta = -4.41\)</span>, <em>p</em> &lt; 0.001): Ties are rare overall; the network is sparse.</li>
+<li><code>nodecov("practice")</code> (<span class="math inline">\(\hat\theta = 0.18\)</span>, <em>p</em> &lt; 0.05): Lawyers from a given practice area (e.g., corporate) are slightly more likely to form ties overall.</li>
+<li><code>nodematch("practice")</code> (<span class="math inline">\(\hat\theta = 0.61\)</span>, <em>p</em> &lt; 0.001): Strong evidence of homophily, lawyers are significantly more likely to collaborate within their own practice area.</li>
+<li><code>gwesp(0.693)</code> (<span class="math inline">\(\hat\theta = 1.15\)</span>, <em>p</em> &lt; 0.001): High and significant triadic closure effect, indicating a strong tendency for collaboration among those with shared partners consistent with social circuit dependence.</li>
+</ul>
+<p>Taken together, the results indicate that processes of <strong>attribute-related activity</strong>, <strong>assortative mixing by attribute (homophily)</strong>, and <strong>structural closure</strong> (via triadic dependence) operate concurrently in shaping tie formation within the Lazega co-working network.</p>
+</section>
+</section>
+</section>
+<section id="sec-ergmest" class="level3" data-number="17.2.2">
+<h3 data-number="17.2.2"><span class="header-section-number">17.2.2</span> Model Estimation</h3>
+<p>Estimating the parameters of an Exponential Random Graph Model (ERGM) involves finding the parameter vector <span class="math inline">\(\boldsymbol{\theta}\)</span> that maximizes the likelihood of observing the network <span class="math inline">\(G_{\text{obs}}\)</span> under the specified model:</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\theta}} = \arg\max_{\boldsymbol{\theta}} \, P(G_{\text{obs}} \mid \boldsymbol{\theta}) = \frac{\exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G_{\text{obs}}) \right)}{\kappa(\boldsymbol{\theta})}
+\]</span></p>
+<p>Here, <span class="math inline">\(\mathbf{s}(G)\)</span> is a vector of network statistics (e.g., number of edges, mutual ties, triangles), and <span class="math inline">\(\kappa(\boldsymbol{\theta})\)</span> is a normalizing constant that sums the exponential terms over all possible networks with the same number of nodes:</p>
+<p><span class="math display">\[
+\kappa(\boldsymbol{\theta}) = \sum_{G&#39;} \exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G&#39;) \right)
+\]</span></p>
+<p>This computation is analytically intractable for all but the smallest networks due to the exponential number of possible configurations.</p>
+<p>To overcome this, ERGMs use <strong>Markov Chain Monte Carlo Maximum Likelihood Estimation (MCMCMLE)</strong>. The idea is to simulate many networks from the current estimate of the model and compare their statistics to those of the observed network. The process iteratively updates the parameter estimates so that the simulated statistics converge toward the observed ones.</p>
+<p>The estimation process, as implemented in the <code>ergm</code> package, proceeds as follows:</p>
+<ol type="1">
+<li><p><strong>Initial Parameter Estimation (MPLE):</strong><br />
+The process begins with a <strong>Maximum Pseudo-Likelihood Estimate (MPLE)</strong>, which provides a fast but approximate estimate of <span class="math inline">\(\boldsymbol{\theta}\)</span>. This serves as the starting point for simulation.</p></li>
+<li><p><strong>MCMC Simulation:</strong><br />
+Given the current parameter estimates, networks are simulated from the model using <strong>Markov Chain Monte Carlo (MCMC)</strong> methods; typically a form of <strong>Metropolis-Hastings</strong> sampling.</p></li>
+<li><p><strong>Likelihood Approximation and Parameter Updating:</strong><br />
+The simulated networks are used to approximate the <strong>log-likelihood gradient</strong>, which informs updates to <span class="math inline">\(\boldsymbol{\theta}\)</span>. These updates move the model toward parameter values that better reproduce the observed network statistics.</p></li>
+<li><p><strong>Iteration:</strong><br />
+Steps 2 and 3 are repeated iteratively. At each round, the model simulates networks, compares the simulated statistics to the observed ones, and updates the parameters. The goal is to minimize the difference between observed and expected statistics under the model.</p></li>
+</ol>
+<p>This process continues until convergence is reached, i.e., when the simulated network statistics closely match those of the observed network and parameter updates stabilize.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on <strong>Metropolis-Hastings</strong> sampling
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the <code>ergm</code> package, the Metropolis–Hastings (MH) algorithm is used for MCMC simulation. It evaluates how a proposed tie change affects the <strong>network statistics</strong> (e.g., edges, triangles) and adjusts the <strong>likelihood ratio</strong> accordingly. This makes MH well-suited for models with <strong>dyad dependence</strong>, where toggling one tie may alter the configuration of multiple others. Specifically, the algorithm works as follows:</p>
+<ul>
+<li><strong>Propose a change</strong> to the current network state, typically by randomly toggling a tie (i.e., adding or removing an edge between two nodes).</li>
+<li><strong>Compute an acceptance probability</strong>, based on the change in the model’s sufficient statistics and the corresponding change in likelihood.</li>
+<li><strong>Accept or reject</strong> the proposed change with that probability, ensuring the Markov chain samples from the correct distribution.</li>
+</ul>
+<p>Over many iterations, this process produces a sample of networks from the ERGM’s specified distribution, which is then used for parameter estimation and simulation.</p>
+</div>
+</div>
+<p>In summary, the simulation-based procedure involves two key steps:</p>
+<ol type="1">
+<li><strong>MCMC Sampling</strong>: Generate random networks from the current parameter estimates using a Markov chain.</li>
+<li><strong>Score Updating</strong>: Adjust the parameter values to reduce the difference between simulated and observed network statistics.</li>
+</ol>
+<p>Because ERGMs rely on MCMC simulation to estimate model parameters, it is important to check whether the estimation process has properly converged. <strong>MCMC diagnostics</strong> help assess whether the Markov chain has explored the space of possible networks sufficiently and whether the simulated networks reflect a stable distribution. Poor convergence can lead to unreliable parameter estimates and misleading inferences. Key diagnostics include</p>
+<ul>
+<li>trace plots (to check stability of simulated statistics over time)</li>
+<li>autocorrelation plots (to assess dependence between samples)</li>
+<li>and comparisons between observed and simulated statistics.</li>
+</ul>
+<p>A well-fitting model should not only reproduce the observed statistics on average but also generate networks with similar variability and structure. Running these diagnostics ensures that conclusions drawn from the model are based on a valid and stable estimation process.</p>
+<p>While MCMC diagnostics are useful in general, they are especially critical when estimating dyad-dependent ERGMs; models in which the probability of a tie depends on the presence or absence of other ties in the network. This includes models with terms like triangles, <span class="math inline">\(k\)</span>-stars, or other structural dependencies. In these cases, the network space becomes highly constrained and interdependent, making it more challenging for the Markov chain to explore effectively. As a result, convergence issues are more common, and MCMC diagnostics play a key role in ensuring that the simulation-based estimation has produced reliable parameter values.</p>
+<p>For dyad-independent models (e.g., those using only nodal covariates like homophily), estimation is generally simpler and may not require full MCMC sampling or diagnostics. You can actually think of the dyad-independent ERGM as the mathematically equivalent to a logistic regression model applied to all possible dyads in the network. In fact, the <code>ergm</code> package uses maximum pseudo-likelihood estimation (MPLE) for dyad-independent models, which is logistic regression under the hood.</p>
+<section id="model-instability-and-degeneracy" class="level4" data-number="17.2.2.1">
+<h4 data-number="17.2.2.1"><span class="header-section-number">17.2.2.1</span> Model Instability and Degeneracy</h4>
+<p>While MCMC-based estimation enables flexible ERGM modeling, it also introduces potential pitfalls. In particular, unstable ERGMs can give rise to multi-modal probability distributions over the space of possible networks, where most of the probability mass concentrates on a small and unrealistic subset of configurations.</p>
+<p>This phenomenon is known as <strong>model degeneracy</strong>. A degenerate ERGM assigns near-zero probability to most networks in the model space, and high probability only to extreme graphs, such as the completely empty or fully connected one. Since real social networks rarely resemble either of these extremes, such a distribution indicates a serious modeling failure.</p>
+<p>Signs of degeneracy include:</p>
+<ul>
+<li>Simulated networks that are always empty or complete, regardless of the observed data.</li>
+<li>Poor convergence of MCMC chains, or failure to reach a stable equilibrium (stationary distribution).</li>
+<li>Large gaps between observed and simulated statistics, especially for higher-order configurations like triangles.</li>
+</ul>
+<p>More technically, MCMC simulation is particularly vulnerable to problems like instability and degeneracy when:</p>
+<ul>
+<li><p><strong>Burn-in period is too short</strong>: The burn-in period refers to the initial phase of MCMC sampling during which the Markov chain has not yet stabilized. Early samples may be heavily influenced by the starting values and not representative of the true model distribution. If this phase is too short, those unrepresentative samples may skew the estimation.</p></li>
+<li><p><strong>Post-burn-in sampling is too sparse</strong>: After burn-in, we collect samples intended to represent the stationary distribution of the model. If too few of these post-burn-in samples are collected, or if they are too highly correlated (e.g., due to short MCMC intervals), the resulting estimates may be unreliable or noisy.</p></li>
+<li><p>The model includes <strong>strong dependence terms</strong> (e.g., many triangle-based or star-based statistics) without sufficient balancing components such as edge terms or decay-weighted statistics like <code>gwesp()</code>. These terms can make the network space highly constrained and difficult for the MCMC algorithm to explore effectively.</p></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Running MCMC Diagnostics
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>After fitting an ERGM, use <code>mcmc.diagnostics()</code> to evaluate whether the MCMC estimation has converged and whether the Markov chain has mixed well. This function provides trace plots, density plots, and numerical summaries for each model parameter:</p>
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MCMC convergence check</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(model)</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>We will consider the diagnostics for the <code>model_sc</code> on the lawyer data set above:</p>
+<section id="example-lawyers-network---cowork-among-partners-1" class="level5 unnumbered">
+<h5 class="unnumbered">Example: Lawyers Network - Cowork Among Partners</h5>
+<p>The <code>mcmc.diagnostics()</code> function in the <code>ergm</code> package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consists of two parts. The first part is a plot:</p>
+<div id="fig-mcmc" class="center quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-mcmc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb25"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(model_sc, <span class="at">which =</span> <span class="st">&quot;plots&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img src="ergm_files/figure-html/ergm-mcmc-1.png" class="img-fluid quarto-figure quarto-figure-center" width="672" /></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Note: MCMC diagnostics shown here are from the last round of
+  simulation, prior to computation of final parameter estimates.
+  Because the final estimates are refinements of those used for this
+  simulation run, these diagnostics may understate model performance.
+  To directly assess the performance of the final model on in-model
+  statistics, please use the GOF command: gof(ergmFitObject,
+  GOF=~model).</code></pre>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mcmc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 17.4: MCMC trace and density plots for ERGM parameter estimates. The trace plots (left) show the sampled values of the score function across iterations for each model term. Good mixing is indicated by irregular, stationary fluctuations around zero. The density plots (right) display the distribution of these values; approximately symmetric and centered curves suggest that the MCMC sampler has reached a stable equilibrium and is drawing from the target distribution.
+</figcaption>
+</figure>
+</div>
+<p>The MCMC diagnostic output includes two main types of plots as seen in <a href="#fig-mcmc" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-mcmc</span></a>: <strong>trace plots</strong> and <strong>density plots</strong>, which together help assess whether the Markov chain has properly converged.</p>
+<p>The <strong>trace plots</strong> (left panels of <a href="#fig-mcmc" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-mcmc</span></a>) display the sampled values of the score function (essentially, the gradient of the log-likelihood) for each model term across the course of the MCMC simulation. In a well-behaved chain, these traces should appear as irregular but stable fluctuations around zero, without discernible trends, drifts, or flat segments. Such patterns indicate good mixing, where the sampler is exploring the parameter space effectively rather than getting stuck.</p>
+<p>In the Lazega model, all four trace plots (for <code>edges</code>, <code>nodecov.practice</code>, <code>nodematch.practice</code>, and <code>gwesp.fixed.0.693</code>) exhibit the expected noisy, stable behavior. There are no signs of poor mixing or convergence issues.</p>
+<p>The <strong>density plots</strong> (right panels of <a href="#fig-mcmc" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-mcmc</span></a>) complement this by summarizing the distribution of the sampled scores for each term. A roughly symmetric, bell-shaped curve centered near zero suggests that the chain has reached its stationary distribution. Here too, all four parameters display smooth, unimodal density curves with means close to zero, providing further evidence that the MCMC sampler has stabilized and that the parameter estimates are reliable.</p>
+<p>Together, these visual diagnostics indicate that the model has converged appropriately and that the MCMC estimation procedure has produced a stable and interpretable result.</p>
+<p>In addition to the trace and density plots, the <code>mcmc.diagnostics()</code> function provides a set of detailed numerical diagnostics that assess both the stability of the simulated statistics and the convergence behavior of the Markov chain. These diagnostics offer a more granular view of the estimation process and help confirm whether the model has been reliably estimated. We’ll interpret the output in the following.</p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(model_sc, <span class="at">which =</span> <span class="st">&quot;texts&quot;</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sample statistics summary:
+
+Iterations = 82944:1648640
+Thinning interval = 1024 
+Number of chains = 1 
+Sample size per chain = 1530 
+
+1. Empirical mean and standard deviation for each variable,
+   plus standard error of the mean:
+
+                    Mean    SD Naive SE Time-series SE
+edges              4.193 27.69   0.7079          2.030
+nodecov.practice   3.084 27.03   0.6911          1.699
+nodematch.practice 2.555 17.11   0.4374          1.312
+gwesp.fixed.0.693  7.441 54.95   1.4048          3.982
+
+2. Quantiles for each variable:
+
+                      2.5%    25%   50%   75%  97.5%
+edges               -58.00 -13.00  7.00 24.00  50.00
+nodecov.practice    -62.00 -11.75  7.00 22.00  44.77
+nodematch.practice  -34.77  -7.75  4.00 15.00  32.00
+gwesp.fixed.0.693  -112.95 -27.27 11.86 46.56 105.24
+
+
+Are sample statistics significantly different from observed?
+              edges nodecov.practice nodematch.practice gwesp.fixed.0.693
+diff.      4.193464       3.08431373         2.55490196        7.44060041
+test stat. 2.065603       1.81503409         1.94692678        1.86876829
+P-val.     0.038866       0.06951867         0.05154351        0.06165506
+                 (Omni)
+diff.                NA
+test stat. 2.018915e+01
+P-val.     5.549297e-04
+
+Sample statistics cross-correlations:
+                       edges nodecov.practice nodematch.practice
+edges              1.0000000        0.8661702          0.9385818
+nodecov.practice   0.8661702        1.0000000          0.8058032
+nodematch.practice 0.9385818        0.8058032          1.0000000
+gwesp.fixed.0.693  0.9930583        0.8706234          0.9326873
+                   gwesp.fixed.0.693
+edges                      0.9930583
+nodecov.practice           0.8706234
+nodematch.practice         0.9326873
+gwesp.fixed.0.693          1.0000000
+
+Sample statistics auto-correlation:
+Chain 1 
+             edges nodecov.practice nodematch.practice gwesp.fixed.0.693
+Lag 0    1.0000000        1.0000000          1.0000000         1.0000000
+Lag 1024 0.7830828        0.6976898          0.7312736         0.7512523
+Lag 2048 0.6230787        0.5053844          0.5691328         0.5927850
+Lag 3072 0.5060997        0.3787281          0.4569260         0.4783505
+Lag 4096 0.4117891        0.3017643          0.3746105         0.3901042
+Lag 5120 0.3397918        0.2345665          0.3080189         0.3204952
+
+Sample statistics burn-in diagnostic (Geweke):
+Chain 1 
+
+Fraction in 1st window = 0.1
+Fraction in 2nd window = 0.5 
+
+             edges   nodecov.practice nodematch.practice  gwesp.fixed.0.693 
+          1.183854           1.102967           1.430812           1.202088 
+
+Individual P-values (lower = worse):
+             edges   nodecov.practice nodematch.practice  gwesp.fixed.0.693 
+         0.2364708          0.2700415          0.1524842          0.2293296 
+Joint P-value (lower = worse):  0.646062 
+
+Note: MCMC diagnostics shown here are from the last round of
+  simulation, prior to computation of final parameter estimates.
+  Because the final estimates are refinements of those used for this
+  simulation run, these diagnostics may understate model performance.
+  To directly assess the performance of the final model on in-model
+  statistics, please use the GOF command: gof(ergmFitObject,
+  GOF=~model).</code></pre>
+</div>
+</div>
+<p>One key output compares the mean of the simulated statistics to the corresponding observed values. For most terms, including <code>nodecov.practice</code>, <code>nodematch.practice</code>, and the <code>gwesp</code> statistic, there is no significant difference between simulated and observed statistics, indicating a good model fit. The only exception is the <code>edges</code> term, which shows a small but statistically significant deviation (<span class="math inline">\(p\)</span> = 0.0389). This suggests a slight misfit on overall tie density, though the magnitude of the difference is modest and not cause for concern.</p>
+<p>The <strong>cross-correlations</strong> between simulated statistics are moderately high but consistent with the expected dependencies among model terms. For example, ties that contribute to homophily (<code>nodematch.practice</code>) also increase the total number of edges, leading to a natural correlation. None of the observed correlations approach levels (e.g., &gt; 0.95) that would indicate redundancy or raise concerns about model identifiability or degeneracy.</p>
+<p>Looking at <strong>auto-correlation</strong>, we see that values for all parameters decay steadily with increasing lags. This pattern is typical of a well-mixing MCMC chain and indicates that the sampler is not highly autocorrelated, which would reduce efficiency.</p>
+<p>Finally, the <strong>Geweke burn-in diagnostic</strong> compares the means of the early and late segments of the MCMC chain. All terms yield non-significant <span class="math inline">\(p\)</span>-values (ranging from 0.15 to 0.27), suggesting that the Markov chain has likely reached stationarity. The joint <span class="math inline">\(p\)</span>-value of 0.64 further supports this conclusion.</p>
+<p>Taken together, these diagnostics confirm that the MCMC estimation for the ERGM is well-behaved. The parameter estimates appear stable, the chain has mixed adequately, and the model reproduces key features of the observed network. While the slight misfit on the <code>edges</code> term is noted, it does not compromise the validity of the overall model, which can be interpreted with confidence.</p>
+<p>As noted, MCMC requires more care and feeding, meaning users often need to tune control parameters, assess diagnostics, and sometimes revise the model specification to ensure convergence and realism. Practically, this may involve:</p>
+<ul>
+<li>Increasing <code>MCMC.burnin</code> and <code>MCMC.samplesize</code> in <code>control.ergm()</code>,</li>
+<li>Replacing raw triangle or star terms with smoother alternatives (e.g., <code>gwesp()</code> or <code>gwdsp()</code>),</li>
+<li>Simplifying the model to reduce overfitting or internal tension among terms.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on MCMC control parameters
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Control parameters for the MCMC algorithm can be found here <code>help(control.ergm)</code></p>
+</div>
+</div>
+<p>For a detailed technical treatment of model instability in ERGMs, see <span class="citation" data-cites="schweinberger2011instability">Schweinberger (<a href="#ref-schweinberger2011instability" role="doc-biblioref">2011</a>)</span>. Alternative specification strategies that improve stability are discussed in <span class="citation" data-cites="snijders2006new">Snijders et al. (<a href="#ref-snijders2006new" role="doc-biblioref">2006</a>)</span>, while the formulation and rationale behind the <code>gwesp</code> term, and curved exponential family models more broadly, are addressed in <span class="citation" data-cites="hunter2006inference">Hunter and Handcock (<a href="#ref-hunter2006inference" role="doc-biblioref">2006</a>)</span>.</p>
+</section>
+</section>
+</section>
+<section id="model-fit" class="level3" data-number="17.2.3">
+<h3 data-number="17.2.3"><span class="header-section-number">17.2.3</span> Model Fit</h3>
+<p>After confirming that the MCMC estimation has converged properly (as diagnosed through trace plots, numerical summaries, and Geweke statistics) the next essential step is to assess the fit of the model to the observed network.</p>
+<p>While MCMC diagnostics ensure that parameter estimates are stable and reliable, they do not tell us whether the model is substantively adequate, that is, whether it captures the essential structure of the network. For this, we turn to <strong>goodness-of-fit (GOF) diagnostics</strong>.</p>
+<p>There are two complementary questions in ERGM model checking:</p>
+<ol type="1">
+<li><p><strong>Did the model reproduce the terms included in the formula?</strong><br />
+This is effectively ensured by the maximum likelihood estimation procedure. If convergence has been achieved, the model will reproduce the sufficient statistics (e.g., number of edges, triangles) used in the specification.</p></li>
+<li><p><strong>Does the model reproduce broader structural properties of the network?</strong><br />
+This is the more important and revealing test. GOF checks compare simulated networks to the observed one on key network features not explicitly included in the model. These typically include:</p>
+<ul>
+<li><strong>Degree distribution</strong> (node-level centrality)</li>
+<li><strong>Edgewise shared partners (ESP)</strong> (local clustering)</li>
+<li><strong>Geodesic distances</strong> (overall reachability)</li>
+</ul></li>
+</ol>
+<p>This second category helps detect <strong>model misspecification</strong>, i.e., features of the network that the model fails to account for.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Running Goodness-of-Fit Checks in ERGM
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>ergm</code> package provides the <code>gof()</code> function, which performs a <strong>simulation-based goodness-of-fit assessment</strong>. This function compares the observed network to a distribution of networks simulated from the fitted model, focusing on structural features not directly modeled.</p>
+<p>The typical workflow is:</p>
+<div class="cell">
+<div class="sourceCode" id="cb29"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run GOF assessment</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>gof_model <span class="ot">&lt;-</span> <span class="fu">gof</span>(model)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># View numeric summary</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gof_model)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot GOF results</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gof_model)</span></code></pre></div>
+</div>
+</div>
+</div>
+<section id="example-lawyers-network---cowork-among-partners-2" class="level5 unnumbered">
+<h5 class="unnumbered">Example: Lawyers Network - Cowork Among Partners</h5>
+<p>We now assess the fit of the ERGM specified for Lazega’s co-working network, which included:</p>
+<ul>
+<li><code>edges</code>: baseline tie probability,</li>
+<li><code>nodecov("practice")</code>: effect of practice area on tie activity,</li>
+<li><code>nodematch("practice")</code>: homophily within practice areas,</li>
+<li><code>gwesp(0.693, fixed = TRUE)</code>: transitive closure (triadic clustering).</li>
+</ul>
+<p>The goal is to evaluate whether the model, beyond reproducing the modeled statistics, also captures broader structural features of the observed network.</p>
+<p>We use the <code>gof()</code> function from the <code>ergm</code> package to simulate networks under the fitted model and compare them to the observed network on several unmodeled statistics:</p>
+<div id="fig-gof" class="center quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-gof-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb30"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>gof_sc <span class="ot">&lt;-</span> <span class="fu">gof</span>(model_sc, <span class="at">plotlogodds=</span><span class="cn">TRUE</span>) <span class="co"># this will produce 4 plots</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)) <span class="co"># figure orientation with 2 rows and 2 columns</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gof_sc)</span></code></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img src="ergm_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid quarto-figure quarto-figure-center" width="960" /></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gof-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 17.5: Goodness-of-fit (GOF) diagnostics for the ERGM fitted to the Lazega lawyers co-working network. Each plot compares statistics from networks simulated under the model to those observed in the empirical network (blue diamonds). The top-left panel confirms that the model reproduces the sufficient statistics (model terms). The other panels assess fit to un-modeled structural features: the degree distribution, edgewise shared partners (not used as it is explicitly controlled for in the model), and geodesic distances. The observed values fall mostly within the distribution of simulated networks, indicating that the model captures key features of the network’s local and global structure.
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Interpreting th GOF plots
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the GOF plots generated by the ergm package, the meaning of the black line and blue diamond differs slightly depending on the panel:</p>
+<ul>
+<li>Model statistics plot:
+<ul>
+<li>Blue diamond: The observed value of each modeled statistic in the empirical network.</li>
+<li>Black line: The mean value of that statistic across the simulated networks.</li>
+</ul></li>
+<li>Other GOF plots (e.g., degree, geodesic distance, ESP):
+<ul>
+<li>Black line: The observed distribution of the statistic (e.g., degree counts) in the empirical network.</li>
+<li>Blue diamonds: The mean of the simulated distributions at each value or bin.</li>
+</ul></li>
+</ul>
+<p>Good model fit is indicated when the black line lies within the range of the simulated distributions (shown as boxplots or shaded areas), and aligns closely with the blue diamonds.</p>
+</div>
+</div>
+<p>This goodness-of-fit check produces plots for several structural features, including both modeled and un-modeled terms. The GOF plots in <a href="#fig-gof" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-gof</span></a> compare statistics from the observed network (black lines or blue diamonds) to distributions of the same statistics across networks simulated from the model:</p>
+<ul>
+<li><strong>Model statistics</strong>: the sufficient statistics explicitly specified in the model formula (e.g., <code>edges</code>, <code>nodematch</code>, <code>gwesp</code>). This plot shows whether the model reproduces the statistics it was explicitly fit to match. Each boxplot represents the distribution of simulated values for a modeled term (e.g., <code>edges</code>, <code>nodematch.practice</code>, <code>gwesp</code>), and the blue diamond marks the observed value. Good fit is indicated when the diamond lies near the center of the box. This panel essentially checks if maximum likelihood estimation succeeded.</li>
+<li><strong>Degree distribution</strong>: the number of ties per node. The model accurately captures the variability in the number of ties per node if the observed degree frequencies fall within the simulated distribution at most points.</li>
+<li><strong>Geodesic distances</strong>: shortest paths between nodes. If the model reflects the observed network’s overall connectivity, the distribution of shortest path lengths should align closely with those from the simulations.</li>
+<li><strong>Edgewise shared partners (ESP)</strong>: the number of common neighbors shared by directly connected pairs of nodes. This panel can typically indicate clustering tendencies. Note that ESP should not be interpreted as a fit criterion in the example shown in <a href="#fig-gof" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-gof</span></a>, since it is directly modeled via the <code>gwesp</code> term. Including it in GOF checks may simply reflect that the model was designed to reproduce it.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class='callout-icon'></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on using log-odds instead
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Normally, GOF plots show the proportion (e.g., of nodes with a given degree) on the y-axis. Using the following and setting <code>plotlogodds = TRUE</code> transforms those proportions to log-odds:</p>
+<p><span class="math display">\[
+\text{log-odds}(p) = \log\left(\frac{p}{1 - p}\right)
+\]</span> In other words, you instead run <code>gof(model, plotlogodds=TRUE)</code>.</p>
+<p>This is useful when you’re interested in small differences in low-probability bins (e.g., rare degrees or long geodesic distances). Values close to 0 (e.g., rare degrees or high distances) are spread out and more visible. Differences between observed and simulated values in the tails become more pronounced. Plots become less intuitive if you’re unfamiliar with log-odds, so interpret with care.</p>
+</div>
+</div>
+<p>In addition to the plots shown in <a href="#fig-gof" class="quarto-xref">Figure <span class="quarto-unresolved-ref">fig-gof</span></a>, we can also look at the printed GOF summary:</p>
+<div class="cell">
+<div class="sourceCode" id="cb31"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>gof_sc</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Goodness-of-fit for degree 
+
+         obs min mean max MC p-value
+degree0    2   0 3.42  10       0.90
+degree1    3   0 2.24   8       0.74
+degree2    2   0 2.14   8       1.00
+degree3    4   0 2.72   7       0.66
+degree4    2   0 2.81   8       1.00
+degree5    4   0 2.83   7       0.60
+degree6    4   0 3.25   7       0.88
+degree7    1   0 2.77   7       0.34
+degree8    1   0 2.50   8       0.64
+degree9    5   0 2.83   9       0.34
+degree10   1   0 2.48   9       0.62
+degree11   1   0 1.84   5       0.92
+degree12   2   0 1.39   6       0.70
+degree13   3   0 1.06   5       0.20
+degree14   0   0 0.73   4       0.98
+degree15   1   0 0.37   3       0.58
+degree16   0   0 0.24   2       1.00
+degree17   0   0 0.14   3       1.00
+degree18   0   0 0.16   2       1.00
+degree19   0   0 0.04   1       1.00
+degree20   0   0 0.02   1       1.00
+degree21   0   0 0.02   1       1.00
+
+Goodness-of-fit for edgewise shared partner 
+
+      obs min  mean max MC p-value
+esp0    5   0  4.86  11       1.00
+esp1   16   6 16.27  31       0.98
+esp2   29   8 26.01  44       0.62
+esp3   17   8 25.21  41       0.28
+esp4   23   4 19.69  51       0.74
+esp5   11   0 11.76  27       1.00
+esp6   10   0  5.62  20       0.38
+esp7    4   0  2.47  10       0.56
+esp8    0   0  0.87   7       1.00
+esp9    0   0  0.33   3       1.00
+esp10   0   0  0.04   1       1.00
+esp11   0   0  0.04   1       1.00
+esp12   0   0  0.02   1       1.00
+
+Goodness-of-fit for minimum geodesic distance 
+
+    obs min   mean max MC p-value
+1   115  56 113.19 170       0.92
+2   275 106 264.57 393       0.92
+3   148  11 106.60 192       0.26
+4    21   0  18.60  66       0.76
+5     2   0   2.61  19       0.62
+6     0   0   0.21   5       1.00
+7     0   0   0.01   1       1.00
+Inf  69   0 124.21 434       0.84
+
+Goodness-of-fit for model statistics 
+
+                        obs      min     mean      max MC p-value
+edges              115.0000 56.00000 113.1900 170.0000       0.92
+nodecov.practice   129.0000 74.00000 130.0500 174.0000       1.00
+nodematch.practice  72.0000 40.00000  70.8400 119.0000       0.94
+gwesp.fixed.0.693  181.2969 69.40236 177.6489 291.4062       0.76</code></pre>
+</div>
+</div>
+<p>The numerical output provides a detailed assessment of how well the fitted ERGM reproduces both the modeled terms and modeled structural features of the observed network.</p>
+<p>The degree distribution is well captured across nearly all values, with observed counts generally falling within the range of those generated by simulations. Most Monte Carlo <span class="math inline">\(p\)</span>-values are high (e.g., &gt; 0.5), indicating no significant deviation between the observed and simulated degree frequencies.</p>
+<p>Minimum geodesic distances, a measure of global connectivity, show reasonable agreement between observed and simulated networks. While the fit is slightly weaker at a geodesic distance of 3 (<span class="math inline">\(p = 0.08\)</span>), all other distances are well within acceptable bounds, suggesting that the model captures the overall reachability structure effectively.</p>
+<p>Lastly, the model terms explicitly included in the formula (<code>edges</code>, <code>nodecov.practice</code>, <code>nodematch.practice</code>, and <code>gwesp</code>) are all closely matched by the simulated networks, with very high <span class="math inline">\(p\)</span>-values across the board. This confirms that the maximum likelihood estimation successfully reproduced the sufficient statistics.</p>
+<p>These diagnostics together indicate that the model performs well. It reproduces the modeled terms accurately, and also generalizes to capture broader structural features such as degree variation and path lengths. Since the model has also passed MCMC convergence diagnostics, we can conclude that the ERGM is both well-estimated and substantively valid in representing the network-generating processes in the Lazega law firm.</p>
+</section>
+</section>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="quarto-navigation-envelope" class="hidden">
+<p><span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyLXRpdGxl">R for Social Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXItdGl0bGU=">R for Social Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uZXh0"><span class="chapter-number">18</span>  <span class="chapter-title">Stochastic Actor Oriented Models (SAOMs)</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1wcmV2"><span class="chapter-number">16</span>  <span class="chapter-title">Random Graph Models</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbmRleC5odG1sV2VsY29tZQ==">Welcome</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbnRyby5odG1sSW50cm9kdWN0aW9u">Introduction</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9uZXR3b3JrLWRhdGEuaHRtbE5ldHdvcmstRGF0YQ==">Network Data</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tMQ==">Descriptive Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9kZXNjcmlwdGl2ZS9pbnRyb2R1Y3Rpb24uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5JbnRyb2R1Y3Rpb248L3NwYW4+"><span class="chapter-number">1</span>  <span class="chapter-title">Introduction</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9kZXNjcmlwdGl2ZS9kZXNjcmlwdGl2ZXMtYmFzaWMuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+Mjwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5CYXNpYy1OZXR3b3JrLVN0YXRpc3RpY3M8L3NwYW4+"><span class="chapter-number">2</span>  <span class="chapter-title">Basic Network Statistics</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9kZXNjcmlwdGl2ZS9jZW50cmFsaXR5LWJhc2ljLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjM8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+Q2VudHJhbGl0eTwvc3Bhbj4="><span class="chapter-number">3</span>  <span class="chapter-title">Centrality</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9kZXNjcmlwdGl2ZS9jZW50cmFsaXR5LWFkdmFuY2VkLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjQ8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+QWR2YW5jZWQtQ2VudHJhbGl0eS1Db25jZXB0czwvc3Bhbj4="><span class="chapter-number">4</span>  <span class="chapter-title">Advanced Centrality Concepts</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9kZXNjcmlwdGl2ZS9jbHVzdGVyaW5nLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjU8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+Q29oZXNpdmUtU3ViZ3JvdXBzPC9zcGFuPg=="><span class="chapter-number">5</span>  <span class="chapter-title">Cohesive Subgroups</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9kZXNjcmlwdGl2ZS90d28tbW9kZS1uZXR3b3Jrcy5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz42PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlR3by1Nb2RlLU5ldHdvcmtzPC9zcGFuPg=="><span class="chapter-number">6</span>  <span class="chapter-title">Two-Mode Networks</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9kZXNjcmlwdGl2ZS9zaWduZWQtbmV0d29ya3MuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+Nzwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5TaWduZWQtTmV0d29ya3M8L3NwYW4+"><span class="chapter-number">7</span>  <span class="chapter-title">Signed Networks</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9kZXNjcmlwdGl2ZS9lZ28tbmV0d29ya3MuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+ODwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5FZ28tTmV0d29ya3M8L3NwYW4+"><span class="chapter-number">8</span>  <span class="chapter-title">Ego Networks</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tMg==">Network Visualization</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi92aXN1YWxpemF0aW9uL2ludHJvZHVjdGlvbi5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz45PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkludHJvZHVjdGlvbjwvc3Bhbj4="><span class="chapter-number">9</span>  <span class="chapter-title">Introduction</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi92aXN1YWxpemF0aW9uL2dncmFwaC1iYXNpY3MuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTA8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+QmFzaWNzLW9mLWdncmFwaDwvc3Bhbj4="><span class="chapter-number">10</span>  <span class="chapter-title">Basics of ggraph</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi92aXN1YWxpemF0aW9uL2dncmFwaC1hZHZhbmNlZC5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4xMTwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5BZHZhbmNlZC1MYXlvdXRzPC9zcGFuPg=="><span class="chapter-number">11</span>  <span class="chapter-title">Advanced Layouts</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi92aXN1YWxpemF0aW9uL2VuaGFuY2Utdml6Lmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjEyPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkVuaGFuY2luZy1WaXN1YWxpemF0aW9uczwvc3Bhbj4="><span class="chapter-number">12</span>  <span class="chapter-title">Enhancing Visualizations</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi92aXN1YWxpemF0aW9uL2ludGVyYWN0aXZlLXZpei5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4xMzwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5JbnRlcmFjdGl2ZS1WaXN1YWxpemF0aW9uPC9zcGFuPg=="><span class="chapter-number">13</span>  <span class="chapter-title">Interactive Visualization</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tMw==">Inferential Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbmZlcmVudGlhbC9pbnRyb2R1Y3Rpb24uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTQ8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+SW50cm9kdWN0aW9uPC9zcGFuPg=="><span class="chapter-number">14</span>  <span class="chapter-title">Introduction</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbmZlcmVudGlhbC9ub24tcGFyYW1ldHJpYy5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4xNTwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5Ob24tUGFyYW1ldHJpYy1NZXRob2RzPC9zcGFuPg=="><span class="chapter-number">15</span>  <span class="chapter-title">Non-Parametric Methods</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbmZlcmVudGlhbC9yZ20uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTY8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+UmFuZG9tLUdyYXBoLU1vZGVsczwvc3Bhbj4="><span class="chapter-number">16</span>  <span class="chapter-title">Random Graph Models</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbmZlcmVudGlhbC9lcmdtLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjE3PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPkV4cG9uZW50aWFsLVJhbmRvbS1HcmFwaC1Nb2RlbHMtKEVSR01zKTwvc3Bhbj4="><span class="chapter-number">17</span>  <span class="chapter-title">Exponential Random Graph Models (ERGMs)</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbmZlcmVudGlhbC9zYW9tLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjE4PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlN0b2NoYXN0aWMtQWN0b3ItT3JpZW50ZWQtTW9kZWxzLShTQU9Ncyk8L3NwYW4+"><span class="chapter-number">18</span>  <span class="chapter-title">Stochastic Actor Oriented Models (SAOMs)</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9pbmZlcmVudGlhbC9yZW0uaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTk8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+UmVsYXRpb25hbC1ldmVudC1Nb2RlbHMtKFJFTXMpPC9zcGFuPg=="><span class="chapter-number">19</span>  <span class="chapter-title">Relational event Models (REMs)</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tNA==">Tidy Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi90aWR5L2ludHJvZHVjdGlvbi5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4yMDwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5JbnRyb2R1Y3Rpb248L3NwYW4+"><span class="chapter-number">20</span>  <span class="chapter-title">Introduction</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi90aWR5L3RpZHlncmFwaC1iYXNpY3MuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MjE8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+QmFzaWNzLW9mLXRpZHlncmFwaDwvc3Bhbj4="><span class="chapter-number">21</span>  <span class="chapter-title">Basics of tidygraph</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi90aWR5L3RpZHlncmFwaC1kZXNjcmlwdGl2ZS5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4yMjwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5EZXNjcmlwdGl2ZS1OZXR3b3JrLUFuYWx5c2lzPC9zcGFuPg=="><span class="chapter-number">22</span>  <span class="chapter-title">Descriptive Network Analysis</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi90aWR5L3RpZHlncmFwaC1zdW1tYXJ5Lmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjIzPC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlN1bW1hcnk8L3NwYW4+"><span class="chapter-number">23</span>  <span class="chapter-title">Summary</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOnF1YXJ0by1zaWRlYmFyLXNlY3Rpb24tNQ==">Additional Tools</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9hZGRpdGlvbmFsL2ludHJvZHVjdGlvbi5odG1sPHNwYW4tY2xhc3M9J2NoYXB0ZXItbnVtYmVyJz4yNDwvc3Bhbj4tLTxzcGFuLWNsYXNzPSdjaGFwdGVyLXRpdGxlJz5JbnRyb2R1Y3Rpb248L3NwYW4+"><span class="chapter-number">24</span>  <span class="chapter-title">Introduction</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9hZGRpdGlvbmFsL25ldHJvcHkuaHRtbDxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MjU8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+RW50cm9weS1BbmFseXNpczwvc3Bhbj4="><span class="chapter-number">25</span>  <span class="chapter-title">Entropy Analysis</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9hZGRpdGlvbmFsL211bHRpZ3JhcGhyLmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjI2PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPk11bHRpZ3JhcGgtQXBwcm9hY2g8L3NwYW4+"><span class="chapter-number">26</span>  <span class="chapter-title">Multigraph Approach</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9zdW1tYXJ5Lmh0bWw8c3Bhbi1jbGFzcz0nY2hhcHRlci1udW1iZXInPjI3PC9zcGFuPi0tPHNwYW4tY2xhc3M9J2NoYXB0ZXItdGl0bGUnPlN1bW1hcnk8L3NwYW4+"><span class="chapter-number">27</span>  <span class="chapter-title">Summary</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyOi9yZWZlcmVuY2VzLmh0bWxSZWZlcmVuY2Vz">References</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWJyZWFkY3J1bWJzLUluZmVyZW50aWFsLU5ldHdvcmstQW5hbHlzaXM=">Inferential Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWJyZWFkY3J1bWJzLTxzcGFuLWNsYXNzPSdjaGFwdGVyLW51bWJlcic+MTc8L3NwYW4+LS08c3Bhbi1jbGFzcz0nY2hhcHRlci10aXRsZSc+RXhwb25lbnRpYWwtUmFuZG9tLUdyYXBoLU1vZGVscy0oRVJHTXMpPC9zcGFuPg=="><span class="chapter-number">17</span>  <span class="chapter-title">Exponential Random Graph Models (ERGMs)</span></span></p>
+<div class="hidden quarto-markdown-envelope-contents" data-render-id="Zm9vdGVyLWxlZnQ=">
+<p>R for Social Network Analysis was written by Termeh Shafie and David Schoch.</p>
+</div>
+<div class="hidden quarto-markdown-envelope-contents" data-render-id="Zm9vdGVyLXJpZ2h0">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+</div>
+<div id="quarto-meta-markdown" class="hidden">
+<p><span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW1ldGF0aXRsZQ=="><span id="sec-ergm" class="quarto-section-identifier"><span class="chapter-number">17</span>  <span class="chapter-title">Exponential Random Graph Models (ERGMs)</span></span> – R for Social Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLXR3aXR0ZXJjYXJkdGl0bGU="><span id="sec-ergm" class="quarto-section-identifier"><span class="chapter-number">17</span>  <span class="chapter-title">Exponential Random Graph Models (ERGMs)</span></span> – R for Social Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW9nY2FyZHRpdGxl"><span id="sec-ergm" class="quarto-section-identifier"><span class="chapter-number">17</span>  <span class="chapter-title">Exponential Random Graph Models (ERGMs)</span></span> – R for Social Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW1ldGFzaXRlbmFtZQ==">R for Social Network Analysis</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLXR3aXR0ZXJjYXJkZGVzYw=="></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW9nY2FyZGRkZXNj"></span></p>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-besag1972nearest" class="csl-entry" role="listitem">
+Besag, Julian E. 1972. <span>“Nearest-Neighbour Systems and the Auto-Logistic Model for Binary Data.”</span> <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 34 (1): 75–83.
+</div>
+<div id="ref-frank1986markov" class="csl-entry" role="listitem">
+Frank, Ove, and David Strauss. 1986. <span>“Markov Graphs.”</span> <em>Journal of the American Statistical Association</em> 81 (395): 832–42.
+</div>
+<div id="ref-hunter2006inference" class="csl-entry" role="listitem">
+Hunter, David R, and Mark S Handcock. 2006. <span>“Inference in Curved Exponential Family Models for Networks.”</span> <em>Journal of Computational and Graphical Statistics</em> 15 (3): 565–83.
+</div>
+<div id="ref-pattison2002neighborhood" class="csl-entry" role="listitem">
+Pattison, Philippa, and Garry Robins. 2002. <span>“Neighborhood–Based Models for Social Networks.”</span> <em>Sociological Methodology</em> 32 (1): 301–37.
+</div>
+<div id="ref-schweinberger2011instability" class="csl-entry" role="listitem">
+Schweinberger, Michael. 2011. <span>“Instability, Sensitivity, and Degeneracy of Discrete Exponential Families.”</span> <em>Journal of the American Statistical Association</em> 106 (496): 1361–70.
+</div>
+<div id="ref-snijders2006new" class="csl-entry" role="listitem">
+Snijders, Tom AB, Philippa E Pattison, Garry L Robins, and Mark S Handcock. 2006. <span>“New Specifications for Exponential Random Graph Models.”</span> <em>Sociological Methodology</em> 36 (1): 99–153.
+</div>
+<div id="ref-west1996s50" class="csl-entry" role="listitem">
+West, P, and H Sweeting. 1996. <span>“Background, Rationale and Design of the West of Scotland 11 to 16 Study.”</span> <em>MRC Medical Sociology Unit Working Paper</em>, no. 52: 1.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id = "quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/schochastics\.io\/R4SNA");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a  href="/inferential/rgm.html" class="pagination-link" aria-label="Random Graph Models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class='chapter-number'>16</span>  <span class='chapter-title'>Random Graph Models</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a  href="/inferential/saom.html" class="pagination-link" aria-label="Stochastic Actor Oriented Models (SAOMs)">
+        <span class="nav-page-text"><span class='chapter-number'>18</span>  <span class='chapter-title'>Stochastic Actor Oriented Models (SAOMs)</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      <div class='footer-contents'>R for Social Network Analysis was written by Termeh Shafie and David Schoch.
+</div>  
+    </div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <div class='footer-contents'>This book was built with <a href="https://quarto.org/">Quarto</a>.
+</div>  
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
