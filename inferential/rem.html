@@ -460,8 +460,7 @@ window.Quarto = {
   <li><a href="#step-1-constructing-the-risk-sets" id="toc-step-1-constructing-the-risk-sets" class="nav-link" data-scroll-target="#step-1-constructing-the-risk-sets">Step 1: Constructing the Risk Sets</a></li>
   <li><a href="#step-2-computing-event-statistics" id="toc-step-2-computing-event-statistics" class="nav-link" data-scroll-target="#step-2-computing-event-statistics">Step 2: Computing Event Statistics</a></li>
   <li><a href="#step-3-estimating-the-model" id="toc-step-3-estimating-the-model" class="nav-link" data-scroll-target="#step-3-estimating-the-model">Step 3: Estimating the Model</a></li>
-  </ul></li>
-  <li><a href="#endogenous-statistics" id="toc-endogenous-statistics" class="nav-link" data-scroll-target="#endogenous-statistics"><span class="header-section-number">19.4</span> Endogenous Statistics</a>
+  <li><a href="#endogenous-statistics" id="toc-endogenous-statistics" class="nav-link" data-scroll-target="#endogenous-statistics"><span class="header-section-number">19.3.1</span> Endogenous Statistics</a>
   <ul>
   <li><a href="#reciprocity" id="toc-reciprocity" class="nav-link" data-scroll-target="#reciprocity">Reciprocity</a></li>
   <li><a href="#repetition" id="toc-repetition" class="nav-link" data-scroll-target="#repetition">Repetition</a></li>
@@ -471,7 +470,9 @@ window.Quarto = {
   <li><a href="#receiver-activity" id="toc-receiver-activity" class="nav-link" data-scroll-target="#receiver-activity">Receiver Activity</a></li>
   <li><a href="#receiver-popularity" id="toc-receiver-popularity" class="nav-link" data-scroll-target="#receiver-popularity">Receiver Popularity</a></li>
   </ul></li>
-  <li><a href="#exogenous-covariates" id="toc-exogenous-covariates" class="nav-link" data-scroll-target="#exogenous-covariates"><span class="header-section-number">19.5</span> Exogenous Covariates</a></li>
+  <li><a href="#exogenous-covariates" id="toc-exogenous-covariates" class="nav-link" data-scroll-target="#exogenous-covariates"><span class="header-section-number">19.3.2</span> Exogenous Covariates</a></li>
+  </ul></li>
+  <li><a href="#rem-in-r" id="toc-rem-in-r" class="nav-link" data-scroll-target="#rem-in-r"><span class="header-section-number">19.4</span> REM in R</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/rem.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -527,6 +528,22 @@ window.Quarto = {
 <h2 data-number="19.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">19.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(relevent)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note on Alternative Software for Relational Event Models
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this chapter we use the <code>relevent</code> package to estimate relational event models. The package implements the framework introduced by <span class="citation" data-cites="butts2008">Butts (<a href="../references.html#ref-butts2008" role="doc-biblioref">2008</a>)</span> and provides a straightforward and widely used approach for estimating REMs from sequences of dyadic interactions.</p>
+<p>Several alternative implementations are also available. The <code>goldfish</code> package provides a more modern and flexible framework for relational event modeling. In contrast to <code>relevent</code>, which requires users to manually construct event statistics and covariates, <code>goldfish</code> offers a formula-based interface that allows endogenous effects and actor attributes to be specified directly within the model. The package also supports a broader range of structural effects and is designed to scale more efficiently to larger event datasets.</p>
+<p>Another option is the <code>rem</code> package, which provides a simplified implementation of relational event models with a more modern interface than <code>relevent</code>. In particular, <code>rem</code> integrates more naturally with tidyverse-style workflows, making it convenient for researchers who prefer a tidy data structure and formula-based model specification. While it supports many core REM features, it is currently less widely used in applied research than <code>relevent</code> or <code>goldfish</code>.</p>
+<p>Despite these differences in implementation, the underlying statistical logic remains the same across packages: relational event models estimate the intensity of possible interactions and compare competing events within a risk set. For introductory applications and teaching purposes, <code>relevent</code> remains a convenient and transparent tool, while <code>goldfish</code> or <code>rem</code> may be preferable in more complex or larger-scale analyses.</p>
+</div>
 </div>
 </section>
 <section id="model-specification" class="level2" data-number="19.2">
@@ -679,9 +696,8 @@ P(a \rightarrow b \text{ occurs next}) =
 <p>Finally, we estimate the relational event model using a Cox proportional hazards framework. Event occurrence is treated as the dependent variable, while the computed statistics serve as explanatory variables.</p>
 <p>Estimation relies on the partial likelihood, which compares the intensity of the observed event with the intensities of all other possible events within the same risk set.</p>
 </section>
-</section>
-<section id="endogenous-statistics" class="level2" data-number="19.4">
-<h2 data-number="19.4" class="anchored" data-anchor-id="endogenous-statistics"><span class="header-section-number">19.4</span> Endogenous Statistics</h2>
+<section id="endogenous-statistics" class="level3" data-number="19.3.1">
+<h3 data-number="19.3.1" class="anchored" data-anchor-id="endogenous-statistics"><span class="header-section-number">19.3.1</span> Endogenous Statistics</h3>
 <p>Relational event models allow us to incorporate <strong>endogenous statistics</strong>, which capture patterns that arise from the history of interactions itself. These statistics represent mechanisms through which past events influence the likelihood of future events. Some of these endogenous statistics are summarized in the following and in <a href="#tbl-endstats" class="quarto-xref">Table&nbsp;<span>19.1</span></a>.</p>
 <p>Let <span class="math inline">\(V=\{1,\dots,n\}\)</span> denote the set of actors. An event at time <span class="math inline">\(t\)</span> is represented as <span class="math inline">\(e_t=(i,j,t)\)</span>, where actor <span class="math inline">\(i\)</span> sends an interaction to actor <span class="math inline">\(j\)</span>. Let <span class="math inline">\(Y_{ij}(t)\)</span> be an indicator variable that equals 1 if the event <span class="math inline">\(i \rightarrow j\)</span> occurs at time <span class="math inline">\(t\)</span> and 0 otherwise. Further, let <span class="math inline">\(N_{ij}(t)\)</span> denote the total number of interactions from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span> that have occurred up to time <span class="math inline">\(t\)</span>.</p>
 <section id="reciprocity" class="level4 unnumbered">
@@ -804,8 +820,8 @@ Table&nbsp;19.1: Summary of some endogenous statistics used in relational event 
 </div>
 </section>
 </section>
-<section id="exogenous-covariates" class="level2" data-number="19.5">
-<h2 data-number="19.5" class="anchored" data-anchor-id="exogenous-covariates"><span class="header-section-number">19.5</span> Exogenous Covariates</h2>
+<section id="exogenous-covariates" class="level3" data-number="19.3.2">
+<h3 data-number="19.3.2" class="anchored" data-anchor-id="exogenous-covariates"><span class="header-section-number">19.3.2</span> Exogenous Covariates</h3>
 <p>In addition to endogenous statistics derived from the event history, relational event models can also incorporate <strong>exogenous covariates</strong>. These variables capture attributes of actors or dyads that may influence the likelihood of interactions but are not themselves determined by the evolving sequence of events.</p>
 <p>Exogenous covariates may include <strong>actor-level attributes</strong> (e.g., demographic characteristics, roles, or status), <strong>dyadic attributes</strong> (e.g., similarity or shared group membership), or other contextual variables describing the environment in which interactions occur.</p>
 <p>Let <span class="math inline">\(c_k\)</span> denote an attribute associated with actor <span class="math inline">\(k\)</span>. For binary attributes, this can be represented as</p>
@@ -866,6 +882,20 @@ Table&nbsp;19.2: Summary of exogenous covariates used in relational event models
 </div>
 </figure>
 </div>
+</section>
+</section>
+<section id="rem-in-r" class="level2" data-number="19.4">
+<h2 data-number="19.4" class="anchored" data-anchor-id="rem-in-r"><span class="header-section-number">19.4</span> REM in R</h2>
+<p>Here we estimate a relational event model for the dialogue interactions among characters in <em>Frozen</em>. In the <code>relevent</code> package, relational event models are estimated using the function <code>rem.dyad()</code>, which fits a dyadic relational event model based on the observed sequence of interactions.</p>
+<p>The main arguments of the <code>rem.dyad()</code> function are:</p>
+<ul>
+<li><strong><code>edgelist</code></strong>: the event sequence, provided as a matrix or data frame containing the time (or order) of each event, the sender, and the receiver.</li>
+<li><strong><code>n</code></strong>: the number of actors in the network.</li>
+<li><strong><code>effects</code></strong>: a vector specifying the endogenous effects to include in the model (e.g., reciprocity, repetition, or activity effects).</li>
+<li><strong><code>covar</code></strong>: a list of covariate matrices corresponding to the exogenous effects specified in <code>effects</code>.</li>
+<li><strong><code>ordinal</code></strong>: a logical argument indicating whether the event data are ordinal. Set <code>TRUE</code> if the data only record the order of events (without exact timestamps), and <code>FALSE</code> if precise event times are available.</li>
+</ul>
+<p>In our case, the dataset consists of a sequence of dialogue interactions between characters in <em>Frozen</em>, where each event records which character speaks to another and the order in which the interaction occurs. Because the data contain only the ordering of events rather than precise timestamps, we specify <code>ordinal = TRUE</code> when estimating the model.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
