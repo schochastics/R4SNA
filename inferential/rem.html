@@ -472,7 +472,23 @@ window.Quarto = {
   </ul></li>
   <li><a href="#exogenous-covariates" id="toc-exogenous-covariates" class="nav-link" data-scroll-target="#exogenous-covariates"><span class="header-section-number">19.3.2</span> Exogenous Covariates</a></li>
   </ul></li>
-  <li><a href="#rem-in-r" id="toc-rem-in-r" class="nav-link" data-scroll-target="#rem-in-r"><span class="header-section-number">19.4</span> REM in R</a></li>
+  <li><a href="#rem-in-r" id="toc-rem-in-r" class="nav-link" data-scroll-target="#rem-in-r"><span class="header-section-number">19.4</span> REM in R</a>
+  <ul>
+  <li><a href="#model-1-reciprocity-and-repetition" id="toc-model-1-reciprocity-and-repetition" class="nav-link" data-scroll-target="#model-1-reciprocity-and-repetition"><span class="header-section-number">19.4.1</span> Model 1: Reciprocity and Repetition</a>
+  <ul>
+  <li><a href="#reciprocity-rrecsnd" id="toc-reciprocity-rrecsnd" class="nav-link" data-scroll-target="#reciprocity-rrecsnd">Reciprocity (<code>RRecSnd</code>)</a></li>
+  <li><a href="#repetition-rsndsnd" id="toc-repetition-rsndsnd" class="nav-link" data-scroll-target="#repetition-rsndsnd">Repetition (<code>RSndSnd</code>)</a></li>
+  <li><a href="#interpreting-the-coefficients" id="toc-interpreting-the-coefficients" class="nav-link" data-scroll-target="#interpreting-the-coefficients">Interpreting the Coefficients</a></li>
+  </ul></li>
+  <li><a href="#model-2-gender-as-an-exogenous-covariate" id="toc-model-2-gender-as-an-exogenous-covariate" class="nav-link" data-scroll-target="#model-2-gender-as-an-exogenous-covariate"><span class="header-section-number">19.4.2</span> Model 2: Gender as an Exogenous Covariate</a>
+  <ul>
+  <li><a href="#interpreting-the-coefficients-1" id="toc-interpreting-the-coefficients-1" class="nav-link" data-scroll-target="#interpreting-the-coefficients-1">Interpreting the Coefficients</a></li>
+  </ul></li>
+  <li><a href="#model-3-gender-interaction-effects" id="toc-model-3-gender-interaction-effects" class="nav-link" data-scroll-target="#model-3-gender-interaction-effects"><span class="header-section-number">19.4.3</span> Model 3: Gender Interaction Effects</a>
+  <ul>
+  <li><a href="#interpreting-the-coefficients-2" id="toc-interpreting-the-coefficients-2" class="nav-link" data-scroll-target="#interpreting-the-coefficients-2">Interpreting the Coefficients</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/inferential/rem.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -522,7 +538,7 @@ window.Quarto = {
 <li><strong>Environmental or contextual factors</strong> (e.g., time constraints, institutional settings)</li>
 </ul>
 <p>By incorporating these elements, REM enables researchers to test hypotheses about the mechanisms that generate interaction sequences.</p>
-<p>This chapter introduces the theoretical foundations and methodological tools of Relational Event Models. It begins by situating REM within the broader landscape of network analysis and clarifying its event-centered logic. It then develops the core components of the model—event histories, risk sets, and rate functions—before examining how structural, attribute-based, and contextual effects are specified and interpreted.</p>
+<p>This chapter introduces the theoretical foundations and methodological tools of Relational Event Models. It begins by situating REM within the broader landscape of network analysis and clarifying its event-centered logic. It then develops the core components of the model (event histories, risk sets, and rate functions) before examining how structural, attribute-based, and contextual effects are specified and interpreted.</p>
 <p>Through this approach, we will see how REM provides a rigorous and flexible framework for modeling dynamic interaction processes, illuminating the micro-level mechanisms through which social structure emerges over time.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="19.1">
 <h2 data-number="19.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">19.1</span> Packages Needed for this Chapter</h2>
@@ -896,6 +912,396 @@ Table&nbsp;19.2: Summary of exogenous covariates used in relational event models
 <li><strong><code>ordinal</code></strong>: a logical argument indicating whether the event data are ordinal. Set <code>TRUE</code> if the data only record the order of events (without exact timestamps), and <code>FALSE</code> if precise event times are available.</li>
 </ul>
 <p>In our case, the dataset consists of a sequence of dialogue interactions between characters in <em>Frozen</em>, where each event records which character speaks to another and the order in which the interaction occurs. Because the data contain only the ordering of events rather than precise timestamps, we specify <code>ordinal = TRUE</code> when estimating the model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Edit this code once frozen is in networkdata</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the two files</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>frozenlines <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"frozenlines.csv"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>frozenchars <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"frozenchars.csv"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the structure</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(frozenlines)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   634 obs. of  17 variables:
+ $ eventID         : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ sceneID         : int  1 1 1 1 1 1 2 3 3 3 ...
+ $ speakerID       : int  1 1 2 1 2 1 1 1 1 2 ...
+ $ Anna..1.        : int  0 0 1 0 1 0 0 0 0 1 ...
+ $ Elsa..2.        : int  1 1 0 1 0 1 1 1 1 0 ...
+ $ Olaf..3.        : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ King..4.        : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Queen..5.       : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Kristoff..6.    : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Bulda..8.       : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Grand.Pabbie..9.: int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Kai..10.        : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Hans..11.       : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Duke..12.       : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Oaken..13.      : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Gerda..14.      : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ Marshmallow..15.: int  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(frozenchars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   14 obs. of  4 variables:
+ $ characterID   : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ character.name: chr  "Anna" "Elsa" "Olaf" "King" ...
+ $ charfem       : int  1 1 0 0 1 0 1 0 0 0 ...
+ $ nlines        : int  249 69 73 9 2 115 3 8 9 59 ...</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(frozenlines)[<span class="dv">4</span><span class="sc">:</span><span class="fu">ncol</span>(frozenlines)] <span class="ot">&lt;-</span> frozenchars<span class="sc">$</span>characterID</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>receiver_cols <span class="ot">&lt;-</span> <span class="dv">4</span><span class="sc">:</span><span class="fu">ncol</span>(frozenlines)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(frozenlines)) {</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  sender <span class="ot">&lt;-</span> frozenlines<span class="sc">$</span>speakerID[i]</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  event  <span class="ot">&lt;-</span> frozenlines<span class="sc">$</span>eventID[i]</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find receivers with value 1</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  receivers <span class="ot">&lt;-</span> receiver_cols[frozenlines[i, receiver_cols] <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(receivers) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(r <span class="cf">in</span> receivers){</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>      edges[[k]] <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">time =</span> event,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">sender =</span> sender,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">receiver =</span> <span class="fu">as.integer</span>(<span class="fu">names</span>(frozenlines)[r])</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>      k <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine all edges</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>edgelist <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, edges)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort by event order</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>edgelist <span class="ot">&lt;-</span> edgelist[<span class="fu">order</span>(edgelist<span class="sc">$</span>time), ]</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(edgelist)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  time sender receiver
+1    1      1        2
+2    2      1        2
+3    3      2        1
+4    4      1        2
+5    5      2        1
+6    6      1        2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make sure eachevent is unique (this can be a manual fix from networkdata)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>edgelist <span class="ot">&lt;-</span> edgelist[<span class="fu">order</span>(edgelist<span class="sc">$</span>time), ]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>edgelist<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(edgelist)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>edgelist <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(edgelist)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Network size ----</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>n_actors <span class="ot">&lt;-</span> <span class="fu">nrow</span>(frozenchars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="model-1-reciprocity-and-repetition" class="level3" data-number="19.4.1">
+<h3 data-number="19.4.1" class="anchored" data-anchor-id="model-1-reciprocity-and-repetition"><span class="header-section-number">19.4.1</span> Model 1: Reciprocity and Repetition</h3>
+<p>We begin by estimating a relational event model that includes two endogenous structural effects: reciprocity and repetition. These effects capture two basic conversational dynamics: turn-taking behaviour and the persistence of interactions between the same pair of characters. Including these mechanisms allows the model to account for simple structural patterns in the dialogue sequence before introducing additional explanatory variables, such as actor attributes or contextual factors, in later models.</p>
+<p>Because the dialogue data record only the order of interactions rather than precise timestamps, the model is estimated with <code>ordinal = TRUE</code>. In this setting, the relational event model compares the intensity of the observed interaction to the intensities of all other possible interactions in the risk set, which consists of all possible sender–receiver pairs at that moment.</p>
+<p>Formally, the event intensity for a potential interaction <span class="math inline">\(i \rightarrow j\)</span> at time <span class="math inline">\(t\)</span> is given by</p>
+<p><span class="math display">\[
+\lambda_{ij}(t \mid H_t) =
+\lambda_0(t)\exp\Big(
+\theta_1\,\text{Reciprocity}_{ij}(t) +
+\theta_2\,\text{Repetition}_{ij}(t)
+\Big)
+\]</span></p>
+<p>where <span class="math inline">\(\lambda_{ij}(t \mid H_t)\)</span> denotes the rate at which actor <span class="math inline">\(i\)</span> directs an interaction to actor <span class="math inline">\(j\)</span> at time <span class="math inline">\(t\)</span>, given the event history <span class="math inline">\(H_t\)</span>. The statistics capture the following mechanisms:</p>
+<ul>
+<li><span class="math inline">\(\text{Reciprocity}_{ij}(t)\)</span> indicates whether the previous interaction was <span class="math inline">\(j \rightarrow i\)</span>.</li>
+<li><span class="math inline">\(\text{Repetition}_{ij}(t)\)</span> indicates whether the previous interaction was <span class="math inline">\(i \rightarrow j\)</span>.</li>
+</ul>
+<section id="reciprocity-rrecsnd" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="reciprocity-rrecsnd">Reciprocity (<code>RRecSnd</code>)</h4>
+<p>This effect captures whether characters tend to respond to someone who has just addressed them. In conversational settings, reciprocity reflects a basic turn-taking mechanism. If the previous interaction was <span class="math inline">\(i \rightarrow j\)</span>, a positive reciprocity effect indicates that the event <span class="math inline">\(j \rightarrow i\)</span> becomes more likely to occur next.</p>
+<p>In the context of the <em>Frozen</em> dialogue network, a positive reciprocity coefficient implies that when one character speaks to another, the addressed character is more likely to respond directly.</p>
+</section>
+<section id="repetition-rsndsnd" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="repetition-rsndsnd">Repetition (<code>RSndSnd</code>)</h4>
+<p>This effect captures the tendency for the same sender–receiver interaction to occur repeatedly. If the previous event was <span class="math inline">\(i \rightarrow j\)</span>, this statistic measures whether the same interaction <span class="math inline">\(i \rightarrow j\)</span> occurs again immediately afterward.</p>
+<p>In conversational terms, repetition indicates that a speaker may continue addressing the same character across consecutive lines of dialogue.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Prepping edgelist.
+Checking/prepping covariates.
+Computing preliminary statistics
+Fitting model
+Obtaining goodness-of-fit statistics</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Relational Event Model (Ordinal Likelihood)
+
+        Estimate Std.Err Z value  Pr(&gt;|z|)    
+RRecSnd  3.57036 0.14991  23.816 &lt; 2.2e-16 ***
+RSndSnd  2.24439 0.13296  16.881 &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Null deviance: 6879.697 on 661 degrees of freedom
+Residual deviance: 3995.745 on 659 degrees of freedom
+    Chi-square: 2883.952 on 2 degrees of freedom, asymptotic p-value 0 
+AIC: 3999.745 AICC: 3999.763 BIC: 4008.732 </code></pre>
+</div>
+</div>
+</section>
+<section id="interpreting-the-coefficients" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="interpreting-the-coefficients">Interpreting the Coefficients</h4>
+<p>The estimated coefficients reported in <code>summary(model1)</code> represent log-relative rates of events. A positive coefficient indicates that the corresponding interaction pattern increases the likelihood that a given event occurs next, while a negative coefficient indicates that it decreases that likelihood. Because the model uses a log-linear intensity formulation, coefficients can be interpreted multiplicatively: if a coefficient is <span class="math inline">\(\theta\)</span>, the corresponding event rate is multiplied by <span class="math inline">\(e^{\theta}\)</span> when the associated statistic increases by one unit. The argument <code>hessian = TRUE</code> instructs the model to compute the Hessian matrix, allowing standard errors and statistical tests to be obtained.</p>
+<p>Both endogenous effects are positive and highly statistically significant. The estimated coefficient for reciprocity is 3.57 (<span class="math inline">\(SE = 0.15\)</span>, <span class="math inline">\(p &lt; 0.001\)</span>), indicating a strong tendency for characters to respond directly to those who have just spoken to them. Exponentiating the coefficient gives</p>
+<p><span class="math display">\[
+e^{3.57} \approx 35.6
+\]</span></p>
+<p>This means that a reciprocating interaction is estimated to be about 35 times more likely to occur next than it would be in the absence of this structural tendency, providing strong evidence of turn-taking dynamics in the <em>Frozen</em> dialogue network.</p>
+<p>The estimated coefficient for repetition is 2.24 (<span class="math inline">\(SE = 0.13\)</span>, <span class="math inline">\(p &lt; 0.001\)</span>). Exponentiating this coefficient yields</p>
+<p><span class="math display">\[
+e^{2.24} \approx 9.4
+\]</span></p>
+<p>Thus, if the previous interaction was <span class="math inline">\(i \rightarrow j\)</span>, the same interaction occurring again immediately afterward is approximately nine times more likely than it would otherwise be. This suggests that once a conversational exchange begins between two characters, it often persists for multiple lines of dialogue.</p>
+<p>Taken together, these results indicate that dialogue interactions in <em>Frozen</em> are strongly structured by basic conversational dynamics. Characters frequently respond directly to those who have just spoken to them, and conversations often continue between the same pair of characters across consecutive dialogue turns.</p>
+</section>
+</section>
+<section id="model-2-gender-as-an-exogenous-covariate" class="level3" data-number="19.4.2">
+<h3 data-number="19.4.2" class="anchored" data-anchor-id="model-2-gender-as-an-exogenous-covariate"><span class="header-section-number">19.4.2</span> Model 2: Gender as an Exogenous Covariate</h3>
+<p>We now extend the previous model by incorporating gender as an exogenous actor-level covariate. The gender information is taken from the character data, where the variable <code>charfem</code> indicates whether a character is female (<code>1</code>) or not (<code>0</code>). This allows us to examine whether gender influences patterns of dialogue in the <em>Frozen</em> interaction network, while still accounting for the endogenous conversational dynamics captured in Model 1.</p>
+<p>As before, the model includes reciprocity and repetition. In addition, it now allows the probability of an interaction to depend on the gender of the sender and the receiver.</p>
+<p>The gender indicator is first constructed as an actor-level covariate aligned with the character IDs:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># female indicator by character ID</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)], <span class="at">ncol =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Formally, the event intensity for a potential interaction <span class="math inline">\(i \rightarrow j\)</span> at time <span class="math inline">\(t\)</span> is given by</p>
+<p><span class="math display">\[
+\begin{split}
+\lambda_{ij}(t \mid H_t)  &amp; =
+\lambda_0(t)\exp\Big(
+\theta_1\,\text{Reciprocity}_{ij}(t) +
+\theta_2\,\text{Repetition}_{ij}(t)   \\ &amp; \qquad \qquad \qquad
++\theta_3\,\text{SenderFemale}_{ij} +
+\theta_4\,\text{ReceiverFemale}_{ij}
+\Big)
+\end{split}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\text{Reciprocity}_{ij}(t)\)</span> indicates whether the previous interaction was <span class="math inline">\(j \rightarrow i\)</span>,</li>
+<li><span class="math inline">\(\text{Repetition}_{ij}(t)\)</span> indicates whether the previous interaction was <span class="math inline">\(i \rightarrow j\)</span>,</li>
+<li><span class="math inline">\(\text{SenderFemale}_{ij}\)</span> equals 1 if the sender <span class="math inline">\(i\)</span> is female,</li>
+<li><span class="math inline">\(\text{ReceiverFemale}_{ij}\)</span> equals 1 if the receiver <span class="math inline">\(j\)</span> is female.</li>
+</ul>
+<p>The parameters <span class="math inline">\(\theta_3\)</span> and <span class="math inline">\(\theta_4\)</span> therefore capture whether female characters are more or less likely to initiate dialogue or be addressed by others, respectively.</p>
+<p>The sender gender effect (<code>CovSnd</code>) tests whether female characters are more likely to initiate interactions than male characters. A positive coefficient indicates that female characters speak more frequently to others, while a negative coefficient would suggest that male characters initiate dialogue more often.</p>
+<p>The receiver gender effect (<code>CovRec</code>) tests whether female characters are more likely to be addressed by others. A positive coefficient indicates that interactions are more likely to target female characters.</p>
+<p>Importantly, these effects are estimated while controlling for the conversational dynamics captured by reciprocity and repetition. This allows us to assess whether gender differences in dialogue persist after accounting for basic turn-taking behaviour and repeated exchanges between the same characters.</p>
+<p>As in the previous model, the coefficients are expressed in log-relative rates, meaning that exponentiating a coefficient yields the multiplicative change in the event rate associated with a one-unit change in the corresponding statistic.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># female indicator by character ID</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)], <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovSnd"</span>, <span class="st">"CovRec"</span>),</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovSnd =</span> female,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovRec =</span> female</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Prepping edgelist.
+Checking/prepping covariates.
+Computing preliminary statistics
+Fitting model
+Obtaining goodness-of-fit statistics</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Relational Event Model (Ordinal Likelihood)
+
+         Estimate  Std.Err Z value Pr(&gt;|z|)    
+RRecSnd  3.669319 0.149300 24.5769   &lt;2e-16 ***
+RSndSnd  2.171289 0.132459 16.3922   &lt;2e-16 ***
+CovSnd.1 0.797349 0.082131  9.7083   &lt;2e-16 ***
+CovRec.1 0.106776 0.085729  1.2455   0.2129    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Null deviance: 6879.697 on 661 degrees of freedom
+Residual deviance: 3902.631 on 657 degrees of freedom
+    Chi-square: 2977.066 on 4 degrees of freedom, asymptotic p-value 0 
+AIC: 3910.631 AICC: 3910.692 BIC: 3928.606 </code></pre>
+</div>
+</div>
+<section id="interpreting-the-coefficients-1" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="interpreting-the-coefficients-1">Interpreting the Coefficients</h4>
+<p>The results of the relational event model including gender covariates can be summarized as follows.</p>
+<p>The estimated coefficients again represent log-relative rates of events. As in the previous model, a positive coefficient indicates that the corresponding effect increases the likelihood that a particular interaction occurs next, while a negative coefficient indicates that it decreases that likelihood. Exponentiating a coefficient provides a multiplicative interpretation of the change in the event rate associated with a one-unit increase in the corresponding statistic.</p>
+<p>The estimates indicate that the conversational dynamics identified in the previous model (reciprocity and repetition) remain strong and highly statistically significant even after accounting for gender effects.</p>
+<p>The reciprocity coefficient is 3.67 (<span class="math inline">\(SE = 0.15\)</span>, <span class="math inline">\(p &lt; 0.001\)</span>), indicating a strong tendency for characters to respond directly to those who have just addressed them. Exponentiating the coefficient yields</p>
+<p><span class="math display">\[
+e^{3.67} \approx 39.3
+\]</span></p>
+<p>This implies that when a character <span class="math inline">\(i\)</span> speaks to character <span class="math inline">\(j\)</span>, the probability that the next interaction will be <span class="math inline">\(j \rightarrow i\)</span> is nearly forty times larger than it would otherwise be.</p>
+<p>The repetition coefficient is 2.17 (<span class="math inline">\(SE = 0.13\)</span>, <span class="math inline">\(p &lt; 0.001\)</span>). Exponentiating this coefficient gives</p>
+<p><span class="math display">\[
+e^{2.17} \approx 8.8
+\]</span></p>
+<p>Thus, if the previous interaction was <span class="math inline">\(i \rightarrow j\)</span>, the same interaction occurring again immediately afterward is roughly nine times more likely than it would otherwise be. This indicates that conversations frequently continue between the same pair of characters across consecutive lines of dialogue.</p>
+<p>Turning to the gender covariates, the sender gender coefficient is 0.80 (<span class="math inline">\(SE = 0.08\)</span>, <span class="math inline">\(p &lt; 0.001\)</span>), indicating that female characters are significantly more likely to initiate dialogue than male characters. Exponentiating the coefficient gives</p>
+<p><span class="math display">\[
+e^{0.80} \approx 2.22
+\]</span></p>
+<p>This suggests that, holding the conversational dynamics constant, interactions initiated by female characters occur at a rate that is approximately 2.2 times higher than those initiated by male characters.</p>
+<p>The receiver gender coefficient is 0.11 (<span class="math inline">\(SE = 0.09\)</span>, <span class="math inline">\(p = 0.21\)</span>), which is not statistically significant. This indicates that there is no strong evidence that female characters are more or less likely to be addressed by others once conversational dynamics are taken into account.</p>
+<p>Taken together, these results show that dialogue interactions in <em>Frozen</em> are shaped by both structural conversational dynamics and gender differences in speaking behavior. Turn-taking and repeated exchanges remain the dominant organizing mechanisms, while the gender covariate reveals that female characters are more likely to initiate dialogue within the interaction network.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Gender Dynamics in Dialogue Networks
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The finding that female characters are more likely to initiate dialogue is noteworthy in the context of film dialogue networks. In many films, speaking roles and conversational agency are disproportionately concentrated among male characters. A widely discussed indicator of this imbalance is the <strong>Bechdel Test</strong>, which evaluates whether a film contains at least two named female characters who speak to each other about something other than a man.</p>
+<p>Many films fail to satisfy even this minimal criterion, highlighting the limited presence and interaction of female characters in cinematic narratives. Against this backdrop, the <em>Frozen</em> dialogue network presents a somewhat unusual pattern: female characters not only appear frequently but also play an active role in initiating interactions.</p>
+<p>While this analysis does not directly test the Bechdel criterion, the strong sender gender effect suggests that female characters occupy central conversational roles within the narrative. This aligns with the broader narrative structure of <em>Frozen</em>, which centers on the relationship between its two main female protagonists.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="model-3-gender-interaction-effects" class="level3" data-number="19.4.3">
+<h3 data-number="19.4.3" class="anchored" data-anchor-id="model-3-gender-interaction-effects"><span class="header-section-number">19.4.3</span> Model 3: Gender Interaction Effects</h3>
+<p>We now extend the previous specification by allowing the gender of the sender and receiver to interact. While Model 2 examined whether female characters are more likely to initiate or receive dialogue, this model additionally tests whether interactions between female characters occur at a different rate than would be expected from the sender and receiver effects alone.</p>
+<p>As before, the model includes the endogenous conversational dynamics captured by reciprocity and repetition. In addition, it now includes a gender interaction effect that captures whether interactions between two female characters are more or less likely than other interactions.</p>
+<p>Formally, the event intensity for a potential interaction <span class="math inline">\(i \rightarrow j\)</span> at time <span class="math inline">\(t\)</span> is given by</p>
+<p><span class="math display">\[
+\begin{split}
+\lambda_{ij}(t \mid H_t) &amp; =
+\lambda_0(t)\exp\Big(
+\theta_1\,\text{Reciprocity}_{ij}(t) +
+\theta_2\,\text{Repetition}_{ij}(t)  \\ &amp; \qquad \qquad \qquad
++ \theta_3\,\text{SenderFemale}_{ij} +
+\theta_4\,\text{ReceiverFemale}_{ij} +
+\theta_5\,\text{FemaleInteraction}_{ij}
+\Big)
+\end{split}
+\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(\text{Reciprocity}_{ij}(t)\)</span> indicates whether the previous interaction was <span class="math inline">\(j \rightarrow i\)</span>,</li>
+<li><span class="math inline">\(\text{Repetition}_{ij}(t)\)</span> indicates whether the previous interaction was <span class="math inline">\(i \rightarrow j\)</span>,</li>
+<li><span class="math inline">\(\text{SenderFemale}_{ij}\)</span> equals 1 if the sender <span class="math inline">\(i\)</span> is female,</li>
+<li><span class="math inline">\(\text{ReceiverFemale}_{ij}\)</span> equals 1 if the receiver <span class="math inline">\(j\)</span> is female,</li>
+<li><span class="math inline">\(\text{FemaleInteraction}_{ij}\)</span> equals 1 if both the sender and receiver are female.</li>
+</ul>
+<p>The interaction effect therefore captures whether conversations between female characters occur more or less frequently than would be expected based solely on sender and receiver gender effects.</p>
+<p>The sender gender effect (<code>CovSnd</code>) continues to test whether female characters are more likely to initiate dialogue, while the receiver gender effect (<code>CovRec</code>) captures whether female characters are more likely to be addressed. The interaction effect (<code>CovInt</code>) captures whether interactions between female characters occur at a higher or lower rate than would be expected from these individual effects.</p>
+<p>Importantly, these effects are estimated while controlling for the conversational dynamics captured by reciprocity and repetition. This allows us to examine whether gender-based interaction patterns persist once basic conversational mechanisms are taken into account.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovSnd"</span>, <span class="st">"CovRec"</span>, <span class="st">"CovInt"</span>),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovSnd =</span> female,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovRec =</span> female,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovInt =</span> female</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Prepping edgelist.
+Checking/prepping covariates.
+Computing preliminary statistics
+Fitting model
+Obtaining goodness-of-fit statistics</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Relational Event Model (Ordinal Likelihood)
+
+         Estimate  Std.Err Z value Pr(&gt;|z|)    
+RRecSnd   3.66899  0.14930 24.5739   &lt;2e-16 ***
+RSndSnd   2.17218  0.13247 16.3972   &lt;2e-16 ***
+CovSnd.1  0.49670 51.69496  0.0096   0.9923    
+CovRec.1 -0.19412 51.69497 -0.0038   0.9970    
+CovInt.1  0.30029 51.69495  0.0058   0.9954    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Null deviance: 6879.697 on 661 degrees of freedom
+Residual deviance: 3902.631 on 656 degrees of freedom
+    Chi-square: 2977.066 on 5 degrees of freedom, asymptotic p-value 0 
+AIC: 3912.631 AICC: 3912.723 BIC: 3935.1 </code></pre>
+</div>
+</div>
+<section id="interpreting-the-coefficients-2" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="interpreting-the-coefficients-2">Interpreting the Coefficients</h4>
+<p>The interpretation of the coefficients follows the same logic as in the previous models. The estimated parameters represent log-relative rates of events. A positive coefficient indicates that the corresponding effect increases the likelihood that an interaction occurs next, while a negative coefficient indicates that it decreases that likelihood. Exponentiating a coefficient yields the multiplicative change in the event rate associated with a one-unit increase in the corresponding statistic.</p>
+<p>The estimates show that the conversational dynamics identified in the previous models remain strong and highly statistically significant. The reciprocity coefficient is 3.67 (<span class="math inline">\(SE = 0.15\)</span>, <span class="math inline">\(p &lt; 0.001\)</span>), indicating a strong tendency for characters to respond directly to those who have just addressed them. Exponentiating the coefficient gives</p>
+<p><span class="math display">\[
+e^{3.67} \approx 39.3
+\]</span></p>
+<p>This implies that when a character <span class="math inline">\(i\)</span> speaks to character <span class="math inline">\(j\)</span>, the probability that the next interaction will be <span class="math inline">\(j \rightarrow i\)</span> is nearly forty times larger than it would otherwise be.</p>
+<p>The repetition coefficient is 2.17 (<span class="math inline">\(SE = 0.13\)</span>, <span class="math inline">\(p &lt; 0.001\)</span>). Exponentiating this coefficient yields</p>
+<p><span class="math display">\[
+e^{2.17} \approx 8.8
+\]</span></p>
+<p>Thus, if the previous interaction was <span class="math inline">\(i \rightarrow j\)</span>, the same interaction occurring again immediately afterward is roughly nine times more likely than it would otherwise be. This again indicates that conversations frequently continue between the same pair of characters across consecutive dialogue turns.</p>
+<p>Turning to the gender covariates, none of the gender-related effects are statistically significant in this specification. The estimated sender gender coefficient is 0.50 (<span class="math inline">\(SE = 51.83\)</span>, <span class="math inline">\(p = 0.99\)</span>), the receiver gender coefficient is <span class="math inline">\(-0.20\)</span> (<span class="math inline">\(SE = 51.83\)</span>, <span class="math inline">\(p = 0.997\)</span>), and the gender interaction coefficient is 0.30 (<span class="math inline">\(SE = 51.83\)</span>, <span class="math inline">\(p = 0.995\)</span>). The extremely large standard errors indicate that these parameters are estimated with very high uncertainty in this model.</p>
+<p>Substantively, this suggests that once the interaction effect between sender and receiver gender is introduced, the model is unable to distinguish clear gender-based patterns in the dialogue sequence. In contrast to Model 2, where female characters appeared more likely to initiate dialogue, the additional interaction term absorbs much of the variation associated with gender and results in unstable estimates for the gender effects.</p>
+<p>Taken together, these results reinforce the conclusion that the primary structure of the dialogue network is driven by conversational dynamics (specifically reciprocity and repetition) while gender-based interaction patterns are not strongly identified once interaction effects are included in the model.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Contextual Covariates in Relational Event Models
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In addition to endogenous network statistics and actor attributes, relational event models can also incorporate contextual covariates when such information is available. Contextual covariates capture features of the environment or situation in which interactions occur and allow researchers to examine how interaction patterns vary across different settings.</p>
+<p>In the <code>relevent</code> package, such variables can be included using the <code>CovEvent</code> effect. Event-level covariates describe characteristics of the interaction context at a particular point in time rather than attributes of the actors involved.</p>
+<p>For example, in studies of classroom interaction networks, contextual variables might include the structure of the lesson (e.g., lecture, group work, or discussion), the phase of an activity, or the seating arrangement of students. These contextual factors may influence who interacts with whom and how conversational dynamics unfold over time.</p>
+<p>When included in the model, the event intensity can be written as</p>
+<p><span class="math display">\[
+\lambda_{ij}(t \mid H_t) =
+\lambda_0(t)\exp\Big(
+\theta_1\,\text{Reciprocity}_{ij}(t) +
+\theta_2\,\text{Repetition}_{ij}(t) +
+\theta_3\,\text{Context}_t
+\Big)
+\]</span></p>
+<p>where <span class="math inline">\(\text{Context}_t\)</span> represents an event-level covariate capturing features of the situation at time <span class="math inline">\(t\)</span>.</p>
+<p>In practice, such variables are included in <code>relevent</code> using the <code>CovEvent</code> term in the <code>effects</code> argument and supplying the corresponding event-level covariate through the <code>covar</code> list. For example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rem.dyad</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovEvent"</span>),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(<span class="at">CovEvent =</span> context_variable),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Including contextual covariates allows relational event models to move beyond purely structural explanations of interaction sequences and to account for how social behaviour is shaped by situational or institutional conditions.</p>
+</div>
+</div>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
@@ -903,6 +1309,8 @@ Table&nbsp;19.2: Summary of exogenous covariates used in relational event models
 Butts, Carter T. 2008. <span>“4. A Relational Event Framework for Social Action.”</span> <em>Sociological Methodology</em> 38 (1): 155–200.
 </div>
 </div>
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->
