@@ -32,7 +32,7 @@ These factors may include:
 
 By incorporating these elements, REM enables researchers to test hypotheses about the mechanisms that generate interaction sequences.
 
-This chapter introduces the theoretical foundations and methodological tools of Relational Event Models. It begins by situating REM within the broader landscape of network analysis and clarifying its event-centered logic. It then develops the core components of the model—event histories, risk sets, and rate functions—before examining how structural, attribute-based, and contextual effects are specified and interpreted.
+This chapter introduces the theoretical foundations and methodological tools of Relational Event Models. It begins by situating REM within the broader landscape of network analysis and clarifying its event-centered logic. It then develops the core components of the model (event histories, risk sets, and rate functions) before examining how structural, attribute-based, and contextual effects are specified and interpreted.
 
 Through this approach, we will see how REM provides a rigorous and flexible framework for modeling dynamic interaction processes, illuminating the micro-level mechanisms through which social structure emerges over time.
 
@@ -342,3 +342,370 @@ The main arguments of the `rem.dyad()` function are:
 - **`ordinal`**: a logical argument indicating whether the event data are ordinal. Set `TRUE` if the data only record the order of events (without exact timestamps), and `FALSE` if precise event times are available.
 
 In our case, the dataset consists of a sequence of dialogue interactions between characters in *Frozen*, where each event records which character speaks to another and the order in which the interaction occurs. Because the data contain only the ordering of events rather than precise timestamps, we specify `ordinal = TRUE` when estimating the model.
+
+
+```{r}
+#| label: data
+#| message: false
+
+# Edit this code once frozen is in networkdata
+# Read the two files
+frozenlines <- read.csv("frozenlines.csv")
+frozenchars <- read.csv("frozenchars.csv")
+
+# Check the structure
+str(frozenlines)
+str(frozenchars)
+
+names(frozenlines)[4:ncol(frozenlines)] <- frozenchars$characterID
+receiver_cols <- 4:ncol(frozenlines)
+
+edges <- list()
+k <- 1
+
+for (i in 1:nrow(frozenlines)) {
+  
+  sender <- frozenlines$speakerID[i]
+  event  <- frozenlines$eventID[i]
+  
+  # find receivers with value 1
+  receivers <- receiver_cols[frozenlines[i, receiver_cols] == 1]
+  
+  if(length(receivers) > 0){
+    
+    for(r in receivers){
+      edges[[k]] <- data.frame(
+        time = event,
+        sender = sender,
+        receiver = as.integer(names(frozenlines)[r])
+      )
+      k <- k + 1
+    }
+    
+  }
+}
+
+# Combine all edges
+edgelist <- do.call(rbind, edges)
+
+# Sort by event order
+edgelist <- edgelist[order(edgelist$time), ]
+
+head(edgelist)
+
+# make sure eachevent is unique (this can be a manual fix from networkdata)
+edgelist <- edgelist[order(edgelist$time), ]
+edgelist$time <- 1:nrow(edgelist)
+
+edgelist <- as.matrix(edgelist)
+# ---- Network size ----
+n_actors <- nrow(frozenchars)
+
+
+```
+### Model 1: Reciprocity and Repetition
+
+
+We begin by estimating a relational event model that includes two endogenous structural effects: reciprocity and repetition. These effects capture two basic conversational dynamics: turn-taking behaviour and the persistence of interactions between the same pair of characters. Including these mechanisms allows the model to account for simple structural patterns in the dialogue sequence before introducing additional explanatory variables, such as actor attributes or contextual factors, in later models.
+
+Because the dialogue data record only the order of interactions rather than precise timestamps, the model is estimated with `ordinal = TRUE`. In this setting, the relational event model compares the intensity of the observed interaction to the intensities of all other possible interactions in the risk set, which consists of all possible sender–receiver pairs at that moment.
+
+Formally, the event intensity for a potential interaction $i \rightarrow j$ at time $t$ is given by
+
+$$
+\lambda_{ij}(t \mid H_t) =
+\lambda_0(t)\exp\Big(
+\theta_1\,\text{Reciprocity}_{ij}(t) +
+\theta_2\,\text{Repetition}_{ij}(t)
+\Big)
+$$
+
+where $\lambda_{ij}(t \mid H_t)$ denotes the rate at which actor $i$ directs an interaction to actor $j$ at time $t$, given the event history $H_t$. The statistics capture the following mechanisms:
+
+- $\text{Reciprocity}_{ij}(t)$ indicates whether the previous interaction was $j \rightarrow i$.
+- $\text{Repetition}_{ij}(t)$ indicates whether the previous interaction was $i \rightarrow j$.
+
+#### Reciprocity (`RRecSnd`) {.unnumbered}
+
+This effect captures whether characters tend to respond to someone who has just addressed them. In conversational settings, reciprocity reflects a basic turn-taking mechanism. If the previous interaction was $i \rightarrow j$, a positive reciprocity effect indicates that the event $j \rightarrow i$ becomes more likely to occur next.
+
+In the context of the *Frozen* dialogue network, a positive reciprocity coefficient implies that when one character speaks to another, the addressed character is more likely to respond directly.
+
+#### Repetition (`RSndSnd`) {.unnumbered}
+
+This effect captures the tendency for the same sender–receiver interaction to occur repeatedly. If the previous event was $i \rightarrow j$, this statistic measures whether the same interaction $i \rightarrow j$ occurs again immediately afterward.
+
+In conversational terms, repetition indicates that a speaker may continue addressing the same character across consecutive lines of dialogue.
+
+```{r}
+#| label: fit-rem1
+#| message: false
+
+model1 <- rem.dyad(
+  edgelist = edgelist,
+  n = n_actors,
+  effects = c("RRecSnd", "RSndSnd"),
+  ordinal = TRUE,
+  hessian = TRUE
+)
+
+summary(model1)
+```
+
+#### Interpreting the Coefficients {.unnumbered}
+
+The estimated coefficients reported in `summary(model1)` represent log-relative rates of events. A positive coefficient indicates that the corresponding interaction pattern increases the likelihood that a given event occurs next, while a negative coefficient indicates that it decreases that likelihood. Because the model uses a log-linear intensity formulation, coefficients can be interpreted multiplicatively: if a coefficient is $\theta$, the corresponding event rate is multiplied by $e^{\theta}$ when the associated statistic increases by one unit. The argument `hessian = TRUE` instructs the model to compute the Hessian matrix, allowing standard errors and statistical tests to be obtained.
+
+Both endogenous effects are positive and highly statistically significant. The estimated coefficient for reciprocity is 3.57 ($SE = 0.15$, $p < 0.001$), indicating a strong tendency for characters to respond directly to those who have just spoken to them. Exponentiating the coefficient gives
+
+$$
+e^{3.57} \approx 35.6
+$$
+
+This means that a reciprocating interaction is estimated to be about 35 times more likely to occur next than it would be in the absence of this structural tendency, providing strong evidence of turn-taking dynamics in the *Frozen* dialogue network.
+
+The estimated coefficient for repetition is 2.24 ($SE = 0.13$, $p < 0.001$). Exponentiating this coefficient yields
+
+$$
+e^{2.24} \approx 9.4
+$$
+
+Thus, if the previous interaction was $i \rightarrow j$, the same interaction occurring again immediately afterward is approximately nine times more likely than it would otherwise be. This suggests that once a conversational exchange begins between two characters, it often persists for multiple lines of dialogue.
+
+Taken together, these results indicate that dialogue interactions in *Frozen* are strongly structured by basic conversational dynamics. Characters frequently respond directly to those who have just spoken to them, and conversations often continue between the same pair of characters across consecutive dialogue turns.
+
+
+### Model 2: Gender as an Exogenous Covariate
+We now extend the previous model by incorporating gender as an exogenous actor-level covariate. The gender information is taken from the character data, where the variable `charfem` indicates whether a character is female (`1`) or not (`0`). This allows us to examine whether gender influences patterns of dialogue in the *Frozen* interaction network, while still accounting for the endogenous conversational dynamics captured in Model 1.
+
+As before, the model includes reciprocity and repetition. In addition, it now allows the probability of an interaction to depend on the gender of the sender and the receiver.
+
+The gender indicator is first constructed as an actor-level covariate aligned with the character IDs:
+
+
+```{r}
+#| label: female-covar
+#| message: false
+# female indicator by character ID
+female <- matrix(frozenchars$charfem[order(frozenchars$characterID)], ncol = 1)
+```
+
+Formally, the event intensity for a potential interaction $i \rightarrow j$ at time $t$ is given by
+
+$$
+\begin{split}
+\lambda_{ij}(t \mid H_t)  & =
+\lambda_0(t)\exp\Big(
+\theta_1\,\text{Reciprocity}_{ij}(t) +
+\theta_2\,\text{Repetition}_{ij}(t)   \\ & \qquad \qquad \qquad 
++\theta_3\,\text{SenderFemale}_{ij} +
+\theta_4\,\text{ReceiverFemale}_{ij}
+\Big)
+\end{split}
+$$
+
+where:
+
+- $\text{Reciprocity}_{ij}(t)$ indicates whether the previous interaction was $j \rightarrow i$,
+- $\text{Repetition}_{ij}(t)$ indicates whether the previous interaction was $i \rightarrow j$,
+- $\text{SenderFemale}_{ij}$ equals 1 if the sender $i$ is female,
+- $\text{ReceiverFemale}_{ij}$ equals 1 if the receiver $j$ is female.
+
+The parameters $\theta_3$ and $\theta_4$ therefore capture whether female characters are more or less likely to initiate dialogue or be addressed by others, respectively.
+
+The sender gender effect (`CovSnd`) tests whether female characters are more likely to initiate interactions than male characters. A positive coefficient indicates that female characters speak more frequently to others, while a negative coefficient would suggest that male characters initiate dialogue more often.
+
+The receiver gender effect (`CovRec`) tests whether female characters are more likely to be addressed by others. A positive coefficient indicates that interactions are more likely to target female characters.
+
+Importantly, these effects are estimated while controlling for the conversational dynamics captured by reciprocity and repetition. This allows us to assess whether gender differences in dialogue persist after accounting for basic turn-taking behaviour and repeated exchanges between the same characters.
+
+As in the previous model, the coefficients are expressed in log-relative rates, meaning that exponentiating a coefficient yields the multiplicative change in the event rate associated with a one-unit change in the corresponding statistic.
+
+```{r}
+#| label: fit-rem2
+#| message: false
+# female indicator by character ID
+female <- matrix(frozenchars$charfem[order(frozenchars$characterID)], ncol = 1)
+
+model2 <- rem.dyad(
+  edgelist = edgelist,
+  n = n_actors,
+  effects = c("RRecSnd", "RSndSnd", "CovSnd", "CovRec"),
+  covar = list(
+    CovSnd = female,
+    CovRec = female
+  ),
+  ordinal = TRUE,
+  hessian = TRUE
+)
+
+summary(model2)
+```
+
+#### Interpreting the Coefficients {.unnumbered}
+
+The results of the relational event model including gender covariates can be summarized as follows.
+
+The estimated coefficients again represent log-relative rates of events. As in the previous model, a positive coefficient indicates that the corresponding effect increases the likelihood that a particular interaction occurs next, while a negative coefficient indicates that it decreases that likelihood. Exponentiating a coefficient provides a multiplicative interpretation of the change in the event rate associated with a one-unit increase in the corresponding statistic.
+
+The estimates indicate that the conversational dynamics identified in the previous model (reciprocity and repetition) remain strong and highly statistically significant even after accounting for gender effects.
+
+The reciprocity coefficient is 3.67 ($SE = 0.15$, $p < 0.001$), indicating a strong tendency for characters to respond directly to those who have just addressed them. Exponentiating the coefficient yields
+
+$$
+e^{3.67} \approx 39.3
+$$
+
+This implies that when a character $i$ speaks to character $j$, the probability that the next interaction will be $j \rightarrow i$ is nearly forty times larger than it would otherwise be.
+
+The repetition coefficient is 2.17 ($SE = 0.13$, $p < 0.001$). Exponentiating this coefficient gives
+
+$$
+e^{2.17} \approx 8.8
+$$
+
+Thus, if the previous interaction was $i \rightarrow j$, the same interaction occurring again immediately afterward is roughly nine times more likely than it would otherwise be. This indicates that conversations frequently continue between the same pair of characters across consecutive lines of dialogue.
+
+Turning to the gender covariates, the sender gender coefficient is 0.80 ($SE = 0.08$, $p < 0.001$), indicating that female characters are significantly more likely to initiate dialogue than male characters. Exponentiating the coefficient gives
+
+$$
+e^{0.80} \approx 2.22
+$$
+
+This suggests that, holding the conversational dynamics constant, interactions initiated by female characters occur at a rate that is approximately 2.2 times higher than those initiated by male characters.
+
+The receiver gender coefficient is 0.11 ($SE = 0.09$, $p = 0.21$), which is not statistically significant. This indicates that there is no strong evidence that female characters are more or less likely to be addressed by others once conversational dynamics are taken into account.
+
+Taken together, these results show that dialogue interactions in *Frozen* are shaped by both structural conversational dynamics and gender differences in speaking behavior. Turn-taking and repeated exchanges remain the dominant organizing mechanisms, while the gender covariate reveals that female characters are more likely to initiate dialogue within the interaction network.
+
+::: {.callout-note}
+
+### Gender Dynamics in Dialogue Networks
+
+The finding that female characters are more likely to initiate dialogue is noteworthy in the context of film dialogue networks. In many films, speaking roles and conversational agency are disproportionately concentrated among male characters. A widely discussed indicator of this imbalance is the **Bechdel Test**, which evaluates whether a film contains at least two named female characters who speak to each other about something other than a man.
+
+Many films fail to satisfy even this minimal criterion, highlighting the limited presence and interaction of female characters in cinematic narratives. Against this backdrop, the *Frozen* dialogue network presents a somewhat unusual pattern: female characters not only appear frequently but also play an active role in initiating interactions.
+
+While this analysis does not directly test the Bechdel criterion, the strong sender gender effect suggests that female characters occupy central conversational roles within the narrative. This aligns with the broader narrative structure of *Frozen*, which centers on the relationship between its two main female protagonists.
+
+:::
+
+### Model 3: Gender Interaction Effects
+We now extend the previous specification by allowing the gender of the sender and receiver to interact. While Model 2 examined whether female characters are more likely to initiate or receive dialogue, this model additionally tests whether interactions between female characters occur at a different rate than would be expected from the sender and receiver effects alone.
+
+As before, the model includes the endogenous conversational dynamics captured by reciprocity and repetition. In addition, it now includes a gender interaction effect that captures whether interactions between two female characters are more or less likely than other interactions.
+
+Formally, the event intensity for a potential interaction $i \rightarrow j$ at time $t$ is given by
+
+$$
+\begin{split}
+\lambda_{ij}(t \mid H_t) & =
+\lambda_0(t)\exp\Big(
+\theta_1\,\text{Reciprocity}_{ij}(t) +
+\theta_2\,\text{Repetition}_{ij}(t)  \\ & \qquad \qquad \qquad 
++ \theta_3\,\text{SenderFemale}_{ij} +
+\theta_4\,\text{ReceiverFemale}_{ij} +
+\theta_5\,\text{FemaleInteraction}_{ij}
+\Big)
+\end{split}
+$$
+
+where
+
+- $\text{Reciprocity}_{ij}(t)$ indicates whether the previous interaction was $j \rightarrow i$,
+- $\text{Repetition}_{ij}(t)$ indicates whether the previous interaction was $i \rightarrow j$,
+- $\text{SenderFemale}_{ij}$ equals 1 if the sender $i$ is female,
+- $\text{ReceiverFemale}_{ij}$ equals 1 if the receiver $j$ is female,
+- $\text{FemaleInteraction}_{ij}$ equals 1 if both the sender and receiver are female.
+
+The interaction effect therefore captures whether conversations between female characters occur more or less frequently than would be expected based solely on sender and receiver gender effects.
+
+The sender gender effect (`CovSnd`) continues to test whether female characters are more likely to initiate dialogue, while the receiver gender effect (`CovRec`) captures whether female characters are more likely to be addressed. The interaction effect (`CovInt`) captures whether interactions between female characters occur at a higher or lower rate than would be expected from these individual effects.
+
+Importantly, these effects are estimated while controlling for the conversational dynamics captured by reciprocity and repetition. This allows us to examine whether gender-based interaction patterns persist once basic conversational mechanisms are taken into account.
+
+```{r}
+#| label: fit-rem3
+#| message: false
+
+model3 <- rem.dyad(
+  edgelist = edgelist,
+  n = n_actors,
+  effects = c("RRecSnd", "RSndSnd", "CovSnd", "CovRec", "CovInt"),
+  covar = list(
+    CovSnd = female,
+    CovRec = female,
+    CovInt = female
+  ),
+  ordinal = TRUE,
+  hessian = TRUE
+)
+
+summary(model3)
+```
+
+#### Interpreting the Coefficients {.unnumbered}
+
+The interpretation of the coefficients follows the same logic as in the previous models. The estimated parameters represent log-relative rates of events. A positive coefficient indicates that the corresponding effect increases the likelihood that an interaction occurs next, while a negative coefficient indicates that it decreases that likelihood. Exponentiating a coefficient yields the multiplicative change in the event rate associated with a one-unit increase in the corresponding statistic.
+
+The estimates show that the conversational dynamics identified in the previous models remain strong and highly statistically significant. The reciprocity coefficient is 3.67 ($SE = 0.15$, $p < 0.001$), indicating a strong tendency for characters to respond directly to those who have just addressed them. Exponentiating the coefficient gives
+
+$$
+e^{3.67} \approx 39.3
+$$
+
+This implies that when a character $i$ speaks to character $j$, the probability that the next interaction will be $j \rightarrow i$ is nearly forty times larger than it would otherwise be.
+
+The repetition coefficient is 2.17 ($SE = 0.13$, $p < 0.001$). Exponentiating this coefficient yields
+
+$$
+e^{2.17} \approx 8.8
+$$
+
+Thus, if the previous interaction was $i \rightarrow j$, the same interaction occurring again immediately afterward is roughly nine times more likely than it would otherwise be. This again indicates that conversations frequently continue between the same pair of characters across consecutive dialogue turns.
+
+Turning to the gender covariates, none of the gender-related effects are statistically significant in this specification. The estimated sender gender coefficient is 0.50 ($SE = 51.83$, $p = 0.99$), the receiver gender coefficient is $-0.20$ ($SE = 51.83$, $p = 0.997$), and the gender interaction coefficient is 0.30 ($SE = 51.83$, $p = 0.995$). The extremely large standard errors indicate that these parameters are estimated with very high uncertainty in this model.
+
+Substantively, this suggests that once the interaction effect between sender and receiver gender is introduced, the model is unable to distinguish clear gender-based patterns in the dialogue sequence. In contrast to Model 2, where female characters appeared more likely to initiate dialogue, the additional interaction term absorbs much of the variation associated with gender and results in unstable estimates for the gender effects.
+
+Taken together, these results reinforce the conclusion that the primary structure of the dialogue network is driven by conversational dynamics (specifically reciprocity and repetition) while gender-based interaction patterns are not strongly identified once interaction effects are included in the model.
+
+::: {.callout-note}
+
+### Contextual Covariates in Relational Event Models
+
+In addition to endogenous network statistics and actor attributes, relational event models can also incorporate contextual covariates when such information is available. Contextual covariates capture features of the environment or situation in which interactions occur and allow researchers to examine how interaction patterns vary across different settings.
+
+In the `relevent` package, such variables can be included using the `CovEvent` effect. Event-level covariates describe characteristics of the interaction context at a particular point in time rather than attributes of the actors involved.
+
+For example, in studies of classroom interaction networks, contextual variables might include the structure of the lesson (e.g., lecture, group work, or discussion), the phase of an activity, or the seating arrangement of students. These contextual factors may influence who interacts with whom and how conversational dynamics unfold over time.
+
+When included in the model, the event intensity can be written as
+
+$$
+\lambda_{ij}(t \mid H_t) =
+\lambda_0(t)\exp\Big(
+\theta_1\,\text{Reciprocity}_{ij}(t) +
+\theta_2\,\text{Repetition}_{ij}(t) +
+\theta_3\,\text{Context}_t
+\Big)
+$$
+
+where $\text{Context}_t$ represents an event-level covariate capturing features of the situation at time $t$.
+
+In practice, such variables are included in `relevent` using the `CovEvent` term in the `effects` argument and supplying the corresponding event-level covariate through the `covar` list. For example:
+
+```{r}
+#| eval: false
+rem.dyad(
+  edgelist = edgelist,
+  n = n_actors,
+  effects = c("RRecSnd", "RSndSnd", "CovEvent"),
+  covar = list(CovEvent = context_variable),
+  ordinal = TRUE
+)
+```
+
+Including contextual covariates allows relational event models to move beyond purely structural explanations of interaction sequences and to account for how social behaviour is shaped by situational or institutional conditions.
+
+:::
