@@ -400,9 +400,74 @@ edgelist$time <- 1:nrow(edgelist)
 edgelist <- as.matrix(edgelist)
 # ---- Network size ----
 n_actors <- nrow(frozenchars)
+```
 
+Before estimating the relational event models, it is helpful to visualize the aggregated dialogue network. Figure @fig-frozen shows the *Frozen* character interaction network, with node color indicating gender.
+
+```{r}
+#| label: fig-frozen
+#| fig-cap: "Aggregated dialogue network of Frozen characters. Node colour indicates gender, node size reflects the number of dialogue lines spoken, and edge width reflects interaction frequency."
+#| echo: false
+#| message: false
+#| warning: false
+
+library(tidygraph)
+library(ggraph)
+library(dplyr)
+
+# Aggregate interactions
+agg_edges <- as.data.frame(table(edgelist[,2], edgelist[,3]))
+colnames(agg_edges) <- c("sender", "receiver", "weight")
+
+agg_edges <- agg_edges |> 
+  filter(weight > 0)
+
+# Node data
+nodes <- frozenchars |>
+  arrange(characterID) |>
+  mutate(
+    gender = ifelse(charfem == 1, "Female", "Male")
+  )
+
+# Build graph
+g <- tbl_graph(
+  nodes = nodes,
+  edges = agg_edges,
+  directed = TRUE
+)
+
+
+ggraph(g, layout = "stress") +
+  geom_edge_link(
+    aes(width = weight),
+    alpha = 0.4,
+    colour = "grey60",
+    show.legend = FALSE
+  ) +
+  geom_node_point(
+    aes(size = nlines, colour = gender)
+  ) +
+  geom_node_text(
+    aes(label = character.name),
+    repel = F,
+    size = 4
+  ) +
+  scale_colour_manual(
+    values = c("Female" = "skyblue", "Male" = "tan")
+  ) +
+  scale_size(
+    range = c(5, 17),
+    transform = "sqrt"
+  ) +
+   guides(
+    colour = "none",
+    size = "none"
+  ) +
+  theme_graph()
 
 ```
+
+
 ### Model 1: Reciprocity and Repetition
 
 
