@@ -1154,8 +1154,8 @@ Obtaining goodness-of-fit statistics</code></pre>
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
-RRecSnd  3.669318 0.149300 24.5768   &lt;2e-16 ***
-RSndSnd  2.171290 0.132459 16.3922   &lt;2e-16 ***
+RRecSnd  3.669318 0.149300 24.5769   &lt;2e-16 ***
+RSndSnd  2.171289 0.132459 16.3922   &lt;2e-16 ***
 CovSnd.1 0.797348 0.082131  9.7083   &lt;2e-16 ***
 CovRec.1 0.106776 0.085729  1.2455   0.2129    
 ---
@@ -1258,11 +1258,11 @@ Obtaining goodness-of-fit statistics</code></pre>
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
-RRecSnd   3.66899  0.14930 24.5739   &lt;2e-16 ***
-RSndSnd   2.17218  0.13247 16.3972   &lt;2e-16 ***
-CovSnd.1  0.49616 51.05526  0.0097   0.9922    
-CovRec.1 -0.19466 51.05526 -0.0038   0.9970    
-CovInt.1  0.30084 51.05524  0.0059   0.9953    
+RRecSnd   3.66897  0.14930 24.5738   &lt;2e-16 ***
+RSndSnd   2.17217  0.13247 16.3972   &lt;2e-16 ***
+CovSnd.1  0.49647 52.77214  0.0094   0.9925    
+CovRec.1 -0.19435 52.77214 -0.0037   0.9971    
+CovInt.1  0.30051 52.77213  0.0057   0.9955    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Null deviance: 6879.697 on 661 degrees of freedom
@@ -1320,7 +1320,7 @@ e^{2.17} \approx 8.8
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span></span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Including contextual covariates allows relational event models to move beyond purely structural explanations of interaction sequences and to account for how social behaviour is shaped by situational or institutional conditions.</p>
+<p>Including contextual covariates (<code>context_variable</code> in above code) allows relational event models to move beyond purely structural explanations of interaction sequences and to account for how social behaviour is shaped by situational or institutional conditions.</p>
 </div>
 </div>
 </section>
@@ -1386,26 +1386,13 @@ send_col      FALSE       TRUE
 <p>The summary provides an overview of the range and distribution of residuals across the event sequence. While many events will typically have residuals close to zero, larger values may indicate interactions that the model has difficulty explaining.</p>
 <p>To identify potential outliers, we can locate events with particularly large residuals. For illustration, we define outlying cases as those with residuals greater than 10.</p>
 <p>The summary provides an overview of the range and distribution of residuals across the event sequence. While many events will typically have residuals close to zero, larger values may indicate interactions that the model has difficulty explaining.</p>
-<p>To identify potential outliers, we can locate events with particularly large residuals. For illustration, we define outlying cases as those with residuals greater than 12 (<span class="math inline">\(\approx \text{Threshold} = Q_3 + 1.5 \times IQR)\)</span>.</p>
+<p>To identify potential outliers, we can locate events with particularly large residuals. For illustration, we define outlying cases as those with residuals greater than 12 (<span class="math inline">\(\approx  Q_3 + 1.5 \times IQR)\)</span>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>high_resids <span class="ot">&lt;-</span> <span class="fu">which</span>(model3<span class="sc">$</span>residuals <span class="sc">&gt;</span> <span class="dv">12</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>These indices correspond to the positions of events in the event sequence where the observed interaction deviates strongly from the model’s predictions. We can inspect these events directly in the event list.</p>
 <p>A visualization of the residual distribution and this threshold is shown below in <a href="#fig-rem-residuals" class="quarto-xref">Figure&nbsp;<span>19.2</span></a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>res_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">residual =</span> model3<span class="sc">$</span>residuals)</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(res_df, <span class="fu">aes</span>(<span class="at">x =</span> residual)) <span class="sc">+</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">12</span>, <span class="at">color =</span> <span class="st">"tomato"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Residual"</span>,</span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span></span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-rem-residuals" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1420,7 +1407,7 @@ Figure&nbsp;19.2: Distribution of residuals from Model 3 of the relational event
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>edgelist[high_resids, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>edgelist[high_resids, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    time sender receiver
 12    12      1        3
@@ -1488,11 +1475,11 @@ Figure&nbsp;19.2: Distribution of residuals from Model 3 of the relational event
 <h4 class="unnumbered anchored" data-anchor-id="comparing-model-specifications">Comparing Model Specifications</h4>
 <p>To compare the three model specifications, we examine their Bayesian Information Criterion (BIC) values. The BIC provides a measure of model fit that penalizes model complexity, meaning that lower values indicate a better balance between explanatory power and the number of estimated parameters.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model1_BIC =</span> model1<span class="sc">$</span>BIC,</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model2_BIC =</span> model2<span class="sc">$</span>BIC,</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model3_BIC =</span> model3<span class="sc">$</span>BIC</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model1_BIC =</span> model1<span class="sc">$</span>BIC,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model2_BIC =</span> model2<span class="sc">$</span>BIC,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model3_BIC =</span> model3<span class="sc">$</span>BIC</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Model1_BIC Model2_BIC Model3_BIC 
   4008.732   3928.606   3935.100 </code></pre>
