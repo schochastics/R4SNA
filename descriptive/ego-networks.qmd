@@ -338,7 +338,7 @@ We now plot the networks using `igraph`. The first step is to convert the `egor`
 g <- as.igraph(ego_net_w1)
 
 # Inspect the first three ego networks
-g[1:6]
+g[1:3]
 ```
 
 ::: {.callout-note}
@@ -421,7 +421,7 @@ ggplot(dens, aes(x = density)) +
 
 ## Network Composition Based on Alter Attributes
 
-A useful way to describe ego networks is to examine the **composition of alters** within each network. Rather than focusing on the structure of ties among alters, compositional measures summarize **who is present in the ego’s personal network**. These measures are obtained by aggregating alter attributes within each ego network.
+A useful way to describe ego networks is to examine the **composition of alters** within each network. Rather than focusing on the structure of ties among alters, compositional measures summarize *who is present in the ego’s personal network*. These measures are obtained by aggregating alter attributes within each ego network.
 
 The `comp_ply()` function from the `egor` package provides a convenient way to compute such summaries. It applies a function to an alter attribute within each ego network and returns one value per ego. In our dataset, the alter-level data include several characteristics, such as `gender`, whether the alter is a `family` member, and whether the alter shares the same race as the ego (`same_race`). Using these variables, we can construct several interpretable measures of network composition.
 
@@ -541,3 +541,12 @@ ggplot(comp_long, aes(x = value)) +
 The distributions reveal several interesting patterns in the composition of ego networks. The proportion of family members varies widely across respondents, indicating substantial heterogeneity in the extent to which personal networks are centered around kin. The gender composition measure is broadly distributed around intermediate values, suggesting that many respondents’ networks contain a mixture of male and female alters rather than being strongly gender-segregated. The gender diversity measure is concentrated toward higher values, indicating that many ego networks contain a relatively balanced mix of male and female alters. Finally, the distribution of racial homophily is highly skewed toward 1, suggesting that most respondents name alters who share their racial background.
 
 These patterns are consistent with well-known findings on homophily in social networks, that is, the tendency for individuals to form ties with others who are similar to themselves [@mcpherson2001birds]. In particular, the concentration of prop_same_race near one indicates strong racial homophily in personal networks. At the same time, the distributions of prop_female and gender_entropy suggest that many networks remain gender-mixed rather than fully gender-segregated. Together, these measures show that ego networks are shaped by both similarity and diversity in the social contexts from which alters are drawn.
+
+
+## Predicting Individual Outcomes Using Ego Network Characteristics
+
+In the previous sections we examined the structure and composition of ego networks, focusing on characteristics such as family ties, gender composition, and racial homophily. These measures describe how individuals’ personal networks are organized. However, ego network properties can also be used as explanatory variables in statistical models.
+
+As discussed in the introduction, ego network data are typically collected through surveys in which each respondent reports information about their personal contacts. Because each ego corresponds to a distinct survey respondent, the resulting observations can reasonably be treated as independent. This differs from whole-network data, where observations are inherently interdependent. The survey-based structure of ego network data therefore allows us to apply familiar statistical tools such as regression models to examine how network characteristics relate to individual outcomes.
+
+In this section we illustrate this idea by examining whether features of respondents’ ego networks are associated with their self-reported health.
