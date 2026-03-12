@@ -483,6 +483,17 @@ window.Quarto = {
   <li><a href="#interpretation-of-model-output-1" id="toc-interpretation-of-model-output-1" class="nav-link" data-scroll-target="#interpretation-of-model-output-1"><span class="header-section-number">8.5.2.4</span> Interpretation of Model Output</a></li>
   <li><a href="#predicted-probabilities-1" id="toc-predicted-probabilities-1" class="nav-link" data-scroll-target="#predicted-probabilities-1"><span class="header-section-number">8.5.2.5</span> Predicted Probabilities</a></li>
   </ul></li>
+  <li><a href="#predicting-drinking-frequency" id="toc-predicting-drinking-frequency" class="nav-link" data-scroll-target="#predicting-drinking-frequency"><span class="header-section-number">8.5.3</span> Predicting Drinking Frequency</a>
+  <ul>
+  <li><a href="#outcome-variable-2" id="toc-outcome-variable-2" class="nav-link" data-scroll-target="#outcome-variable-2"><span class="header-section-number">8.5.3.1</span> Outcome Variable</a></li>
+  <li><a href="#predictors-2" id="toc-predictors-2" class="nav-link" data-scroll-target="#predictors-2"><span class="header-section-number">8.5.3.2</span> Predictors</a></li>
+  <li><a href="#estimating-the-model-2" id="toc-estimating-the-model-2" class="nav-link" data-scroll-target="#estimating-the-model-2"><span class="header-section-number">8.5.3.3</span> Estimating the Model</a></li>
+  <li><a href="#interpretation-of-model-output-2" id="toc-interpretation-of-model-output-2" class="nav-link" data-scroll-target="#interpretation-of-model-output-2"><span class="header-section-number">8.5.3.4</span> Interpretation of Model Output</a></li>
+  </ul></li>
+  <li><a href="#interpretation-of-model-output-3" id="toc-interpretation-of-model-output-3" class="nav-link" data-scroll-target="#interpretation-of-model-output-3"><span class="header-section-number">8.5.4</span> Interpretation of Model Output</a>
+  <ul>
+  <li><a href="#predicted-counts" id="toc-predicted-counts" class="nav-link" data-scroll-target="#predicted-counts"><span class="header-section-number">8.5.4.1</span> Predicted Counts</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/descriptive/ego-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -609,24 +620,24 @@ window.Quarto = {
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`3000000000036`
-IGRAPH b071c8f UNW- 6 2 -- 
+IGRAPH 33ba096 UNW- 6 2 -- 
 + attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
 | (v/n), same_age (v/n), weight (e/n)
-+ edges from b071c8f (vertex names):
++ edges from 33ba096 (vertex names):
 [1] 2--5 2--5
 
 $`3000000000156`
-IGRAPH 7bbd90e UNW- 15 8 -- 
+IGRAPH 7cf1605 UNW- 15 8 -- 
 + attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
 | (v/n), same_age (v/n), weight (e/n)
-+ edges from 7bbd90e (vertex names):
++ edges from 7cf1605 (vertex names):
 [1] 2--3 3--5 2--3 2--5 1--4 2--5 3--5 1--4
 
 $`3000000000271`
-IGRAPH dcc888a UNW- 5 6 -- 
+IGRAPH 0f0cf09 UNW- 5 6 -- 
 + attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
 | (v/n), same_age (v/n), weight (e/n)
-+ edges from dcc888a (vertex names):
++ edges from 0f0cf09 (vertex names):
 [1] 1--2 1--3 1--2 2--3 1--3 2--3</code></pre>
 </div>
 </div>
@@ -1416,6 +1427,245 @@ Number of Fisher Scoring iterations: 6</code></pre>
 <p>For individuals with very small ego networks, the predicted probability of smoking is relatively high, at roughly 20 percent. As network size increases, this probability steadily declines. For respondents with very large ego networks, the predicted probability of smoking falls to below 5 percent.</p>
 <p>This pattern suggests that individuals embedded in larger personal networks may be less likely to smoke. One possible interpretation is that larger networks provide stronger social norms, greater social support, or more opportunities for social monitoring that discourage smoking behavior.</p>
 <p>Of course, whether networks influence smoking behavior also depends on the behaviors of the alters themselves. For example, if many alters smoke, peer influence could increase the likelihood that the ego smokes as well. However, the dataset used here does not contain information about the smoking behavior of alters, so we cannot directly examine such influence processes in this analysis.</p>
+</section>
+</section>
+<section id="predicting-drinking-frequency" class="level3" data-number="8.5.3">
+<h3 data-number="8.5.3" class="anchored" data-anchor-id="predicting-drinking-frequency"><span class="header-section-number">8.5.3</span> Predicting Drinking Frequency</h3>
+<p>In addition to examining health outcomes and smoking behavior, we can also use ego network characteristics to study patterns of alcohol consumption. Drinking behavior is a natural outcome to consider in a network context because social interactions often occur in settings where alcohol is present. Individuals embedded in larger or more socially active networks may encounter more opportunities to drink, while networks centered around family members may involve different social norms around alcohol use.</p>
+<p>Here we examine whether characteristics of respondents’ ego networks are associated with <strong>how frequently they drink alcohol</strong>.</p>
+<section id="outcome-variable-2" class="level4" data-number="8.5.3.1">
+<h4 data-number="8.5.3.1" class="anchored" data-anchor-id="outcome-variable-2"><span class="header-section-number">8.5.3.1</span> Outcome Variable</h4>
+<blockquote class="blockquote">
+<p><em>Are respondents with larger, more diverse, or more kin-centered personal networks more likely to drink alcohol more frequently?</em></p>
+</blockquote>
+<p>Our outcome variable is the ego-level variable <code>drinking_days</code>, which records how many days per week the respondent reports having an alcoholic drink.</p>
+<p>In the original survey data, this variable is coded as:</p>
+<ul>
+<li><code>0</code> = less than once a week<br>
+</li>
+<li><code>1</code> = one day a week<br>
+</li>
+<li><code>2</code> = two days a week<br>
+</li>
+<li><code>3</code> = three days a week<br>
+</li>
+<li><code>4</code> = four days a week<br>
+</li>
+<li><code>5</code> = five days a week<br>
+</li>
+<li><code>6</code> = six days a week<br>
+</li>
+<li><code>7</code> = every day<br>
+</li>
+<li><code>8</code> = less than one drink per week<br>
+</li>
+<li><code>9</code> = does not drink at all</li>
+</ul>
+<p>For the analysis, we recode the variable so that it represents a count of drinking days per week. Respondents who report not drinking at all (<code>9</code>) are coded as <code>0</code>, and respondents reporting less than one drink per week (<code>8</code>) are also coded as <code>0</code>. The remaining values already correspond to the number of drinking days per week.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>analysis_dat<span class="sc">$</span>drinking_days_rec <span class="ot">&lt;-</span> analysis_dat<span class="sc">$</span>drinking_days</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>analysis_dat<span class="sc">$</span>drinking_days_rec[</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  analysis_dat<span class="sc">$</span>drinking_days <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">9</span>)</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(analysis_dat<span class="sc">$</span>drinking_days_rec, <span class="at">useNA =</span> <span class="st">"ifany"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   0    1    2    3    4    5    6    7 &lt;NA&gt; 
+ 340  301  110  128  113   62   69   35    1 </code></pre>
+</div>
+</div>
+<p>Because the outcome variable represents a count of events (drinking days per week), a Poisson regression model is appropriate.</p>
+</section>
+<section id="predictors-2" class="level4" data-number="8.5.3.2">
+<h4 data-number="8.5.3.2" class="anchored" data-anchor-id="predictors-2"><span class="header-section-number">8.5.3.2</span> Predictors</h4>
+<p>We include the same ego-network measures used in the previous examples:</p>
+<ul>
+<li><code>ego_size</code>: the number of alters in the ego network<br>
+</li>
+<li><code>prop_family</code>: the proportion of alters who are family members<br>
+</li>
+<li><code>gender_entropy</code>: a measure of gender diversity among alters</li>
+</ul>
+<p>As before, we exclude <code>prop_same_race</code> due to the large number of missing observations.</p>
+<p>We also include three demographic control variables:</p>
+<ul>
+<li><code>age</code><br>
+</li>
+<li><code>gender</code><br>
+</li>
+<li><code>education</code></li>
+</ul>
+<p>Together, these predictors allow us to examine whether network size, network composition, and diversity are associated with alcohol consumption while accounting for basic demographic characteristics.</p>
+</section>
+<section id="estimating-the-model-2" class="level4" data-number="8.5.3.3">
+<h4 data-number="8.5.3.3" class="anchored" data-anchor-id="estimating-the-model-2"><span class="header-section-number">8.5.3.3</span> Estimating the Model</h4>
+<p>We estimate a Poisson regression model using the <code>glm()</code> function with a Poisson link.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>drink_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  drinking_days_rec <span class="sc">~</span> ego_size <span class="sc">+</span> prop_family <span class="sc">+</span> gender_entropy <span class="sc">+</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span> gender <span class="sc">+</span> education,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> analysis_dat,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> poisson,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.action =</span> na.omit</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(drink_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = drinking_days_rec ~ ego_size + prop_family + gender_entropy + 
+    age + gender + education, family = poisson, data = analysis_dat, 
+    na.action = na.omit)
+
+Coefficients:
+                 Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)     0.4810541  0.1310035   3.672 0.000241 ***
+ego_size        0.0134878  0.0050336   2.680 0.007372 ** 
+prop_family    -0.2819585  0.1035761  -2.722 0.006484 ** 
+gender_entropy  0.0437564  0.1477433   0.296 0.767104    
+age             0.0007412  0.0012170   0.609 0.542500    
+gender         -0.1123705  0.0447703  -2.510 0.012075 *  
+education.L     0.3736343  0.2430547   1.537 0.124234    
+education.Q    -0.6962611  0.2406259  -2.894 0.003809 ** 
+education.C     0.0506934  0.2237053   0.227 0.820729    
+education^4    -0.4743386  0.1673270  -2.835 0.004585 ** 
+education^5     0.0700040  0.1203433   0.582 0.560767    
+education^6    -0.1346388  0.1432642  -0.940 0.347324    
+education^7    -0.0578159  0.1264793  -0.457 0.647587    
+education^8    -0.0404278  0.0866799  -0.466 0.640927    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 2553.3  on 1145  degrees of freedom
+Residual deviance: 2492.2  on 1132  degrees of freedom
+  (13 observations deleted due to missingness)
+AIC: 4747.7
+
+Number of Fisher Scoring iterations: 6</code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation-of-model-output-2" class="level4" data-number="8.5.3.4">
+<h4 data-number="8.5.3.4" class="anchored" data-anchor-id="interpretation-of-model-output-2"><span class="header-section-number">8.5.3.4</span> Interpretation of Model Output</h4>
+</section>
+</section>
+<section id="interpretation-of-model-output-3" class="level3" data-number="8.5.4">
+<h3 data-number="8.5.4" class="anchored" data-anchor-id="interpretation-of-model-output-3"><span class="header-section-number">8.5.4</span> Interpretation of Model Output</h3>
+<p>The Poisson regression results examine whether characteristics of respondents’ ego networks are associated with the number of days per week they report drinking alcohol. In a Poisson regression model, coefficients represent the effect of predictors on the log of the expected count of the outcome. A positive coefficient indicates that higher values of the predictor are associated with more drinking days per week, while a negative coefficient indicates fewer drinking days.</p>
+<p>Statistical significance can be evaluated using the ratio of the coefficient to its standard error (the <span class="math inline">\(z\)</span>-statistic). As in the previous models, absolute values larger than approximately 1.96 correspond to statistical significance at the 5% level under the normal approximation.</p>
+<p>Among the network predictors, ego network size (<code>ego_size</code>) shows a positive and statistically significant association with drinking frequency. The coefficient is approximately 0.013 (<span class="math inline">\(z\)</span> = 2.68, <span class="math inline">\(p\)</span> &lt; 0.01). Because Poisson regression models the log of the expected count, it is useful to exponentiate the coefficient to interpret the effect multiplicatively. The value exp(0.013) ≈ 1.014 suggests that each additional alter in a respondent’s ego network is associated with roughly a 1.4 percent increase in the expected number of drinking days per week. Substantively, this pattern is consistent with the idea that individuals embedded in larger personal networks may have more opportunities for social activities where alcohol consumption occurs.</p>
+<p>The proportion of family members in the network (<code>prop_family</code>) shows a negative and statistically significant association with drinking frequency (<span class="math inline">\(z\)</span> = −2.72, <span class="math inline">\(p\)</span> &lt; 0.01). This suggests that respondents whose networks contain a larger share of family members tend to report fewer drinking days per week. One possible interpretation is that kin-centered networks may involve different social norms or contexts that discourage frequent alcohol consumption compared to networks composed primarily of friends or acquaintances.</p>
+<p>By contrast, gender diversity in the network (<code>gender_entropy</code>) does not appear to be strongly related to drinking frequency in this model. The coefficient is small and statistically insignificant, indicating that variation in the gender composition of alters is not associated with meaningful differences in drinking behavior.</p>
+<p>Among the demographic controls, respondent gender shows a statistically significant association with drinking frequency (<span class="math inline">\(z\)</span> = −2.51, <span class="math inline">\(p\)</span> &lt; 0.05). The negative coefficient indicates that respondents coded as female report fewer drinking days per week than males. Age does not show a statistically significant relationship with drinking behavior in this model.</p>
+<p>Finally, the education variable shows some evidence of association with drinking behavior, as reflected in several statistically significant polynomial contrasts. These contrasts indicate that drinking frequency varies systematically across levels of educational attainment, although the interpretation of individual contrast terms is less straightforward than standard regression coefficients.</p>
+<p>Overall, the results illustrate how ego network measures can be incorporated into regression models for count outcomes. In this example, larger ego networks are associated with slightly more frequent drinking, while networks with a higher proportion of family members are associated with less frequent drinking. These patterns suggest that both the size and composition of personal networks may shape opportunities and social contexts for alcohol consumption.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For ease of interpretation, it is often useful to transform the coefficients into incidence rate ratios, which indicate the multiplicative change in the expected number of drinking days associated with a one-unit increase in the predictor.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(drink_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   (Intercept)       ego_size    prop_family gender_entropy            age 
+     1.6177788      1.0135791      0.7543050      1.0447279      1.0007415 
+        gender    education.L    education.Q    education.C    education^4 
+     0.8937130      1.4530057      0.4984455      1.0520003      0.6222965 
+   education^5    education^6    education^7    education^8 
+     1.0725124      0.8740316      0.9438237      0.9603785 </code></pre>
+</div>
+</div>
+<p>Values greater than 1 indicate that the predictor is associated with more frequent drinking, while values below 1 indicate less frequent drinking.</p>
+</div>
+</div>
+<section id="predicted-counts" class="level4" data-number="8.5.4.1">
+<h4 data-number="8.5.4.1" class="anchored" data-anchor-id="predicted-counts"><span class="header-section-number">8.5.4.1</span> Predicted Counts</h4>
+<p>As in the previous examples, predicted values provide a more intuitive way to interpret the model than the raw regression coefficients alone. In a Poisson regression, the fitted values correspond to the expected number of events—in this case, the expected number of drinking days per week.</p>
+<p>To visualize the effects of the substantively important predictors, we generate predicted counts while varying one predictor at a time and holding the remaining variables constant at typical values. Here, we focus on the three predictors that showed the clearest associations with drinking frequency in the model: <code>ego_size</code>, <code>prop_family</code>, and <code>gender</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sequences for predictors</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>size_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(analysis_dat<span class="sc">$</span>ego_size, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>                <span class="fu">max</span>(analysis_dat<span class="sc">$</span>ego_size, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">length.out =</span> <span class="dv">50</span>)</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>family_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">50</span>)</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a><span class="co"># prediction data for ego_size</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>pred_size <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_size =</span> size_seq,</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_family =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>prop_family, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_entropy =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>gender_entropy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="dv">0</span>,</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">levels</span>(analysis_dat<span class="sc">$</span>education)[<span class="dv">1</span>]</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(drink_model, <span class="at">newdata =</span> pred_size, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"ego_size"</span></span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_size<span class="sc">$</span>ego_size</span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a><span class="co"># prediction data for prop_family</span></span>
+<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>pred_family <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_size =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>ego_size, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_family =</span> family_seq,</span>
+<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_entropy =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>gender_entropy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-28"><a href="#cb47-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="dv">0</span>,</span>
+<span id="cb47-29"><a href="#cb47-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">levels</span>(analysis_dat<span class="sc">$</span>education)[<span class="dv">1</span>]</span>
+<span id="cb47-30"><a href="#cb47-30" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb47-31"><a href="#cb47-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-32"><a href="#cb47-32" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(drink_model, <span class="at">newdata =</span> pred_family, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb47-33"><a href="#cb47-33" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"prop_family"</span></span>
+<span id="cb47-34"><a href="#cb47-34" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_family<span class="sc">$</span>prop_family</span>
+<span id="cb47-35"><a href="#cb47-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-36"><a href="#cb47-36" aria-hidden="true" tabindex="-1"></a><span class="co"># prediction data for gender</span></span>
+<span id="cb47-37"><a href="#cb47-37" aria-hidden="true" tabindex="-1"></a>pred_gender <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb47-38"><a href="#cb47-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_size =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>ego_size, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-39"><a href="#cb47-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_family =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>prop_family, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-40"><a href="#cb47-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_entropy =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>gender_entropy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-41"><a href="#cb47-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-42"><a href="#cb47-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb47-43"><a href="#cb47-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">levels</span>(analysis_dat<span class="sc">$</span>education)[<span class="dv">1</span>]</span>
+<span id="cb47-44"><a href="#cb47-44" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb47-45"><a href="#cb47-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-46"><a href="#cb47-46" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(drink_model, <span class="at">newdata =</span> pred_gender, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb47-47"><a href="#cb47-47" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"gender"</span></span>
+<span id="cb47-48"><a href="#cb47-48" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_gender<span class="sc">$</span>gender</span>
+<span id="cb47-49"><a href="#cb47-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-50"><a href="#cb47-50" aria-hidden="true" tabindex="-1"></a><span class="co"># combine predictions</span></span>
+<span id="cb47-51"><a href="#cb47-51" aria-hidden="true" tabindex="-1"></a>pred_all <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(pred_size, pred_family, pred_gender)</span>
+<span id="cb47-52"><a href="#cb47-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-53"><a href="#cb47-53" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb47-54"><a href="#cb47-54" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred_all, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb47-55"><a href="#cb47-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb47-56"><a href="#cb47-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>variable, <span class="at">scales =</span> <span class="st">"free_x"</span>) <span class="sc">+</span></span>
+<span id="cb47-57"><a href="#cb47-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb47-58"><a href="#cb47-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Predictor value"</span>,</span>
+<span id="cb47-59"><a href="#cb47-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Expected drinking days per week"</span></span>
+<span id="cb47-60"><a href="#cb47-60" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb47-61"><a href="#cb47-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ego-networks_files/figure-html/predicted-drinking-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure summarizes how the expected number of drinking days per week changes across the three predictors. The left panel shows a clear positive relationship between <code>ego_size</code> and expected drinking frequency. Holding the other variables constant, respondents with larger ego networks are predicted to drink on more days per week. Although the absolute increase is modest, the pattern is consistent with the positive coefficient for network size in the Poisson model.</p>
+<p>The middle panel shows the predicted effect of <code>gender</code>. Because <code>gender</code> is coded <code>0 = male</code> and <code>1 = female</code>, the downward slope indicates that respondents coded as female are predicted to drink less frequently than those coded as male, all else equal. This matches the negative regression coefficient for <code>gender</code>.</p>
+<p>The right panel displays the predicted effect of <code>prop_family</code>. Here the relationship is negative: as the share of family members in the ego network increases, the expected number of drinking days per week declines. Substantively, this suggests that respondents embedded in more kin-centered networks tend to drink less frequently than those whose networks contain fewer family members.</p>
+<p>Taken together, the predicted counts reinforce the main results of the Poisson model. Larger ego networks are associated with somewhat more frequent drinking, whereas networks with a higher proportion of family members are associated with less frequent drinking. At the same time, women are predicted to drink less frequently than men. As in the previous examples, these predictions are model-based associations rather than causal effects. In particular, whether alters themselves drink alcohol would likely matter for understanding social influence more directly, but the present dataset does not include alter-level information on drinking behavior.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
