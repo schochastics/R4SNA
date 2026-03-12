@@ -7,12 +7,16 @@ In this chapter, we will begin by introducing the fundamentals of ego network da
 ## Packages Needed for this Chapter
 ```{r}
 #| message: false
+#| warning: false
 library(igraph)
 library(egor)
 library(networkdata)
 library(ggraph)
 library(patchwork)
 library(tidyverse)
+library(knitr)
+
+
 ```
 
 ::: {.callout-note}
@@ -35,31 +39,294 @@ A second common source of ego network data involves deriving them from complete 
 ### Constructing an Ego Network with `egor`
 An `egor` object stores the multiple data levels required for ego-centered network analysis. These levels include **ego-level data** (attributes of respondents), **alter-level data** (attributes of the individuals named by the respondent), and **alter–alter ties** (relationships among those alters).
 
-The data used in the following examples come from the 2004 General Social Survey (GSS) egocentric network module, which is available in the `networkdata` package. The dataset contains a stratified sample of 594 respondents and provides information at all three levels commonly used in ego network analysis: characteristics of the respondents (*egos*), characteristics of the individuals they name in their networks (*alters*), and the relationships among those alters (*alter–alter ties*). In the package, these data are already provided in the form of an `egor` object.
 
-To explore the structure of the dataset, we can inspect the first few rows of each component of the `egor` object:
+In this chapter, we draw on ego network data from the **UC Berkeley Social Networks Study (UCNets)** , a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the first wave and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset employed in this chapter is provided in the Appendix. However, because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the UCNets project website: https://ucnets.berkeley.edu/. 
+
+
+In this chapter, we draw on ego network data from the **UC Berkeley Social Networks Study (UCNets)** [@fischer2020uc], a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the *first wave* and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in the **Appendix**[INSERT LINK]. This code already processes the raw survey files and combines them into an `egor` object, the data structure used by the `egor` package for ego-centered network analysis. An `egor` object contains three linked levels of data: **ego-level attributes** (characteristics of the respondents), **alter-level attributes** (characteristics of the individuals named in each respondent’s personal network), and **alter–alter ties** (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the [UCNets project website](https://ucnets.berkeley.edu/).
+
 
 ```{r}
-#| label: load-ego-data
+#| label: create-egor-ucnet
+#| include: false
+#| echo: false
 
-data("gss_egor")
-head(gss_egor$ego) # ego level
-head(gss_egor$alter) # alter level
-head(gss_egor$aatie) # alter-alter ties
+library(dplyr)
+library(tidyr)
+library(egor)
+
+# =========================
+# 1. LOAD WAVE 1 DATA
+# =========================
+
+alt_obj <- load("DS0001/36975-0001-Data.rda")
+altw1 <- get(alt_obj)
+
+ego_obj <- load("DS0005/36975-0005-Data.rda")
+egow1 <- get(ego_obj)
+
+# Alter-alter pair variables in the alter file
+pair_vars <- c(
+  "N1_N2", "N1_N3", "N1_N4", "N1_N5",
+  "N2_N3", "N2_N4", "N2_N5",
+  "N3_N4", "N3_N5",
+  "N4_N5"
+)
+
+# =========================
+# 2. EGO-LEVEL DATA
+# =========================
+
+egos <- egow1 %>%
+  select(
+    PRIM_KEY, GENDER, YEAR_PRELOAD, AGE_EX, A2A, A13A, A19A, B3B,
+    G1, H3, H4A, H5A, H6A, J1A, J1B, K1, RACECATS1, K9A, K15, K22A
+  ) %>%
+  transmute(
+    .egoID = as.character(PRIM_KEY),
+
+    # 0 = male, 1 = female
+    gender = ifelse(as.numeric(GENDER) == 2, 1, 0),
+
+    year_birth = YEAR_PRELOAD,
+
+    # exact age in years
+    age = as.numeric(AGE_EX),
+
+    # 1 = married, 0 = otherwise
+    married = ifelse(as.numeric(A2A) == 1, 1, 0),
+
+    # 1 = yes, 0 = no
+    pets = ifelse(as.numeric(A13A) == 1, 1, 0),
+
+    # 1 = own, 0 = rent/other
+    home_owner = ifelse(as.numeric(A19A) == 1, 1, 0),
+
+    # 1 = active in informal groups, 0 = not active
+    informal_groups = ifelse(as.numeric(B3B) == 1, 1, 0),
+
+    # ordered self-rated health
+    health = ordered(
+      as.numeric(G1),
+      levels = c(1, 2, 3, 4, 5),
+      labels = c("excellent", "very_good", "good", "fair", "poor")
+    ),
+
+    # 1 = advised to lose weight, 0 = otherwise
+    lose_weight_advice = ifelse(as.numeric(H3) == 1, 1, 0),
+
+    # 1 = smoker, 0 = non-smoker
+    smoker = ifelse(as.numeric(H4A) == 1, 1, 0),
+
+    # days per week drinking alcohol
+    drinking_days = as.numeric(H5A),
+
+    # 1 = used marijuana, 0 = otherwise
+    marijuana_use = ifelse(as.numeric(H6A) == 1, 1, 0),
+
+    # extraversion = reverse-coded reserved + sociable
+    extraversion = rowMeans(
+      cbind(
+        6 - as.numeric(J1A),
+        as.numeric(J1B)
+      ),
+      na.rm = TRUE
+    ),
+
+    # ordered education
+    education = ordered(
+      as.numeric(K1),
+      levels = 1:10,
+      labels = c(
+        "less_than_9th",
+        "9th_to_12th_no_grad",
+        "high_school",
+        "ged",
+        "some_college",
+        "associate",
+        "bachelor",
+        "master",
+        "professional_degree",
+        "other"
+      )
+    ),
+
+    # race
+    race = factor(
+      as.numeric(RACECATS1),
+      levels = c(1, 2, 3, 4, 6, 7, 9),
+      labels = c(
+        "white",
+        "black",
+        "american_indian",
+        "asian",
+        "unknown",
+        "pacific_islander",
+        "mixed"
+      )
+    ),
+
+    # country of birth collapsed to continent
+    birth_continent = factor(
+      as.numeric(K9A),
+      levels = c(1, 2, 4, 6, 11, 3, 7, 8, 9, 10, 12, 14, 5, 13, 15),
+      labels = c(
+        "north_america", "north_america", "north_america",
+        "north_america", "north_america",
+        "asia", "asia", "asia", "asia", "asia", "asia", "asia",
+        "europe", "europe",
+        "other"
+      )
+    ),
+
+    # religion
+    religion = factor(
+      as.numeric(K15),
+      levels = c(1, 2, 3, 4, 5, 6, 7),
+      labels = c(
+        "protestant",
+        "catholic",
+        "jewish",
+        "muslim",
+        "buddhist",
+        "other_religion",
+        "no_religion"
+      )
+    ),
+
+    # ordered income
+    income = ordered(
+      as.numeric(K22A),
+      levels = 1:13,
+      labels = c(
+        "under_15k",
+        "15k_25k",
+        "25k_35k",
+        "35k_45k",
+        "45k_60k",
+        "60k_75k",
+        "75k_100k",
+        "100k_125k",
+        "125k_150k",
+        "150k_200k",
+        "200k_300k",
+        "300k_500k",
+        "500k_plus"
+      )
+    )
+  ) %>%
+  distinct()
+
+# =========================
+# 3. ALTER-LEVEL DATA
+# =========================
+
+alters <- altw1 %>%
+  filter(!is.na(PRIM_KEY), !is.na(NAME_NMBR2)) %>%
+  transmute(
+    .egoID = as.character(PRIM_KEY),
+    .altID = as.integer(NAME_NMBR2),
+
+    # match ego coding: 0 = male, 1 = female
+    gender = ifelse(as.numeric(N_GENDER) == 2, 1, 0),
+
+    # family indicator
+    family = ifelse(
+      C1A_1 == "(1) yes" |
+      C1A_3 == "(1) yes" |
+      C1A_4 == "(1) yes" |
+      C1A_5 == "(1) yes" |
+      C1A_6 == "(1) yes",
+      1, 0
+    ),
+
+    # race homophily indicator
+    same_race = ifelse(C2G_NSAMERACE == "(1) yes", 1, 0),
+
+    # alter roughly same age as ego (+/- 6 years)
+    same_age = case_when(
+      as.numeric(C1C_NSAMEAGE) == 1 ~ 1,
+      as.numeric(C1C_NSAMEAGE) == 0 ~ 0,
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  distinct()
+
+# =========================
+# 4. ALTER-ALTER TIES
+# =========================
+
+aaties <- altw1 %>%
+  select(PRIM_KEY, all_of(pair_vars)) %>%
+  distinct() %>%
+  pivot_longer(
+    cols = all_of(pair_vars),
+    names_to = "pair",
+    values_to = "relation"
+  ) %>%
+  filter(!is.na(relation)) %>%
+  mutate(
+    relation = as.character(relation),
+
+    # tie if alters know each other very well or know a little
+    weight = ifelse(grepl("^\\((1|2)\\)", relation), 1, 0),
+
+    .egoID = as.character(PRIM_KEY),
+    .srcID = as.integer(sub("^N([1-5])_N([1-5])$", "\\1", pair)),
+    .tgtID = as.integer(sub("^N([1-5])_N([1-5])$", "\\2", pair))
+  ) %>%
+  filter(weight == 1) %>%
+  select(.egoID, .srcID, .tgtID, weight)
+
+# Keep only alter-alter ties for alters that exist in the alter table
+valid_alters <- alters %>%
+  select(.egoID, .altID)
+
+aaties <- aaties %>%
+  inner_join(valid_alters, by = c(".egoID", ".srcID" = ".altID")) %>%
+  inner_join(valid_alters, by = c(".egoID", ".tgtID" = ".altID"))
+
+# =========================
+# 5. BUILD egor OBJECT
+# =========================
+
+ego_net_w1 <- egor(
+  egos   = egos,
+  alters = alters,
+  aaties = aaties,
+  ID.vars = list(
+    ego    = ".egoID",
+    alter  = ".altID",
+    source = ".srcID",
+    target = ".tgtID"
+  )
+)
+
 ```
 
-Each of the three data frames is linked through unique identifier variables that ensure the different levels of information correspond to the correct individuals. The `.egoID` variable appears in all three tables and serves as the key that connects each respondent’s attributes to their alters and to the ties among those alters. In the alter-level data, each network member receives a unique `.altID`. These identifiers are referenced again in the alter–alter tie table through the `.srcID` (source) and `.tgtID` (target) columns, which specify which two alters are connected. The `weight` column records the value or strength of the tie between them.
+
+We begin by exploring each of the three components of the `egor` object—ego attributes, alter attributes, and alter–alter ties—in order to understand how the ego network data are structured before proceeding to the analysis.
+
+
+```{r}
+#| label: explor-data
+
+head(ego_net_w1$ego) # ego level
+head(ego_net_w1$alter) # alter level
+head(ego_net_w1$aatie) # alter-alter ties
+```
+
+
+Each of the three tables is linked through identifier variables that ensure the different levels of information correspond to the correct ego networks. The variable `.egoID` appears in all three tables and serves as the key that connects respondent-level attributes in the **ego table** to the individuals they named in their personal networks in the **alter table**, and to the relationships among those alters recorded in the **alter–alter tie table**.
+
+In the alter-level table, each network member receives an identifier `.altID`, which uniquely identifies alters within a given ego network. Additional variables describe characteristics of the alter, including gender, whether the alter is a family member (`family`), whether the alter shares the same race as the ego (`same_race`), and whether the alter is approximately the same age as the ego (`same_age`).
+
+The alter–alter tie table records the relationships among alters within each ego network. These ties are based on survey questions asking respondents how well pairs of alters know each other (e.g., “How well does name 1 know name 2?”), with response options such as *very well*, *know a little*, or *do not know/something else*. For the purposes of constructing the network, responses indicating that alters know each other **“very well”** or **“a little”** were coded as a tie. The pairwise variables were reshaped into long format, and the identifiers `.srcID` and `.tgtID` indicate which two alters are connected. Because only positive ties were retained, the resulting `weight` variable is constant and equal to 1 for all alter–alter ties in the final dataset.
+
 
 Before proceeding with the analysis, we remove respondents for whom the variable `numgiven` is missing in the ego-level data. This variable records how many alters each respondent named and is required for several of the descriptive measures used later in the chapter.  Because `numgiven` records how many alters a respondent named, a missing value at the ego level implies that no alter information is recorded for that respondent. Consequently, it is sufficient to remove missing values only from the ego table, since the alter and alter–alter tie tables contain entries only for egos who actually reported network members.
 
-
-```{r}
-#| label: na-remove
-# Remove egos with missing numgiven
-gss_egor$ego <- gss_egor$ego[!is.na(gss_egor$ego$numgiven), ]
-```
-
-Examining the dimensions of the three components after removing missing values (`dim(gss_egor$ego)`, `dim(gss_egor$alter)`, and `dim(gss_egor$aatie`) provides a quick overview of the dataset. The ego table now contains 305 respondents. Across these respondents, a total of 555 alters were named, each linked to a specific ego via `.egoID` and uniquely identified within each ego network by `.altID`. The alter–alter tie table contains 640 rows, with each row representing a relationship between two alters within the same ego network. These ties are identified by the `.egoID` of the corresponding ego and the `.srcID` and `.tgtID` variables that indicate the two alters involved.
+Examining the dimensions of the three components after removing missing values (`dim(ego_net_w1$ego)`, `dim(ego_net_w1$alter)`, and `dim(ego_net_w1$aatie)`) provides a quick overview of the dataset. The ego table now contains 1159 respondents. Across these respondents, a total of 12209 alters were named, each linked to a specific ego via `.egoID` and uniquely identified within each ego network by `.altID`. The alter–alter tie table contains 6696 rows, with each row representing a relationship between two alters within the same ego network. These ties are identified by the `.egoID` of the corresponding ego and the `.srcID` and `.tgtID` variables that indicate the two alters involved.
 
 ## Plotting Ego Nets
 
@@ -68,10 +335,10 @@ We now plot the networks using `igraph`. The first step is to convert the `egor`
 ```{r}
 #| label: egor-2-igraph
 # Convert egor object to a list of igraph ego networks
-gss_g <- as.igraph(gss_egor)
+g <- as.igraph(ego_net_w1)
 
 # Inspect the first three ego networks
-gss_g[1:3]
+g[1:6]
 ```
 
 ::: {.callout-note}
@@ -89,7 +356,7 @@ We now visualize a subset of the data by plotting the first 9 ego networks in th
 #| fig-height: 9
 #| fig-width: 9
 
-plots <- lapply(gss_g[1:9], function(g) {
+plots <- lapply(g[1:9], function(g) {
   
   # rebuild a clean graph using only structure + names
   el <- as_edgelist(g, names = TRUE)
@@ -108,7 +375,7 @@ plots <- lapply(gss_g[1:9], function(g) {
     }
   }
   
-  ggraph(g_clean, layout = "stress") +
+  ggraph(g_clean, layout = "circle") +
     geom_edge_link(alpha = 0.4) +
     geom_node_point(size = 6, color = "steelblue") +
     geom_node_text(aes(label = name), size = 3, color = "white") +
@@ -130,11 +397,147 @@ possible undirected ties among those alters. If all 10 ties are present, density
 
 Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to **structural hole theory** [@burt1992structural],  dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. The key advantages of social capital derive not primarily from the attributes of one’s alters, but from the *structure* of the ego network itself. Individuals benefit when they bridge gaps, so-called structural holes, between otherwise disconnected groups. In low-density networks, ego may occupy a brokerage position linking clusters that are not directly connected to each other, thereby gaining access to diverse, non-redundant information and potential strategic advantages (such as faster promotion within organizations).  Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.
 
-We can calculate density for each ego network using the `ego_density()` function applied to our `ego32` object. Note that ego networks with 0 or 1 alters will have `NA` values for density, because density is undefined when no alter–alter ties are possible.
+We can calculate density for each ego network using the `ego_density()` function applied to our `egor` object. Note that ego networks with 0 or 1 alters will have density equal to `NaN`, because density is undefined when no alter–alter ties are possible. There are 10 such values and they are removed from the plot below.
+
 
 ```{r}
 #| label: ego-dens
 
-dens <- ego_density(gss_egor)
+dens <- ego_density(ego_net_w1)
 head(dens)
+
+sum(is.nan(dens$density)) # number of NaN's
+
+ggplot(dens, aes(x = density)) +
+  geom_histogram(binwidth = 0.05, fill = "steelblue", color = "white") +
+  labs(
+    x = "Ego network density",
+    y = "Number of ego networks",
+    title = "Distribution of ego network densities"
+  ) +
+  theme_minimal()
 ```
+
+
+## Network Composition Based on Alter Attributes
+
+A useful way to describe ego networks is to examine the **composition of alters** within each network. Rather than focusing on the structure of ties among alters, compositional measures summarize **who is present in the ego’s personal network**. These measures are obtained by aggregating alter attributes within each ego network.
+
+The `comp_ply()` function from the `egor` package provides a convenient way to compute such summaries. It applies a function to an alter attribute within each ego network and returns one value per ego. In our dataset, the alter-level data include several characteristics, such as `gender`, whether the alter is a `family` member, and whether the alter shares the same race as the ego (`same_race`). Using these variables, we can construct several interpretable measures of network composition.
+
+### Proportion of Family Members {.unnumbered}
+
+A simple but informative compositional measure is the **proportion of family members** within an ego network. This captures the extent to which a respondent’s personal network is centered around kin relationships rather than non-kin ties such as friends, coworkers, or acquaintances. Networks with a high proportion of family members may indicate stronger reliance on kin-based support systems, whereas networks with fewer family members may reflect more diverse social connections outside the household or extended family.
+
+In our alter-level data, the variable `family` indicates whether an alter is a relative (including spouse/partner, parent, child, sibling, or another relative). Using `comp_ply()`, we can compute the proportion of alters who are family members for each ego network.
+
+```{r}
+#| label: prop-fam
+prop_family <- comp_ply(ego_net_w1, "family", mean)
+head(prop_family)
+```
+
+### Gender Composition of the Network {.unnumbered}
+
+Another compositional measure describes the gender composition of ego networks. This measure captures the share of alters who are female within each respondent’s personal network. Examining gender composition can reveal patterns of gender-based social organization and potential gender homophily, where individuals tend to form ties with others of the same gender.
+
+In our alter-level data, gender is coded as `0 = male` and `1 = female`. By taking the mean of this binary variable across alters within each ego network, we obtain the proportion of female alters in each network. Values close to 0 indicate networks composed mostly of men, values close to 1 indicate networks composed mostly of women, and values around 0.5 suggest a more gender-balanced network.
+
+```{r}
+#| label: gender-comp
+prop_female <- comp_ply(ego_net_w1, "gender", mean)
+head(prop_female)
+```
+
+### Racial Homophily {.unnumbered}
+A third compositional measure captures racial homophily within ego networks. Homophily refers to the tendency for individuals to form social ties with others who share similar characteristics. Here we examine whether alters share the same race as the ego.
+
+The alter-level variable same_race indicates whether the respondent reported that the alter is of the same race as themselves (`1 = same race`, `0 = different race`). By averaging this binary variable across alters within each ego network, we obtain the proportion of alters who share the ego’s race. Higher values indicate more racially homogeneous networks, while lower values suggest greater racial diversity.
+
+```{r}
+#| label: propo-same-race
+prop_same_race <- comp_ply(ego_net_w1, "same_race", mean)
+head(prop_same_race)
+```
+
+To obtain a compact overview of these compositional measures, we combine them into a single summary table.
+```{r}
+#| label: comp-summary
+prop_family <- comp_ply(ego_net_w1, "family", mean)
+prop_female <- comp_ply(ego_net_w1, "gender", mean)
+prop_same_race <- comp_ply(ego_net_w1, "same_race", mean)
+
+comp_summary <- data.frame(
+  egoID = prop_family$.egoID,
+  prop_family = prop_family$result,
+  prop_female = prop_female$result,
+  prop_same_race = prop_same_race$result
+)
+
+row.names(comp_summary) <- NULL
+
+kable(
+  head(comp_summary, 10),
+  digits = 2,
+  caption = "Summary of compositional measures for ego networks."
+)
+```
+Several entries may appear as `NA`. These occur when the compositional measure cannot be computed because the relevant alter attribute is missing or undefined for all alters in that ego network, or when a network contains too few alters to compute a meaningful proportion.
+
+## Diversity of Alters Within Ego Networks
+
+While the previous measures summarize the presence of specific alter characteristics, another perspective focuses on the overall diversity of alters within an ego network. Instead of examining whether alters resemble the ego, diversity measures capture how heterogeneous the set of alters is with respect to a given attribute.
+
+One commonly used diversity measure is Shannon entropy, defined as
+
+$$
+H = - \sum_i p_i \log(p_i)
+$$
+
+where ($p_i$) represents the proportion of alters belonging to category ($i$). Entropy increases when alters are more evenly distributed across categories and decreases when most alters belong to the same category. Networks with entropy close to zero therefore contain alters who are largely similar to one another, while higher values indicate more heterogeneous networks.
+
+In the `egor` package, entropy-based diversity measures can be computed directly using the function `alts_diversity_entropy()`.
+
+```{r}
+#| label: gender-entropy-egor
+gender_entropy <- alts_diversity_entropy(
+  ego_net_w1,
+  alt.attr = "gender",
+  base = exp(1)
+)
+
+head(gender_entropy)
+```
+
+This measure captures the gender diversity of each ego network. Networks in which alters are evenly split between men and women have higher entropy values, whereas networks composed mostly of alters of the same gender have lower values.
+
+We can combine the diversity measure with the compositional measures above and visualize their distributions to better understand how ego networks vary across respondents.
+```{r}
+#| label: plot-comp-summary
+#| warning: false
+
+# add entropy to summary table
+comp_summary$gender_entropy <- gender_entropy$entropy
+
+# reshape for plotting
+comp_long <- comp_summary |>
+  pivot_longer(
+    cols = -egoID,
+    names_to = "measure",
+    values_to = "value"
+  )
+
+# plot
+ggplot(comp_long, aes(x = value)) +
+  geom_histogram(bins = 20, fill = "steelblue", color = "white") +
+  facet_wrap(~ measure, ncol = 2, scales = "free") +
+  labs(
+    x = "Value",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+The distributions reveal several interesting patterns in the composition of ego networks. The proportion of family members varies widely across respondents, indicating substantial heterogeneity in the extent to which personal networks are centered around kin. The gender composition measure is broadly distributed around intermediate values, suggesting that many respondents’ networks contain a mixture of male and female alters rather than being strongly gender-segregated. The gender diversity measure is concentrated toward higher values, indicating that many ego networks contain a relatively balanced mix of male and female alters. Finally, the distribution of racial homophily is highly skewed toward 1, suggesting that most respondents name alters who share their racial background.
+
+These patterns are consistent with well-known findings on homophily in social networks, that is, the tendency for individuals to form ties with others who are similar to themselves [@mcpherson2001birds]. In particular, the concentration of prop_same_race near one indicates strong racial homophily in personal networks. At the same time, the distributions of prop_female and gender_entropy suggest that many networks remain gender-mixed rather than fully gender-segregated. Together, these measures show that ego networks are shaped by both similarity and diversity in the social contexts from which alters are drawn.
