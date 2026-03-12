@@ -455,6 +455,13 @@ window.Quarto = {
   </ul></li>
   <li><a href="#plotting-ego-nets" id="toc-plotting-ego-nets" class="nav-link" data-scroll-target="#plotting-ego-nets"><span class="header-section-number">8.3</span> Plotting Ego Nets</a></li>
   <li><a href="#descriptive-statistics-for-ego-networks" id="toc-descriptive-statistics-for-ego-networks" class="nav-link" data-scroll-target="#descriptive-statistics-for-ego-networks"><span class="header-section-number">8.4</span> Descriptive Statistics for Ego Networks</a></li>
+  <li><a href="#network-composition-based-on-alter-attributes" id="toc-network-composition-based-on-alter-attributes" class="nav-link" data-scroll-target="#network-composition-based-on-alter-attributes"><span class="header-section-number">8.5</span> Network Composition Based on Alter Attributes</a>
+  <ul>
+  <li><a href="#proportion-of-family-members" id="toc-proportion-of-family-members" class="nav-link" data-scroll-target="#proportion-of-family-members">Proportion of Family Members</a></li>
+  <li><a href="#gender-composition-of-the-network" id="toc-gender-composition-of-the-network" class="nav-link" data-scroll-target="#gender-composition-of-the-network">Gender Composition of the Network</a></li>
+  <li><a href="#racial-homophily" id="toc-racial-homophily" class="nav-link" data-scroll-target="#racial-homophily">Racial Homophily</a></li>
+  </ul></li>
+  <li><a href="#diversity-of-alters-within-ego-networks" id="toc-diversity-of-alters-within-ego-networks" class="nav-link" data-scroll-target="#diversity-of-alters-within-ego-networks"><span class="header-section-number">8.6</span> Diversity of Alters Within Ego Networks</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4sna/edit/main/descriptive/ego-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4sna/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -485,18 +492,13 @@ window.Quarto = {
 <section id="packages-needed-for-this-chapter" class="level2" data-number="8.1">
 <h2 data-number="8.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">8.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'igraph' was built under R version 4.5.2</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(egor)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'ggplot2' was built under R version 4.5.2</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(egor)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -521,85 +523,111 @@ window.Quarto = {
 <section id="constructing-an-ego-network-with-egor" class="level3" data-number="8.2.1">
 <h3 data-number="8.2.1" class="anchored" data-anchor-id="constructing-an-ego-network-with-egor"><span class="header-section-number">8.2.1</span> Constructing an Ego Network with <code>egor</code></h3>
 <p>An <code>egor</code> object stores the multiple data levels required for ego-centered network analysis. These levels include <strong>ego-level data</strong> (attributes of respondents), <strong>alter-level data</strong> (attributes of the individuals named by the respondent), and <strong>alter–alter ties</strong> (relationships among those alters).</p>
-<p>The data used in the following examples come from the 2004 General Social Survey (GSS) egocentric network module, which is available in the <code>networkdata</code> package. The dataset contains a stratified sample of 594 respondents and provides information at all three levels commonly used in ego network analysis: characteristics of the respondents (<em>egos</em>), characteristics of the individuals they name in their networks (<em>alters</em>), and the relationships among those alters (<em>alter–alter ties</em>). In the package, these data are already provided in the form of an <code>egor</code> object.</p>
-<p>To explore the structure of the dataset, we can inspect the first few rows of each component of the <code>egor</code> object:</p>
+<p>In this chapter, we draw on ego network data from the <strong>UC Berkeley Social Networks Study (UCNets)</strong> , a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the first wave and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset employed in this chapter is provided in the Appendix. However, because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the UCNets project website: https://ucnets.berkeley.edu/.</p>
+<p>In this chapter, we draw on ego network data from the <strong>UC Berkeley Social Networks Study (UCNets)</strong> <span class="citation" data-cites="fischer2020uc">(<a href="../references.html#ref-fischer2020uc" role="doc-biblioref">Fischer 2020</a>)</span>, a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the <em>first wave</em> and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in the <strong>Appendix</strong>[INSERT LINK]. This code already processes the raw survey files and combines them into an <code>egor</code> object, the data structure used by the <code>egor</code> package for ego-centered network analysis. An <code>egor</code> object contains three linked levels of data: <strong>ego-level attributes</strong> (characteristics of the respondents), <strong>alter-level attributes</strong> (characteristics of the individuals named in each respondent’s personal network), and <strong>alter–alter ties</strong> (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the <a href="https://ucnets.berkeley.edu/">UCNets project website</a>.</p>
+<p>We begin by exploring each of the three components of the <code>egor</code> object—ego attributes, alter attributes, and alter–alter ties—in order to understand how the ego network data are structured before proceeding to the analysis.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"gss_egor"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gss_egor<span class="sc">$</span>ego) <span class="co"># ego level</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ego_net_w1<span class="sc">$</span>ego) <span class="co"># ego level</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 9
-  .egoID       vpsu     vstrat    wtssall       age  race   sex marital numgiven
-   &lt;dbl&gt; &lt;hvn_lbll&gt; &lt;hvn_lbll&gt; &lt;hvn_lbll&gt; &lt;hvn_lbl&gt; &lt;hvn&gt; &lt;hvn&gt; &lt;hvn_l&gt; &lt;hvn_lb&gt;
-1     16          1       1849     0.4592        48     2     1       4        2
-2     22          1       1850     1.3776        67     1     2       1        0
-3     28          2       1850     2.7551        26     1     1       5       NA
-4     35          2       1851     2.3118        47     1     2       1        3
-5     59          1       1854     0.9184        55     1     2       1        4
-6     65          2       1854     1.3776        55     3     1       1        2</code></pre>
+<pre><code># A tibble: 6 × 19
+  .egoID gender year_birth   age married  pets home_owner informal_groups health
+  &lt;chr&gt;   &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;           &lt;dbl&gt; &lt;ord&gt; 
+1 30000…      1       1961  53.8       0     0          0               1 fair  
+2 30000…      0       1964  51.3       0     0          0               1 good  
+3 30000…      1       1951  63.7       0     1          0               0 good  
+4 30000…      1       1959  55.9       1     1          1               1 very_…
+5 30000…      1       1952  63.1       1     0          1               0 excel…
+6 30000…      1       1949  66.3       0     0          0               0 fair  
+# ℹ 10 more variables: lose_weight_advice &lt;dbl&gt;, smoker &lt;dbl&gt;,
+#   drinking_days &lt;dbl&gt;, marijuana_use &lt;dbl&gt;, extraversion &lt;dbl&gt;,
+#   education &lt;ord&gt;, race &lt;fct&gt;, birth_continent &lt;fct&gt;, religion &lt;fct&gt;,
+#   income &lt;ord&gt;</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gss_egor<span class="sc">$</span>alter) <span class="co"># alter level</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ego_net_w1<span class="sc">$</span>alter) <span class="co"># alter level</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 8
-  .altID .egoID        age       race        sex     spouse    intrace    sexsex
-   &lt;int&gt;  &lt;dbl&gt; &lt;hvn_lbll&gt; &lt;hvn_lbll&gt; &lt;hvn_lbll&gt; &lt;hvn_lbll&gt; &lt;hvn_lbll&gt; &lt;hvn_lbl&gt;
-1      1     16         50          2          1          2          2        NA
-2      2     16         NA          2          2          2         NA        NA
-3      1     35         47          4          1          1          1        NA
-4      2     35         79          4          2          2         NA        NA
-5      3     35         55          4          2          2         NA        NA
-6      1     59         54          4          1          1          1        NA</code></pre>
+<pre><code># A tibble: 6 × 6
+  .altID .egoID        gender family same_race same_age
+  &lt;chr&gt;  &lt;chr&gt;          &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 1      3000000000036      1      1         1        1
+2 2      3000000000036      0      0         1        1
+3 3      3000000000036      1      0         1       NA
+4 4      3000000000036      1      0         1       NA
+5 5      3000000000036      0      0         1        1
+6 6      3000000000036      1      0         1       NA</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gss_egor<span class="sc">$</span>aatie) <span class="co"># alter-alter ties</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ego_net_w1<span class="sc">$</span>aatie) <span class="co"># alter-alter ties</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
-  .egoID .srcID .tgtID     weight
-   &lt;dbl&gt;  &lt;int&gt;  &lt;int&gt; &lt;hvn_lbll&gt;
-1     16      1      2          3
-2     35      1      2          2
-3     59      1      2          1
-4     65      1      2          3
-5     72      1      2          3
-6     83      1      2          1</code></pre>
+  .egoID        .srcID .tgtID weight
+  &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;
+1 3000000000036 2      5           1
+2 3000000000036 2      5           1
+3 3000000000156 2      3           1
+4 3000000000156 3      5           1
+5 3000000000156 2      3           1
+6 3000000000156 2      5           1</code></pre>
 </div>
 </div>
-<p>Each of the three data frames is linked through unique identifier variables that ensure the different levels of information correspond to the correct individuals. The <code>.egoID</code> variable appears in all three tables and serves as the key that connects each respondent’s attributes to their alters and to the ties among those alters. In the alter-level data, each network member receives a unique <code>.altID</code>. These identifiers are referenced again in the alter–alter tie table through the <code>.srcID</code> (source) and <code>.tgtID</code> (target) columns, which specify which two alters are connected. The <code>weight</code> column records the value or strength of the tie between them.</p>
+<p>Each of the three tables is linked through identifier variables that ensure the different levels of information correspond to the correct ego networks. The variable <code>.egoID</code> appears in all three tables and serves as the key that connects respondent-level attributes in the <strong>ego table</strong> to the individuals they named in their personal networks in the <strong>alter table</strong>, and to the relationships among those alters recorded in the <strong>alter–alter tie table</strong>.</p>
+<p>In the alter-level table, each network member receives an identifier <code>.altID</code>, which uniquely identifies alters within a given ego network. Additional variables describe characteristics of the alter, including gender, whether the alter is a family member (<code>family</code>), whether the alter shares the same race as the ego (<code>same_race</code>), and whether the alter is approximately the same age as the ego (<code>same_age</code>).</p>
+<p>The alter–alter tie table records the relationships among alters within each ego network. These ties are based on survey questions asking respondents how well pairs of alters know each other (e.g., “How well does name 1 know name 2?”), with response options such as <em>very well</em>, <em>know a little</em>, or <em>do not know/something else</em>. For the purposes of constructing the network, responses indicating that alters know each other <strong>“very well”</strong> or <strong>“a little”</strong> were coded as a tie. The pairwise variables were reshaped into long format, and the identifiers <code>.srcID</code> and <code>.tgtID</code> indicate which two alters are connected. Because only positive ties were retained, the resulting <code>weight</code> variable is constant and equal to 1 for all alter–alter ties in the final dataset.</p>
 <p>Before proceeding with the analysis, we remove respondents for whom the variable <code>numgiven</code> is missing in the ego-level data. This variable records how many alters each respondent named and is required for several of the descriptive measures used later in the chapter. Because <code>numgiven</code> records how many alters a respondent named, a missing value at the ego level implies that no alter information is recorded for that respondent. Consequently, it is sufficient to remove missing values only from the ego table, since the alter and alter–alter tie tables contain entries only for egos who actually reported network members.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove egos with missing numgiven</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>gss_egor<span class="sc">$</span>ego <span class="ot">&lt;-</span> gss_egor<span class="sc">$</span>ego[<span class="sc">!</span><span class="fu">is.na</span>(gss_egor<span class="sc">$</span>ego<span class="sc">$</span>numgiven), ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Examining the dimensions of the three components after removing missing values (<code>dim(gss_egor$ego)</code>, <code>dim(gss_egor$alter)</code>, and <code>dim(gss_egor$aatie</code>) provides a quick overview of the dataset. The ego table now contains 305 respondents. Across these respondents, a total of 555 alters were named, each linked to a specific ego via <code>.egoID</code> and uniquely identified within each ego network by <code>.altID</code>. The alter–alter tie table contains 640 rows, with each row representing a relationship between two alters within the same ego network. These ties are identified by the <code>.egoID</code> of the corresponding ego and the <code>.srcID</code> and <code>.tgtID</code> variables that indicate the two alters involved.</p>
+<p>Examining the dimensions of the three components after removing missing values (<code>dim(ego_net_w1$ego)</code>, <code>dim(ego_net_w1$alter)</code>, and <code>dim(ego_net_w1$aatie)</code>) provides a quick overview of the dataset. The ego table now contains 1159 respondents. Across these respondents, a total of 12209 alters were named, each linked to a specific ego via <code>.egoID</code> and uniquely identified within each ego network by <code>.altID</code>. The alter–alter tie table contains 6696 rows, with each row representing a relationship between two alters within the same ego network. These ties are identified by the <code>.egoID</code> of the corresponding ego and the <code>.srcID</code> and <code>.tgtID</code> variables that indicate the two alters involved.</p>
 </section>
 </section>
 <section id="plotting-ego-nets" class="level2" data-number="8.3">
 <h2 data-number="8.3" class="anchored" data-anchor-id="plotting-ego-nets"><span class="header-section-number">8.3</span> Plotting Ego Nets</h2>
 <p>We now plot the networks using <code>igraph</code>. The first step is to convert the <code>egor</code> object into a list of <code>igraph</code> objects using <code>as_igraph()</code> from the <code>egor</code> package. Below, we create the list and inspect the first three ego networks.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert egor object to a list of igraph ego networks</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>gss_g <span class="ot">&lt;-</span> <span class="fu">as.igraph</span>(gss_egor)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect the first three ego networks</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>gss_g[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert egor object to a list of igraph ego networks</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">as.igraph</span>(ego_net_w1)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect the first three ego networks</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$`16`
-IGRAPH 9148698 UNW- 2 1 -- 
-+ attr: .egoID (g/n), name (v/c), age (v/n), race (v/n), sex (v/n),
-| spouse (v/n), intrace (v/n), sexsex (v/n), weight (e/n)
-+ edge from 9148698 (vertex names):
-[1] 1--2
+<pre><code>$`3000000000036`
+IGRAPH ae347b3 UNW- 6 2 -- 
++ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
+| (v/n), same_age (v/n), weight (e/n)
++ edges from ae347b3 (vertex names):
+[1] 2--5 2--5
 
-$`22`
-IGRAPH fc40faa UNW- 0 0 -- 
-+ attr: .egoID (g/n), name (v/c), age (v/n), race (v/n), sex (v/n),
-| spouse (v/n), intrace (v/n), sexsex (v/n), weight (e/n)
-+ edges from fc40faa (vertex names):
+$`3000000000156`
+IGRAPH 695860f UNW- 15 8 -- 
++ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
+| (v/n), same_age (v/n), weight (e/n)
++ edges from 695860f (vertex names):
+[1] 2--3 3--5 2--3 2--5 1--4 2--5 3--5 1--4
 
-$`35`
-IGRAPH 28ee382 UNW- 3 3 -- 
-+ attr: .egoID (g/n), name (v/c), age (v/n), race (v/n), sex (v/n),
-| spouse (v/n), intrace (v/n), sexsex (v/n), weight (e/n)
-+ edges from 28ee382 (vertex names):
-[1] 1--2 1--3 2--3</code></pre>
+$`3000000000271`
+IGRAPH f429c77 UNW- 5 6 -- 
++ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
+| (v/n), same_age (v/n), weight (e/n)
++ edges from f429c77 (vertex names):
+[1] 1--2 1--3 1--2 2--3 1--3 2--3
+
+$`3000000000317`
+IGRAPH 80c67eb UNW- 15 18 -- 
++ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
+| (v/n), same_age (v/n), weight (e/n)
++ edges from 80c67eb (vertex names):
+ [1] 1--2 2--3 2--4 2--5 1--4 2--4 4--5 1--3 2--3 3--5 1--2 1--3 1--4 1--5 1--5
+[16] 2--5 3--5 4--5
+
+$`3000000000346`
+IGRAPH 0f5b3b4 UNW- 15 16 -- 
++ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
+| (v/n), same_age (v/n), weight (e/n)
++ edges from 0f5b3b4 (vertex names):
+ [1] 1--3 2--3 3--4 1--2 2--3 2--4 1--2 1--3 1--4 1--5 1--5 4--5 1--4 2--4 3--4
+[16] 4--5
+
+$`3000000000349`
+IGRAPH 3063d2b UNW- 14 5 -- 
++ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
+| (v/n), same_age (v/n), weight (e/n)
++ edges from 3063d2b (vertex names):
+[1] 3--4 2--4 2--5 2--5 4--5</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -621,43 +649,33 @@ Note
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-egos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(gss_g[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>], <span class="cf">function</span>(g) {</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># rebuild a clean graph using only structure + names</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  el <span class="ot">&lt;-</span> <span class="fu">as_edgelist</span>(g, <span class="at">names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  vn <span class="ot">&lt;-</span> <span class="fu">V</span>(g)<span class="sc">$</span>name</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(el) <span class="sc">==</span> <span class="dv">0</span> <span class="sc">||</span> <span class="fu">nrow</span>(el) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    g_clean <span class="ot">&lt;-</span> <span class="fu">make_empty_graph</span>(<span class="at">n =</span> <span class="fu">length</span>(vn), <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">V</span>(g_clean)<span class="sc">$</span>name <span class="ot">&lt;-</span> vn</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    g_clean <span class="ot">&lt;-</span> <span class="fu">graph_from_edgelist</span>(el, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add back isolated vertices, if any</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    missing_v <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(vn, <span class="fu">V</span>(g_clean)<span class="sc">$</span>name)</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(missing_v) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>      g_clean <span class="ot">&lt;-</span> <span class="fu">add_vertices</span>(g_clean, <span class="at">nv =</span> <span class="fu">length</span>(missing_v), <span class="at">name =</span> missing_v)</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(g_clean, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in matrix(c(0, rep(0, dim - 1), 1, rep(0, dim - 2)), 2, dim, byrow =
-TRUE): data length [3] is not a sub-multiple or multiple of the number of rows
-[2]
-Warning in matrix(c(0, rep(0, dim - 1), 1, rep(0, dim - 2)), 2, dim, byrow =
-TRUE): data length [3] is not a sub-multiple or multiple of the number of rows
-[2]
-Warning in matrix(c(0, rep(0, dim - 1), 1, rep(0, dim - 2)), 2, dim, byrow =
-TRUE): data length [3] is not a sub-multiple or multiple of the number of rows
-[2]</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(g[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>], <span class="cf">function</span>(g) {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># rebuild a clean graph using only structure + names</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  el <span class="ot">&lt;-</span> <span class="fu">as_edgelist</span>(g, <span class="at">names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  vn <span class="ot">&lt;-</span> <span class="fu">V</span>(g)<span class="sc">$</span>name</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(el) <span class="sc">==</span> <span class="dv">0</span> <span class="sc">||</span> <span class="fu">nrow</span>(el) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    g_clean <span class="ot">&lt;-</span> <span class="fu">make_empty_graph</span>(<span class="at">n =</span> <span class="fu">length</span>(vn), <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">V</span>(g_clean)<span class="sc">$</span>name <span class="ot">&lt;-</span> vn</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    g_clean <span class="ot">&lt;-</span> <span class="fu">graph_from_edgelist</span>(el, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add back isolated vertices, if any</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    missing_v <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(vn, <span class="fu">V</span>(g_clean)<span class="sc">$</span>name)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(missing_v) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>      g_clean <span class="ot">&lt;-</span> <span class="fu">add_vertices</span>(g_clean, <span class="at">nv =</span> <span class="fu">length</span>(missing_v), <span class="at">name =</span> missing_v)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(g_clean, <span class="at">layout =</span> <span class="st">"circle"</span>) <span class="sc">+</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -679,27 +697,281 @@ Figure&nbsp;8.1: The first nine ego networks derived from the egor object based 
 \frac{5 \times (5 - 1)}{2} = 10
 \]</span> possible undirected ties among those alters. If all 10 ties are present, density equals 1 (a fully connected clique). If only 8 of the 10 possible ties are present, density equals 0.8.</p>
 <p>Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to <strong>structural hole theory</strong> <span class="citation" data-cites="burt1992structural">(<a href="../references.html#ref-burt1992structural" role="doc-biblioref">Burt 1992</a>)</span>, dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. The key advantages of social capital derive not primarily from the attributes of one’s alters, but from the <em>structure</em> of the ego network itself. Individuals benefit when they bridge gaps, so-called structural holes, between otherwise disconnected groups. In low-density networks, ego may occupy a brokerage position linking clusters that are not directly connected to each other, thereby gaining access to diverse, non-redundant information and potential strategic advantages (such as faster promotion within organizations). Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.</p>
-<p>We can calculate density for each ego network using the <code>ego_density()</code> function applied to our <code>ego32</code> object. Note that ego networks with 0 or 1 alters will have <code>NA</code> values for density, because density is undefined when no alter–alter ties are possible.</p>
+<p>We can calculate density for each ego network using the <code>ego_density()</code> function applied to our <code>egor</code> object. Note that ego networks with 0 or 1 alters will have density equal to <code>NaN</code>, because density is undefined when no alter–alter ties are possible. There are 10 such values and they are removed from the plot below.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>dens <span class="ot">&lt;-</span> <span class="fu">ego_density</span>(gss_egor)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dens)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dens <span class="ot">&lt;-</span> <span class="fu">ego_density</span>(ego_net_w1)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dens)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
-  .egoID density
-   &lt;dbl&gt;   &lt;dbl&gt;
-1     16       1
-2     22     NaN
-3     35       1
-4     59       1
-5     65       1
-6     72       1</code></pre>
+  .egoID        density
+  &lt;chr&gt;           &lt;dbl&gt;
+1 3000000000036  0.133 
+2 3000000000156  0.0762
+3 3000000000271  0.6   
+4 3000000000317  0.171 
+5 3000000000346  0.152 
+6 3000000000349  0.0549</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.nan</span>(dens<span class="sc">$</span>density)) <span class="co"># number of NaN's</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dens, <span class="fu">aes</span>(<span class="at">x =</span> density)) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.05</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Ego network density"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of ego networks"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Distribution of ego network densities"</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ego-networks_files/figure-html/ego-dens-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
+</div>
+</section>
+<section id="network-composition-based-on-alter-attributes" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="network-composition-based-on-alter-attributes"><span class="header-section-number">8.5</span> Network Composition Based on Alter Attributes</h2>
+<p>A useful way to describe ego networks is to examine the <strong>composition of alters</strong> within each network. Rather than focusing on the structure of ties among alters, compositional measures summarize <strong>who is present in the ego’s personal network</strong>. These measures are obtained by aggregating alter attributes within each ego network.</p>
+<p>The <code>comp_ply()</code> function from the <code>egor</code> package provides a convenient way to compute such summaries. It applies a function to an alter attribute within each ego network and returns one value per ego. In our dataset, the alter-level data include several characteristics, such as <code>gender</code>, whether the alter is a <code>family</code> member, and whether the alter shares the same race as the ego (<code>same_race</code>). Using these variables, we can construct several interpretable measures of network composition.</p>
+<section id="proportion-of-family-members" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="proportion-of-family-members">Proportion of Family Members</h3>
+<p>A simple but informative compositional measure is the <strong>proportion of family members</strong> within an ego network. This captures the extent to which a respondent’s personal network is centered around kin relationships rather than non-kin ties such as friends, coworkers, or acquaintances. Networks with a high proportion of family members may indicate stronger reliance on kin-based support systems, whereas networks with fewer family members may reflect more diverse social connections outside the household or extended family.</p>
+<p>In our alter-level data, the variable <code>family</code> indicates whether an alter is a relative (including spouse/partner, parent, child, sibling, or another relative). Using <code>comp_ply()</code>, we can compute the proportion of alters who are family members for each ego network.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>prop_family <span class="ot">&lt;-</span> <span class="fu">comp_ply</span>(ego_net_w1, <span class="st">"family"</span>, mean)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prop_family)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  .egoID        result
+  &lt;chr&gt;          &lt;dbl&gt;
+1 3000000000036 0.167 
+2 3000000000156 0.0667
+3 3000000000271 0     
+4 3000000000317 0.467 
+5 3000000000346 0.533 
+6 3000000000349 0.714 </code></pre>
+</div>
+</div>
+</section>
+<section id="gender-composition-of-the-network" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="gender-composition-of-the-network">Gender Composition of the Network</h3>
+<p>Another compositional measure describes the gender composition of ego networks. This measure captures the share of alters who are female within each respondent’s personal network. Examining gender composition can reveal patterns of gender-based social organization and potential gender homophily, where individuals tend to form ties with others of the same gender.</p>
+<p>In our alter-level data, gender is coded as <code>0 = male</code> and <code>1 = female</code>. By taking the mean of this binary variable across alters within each ego network, we obtain the proportion of female alters in each network. Values close to 0 indicate networks composed mostly of men, values close to 1 indicate networks composed mostly of women, and values around 0.5 suggest a more gender-balanced network.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>prop_female <span class="ot">&lt;-</span> <span class="fu">comp_ply</span>(ego_net_w1, <span class="st">"gender"</span>, mean)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prop_female)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  .egoID        result
+  &lt;chr&gt;          &lt;dbl&gt;
+1 3000000000036  0.667
+2 3000000000156  0.2  
+3 3000000000271  1    
+4 3000000000317  0.6  
+5 3000000000346  0.467
+6 3000000000349  0.5  </code></pre>
+</div>
+</div>
+</section>
+<section id="racial-homophily" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="racial-homophily">Racial Homophily</h3>
+<p>A third compositional measure captures racial homophily within ego networks. Homophily refers to the tendency for individuals to form social ties with others who share similar characteristics. Here we examine whether alters share the same race as the ego.</p>
+<p>The alter-level variable same_race indicates whether the respondent reported that the alter is of the same race as themselves (<code>1 = same race</code>, <code>0 = different race</code>). By averaging this binary variable across alters within each ego network, we obtain the proportion of alters who share the ego’s race. Higher values indicate more racially homogeneous networks, while lower values suggest greater racial diversity.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>prop_same_race <span class="ot">&lt;-</span> <span class="fu">comp_ply</span>(ego_net_w1, <span class="st">"same_race"</span>, mean)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prop_same_race)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  .egoID        result
+  &lt;chr&gt;          &lt;dbl&gt;
+1 3000000000036  1    
+2 3000000000156  0.133
+3 3000000000271 NA    
+4 3000000000317  1    
+5 3000000000346  1    
+6 3000000000349 NA    </code></pre>
+</div>
+</div>
+<p>To obtain a compact overview of these compositional measures, we combine them into a single summary table.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>prop_family <span class="ot">&lt;-</span> <span class="fu">comp_ply</span>(ego_net_w1, <span class="st">"family"</span>, mean)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>prop_female <span class="ot">&lt;-</span> <span class="fu">comp_ply</span>(ego_net_w1, <span class="st">"gender"</span>, mean)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>prop_same_race <span class="ot">&lt;-</span> <span class="fu">comp_ply</span>(ego_net_w1, <span class="st">"same_race"</span>, mean)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>comp_summary <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">egoID =</span> prop_family<span class="sc">$</span>.egoID,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_family =</span> prop_family<span class="sc">$</span>result,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_female =</span> prop_female<span class="sc">$</span>result,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_same_race =</span> prop_same_race<span class="sc">$</span>result</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(comp_summary) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(comp_summary, <span class="dv">10</span>),</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span>,</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Summary of compositional measures for ego networks."</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Summary of compositional measures for ego networks.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">egoID</th>
+<th style="text-align: right;">prop_family</th>
+<th style="text-align: right;">prop_female</th>
+<th style="text-align: right;">prop_same_race</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">3000000000036</td>
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3000000000156</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">0.13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3000000000271</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3000000000317</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">0.60</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3000000000346</td>
+<td style="text-align: right;">0.53</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3000000000349</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3000000000490</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3000000000552</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.59</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3000000000560</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3000000000601</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Several entries may appear as <code>NA</code>. These occur when the compositional measure cannot be computed because the relevant alter attribute is missing or undefined for all alters in that ego network, or when a network contains too few alters to compute a meaningful proportion.</p>
+</section>
+</section>
+<section id="diversity-of-alters-within-ego-networks" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="diversity-of-alters-within-ego-networks"><span class="header-section-number">8.6</span> Diversity of Alters Within Ego Networks</h2>
+<p>While the previous measures summarize the presence of specific alter characteristics, another perspective focuses on the overall diversity of alters within an ego network. Instead of examining whether alters resemble the ego, diversity measures capture how heterogeneous the set of alters is with respect to a given attribute.</p>
+<p>One commonly used diversity measure is Shannon entropy, defined as</p>
+<p><span class="math display">\[
+H = - \sum_i p_i \log(p_i)
+\]</span></p>
+<p>where (<span class="math inline">\(p_i\)</span>) represents the proportion of alters belonging to category (<span class="math inline">\(i\)</span>). Entropy increases when alters are more evenly distributed across categories and decreases when most alters belong to the same category. Networks with entropy close to zero therefore contain alters who are largely similar to one another, while higher values indicate more heterogeneous networks.</p>
+<p>In the <code>egor</code> package, entropy-based diversity measures can be computed directly using the function <code>alts_diversity_entropy()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>gender_entropy <span class="ot">&lt;-</span> <span class="fu">alts_diversity_entropy</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  ego_net_w1,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">alt.attr =</span> <span class="st">"gender"</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">base =</span> <span class="fu">exp</span>(<span class="dv">1</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gender_entropy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  .egoID        entropy
+  &lt;chr&gt;           &lt;dbl&gt;
+1 3000000000036   0.637
+2 3000000000156   0.500
+3 3000000000271   0    
+4 3000000000317   0.673
+5 3000000000346   0.691
+6 3000000000349   0.693</code></pre>
+</div>
+</div>
+<p>This measure captures the gender diversity of each ego network. Networks in which alters are evenly split between men and women have higher entropy values, whereas networks composed mostly of alters of the same gender have lower values.</p>
+<p>We can combine the diversity measure with the compositional measures above and visualize their distributions to better understand how ego networks vary across respondents.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add entropy to summary table</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>comp_summary<span class="sc">$</span>gender_entropy <span class="ot">&lt;-</span> gender_entropy<span class="sc">$</span>entropy</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># reshape for plotting</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>comp_long <span class="ot">&lt;-</span> comp_summary <span class="sc">|&gt;</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span>egoID,</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"measure"</span>,</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"value"</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(comp_long, <span class="fu">aes</span>(<span class="at">x =</span> value)) <span class="sc">+</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> measure, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Value"</span>,</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Frequency"</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ego-networks_files/figure-html/plot-comp-summary-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The distributions reveal several interesting patterns in the composition of ego networks. The proportion of family members varies widely across respondents, indicating substantial heterogeneity in the extent to which personal networks are centered around kin. The gender composition measure is broadly distributed around intermediate values, suggesting that many respondents’ networks contain a mixture of male and female alters rather than being strongly gender-segregated. The gender diversity measure is concentrated toward higher values, indicating that many ego networks contain a relatively balanced mix of male and female alters. Finally, the distribution of racial homophily is highly skewed toward 1, suggesting that most respondents name alters who share their racial background.</p>
+<p>These patterns are consistent with well-known findings on homophily in social networks, that is, the tendency for individuals to form ties with others who are similar to themselves <span class="citation" data-cites="mcpherson2001birds">(<a href="../references.html#ref-mcpherson2001birds" role="doc-biblioref">McPherson, Smith-Lovin, and Cook 2001</a>)</span>. In particular, the concentration of prop_same_race near one indicates strong racial homophily in personal networks. At the same time, the distributions of prop_female and gender_entropy suggest that many networks remain gender-mixed rather than fully gender-segregated. Together, these measures show that ego networks are shaped by both similarity and diversity in the social contexts from which alters are drawn.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-burt1992structural" class="csl-entry" role="listitem">
 Burt, Ronald. 1992. <em>Structural Holes: The Social Structure of Competition</em>. Harvard University Press.
+</div>
+<div id="ref-fischer2020uc" class="csl-entry" role="listitem">
+Fischer, Claude S. 2020. <span>“UC Berkeley Social Networks Study (UCNets), San Francisco Bay Area, 2015-2018.”</span>
+</div>
+<div id="ref-mcpherson2001birds" class="csl-entry" role="listitem">
+McPherson, Miller, Lynn Smith-Lovin, and James M Cook. 2001. <span>“Birds of a Feather: Homophily in Social Networks.”</span> <em>Annual Review of Sociology</em> 27 (1): 415–44.
 </div>
 </div>
 </section>
