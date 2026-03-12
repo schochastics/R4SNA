@@ -15,8 +15,7 @@ library(ggraph)
 library(patchwork)
 library(tidyverse)
 library(knitr)
-
-
+library(MASS)
 ```
 
 ::: {.callout-note}
@@ -51,10 +50,6 @@ In this chapter, we draw on ego network data from the **UC Berkeley Social Netwo
 #| include: false
 #| echo: false
 
-library(dplyr)
-library(tidyr)
-library(egor)
-
 # =========================
 # 1. LOAD WAVE 1 DATA
 # =========================
@@ -78,7 +73,7 @@ pair_vars <- c(
 # =========================
 
 egos <- egow1 %>%
-  select(
+  dplyr::select(
     PRIM_KEY, GENDER, YEAR_PRELOAD, AGE_EX, A2A, A13A, A19A, B3B,
     G1, H3, H4A, H5A, H6A, J1A, J1B, K1, RACECATS1, K9A, K15, K22A
   ) %>%
@@ -257,7 +252,7 @@ alters <- altw1 %>%
 # =========================
 
 aaties <- altw1 %>%
-  select(PRIM_KEY, all_of(pair_vars)) %>%
+  dplyr::select(PRIM_KEY, all_of(pair_vars)) %>%
   distinct() %>%
   pivot_longer(
     cols = all_of(pair_vars),
@@ -276,11 +271,11 @@ aaties <- altw1 %>%
     .tgtID = as.integer(sub("^N([1-5])_N([1-5])$", "\\2", pair))
   ) %>%
   filter(weight == 1) %>%
-  select(.egoID, .srcID, .tgtID, weight)
+  dplyr::select(.egoID, .srcID, .tgtID, weight)
 
 # Keep only alter-alter ties for alters that exist in the alter table
 valid_alters <- alters %>%
-  select(.egoID, .altID)
+  dplyr::select(.egoID, .altID)
 
 aaties <- aaties %>%
   inner_join(valid_alters, by = c(".egoID", ".srcID" = ".altID")) %>%
@@ -342,6 +337,7 @@ g[1:3]
 ```
 
 ::: {.callout-note}
+## Note
 If we instead wanted to work within the `statnet` framework, we could use `as_network()` to convert the data into objects of class `network`.
 :::
 
@@ -419,13 +415,13 @@ ggplot(dens, aes(x = density)) +
 ```
 
 
-## Network Composition Based on Alter Attributes
+### Network Composition Based on Alter Attributes
 
 A useful way to describe ego networks is to examine the **composition of alters** within each network. Rather than focusing on the structure of ties among alters, compositional measures summarize *who is present in the ego’s personal network*. These measures are obtained by aggregating alter attributes within each ego network.
 
 The `comp_ply()` function from the `egor` package provides a convenient way to compute such summaries. It applies a function to an alter attribute within each ego network and returns one value per ego. In our dataset, the alter-level data include several characteristics, such as `gender`, whether the alter is a `family` member, and whether the alter shares the same race as the ego (`same_race`). Using these variables, we can construct several interpretable measures of network composition.
 
-### Proportion of Family Members {.unnumbered}
+#### Proportion of Family Members {.unnumbered}
 
 A simple but informative compositional measure is the **proportion of family members** within an ego network. This captures the extent to which a respondent’s personal network is centered around kin relationships rather than non-kin ties such as friends, coworkers, or acquaintances. Networks with a high proportion of family members may indicate stronger reliance on kin-based support systems, whereas networks with fewer family members may reflect more diverse social connections outside the household or extended family.
 
@@ -437,7 +433,7 @@ prop_family <- comp_ply(ego_net_w1, "family", mean)
 head(prop_family)
 ```
 
-### Gender Composition of the Network {.unnumbered}
+#### Gender Composition of the Network {.unnumbered}
 
 Another compositional measure describes the gender composition of ego networks. This measure captures the share of alters who are female within each respondent’s personal network. Examining gender composition can reveal patterns of gender-based social organization and potential gender homophily, where individuals tend to form ties with others of the same gender.
 
@@ -449,7 +445,7 @@ prop_female <- comp_ply(ego_net_w1, "gender", mean)
 head(prop_female)
 ```
 
-### Racial Homophily {.unnumbered}
+#### Racial Homophily {.unnumbered}
 A third compositional measure captures racial homophily within ego networks. Homophily refers to the tendency for individuals to form social ties with others who share similar characteristics. Here we examine whether alters share the same race as the ego.
 
 The alter-level variable same_race indicates whether the respondent reported that the alter is of the same race as themselves (`1 = same race`, `0 = different race`). By averaging this binary variable across alters within each ego network, we obtain the proportion of alters who share the ego’s race. Higher values indicate more racially homogeneous networks, while lower values suggest greater racial diversity.
@@ -484,7 +480,7 @@ kable(
 ```
 Several entries may appear as `NA`. These occur when the compositional measure cannot be computed because the relevant alter attribute is missing or undefined for all alters in that ego network, or when a network contains too few alters to compute a meaningful proportion.
 
-## Diversity of Alters Within Ego Networks
+### Diversity of Alters Within Ego Networks
 
 While the previous measures summarize the presence of specific alter characteristics, another perspective focuses on the overall diversity of alters within an ego network. Instead of examining whether alters resemble the ego, diversity measures capture how heterogeneous the set of alters is with respect to a given attribute.
 
@@ -543,10 +539,341 @@ The distributions reveal several interesting patterns in the composition of ego 
 These patterns are consistent with well-known findings on homophily in social networks, that is, the tendency for individuals to form ties with others who are similar to themselves [@mcpherson2001birds]. In particular, the concentration of prop_same_race near one indicates strong racial homophily in personal networks. At the same time, the distributions of prop_female and gender_entropy suggest that many networks remain gender-mixed rather than fully gender-segregated. Together, these measures show that ego networks are shaped by both similarity and diversity in the social contexts from which alters are drawn.
 
 
-## Predicting Individual Outcomes Using Ego Network Characteristics
+## Predicting Individual Outcomes Using Ego Network Measures
 
 In the previous sections we examined the structure and composition of ego networks, focusing on characteristics such as family ties, gender composition, and racial homophily. These measures describe how individuals’ personal networks are organized. However, ego network properties can also be used as explanatory variables in statistical models.
 
 As discussed in the introduction, ego network data are typically collected through surveys in which each respondent reports information about their personal contacts. Because each ego corresponds to a distinct survey respondent, the resulting observations can reasonably be treated as independent. This differs from whole-network data, where observations are inherently interdependent. The survey-based structure of ego network data therefore allows us to apply familiar statistical tools such as regression models to examine how network characteristics relate to individual outcomes.
 
-In this section we illustrate this idea by examining whether features of respondents’ ego networks are associated with their self-reported health.
+
+###  Predicting Self-Reported Health 
+In addition to describing the structure and composition of ego networks, we can also use ego network measures as **predictors of individual outcomes**. As noted earlier, survey-based ego network data typically yield one observation per respondent. This means that ego networks can often be treated as **independent observations**, which allows us to apply familiar statistical tools such as regression models. This is an important difference from whole-network data, where observations are inherently interdependent and require specialized network models.
+
+Here we illustrate this approach by examining whether features of respondents’ ego networks are associated with their **self-reported health**. Substantively, this is a plausible question: individuals embedded in larger, more diverse, or more supportive personal networks may report better health. At the same time, kin-centered or highly homogeneous networks may provide different forms of support and constraint, so the direction of association is not obvious a priori.
+
+#### Outcome Variable
+
+> *Are respondents with larger, more diverse, or more kin-centered personal networks more likely to report better health?*
+
+So we are basically checking whether individuals embedded in larger, more diverse, or more supportive personal networks may report better health.
+
+Our outcome is the ego-level variable `health`, which records respondents’ self-rated health. In the data preparation step, this variable was retained as an ordered factor with the categories:
+
+- `excellent`
+- `very_good`
+- `good`
+- `fair`
+- `poor`
+
+Because these categories are ordered but not measured on an interval scale, an ordinal regression model is an appropriate choice.
+
+#### Predictors
+
+We incldue four ego-network measures as predictors:
+
+- **`ego_size`**: the number of alters in the ego network
+- **`prop_family`**: the proportion of alters who are family members
+- **`gender_entropy`**: a measure of gender diversity among alters
+
+Note that we do not use `prop_same_race` due to its high number of missing observations. 
+
+To account for basic respondent characteristics, we also include three ego-level controls:
+
+- **`age`**
+- **`gender`**
+- **`education`**
+
+Together, this model combines network size, network composition, homophily, and diversity, along with standard demographic controls.
+
+#### Preparing the Analysis Data
+We first compute ego network size and combine all predictors into a single analysis dataset.
+
+```{r}
+#| label: prepare-health-model-data
+
+# network size = number of alters per ego
+net_size <- ego_net_w1$alter |>
+  count(.egoID, name = "ego_size")
+
+# compositional measures
+prop_family <- comp_ply(ego_net_w1, "family", mean)
+prop_same_race <- comp_ply(ego_net_w1, "same_race", mean)
+gender_entropy <- alts_diversity_entropy(
+  ego_net_w1,
+  alt.attr = "gender",
+  base = exp(1)
+)
+
+# rename columns to merge cleanly
+prop_family_df <- prop_family |>
+  rename(prop_family = result)
+
+prop_same_race_df <- prop_same_race |>
+  rename(prop_same_race = result)
+
+gender_entropy_df <- gender_entropy |>
+  rename(gender_entropy = entropy)
+
+# combine into one analysis dataset
+analysis_dat <- egos |>
+  left_join(net_size, by = ".egoID") |>
+  left_join(prop_family_df, by = ".egoID") |>
+  left_join(prop_same_race_df, by = ".egoID") |>
+  left_join(gender_entropy_df, by = ".egoID")
+
+head(analysis_dat)
+```
+
+Before estimating the model, it is useful to reorder the health outcome so that higher categories correspond to better health. This makes the interpretation of coefficients more intuitive.
+
+```{r}
+#| label: reorder-health
+analysis_dat$health_ord <- ordered(
+  analysis_dat$health,
+  levels = c("poor", "fair", "good", "very_good", "excellent")
+)
+
+table(analysis_dat$health_ord, useNA = "ifany")
+```
+
+#### Estimating the Model
+We now estimate an ordinal logistic regression model using the `polr()` function from the MASS package.
+
+```{r}
+#| label: fit-health-model
+#| 
+# treat education as categorical
+analysis_dat$education <- factor(analysis_dat$education)
+
+health_model <- polr(
+  health_ord ~ ego_size + prop_family + gender_entropy +
+    age + gender + education,
+  data = analysis_dat,
+  Hess = TRUE,
+  na.action = na.omit
+)
+
+summary(health_model)
+```
+
+
+::: {.callout-note}
+## Note
+Because the education variable was originally stored as an ordered factor, R expanded it into polynomial contrasts when estimating the model. These contrasts can sometimes introduce linear dependencies in the design matrix, especially in the presence of missing data. To simplify interpretation and avoid this issue, we treat education as a categorical factor in the regression model.
+:::
+
+#### Interpretation of Model Output
+
+The ordinal logistic regression results suggest that ego network size is positively associated with better self-reported health. The coefficient for ego_size is positive ($0.037$) and its corresponding test statistic ($t = 2.70$) indicates that the effect is statistically significant at conventional levels. In ordinal logistic regression estimated with `polr()`, statistical significance can be assessed by examining the ratio of the coefficient to its standard error (the $t$ value). As a rule of thumb, absolute values larger than about 1.96 correspond to significance at the 5% level under the normal approximation. Applying this criterion, the effect of network size is statistically significant, suggesting that respondents with larger personal networks are more likely to report better health categories.
+
+In contrast, the compositional characteristics of the network do not show strong associations with health in this model. The proportion of family members in the network (`prop_family`) and the gender diversity of alters (`gender_entropy`) both have coefficients with $t$ values well below this threshold, indicating that their effects are not statistically distinguishable from zero in this sample. This suggests that, in this example, the size of the personal network appears to matter more for self-reported health than the specific composition of the network.
+
+Among the control variables, `education` shows a statistically significant association with health, as indicated by the large $t$ value for the linear education contrast. This pattern is consistent with a large body of research linking higher educational attainment to better health outcomes. Age and gender, by contrast, do not show statistically significant associations in this model.
+
+Overall, the results illustrate how ego network measures can be incorporated into standard regression frameworks. In this example, network size emerges as the most important network characteristic associated with health, whereas compositional aspects of the network appear less strongly related to the outcome once demographic characteristics are taken into account.
+
+::: {.callout-note}
+In an ordinal logistic regression, the values listed under *“Intercepts”* are *threshold parameters*, not traditional regression intercepts. They define the boundaries between adjacent categories of the ordered outcome (e.g., `poor|fair`, `fair|good`). The model assumes an underlying continuous health propensity, and these thresholds determine where respondents transition between the observed health categories. Because they simply partition this latent scale, the thresholds are typically *not interpreted substantively*; the main quantities of interest are the coefficients of the predictors, which indicate how variables such as ego network size shift respondents along the latent health scale.
+:::
+
+
+#### Predicted Probabilities
+
+Although the coefficients from an ordinal logistic regression indicate how predictors shift respondents along the underlying latent scale of the outcome, they can be difficult to interpret substantively. A more intuitive way to understand the model is to examine predicted probabilities for each category of the outcome variable.
+
+Predicted probabilities translate the regression results into the probability that a respondent falls into each health category (e.g., *poor*, *fair*, *good*, *very good*, or *excellent*) given specific values of the predictors. These probabilities make it easier to see how changes in ego network characteristics are associated with differences in expected health outcomes.
+
+For example, we can examine how the predicted probability of reporting different health levels changes as ego network size increases, while holding the other variables constant.
+
+```{r}
+#| label: predicted-probs
+# predicted probabilities for each observation
+pred_probs <- predict(health_model, type = "probs")
+
+head(pred_probs)
+```
+
+Each row now contains the estimated probability that a respondent falls into each of the five health categories according to the fitted model.
+
+To visualize the relationship between network size and health, we can generate predicted probabilities across a range of ego network sizes while holding the other predictors at typical values.
+```{r}
+#| label: predicted-probs-plot
+# create a sequence of network sizes
+size_seq <- seq(
+  min(analysis_dat$ego_size, na.rm = TRUE),
+  max(analysis_dat$ego_size, na.rm = TRUE),
+  length.out = 50
+)
+
+# create prediction dataset
+pred_dat <- data.frame(
+  ego_size = size_seq,
+  prop_family = mean(analysis_dat$prop_family, na.rm = TRUE),
+  gender_entropy = mean(analysis_dat$gender_entropy, na.rm = TRUE),
+  age = mean(analysis_dat$age, na.rm = TRUE),
+  gender = 0,
+  education = levels(analysis_dat$education)[1]
+)
+
+# compute predicted probabilities
+pred_dat <- cbind(
+  pred_dat,
+  predict(health_model, newdata = pred_dat, type = "probs")
+)
+
+# reshape for plotting
+pred_long <- pred_dat |>
+  pivot_longer(
+    cols = c(poor, fair, good, very_good, excellent),
+    names_to = "health_category",
+    values_to = "probability"
+  )
+
+ggplot(pred_long, aes(x = ego_size, y = probability, color = health_category)) +
+  geom_line(linewidth = 1) +
+  labs(
+    x = "Ego Network Size",
+    y = "Predicted Probability",
+    color = "Health Category"
+  ) +
+  theme_minimal()
+```
+
+The figure displays the predicted probabilities of reporting each health category as ego network size increases, while holding the other predictors constant at typical values. Overall, the results show a clear pattern: as the number of alters in a respondent’s personal network increases, the probability of reporting better health categories increases, while the probability of reporting poorer health categories declines.
+
+In particular, the predicted probability of reporting excellent health rises steadily with ego network size, and the probability of reporting very good health also increases. At the same time, the probabilities of reporting fair or poor health decrease as networks become larger. This pattern indicates that larger ego networks are associated with a greater likelihood of reporting better health outcomes.
+
+The probability of reporting good health declines slightly as network size increases. This occurs because good is a middle category on the health scale. In ordinal models, probability does not move directly from one category to a single adjacent category. Instead, probability mass is redistributed across all categories when a predictor changes. The probability of reporting good health declines slightly as network size increases. This occurs because “good” is a middle category on the health scale. As network size increases, the predicted probabilities of lower categories such as fair and poor decline, while the probabilities of higher categories such as very good and excellent increase. The reduction in the middle category therefore reflects a redistribution of probability toward the higher end of the health scale..
+
+Taken together, the pattern of increasing probabilities for higher health categories and decreasing probabilities for lower categories suggests that larger ego networks are associated with better self-reported health. This interpretation is consistent with the regression results presented earlier, which indicated a positive association between ego network size and the latent health scale. Substantively, this finding aligns with the idea that individuals embedded in larger personal networks may benefit from greater social support, access to information, and other resources that can contribute to improved health and well-being.
+
+
+### Predicting Smoking Behavior
+
+In the previous example, we examined how ego network characteristics are associated with respondents’ self-reported health. We now illustrate a second application by examining whether features of respondents’ ego networks are associated with a **binary health behavior outcome: cigarette smoking**.
+
+Smoking behavior is a natural outcome to consider in a network context. Social networks often shape health behaviors through mechanisms such as social norms, peer influence, and access to support. Individuals embedded in larger or more diverse networks may experience different pressures or resources that affect their likelihood of smoking. For example, networks with strong family presence may discourage smoking, while more diverse networks may expose individuals to different behavioral norms.
+
+#### Outcome Variable
+
+> *Are respondents with larger, more diverse, or more kin-centered personal networks more or less likely to smoke cigarettes?*
+
+Our outcome variable is the ego-level indicator `smoker`, which records whether the respondent reports currently smoking cigarettes.
+
+The variable is coded as:
+
+- `1` = respondent smokes
+- `0` = respondent does not smoke
+
+Because this outcome is binary, we estimate a **logistic regression model**.
+
+#### Predictors
+
+We include the same ego-network measures as predictors:
+
+- **`ego_size`**: the number of alters in the ego network  
+- **`prop_family`**: the proportion of alters who are family members  
+- **`gender_entropy`**: a measure of gender diversity among alters  
+
+As before, we exclude `prop_same_race` due to the large number of missing observations.
+
+We also include the same ego-level control variables:
+
+- **`age`**
+- **`gender`**
+- **`education`**
+
+This specification allows us to examine whether network size, network composition, and diversity are associated with smoking behavior while accounting for basic demographic characteristics.
+
+#### Estimating the Model
+
+We estimate a logistic regression model using the `glm()` function with a binomial link.
+
+```{r}
+#| label: fit-smoking-model
+
+smoke_model <- glm(
+  smoker ~ ego_size + prop_family + gender_entropy +
+    age + gender + education,
+  data = analysis_dat,
+  family = binomial,
+  na.action = na.omit
+)
+
+summary(smoke_model)
+```
+
+#### Interpretation of Model Output
+
+The logistic regression results examine whether characteristics of respondents’ ego networks are associated with the likelihood of smoking. In logistic regression, coefficients represent the effect of predictors on the log-odds of the outcome. A positive coefficient indicates that higher values of the predictor increase the likelihood of smoking, while a negative coefficient indicates a decrease in the likelihood of smoking. Statistical significance can be assessed using the ratio of the coefficient to its standard error (the $z$-statistic). As a rule of thumb, absolute values larger than approximately 1.96 correspond to statistical significance at the 5% level.
+
+Among the network predictors, ego network size (`ego_size`) shows a negative association with smoking. The coefficient is −0.061, corresponding to an odds ratio of approximately 0.94. This suggests that each additional alter in a respondent’s ego network is associated with roughly a 6% decrease in the odds of smoking, although the effect is only marginally significant. Substantively, this pattern is consistent with the idea that individuals embedded in larger personal networks may experience stronger social norms or social support that discourage smoking.
+
+The proportion of family members in the network (`prop_family`) also has a negative coefficient, indicating that more kin-centered networks may be associated with lower odds of smoking. However, the effect is not statistically significant in this model. Similarly, gender diversity in the network (`gender_entropy`) does not show a clear association with smoking behavior, suggesting that variation in the gender composition of alters is not strongly related to smoking in this sample.
+
+Among the demographic controls, gender shows a marginally significant association with smoking. The negative coefficient indicates that respondents coded as female have lower odds of smoking than males. Age does not appear to have a statistically significant effect in this model.
+
+Finally, the results indicate that education is associated with smoking behavior, as reflected in the statistically significant polynomial contrasts for the education variable. These contrasts capture systematic variation in smoking across levels of educational attainment. Substantively, this pattern is consistent with well-established findings that smoking prevalence tends to be lower among individuals with higher levels of education.
+
+Overall, the results demonstrate how ego network measures can be incorporated into standard logistic regression models to study behavioral outcomes. In this example, there is some evidence that individuals with larger personal networks are less likely to smoke, while compositional aspects of the network appear less strongly related to smoking behavior once demographic characteristics are taken into account.
+
+:::{.callout-note}
+## Note
+For ease of interpretation, it is often useful to transform the coefficients into odds ratios, which indicate the multiplicative change in the odds of smoking associated with a one-unit increase in the predictor.
+
+
+```{r}
+#| label: smoking-odds-ratios
+exp(coef(smoke_model))
+```
+Odds ratios greater than 1 indicate that the predictor is associated with higher odds of smoking, while values below 1 indicate lower odds of smoking.
+
+:::
+
+#### Predicted Probabilities
+
+As with the ordinal model above, predicted probabilities often provide a more intuitive way to interpret logistic regression results.
+
+We can examine how the probability of smoking changes as ego network size increases, while holding the other predictors constant.
+
+
+```{r}
+#| label: predicted-smoking-probs
+
+size_seq <- seq(
+  min(analysis_dat$ego_size, na.rm = TRUE),
+  max(analysis_dat$ego_size, na.rm = TRUE),
+  length.out = 50
+)
+
+pred_dat <- data.frame(
+  ego_size = size_seq,
+  prop_family = mean(analysis_dat$prop_family, na.rm = TRUE),
+  gender_entropy = mean(analysis_dat$gender_entropy, na.rm = TRUE),
+  age = mean(analysis_dat$age, na.rm = TRUE),
+  gender = 0,
+  education = levels(analysis_dat$education)[1]
+)
+
+pred_dat$prob_smoke <- predict(
+  smoke_model,
+  newdata = pred_dat,
+  type = "response"
+)
+
+ggplot(pred_dat, aes(x = ego_size, y = prob_smoke)) +
+  geom_line(linewidth = 1, color = "steelblue") +
+  labs(
+    x = "Ego Network Size",
+    y = "Predicted Probability of Smoking"
+  ) +
+  theme_minimal()
+```
+
+The figure shows how the predicted probability of smoking changes as ego network size increases, while holding the other predictors in the model constant at typical values. The relationship is clearly negative: respondents with larger personal networks are predicted to have a lower probability of smoking.
+
+For individuals with very small ego networks, the predicted probability of smoking is relatively high, at roughly 20 percent. As network size increases, this probability steadily declines. For respondents with very large ego networks, the predicted probability of smoking falls to below 5 percent.
+
+This pattern suggests that individuals embedded in larger personal networks may be less likely to smoke. One possible interpretation is that larger networks provide stronger social norms, greater social support, or more opportunities for social monitoring that discourage smoking behavior. 
+
+Of course, whether networks influence smoking behavior also depends on the behaviors of the alters themselves. For example, if many alters smoke, peer influence could increase the likelihood that the ego smokes as well. However, the dataset used here does not contain information about the smoking behavior of alters, so we cannot directly examine such influence processes in this analysis.
