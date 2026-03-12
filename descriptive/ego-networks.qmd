@@ -877,3 +877,192 @@ For individuals with very small ego networks, the predicted probability of smoki
 This pattern suggests that individuals embedded in larger personal networks may be less likely to smoke. One possible interpretation is that larger networks provide stronger social norms, greater social support, or more opportunities for social monitoring that discourage smoking behavior. 
 
 Of course, whether networks influence smoking behavior also depends on the behaviors of the alters themselves. For example, if many alters smoke, peer influence could increase the likelihood that the ego smokes as well. However, the dataset used here does not contain information about the smoking behavior of alters, so we cannot directly examine such influence processes in this analysis.
+
+### Predicting Drinking Frequency
+
+In addition to examining health outcomes and smoking behavior, we can also use ego network characteristics to study patterns of alcohol consumption. Drinking behavior is a natural outcome to consider in a network context because social interactions often occur in settings where alcohol is present. Individuals embedded in larger or more socially active networks may encounter more opportunities to drink, while networks centered around family members may involve different social norms around alcohol use.
+
+Here we examine whether characteristics of respondents’ ego networks are associated with **how frequently they drink alcohol**.
+
+#### Outcome Variable
+
+> *Are respondents with larger, more diverse, or more kin-centered personal networks more likely to drink alcohol more frequently?*
+
+Our outcome variable is the ego-level variable `drinking_days`, which records how many days per week the respondent reports having an alcoholic drink.
+
+In the original survey data, this variable is coded as:
+
+- `0` = less than once a week  
+- `1` = one day a week  
+- `2` = two days a week  
+- `3` = three days a week  
+- `4` = four days a week  
+- `5` = five days a week  
+- `6` = six days a week  
+- `7` = every day  
+- `8` = less than one drink per week  
+- `9` = does not drink at all  
+
+For the analysis, we recode the variable so that it represents a count of drinking days per week. Respondents who report not drinking at all (`9`) are coded as `0`, and respondents reporting less than one drink per week (`8`) are also coded as `0`. The remaining values already correspond to the number of drinking days per week.
+
+```{r}
+#| label: recode-drinking
+
+analysis_dat$drinking_days_rec <- analysis_dat$drinking_days
+
+analysis_dat$drinking_days_rec[
+  analysis_dat$drinking_days %in% c(8, 9)
+] <- 0
+
+table(analysis_dat$drinking_days_rec, useNA = "ifany")
+```
+
+Because the outcome variable represents a count of events (drinking days per week), a Poisson regression model is appropriate.
+
+#### Predictors
+
+We include the same ego-network measures used in the previous examples:
+
+- `ego_size`: the number of alters in the ego network  
+- `prop_family`: the proportion of alters who are family members  
+- `gender_entropy`: a measure of gender diversity among alters  
+
+As before, we exclude `prop_same_race` due to the large number of missing observations.
+
+We also include three demographic control variables:
+
+- `age`  
+- `gender`  
+- `education`  
+
+Together, these predictors allow us to examine whether network size, network composition, and diversity are associated with alcohol consumption while accounting for basic demographic characteristics.
+
+#### Estimating the Model
+
+We estimate a Poisson regression model using the `glm()` function with a Poisson link.
+```{r}
+#| label: fit-drinking-model
+
+drink_model <- glm(
+  drinking_days_rec ~ ego_size + prop_family + gender_entropy +
+    age + gender + education,
+  data = analysis_dat,
+  family = poisson,
+  na.action = na.omit
+)
+
+summary(drink_model)
+```
+
+
+#### Interpretation of Model Output
+
+### Interpretation of Model Output
+
+The Poisson regression results examine whether characteristics of respondents’ ego networks are associated with the number of days per week they report drinking alcohol. In a Poisson regression model, coefficients represent the effect of predictors on the log of the expected count of the outcome. A positive coefficient indicates that higher values of the predictor are associated with more drinking days per week, while a negative coefficient indicates fewer drinking days.
+
+Statistical significance can be evaluated using the ratio of the coefficient to its standard error (the $z$-statistic). As in the previous models, absolute values larger than approximately 1.96 correspond to statistical significance at the 5% level under the normal approximation.
+
+Among the network predictors, ego network size (`ego_size`) shows a positive and statistically significant association with drinking frequency. The coefficient is approximately 0.013 ($z$ = 2.68, $p$ < 0.01). Because Poisson regression models the log of the expected count, it is useful to exponentiate the coefficient to interpret the effect multiplicatively. The value exp(0.013) ≈ 1.014 suggests that each additional alter in a respondent’s ego network is associated with roughly a 1.4 percent increase in the expected number of drinking days per week. Substantively, this pattern is consistent with the idea that individuals embedded in larger personal networks may have more opportunities for social activities where alcohol consumption occurs.
+
+The proportion of family members in the network (`prop_family`) shows a negative and statistically significant association with drinking frequency ($z$ = −2.72, $p$ < 0.01). This suggests that respondents whose networks contain a larger share of family members tend to report fewer drinking days per week. One possible interpretation is that kin-centered networks may involve different social norms or contexts that discourage frequent alcohol consumption compared to networks composed primarily of friends or acquaintances.
+
+By contrast, gender diversity in the network (`gender_entropy`) does not appear to be strongly related to drinking frequency in this model. The coefficient is small and statistically insignificant, indicating that variation in the gender composition of alters is not associated with meaningful differences in drinking behavior.
+
+Among the demographic controls, respondent gender shows a statistically significant association with drinking frequency ($z$ = −2.51, $p$ < 0.05). The negative coefficient indicates that respondents coded as female report fewer drinking days per week than males. Age does not show a statistically significant relationship with drinking behavior in this model.
+
+Finally, the education variable shows some evidence of association with drinking behavior, as reflected in several statistically significant polynomial contrasts. These contrasts indicate that drinking frequency varies systematically across levels of educational attainment, although the interpretation of individual contrast terms is less straightforward than standard regression coefficients.
+
+Overall, the results illustrate how ego network measures can be incorporated into regression models for count outcomes. In this example, larger ego networks are associated with slightly more frequent drinking, while networks with a higher proportion of family members are associated with less frequent drinking. These patterns suggest that both the size and composition of personal networks may shape opportunities and social contexts for alcohol consumption.
+
+:::{.callout-note}
+# Note
+For ease of interpretation, it is often useful to transform the coefficients into incidence rate ratios, which indicate the multiplicative change in the expected number of drinking days associated with a one-unit increase in the predictor.
+```{r}
+#| label: drinking-rate-ratios
+
+exp(coef(drink_model))
+```
+Values greater than 1 indicate that the predictor is associated with more frequent drinking, while values below 1 indicate less frequent drinking.
+:::
+
+
+#### Predicted Counts
+
+As in the previous examples, predicted values provide a more intuitive way to interpret the model than the raw regression coefficients alone. In a Poisson regression, the fitted values correspond to the expected number of events—in this case, the expected number of drinking days per week.
+
+To visualize the effects of the substantively important predictors, we generate predicted counts while varying one predictor at a time and holding the remaining variables constant at typical values. Here, we focus on the three predictors that showed the clearest associations with drinking frequency in the model: `ego_size`, `prop_family`, and `gender`.
+```{r}
+#| label: predicted-drinking
+#| fig-height: 4
+#| fig-width: 7
+# sequences for predictors
+size_seq <- seq(min(analysis_dat$ego_size, na.rm = TRUE),
+                max(analysis_dat$ego_size, na.rm = TRUE),
+                length.out = 50)
+
+family_seq <- seq(0, 1, length.out = 50)
+
+# prediction data for ego_size
+pred_size <- data.frame(
+  ego_size = size_seq,
+  prop_family = mean(analysis_dat$prop_family, na.rm = TRUE),
+  gender_entropy = mean(analysis_dat$gender_entropy, na.rm = TRUE),
+  age = mean(analysis_dat$age, na.rm = TRUE),
+  gender = 0,
+  education = levels(analysis_dat$education)[1]
+)
+
+pred_size$pred <- predict(drink_model, newdata = pred_size, type = "response")
+pred_size$variable <- "ego_size"
+pred_size$x <- pred_size$ego_size
+
+# prediction data for prop_family
+pred_family <- data.frame(
+  ego_size = mean(analysis_dat$ego_size, na.rm = TRUE),
+  prop_family = family_seq,
+  gender_entropy = mean(analysis_dat$gender_entropy, na.rm = TRUE),
+  age = mean(analysis_dat$age, na.rm = TRUE),
+  gender = 0,
+  education = levels(analysis_dat$education)[1]
+)
+
+pred_family$pred <- predict(drink_model, newdata = pred_family, type = "response")
+pred_family$variable <- "prop_family"
+pred_family$x <- pred_family$prop_family
+
+# prediction data for gender
+pred_gender <- data.frame(
+  ego_size = mean(analysis_dat$ego_size, na.rm = TRUE),
+  prop_family = mean(analysis_dat$prop_family, na.rm = TRUE),
+  gender_entropy = mean(analysis_dat$gender_entropy, na.rm = TRUE),
+  age = mean(analysis_dat$age, na.rm = TRUE),
+  gender = c(0,1),
+  education = levels(analysis_dat$education)[1]
+)
+
+pred_gender$pred <- predict(drink_model, newdata = pred_gender, type = "response")
+pred_gender$variable <- "gender"
+pred_gender$x <- pred_gender$gender
+
+# combine predictions
+pred_all <- bind_rows(pred_size, pred_family, pred_gender)
+
+# plot
+ggplot(pred_all, aes(x = x, y = pred)) +
+  geom_line(linewidth = 1, color = "steelblue") +
+  facet_wrap(~variable, scales = "free_x") +
+  labs(
+    x = "Predictor value",
+    y = "Expected drinking days per week"
+  ) +
+  theme_minimal()
+```
+
+The figure summarizes how the expected number of drinking days per week changes across the three predictors. The left panel shows a clear positive relationship between `ego_size` and expected drinking frequency. Holding the other variables constant, respondents with larger ego networks are predicted to drink on more days per week. Although the absolute increase is modest, the pattern is consistent with the positive coefficient for network size in the Poisson model.
+
+The middle panel shows the predicted effect of `gender`. Because `gender` is coded `0 = male` and `1 = female`, the downward slope indicates that respondents coded as female are predicted to drink less frequently than those coded as male, all else equal. This matches the negative regression coefficient for `gender`.
+
+The right panel displays the predicted effect of `prop_family`. Here the relationship is negative: as the share of family members in the ego network increases, the expected number of drinking days per week declines. Substantively, this suggests that respondents embedded in more kin-centered networks tend to drink less frequently than those whose networks contain fewer family members.
+
+Taken together, the predicted counts reinforce the main results of the Poisson model. Larger ego networks are associated with somewhat more frequent drinking, whereas networks with a higher proportion of family members are associated with less frequent drinking. At the same time, women are predicted to drink less frequently than men. As in the previous examples, these predictions are model-based associations rather than causal effects. In particular, whether alters themselves drink alcohol would likely matter for understanding social influence more directly, but the present dataset does not include alter-level information on drinking behavior.
