@@ -56,27 +56,7 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -738,7 +718,7 @@ P(G) = \frac{1}{\kappa} \exp\left( \theta_1 \cdot L + \theta_2 \cdot m_a(G) \rig
 </section>
 <section id="example-teenage-friends-and-lifestyle-study-data" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="example-teenage-friends-and-lifestyle-study-data">Example: Teenage Friends and Lifestyle Study data</h5>
-<p>For an example including the homophily statistic, we use the the “Teenage Friends and Lifestyle Study” data called <code>s50</code> in the <code>networkdata</code> package. The <code>s50</code> dataset is a subset of 50 pupils over a three-year panel study of adolescent friendship networks and health behaviors conducted in a school in the West of Scotland <span class="citation" data-cites="west1996s50">(<a href="../references.html#ref-west1996s50" role="doc-biblioref">West and Sweeting 1996</a>)</span>. This excerpt was created for illustrative purposes and includes dynamic friendship data over three waves, capturing changes in social ties alongside attributes like gender, sport participation, and substance use. We will focus on the homophily based on smoking behavior.</p>
+<p>For an example including the homophily statistic, we use the the “Teenage Friends and Lifestyle Study” data called <code>s50</code> in the <code>networkdata</code> package. The <code>s50</code> dataset is a subset of 50 pupils over a three-year panel study of adolescent friendship networks and health behaviors conducted in a school in the West of Scotland <span class="citation" data-cites="west1996s50">(West and Sweeting 1996)</span>. This excerpt was created for illustrative purposes and includes dynamic friendship data over three waves, capturing changes in social ties alongside attributes like gender, sport participation, and substance use. We will focus on the homophily based on smoking behavior.</p>
 <p>We only consider cross-sectional network data here so we only focus on the third wave network (we will in later chapters look at modeling longitudinal network data). Let’s prepare the data for the <code>ergm</code> specification. Note that we here instead convert the graph object inot a network one using the package <code>integraph</code> in order to preserve the node attribute of interest</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract the third wave network</span></span>
@@ -860,7 +840,7 @@ AIC: 1719  BIC: 1732  (Smaller is better. MC Std. Err. = 1.891)</code></pre>
 <section id="markov-dependence-triangles-and-stars" class="level4" data-number="17.2.1.3">
 <h4 data-number="17.2.1.3" class="anchored" data-anchor-id="markov-dependence-triangles-and-stars"><span class="header-section-number">17.2.1.3</span> Markov Dependence: Triangles and Stars</h4>
 <p><strong>Markov random graphs</strong> are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes depends only on ties that are “locally adjacent”, specifically, those that share a node. This assumption, known as <strong>Markov dependence</strong>, implies that edges are conditionally independent unless they share a common node. This implies that the presence or absence of a tie between two nodes may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.</p>
-<p>Formally introduced by <span class="citation" data-cites="frank1986markov">Frank and Strauss (<a href="../references.html#ref-frank1986markov" role="doc-biblioref">1986</a>)</span>, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions <span class="citation" data-cites="besag1972nearest">(<a href="../references.html#ref-besag1972nearest" role="doc-biblioref">Besag 1972</a>)</span>. The key insight is that network ties can exhibit local dependencies (like clustering or centralization) that can be modeled using well-defined building blocks.</p>
+<p>Formally introduced by <span class="citation" data-cites="frank1986markov">Frank and Strauss (1986)</span>, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions <span class="citation" data-cites="besag1972nearest">(Besag 1972)</span>. The key insight is that network ties can exhibit local dependencies (like clustering or centralization) that can be modeled using well-defined building blocks.</p>
 <p>Under Markov dependence, ERGMs are typically specified using <strong>edges, <span class="math inline">\(k\)</span>-stars, and triangle terms</strong>, since these configurations reflect dependencies between adjacent ties. Examples of such configurations are shown in <a href="#fig-markov" class="quarto-xref">Figure&nbsp;<span>17.1</span></a>.</p>
 <div id="fig-markov" class="center quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -984,7 +964,7 @@ AIC: 87.49  BIC: 98.64  (Smaller is better. MC Std. Err. = 0.2036)</code></pre>
 </section>
 <section id="social-circuit-dependence-gwesp" class="level4" data-number="17.2.1.4">
 <h4 data-number="17.2.1.4" class="anchored" data-anchor-id="social-circuit-dependence-gwesp"><span class="header-section-number">17.2.1.4</span> Social Circuit Dependence: GWESP</h4>
-<p>In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on <strong>social circuit dependence</strong> <span class="citation" data-cites="pattison2002neighborhood">Snijders et al. (<a href="../references.html#ref-snijders2006new" role="doc-biblioref">2006</a>)</span>.</p>
+<p>In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on <strong>social circuit dependence</strong> <span class="citation" data-cites="pattison2002neighborhood">Snijders et al. (2006)</span>.</p>
 <p>Social circuit dependence modifies the way tie dependencies are specified in the model. Instead of assuming that two ties are conditionally dependent simply because they share a node (as in Markov dependence), social circuit dependence restricts dependence to occur only when two ties would complete a <strong>4-cycle</strong> in the network. Under social circuit dependence, network ties are assumed to self-organize through 4-cycles, i.e., closed paths involving four distinct nodes. Two potential ties are considered conditionally dependent only if they would complete a 4-cycle in the network. In other words, the existence of a tie between <span class="math inline">\((u, v)\)</span> is only dependent on a tie between <span class="math inline">\((w, z)\)</span> if adding both would close such a circuit.</p>
 <p>Examples of configurations based on this depdence assumption are shown in <a href="#fig-soccirc" class="quarto-xref">Figure&nbsp;<span>17.2</span></a>.</p>
 <div id="fig-soccirc" class="center quarto-float quarto-figure quarto-figure-center anchored">
@@ -1363,7 +1343,7 @@ Note: MCMC diagnostics shown here are from the last round of
 <p>Control parameters for the MCMC algorithm can be found here <code>help(control.ergm)</code></p>
 </div>
 </div>
-<p>For a detailed technical treatment of model instability in ERGMs, see <span class="citation" data-cites="schweinberger2011instability">Schweinberger (<a href="../references.html#ref-schweinberger2011instability" role="doc-biblioref">2011</a>)</span>. Alternative specification strategies that improve stability are discussed in <span class="citation" data-cites="snijders2006new">Snijders et al. (<a href="../references.html#ref-snijders2006new" role="doc-biblioref">2006</a>)</span>, while the formulation and rationale behind the <code>gwesp</code> term, and curved exponential family models more broadly, are addressed in <span class="citation" data-cites="hunter2006inference">Hunter and Handcock (<a href="../references.html#ref-hunter2006inference" role="doc-biblioref">2006</a>)</span>.</p>
+<p>For a detailed technical treatment of model instability in ERGMs, see <span class="citation" data-cites="schweinberger2011instability">Schweinberger (2011)</span>. Alternative specification strategies that improve stability are discussed in <span class="citation" data-cites="snijders2006new">Snijders et al. (2006)</span>, while the formulation and rationale behind the <code>gwesp</code> term, and curved exponential family models more broadly, are addressed in <span class="citation" data-cites="hunter2006inference">Hunter and Handcock (2006)</span>.</p>
 </section>
 </section>
 </section>
@@ -1571,29 +1551,6 @@ gwesp.fixed.0.693  181.2969 69.40236 177.6489 291.4062       0.76</code></pre>
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-besag1972nearest" class="csl-entry" role="listitem">
-Besag, Julian E. 1972. <span>“Nearest-Neighbour Systems and the Auto-Logistic Model for Binary Data.”</span> <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 34 (1): 75–83.
-</div>
-<div id="ref-frank1986markov" class="csl-entry" role="listitem">
-Frank, Ove, and David Strauss. 1986. <span>“Markov Graphs.”</span> <em>Journal of the American Statistical Association</em> 81 (395): 832–42.
-</div>
-<div id="ref-hunter2006inference" class="csl-entry" role="listitem">
-Hunter, David R, and Mark S Handcock. 2006. <span>“Inference in Curved Exponential Family Models for Networks.”</span> <em>Journal of Computational and Graphical Statistics</em> 15 (3): 565–83.
-</div>
-<div id="ref-pattison2002neighborhood" class="csl-entry" role="listitem">
-Pattison, Philippa, and Garry Robins. 2002. <span>“Neighborhood–Based Models for Social Networks.”</span> <em>Sociological Methodology</em> 32 (1): 301–37.
-</div>
-<div id="ref-schweinberger2011instability" class="csl-entry" role="listitem">
-Schweinberger, Michael. 2011. <span>“Instability, Sensitivity, and Degeneracy of Discrete Exponential Families.”</span> <em>Journal of the American Statistical Association</em> 106 (496): 1361–70.
-</div>
-<div id="ref-snijders2006new" class="csl-entry" role="listitem">
-Snijders, Tom AB, Philippa E Pattison, Garry L Robins, and Mark S Handcock. 2006. <span>“New Specifications for Exponential Random Graph Models.”</span> <em>Sociological Methodology</em> 36 (1): 99–153.
-</div>
-<div id="ref-west1996s50" class="csl-entry" role="listitem">
-West, P, and H Sweeting. 1996. <span>“Background, Rationale and Design of the West of Scotland 11 to 16 Study.”</span> <em>MRC Medical Sociology Unit Working Paper</em>, no. 52: 1.
-</div>
-</div>
 </section>
 
 </main> <!-- /main -->

@@ -56,27 +56,7 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -512,7 +492,7 @@ window.Quarto = {
 <li>Citation network (authors and papers)</li>
 <li>Co-Authorship networks (also authors and papers)</li>
 </ul>
-<p>There are two ways of analysing a two-mode network. Either directly by using methods specifically created for such networks, or by projecting it to a regular one-mode network <span class="citation" data-cites="everett2013dual">(<a href="../references.html#ref-everett2013dual" role="doc-biblioref">Everett and Borgatti 2013</a>)</span>. The advantage of the former is that there is no information loss and the advantage of the latter is that we are working with more familiar data structures. The projection approach is more popular these days, but we will still introduce some direct methods to analyse two-mode networks. The main part of this chapter will however deal with the projection approach.</p>
+<p>There are two ways of analysing a two-mode network. Either directly by using methods specifically created for such networks, or by projecting it to a regular one-mode network <span class="citation" data-cites="everett2013dual">(Everett and Borgatti 2013)</span>. The advantage of the former is that there is no information loss and the advantage of the latter is that we are working with more familiar data structures. The projection approach is more popular these days, but we will still introduce some direct methods to analyse two-mode networks. The main part of this chapter will however deal with the projection approach.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">6.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
@@ -526,7 +506,7 @@ window.Quarto = {
 <h2 data-number="6.2" class="anchored" data-anchor-id="two-mode-data-structure"><span class="header-section-number">6.2</span> Two-Mode Data Structure</h2>
 <p>Two-mode network data (also called bipartite network data) represent relationships between two distinct types of entities rather than ties among members of a single set. Typical examples include individuals and organizations, students and courses, or authors and publications. Instead of being represented as a standard actor-by-actor adjacency matrix, two-mode networks are stored as an <strong>incidence matrix</strong> or <strong>biadjacency matrix</strong>, in which rows represent one type of node (e.g., individuals) and columns represent the other type (e.g., events or organizations). The entries in the matrix indicate whether a tie exists across the two sets—for instance, whether a person attended an event or belongs to an organization. This incidence matrix structure makes it possible to analyze affiliation patterns, shared participation, and broader forms of social or institutional embeddedness.</p>
 <p>Two-mode networks are especially useful for analyzing how connections emerge indirectly, for example, when two individuals are linked because they attend the same event or belong to the same organization.</p>
-<p>To illustrate methods tailored for two-mode networks, we will use the well-known <em>Southern Women</em> dataset <span class="citation" data-cites="davis2009deep">(<a href="../references.html#ref-davis2009deep" role="doc-biblioref">Davis, Gardner, and Gardner 2009</a>)</span>. This classic dataset records the attendance patterns of 18 women at 14 social events in the American South, and has become a foundational example in network analysis. The network is included in the <code>networkdata</code> package and provides a canonical example of an affiliation (incidence) matrix suitable for demonstrating two-mode network methods and one-mode projections. The biadjacency matrix and can be obtained via <code>as_biadjacency_matrix()</code>. This matrix is visualized in <a href="#fig-incmat" class="quarto-xref">Figure&nbsp;<span>6.1</span></a>.</p>
+<p>To illustrate methods tailored for two-mode networks, we will use the well-known <em>Southern Women</em> dataset <span class="citation" data-cites="davis2009deep">(Davis, Gardner, and Gardner 2009)</span>. This classic dataset records the attendance patterns of 18 women at 14 social events in the American South, and has become a foundational example in network analysis. The network is included in the <code>networkdata</code> package and provides a canonical example of an affiliation (incidence) matrix suitable for demonstrating two-mode network methods and one-mode projections. The biadjacency matrix and can be obtained via <code>as_biadjacency_matrix()</code>. This matrix is visualized in <a href="#fig-incmat" class="quarto-xref">Figure&nbsp;<span>6.1</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"southern_women"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>southern_women</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -622,7 +602,7 @@ FALSE  TRUE
 <section id="direct-approach" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="direct-approach"><span class="header-section-number">6.3</span> Direct Approach</h2>
 <p>Several packages provide methods for analyzing two-mode networks directly, without first projecting them into one-mode structures. In particular, the <code>tnet</code> and <code>bipartite</code> packages extend familiar one-mode concepts (such as clustering or centrality) to bipartite settings.</p>
-<p>For example, recall that the standard (one-mode) clustering coefficient is based on counting triangles, i.e.&nbsp;closed triplets of nodes. However, triangles cannot exist in a two-mode network because ties only occur between the two distinct node sets (e.g., women <span class="math inline">\(\leftrightarrow\)</span> events), not within them. This means the usual definition of transitivity must be adapted <span class="citation" data-cites="opsahl2013triadic">(<a href="../references.html#ref-opsahl2013triadic" role="doc-biblioref">Opsahl 2013</a>)</span>.</p>
+<p>For example, recall that the standard (one-mode) clustering coefficient is based on counting triangles, i.e.&nbsp;closed triplets of nodes. However, triangles cannot exist in a two-mode network because ties only occur between the two distinct node sets (e.g., women <span class="math inline">\(\leftrightarrow\)</span> events), not within them. This means the usual definition of transitivity must be adapted <span class="citation" data-cites="opsahl2013triadic">(Opsahl 2013)</span>.</p>
 <p>If we naively apply <code>igraph</code>’s transitivity function to the bipartite graph, it will return zero (or undefined local values), precisely because triangles are structurally impossible:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transitivity</span>(southern_women)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -877,7 +857,7 @@ IGRAPH f54caa5 UNW- 14 66 --
 </section>
 <section id="model-based-binary-projections" class="level3" data-number="6.4.3">
 <h3 data-number="6.4.3" class="anchored" data-anchor-id="model-based-binary-projections"><span class="header-section-number">6.4.3</span> Model-based Binary Projections</h3>
-<p>The global threshold method is very simple but in many cases leads to undesirable structural features. More sophisticated tools work with statistical models in the background <span class="citation" data-cites="neal2014backbone">(<a href="../references.html#ref-neal2014backbone" role="doc-biblioref">Z. Neal 2014</a>)</span> which determine if an edge weight differs enough from the expected value of an underlying null model. If so, the edge is kept in the binary projection. Many of such models are implemented in the <code>backbone</code> package.</p>
+<p>The global threshold method is very simple but in many cases leads to undesirable structural features. More sophisticated tools work with statistical models in the background <span class="citation" data-cites="neal2014backbone">(Z. Neal 2014)</span> which determine if an edge weight differs enough from the expected value of an underlying null model. If so, the edge is kept in the binary projection. Many of such models are implemented in the <code>backbone</code> package.</p>
 <p>The idea behind all of the models is always the same:</p>
 <ol type="1">
 <li>Create the weighted projection of interest, e.g.&nbsp;<code>B &lt;- A%*%t(A)</code></li>
@@ -892,7 +872,7 @@ IGRAPH f54caa5 UNW- 14 66 --
 <li><strong>Fixed Fill Model</strong> <code>fixedfill()</code>: Create random two-mode networks with the same number of ones as <code>A</code>.</li>
 <li><strong>Stochastic Degree Sequence Model</strong> <code>sdsm()</code>: Create random two-mode networks with <em>approximately</em> the same row and column sums as <code>A</code>.</li>
 </ul>
-<p>Before we move to an actual use case, you may ask: So which model is the right one for me? That is actually quite a tricky question. There is some guidance available <span class="citation" data-cites="neal2021comparing">(<a href="../references.html#ref-neal2021comparing" role="doc-biblioref">Z. P. Neal, Domagalski, and Sagan 2021</a>)</span>, but in general you can follow these rough guidelines:</p>
+<p>Before we move to an actual use case, you may ask: So which model is the right one for me? That is actually quite a tricky question. There is some guidance available <span class="citation" data-cites="neal2021comparing">(Z. P. Neal, Domagalski, and Sagan 2021)</span>, but in general you can follow these rough guidelines:</p>
 <ol type="1">
 <li>Use the model that fits you empirical setting or a known link formation process. If that link formation process dictates that row sums are fixed but column sums not, then choose <code>fixedow()</code>.</li>
 <li>Use <code>fdsm()</code> if your network is small enough. Sampling from the FDSM is quite expensive.</li>
@@ -973,23 +953,6 @@ IGRAPH f54caa5 UNW- 14 66 --
 </ul>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-davis2009deep" class="csl-entry" role="listitem">
-Davis, Allison, Burleigh Bradford Gardner, and Mary R Gardner. 2009. <em>Deep South: A Social Anthropological Study of Caste and Class</em>. Univ of South Carolina Press.
-</div>
-<div id="ref-everett2013dual" class="csl-entry" role="listitem">
-Everett, Martin G, and Stephen P Borgatti. 2013. <span>“The Dual-Projection Approach for Two-Mode Networks.”</span> <em>Social Networks</em> 35 (2): 204–10.
-</div>
-<div id="ref-neal2014backbone" class="csl-entry" role="listitem">
-Neal, Zachary. 2014. <span>“The Backbone of Bipartite Projections: Inferring Relationships from Co-Authorship, Co-Sponsorship, Co-Attendance and Other Co-Behaviors.”</span> <em>Social Networks</em> 39: 84–97.
-</div>
-<div id="ref-neal2021comparing" class="csl-entry" role="listitem">
-Neal, Zachary P, Rachel Domagalski, and Bruce Sagan. 2021. <span>“Comparing Alternatives to the Fixed Degree Sequence Model for Extracting the Backbone of Bipartite Projections.”</span> <em>Scientific Reports</em> 11 (1): 23929.
-</div>
-<div id="ref-opsahl2013triadic" class="csl-entry" role="listitem">
-Opsahl, Tore. 2013. <span>“Triadic Closure in Two-Mode Networks: Redefining the Global and Local Clustering Coefficients.”</span> <em>Social Networks</em> 35 (2): 159–67.
-</div>
-</div>
 </section>
 
 </main> <!-- /main -->
