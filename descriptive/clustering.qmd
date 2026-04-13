@@ -1,4 +1,4 @@
-# Cohesive Subgroups
+# Cohesive Subgroups {#sec-cohesive-subgroups}
 
 In this chapter, we explore cohesive subgroups within networks, focusing on cliques, community detection, blockmodeling, and core-periphery structures. Each concept offers a different way to examine how nodes cluster based on connectivity, from tightly-knit cliques, where every member is connected, to broader communities grouped by denser internal links. Blockmodeling abstracts these patterns into roles and relationships, while core-periphery structures reveal hierarchical organization with central and peripheral actors.
 
@@ -21,14 +21,24 @@ library(patchwork)
 
 ## Cliques 
 
-A *clique* in a network is a set of nodes that form a complete subnetwork within a network (called a complete **subgraph**). A **maximal clique** is a clique that cannot be extended to a bigger clique by addding more nodes to it. 
+A *clique* in a network is a set of nodes that form a complete subnetwork within a network (called a complete *subgraph*). A *maximal clique* is a clique that cannot be extended to a bigger clique by adding more nodes to it.
 
+The `networkdata` package includes a small example graph called `clique_graph` which contains several maximal cliques of different sizes. We will use this graph to illustrate how to find cliques in a network.
 ```{r}
 #| label: load-clique-graph
 data("clique_graph")
 ```
 
-All maximal cliques can be calculated with `max_cliques()` (only feasible for fairly small networks). The min parameter can be used to set a minimum size. Here, we want to ignore all cliques of size $2$.
+```{r}
+#| label: plot-clique-graph-blank
+#| echo: FALSE
+ggraph(clique_graph, "stress") +
+  geom_edge_link0(edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 8, fill = "grey25") +
+  theme_void()
+```
+
+All maximal cliques can be calculated with `max_cliques()`. This is only feasible for fairly small networks given the complexity of the task. The `min` parameter can be used to set a minimum size of discovered cliques. Below, we are only interested to find maximal cliques of size 3 or more.
 
 ```{r}
 #| label: calc_max_cliques
@@ -37,7 +47,7 @@ cl <- max_cliques(clique_graph, min = 3)
 cl
 ```
 
-The figure below shows the network and the found maximal cliques.
+The figure shows the network and the uncovered maximal cliques.
 
 ```{r}
 #| label: plot-clique-graph
@@ -110,16 +120,17 @@ ggraph(clique_graph, "stress") +
 
 ```
 
-Cliques are the prototypical and most strict definition of a cohesive subgroup in a network. In empirical networks, however, we rarely encounter situations where we can partition the whole network into a set of 
-cliques. The relaxed version of this problem is that of clustering, also referred to as **comunity detection**. 
+Cliques are the prototypical and most strict definition of a cohesive subgroup in a network. In empirical networks, however, we rarely encounter situations where we can partition the whole network into a set of cliques. Real networks are messy: ties are missing, groups overlap, and boundaries are fuzzy. We therefore need methods that find approximate groupings based on the overall pattern of connections rather than requiring every possible tie to be present.
 
-## Comunity detection
+## Community Detection
 
-A cluster is loosely defined as a group of nodes which are internally densely and externally sparsely connected. The network below shows an example for a network with a visible and intuitive cluster structure.
+Unlike cliques, which have a precise mathematical definition, the notion of a "community" or "cluster" in a network is inherently fuzzy. The general intuition, however, is straightforward: a community is a group of nodes that are more densely connected to each other than to the rest of the network. But there is no universally accepted formal definition of what this actually means. How dense is dense enough? How sparse must the connections to outsiders be? Different algorithms operationalise this intuition in different ways, which is why they can produce different results on the same network. This is not a flaw but a reflection of the fact that "community" is a flexible concept whose meaning depends on the context of the analysis.
+
+The example below shows a network with a visible and intuitive cluster structure.
 
 ```{r}
-# labeL; clustered-graph
-#| echo: FALSE
+#| label: clustered-graph
+#| echo: false
 
 n1 <- 5
 n2 <- 20
@@ -133,7 +144,7 @@ ggraph(g, "stress") +
   theme_void()
 ```
 
-In contrast, the network below does not really seem to have any well defined cluster structure.
+In contrast, the network below does not really seem to have any well defined cluster structure on first sight.
 
 ```{r}
 #| label: random-graph
@@ -152,7 +163,7 @@ ggraph(g, "stress") +
 
 ```
 
-The following algorithms for graph clustering are implemented in `igraph`.
+The `igraph` package includes a number of different clustering algorithms as shown below.
 
 ```{r}
 #| label: cluster_alg
@@ -161,9 +172,15 @@ algs <- as.character(lsf.str("package:igraph"))
 algs[stringr::str_detect(algs, "cluster_")]
 ```
 
-Most of these algorithms are based on "modularity maximization". Modularity is defined as the fraction of edges that fall within given groups minus the expected fraction if edges were distributed at random.
+Most of these algorithms are based on "modularity maximization". The idea behind modularity is to compare the observed number of edges within groups to what we would expect if edges were placed at random while preserving each node's degree. Formally, modularity is defined as
 
-The workflow of a cluster analysis is always the same, independent from the chosen method. We illustrate the workflow using the infamous karate club network.
+$$
+Q = \frac{1}{2m} \sum_{ij} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(c_i, c_j)
+$$
+
+where $m$ is the total number of edges, $A_{ij}$ is the adjacency matrix entry (1 if nodes $i$ and $j$ are connected, 0 otherwise), $k_i$ is the degree of node $i$, and $\delta(c_i, c_j)$ equals 1 if nodes $i$ and $j$ are assigned to the same community and 0 otherwise. The term $\frac{k_i k_j}{2m}$ is the expected number of edges between $i$ and $j$ under a null model that preserves degree. Modularity values typically range from around $-0.5$ to $1$, where values close to zero indicate no more within-group edges than expected by chance, and higher values indicate stronger community structure.
+
+The workflow of a cluster analysis is always the same, independent from the chosen method. We illustrate the workflow using the infamous karate club network. This network was collected by Wayne Zachary in the 1970s and it captures friendships among 34 members of a university karate club. During the study, a conflict between the club's instructor and the administrator led to the club splitting into two factions, making it a classic benchmark for community detection.
 ```{r}
 #| label: karate
 data("karate")
@@ -179,21 +196,23 @@ ggraph(karate, "stress") +
   coord_equal()
 ```
 
+First, we pick an algorithm and run it on the network. Here, we use the Louvain method for Modularity maximization via `cluster_louvain()`. The result is a community object from which we can extract a membership vector (which community each node belongs to) and a list of communities (which nodes belong to each community).
+
 ```{r}
 #| label: cluster_ex
-# compute clustering
+## compute clustering
 clu <- cluster_louvain(karate)
 
-# cluster membership vector
+## cluster membership vector
 mem <- membership(clu)
 mem
 
-# clusters as list
+## clusters as list
 com <- communities(clu)
 com
 ```
 
-To compare the quality of clusterings, we can compute the modularity score for each output.
+Finding the partition that maximises modularity is a computationally hard problem (NP-hard, to be precise). No algorithm can guarantee finding the global optimum in reasonable time, so all practical methods rely on heuristics. Different heuristics explore the space of possible partitions in different ways, which means they can arrive at different solutions on the same network. To see how much results vary, we run several algorithms and compare their modularity scores.
 
 ```{r}
 #| label: karate-cluster
@@ -213,6 +232,8 @@ scores
 ```
 
 For the karate network, `cluster_spinglass()` produces the highest modularity score.
+In practice, the choice of algorithm depends on more than just modularity. `cluster_louvain()` and `cluster_leiden()` scale well to large networks, while `cluster_spinglass()` tends to produce high-quality results but is only feasible for smaller networks. When in doubt, `cluster_leiden()` with the CPM objective function is a good default, as it avoids the resolution limit problem discussed below.
+
 The corresponding clustering is shown below.
 
 ```{r}
@@ -327,17 +348,45 @@ If you are interested in the technical details of the Leiden method, check out t
 
 The `netUtils` package includes the function `sample_lfr()` which implements the well-known [Lancichinetti–Fortunato–Radicchi benchmark algorithm](https://en.wikipedia.org/wiki/Lancichinetti%E2%80%93Fortunato%E2%80%93Radicchi_benchmark) to generate artificial networks with a priori known communities and they can be used to compare different community detection methods.
 
+### Choosing the number of communities
+
+Some algorithms, like Louvain and Leiden, determine the number of communities automatically as part of the optimisation. Others, such as `cluster_spinglass()`, require the number to be specified upfront. When it is not known in advance, a common strategy is to run the algorithm for a range of values of $k$ and compare the resulting modularity scores. The value of $k$ that produces the highest modularity is then selected. However, modularity tends to increase with $k$ up to a point and then plateau or decrease, so the "best" $k$ is typically where the curve levels off rather than its absolute maximum.
+
+```{r}
+#| label: choose-k
+scores_k <- sapply(2:8, function(k) {
+  cl <- cluster_spinglass(karate, spins = k)
+  modularity(karate, membership(cl))
+})
+names(scores_k) <- 2:8
+round(scores_k, 3)
+```
+
+In practice, the number of communities should also be guided by substantive knowledge about the network. A purely data-driven choice of $k$ can lead to splits that are statistically optimal but socially meaningless.
+
+### Overlapping communities
+
+All methods discussed so far produce a hard partition: each node is assigned to exactly one community. In many social networks, however, people belong to multiple groups simultaneously. A person may be part of their work team, a sports club, and a circle of school friends, and these memberships can overlap. Hard partitions force a choice that may not reflect the actual social structure.
+
+One way to get a sense of potential overlap is to examine which nodes participate in multiple maximal cliques. The `clique_vertex_mat()` function from `netUtils` returns a matrix indicating which nodes belong to which cliques.
+
+```{r}
+#| label: clique-vertex-mat
+cvm <- netUtils::clique_vertex_mat(karate)
+## only consider cliques of size 3 or more
+cvm <- cvm[rowSums(cvm) >= 3, ]
+## nodes that appear in more than one clique
+overlap <- colSums(cvm) > 1
+V(karate)$name[overlap]
+```
+
+Nodes that appear in multiple cliques are natural candidates for overlapping community membership. Dedicated methods for overlapping community detection exist (such as clique percolation), but well-maintained R implementations are scarce. In practice, ego networks (see @sec-ego) offer another perspective on overlapping membership, since each individual's personal network naturally captures the multiple social circles they participate in.
+
 ## Blockmodeling
 
-Blockmodeling is a more formal approach that aims to simplify the network's structure into blocks based on patterns of connections between nodes. Instead of focusing on the density of connections, it categorizes the relationships between different groups (or blocks) of nodes according to the roles they play in the network.
+Community detection focuses on finding groups of nodes that are densely connected internally. Blockmodeling takes a different perspective: it groups nodes based on *patterns* of connections, not just density. Two nodes belong to the same block if they relate to other blocks in similar ways, regardless of whether they are connected to each other. This makes blockmodeling particularly useful for role analysis in sociology and organisational studies.
 
-The goal is to reduce the complexity of the network by identifying roles and positions within the network, where nodes in the same block have similar patterns of connections to other blocks, rather than necessarily being densely connected to each other.
-
-Blockmodeling involves partitioning the network into blocks and then modeling the connections between these blocks. It can be done through conventional (deterministic) or stochastic approaches, including k-block modeling and stochastic blockmodeling.
-
-Blockmodeling is particularly useful in sociology for role analysis and in organizational studies, where it's important to understand how different groups (e.g., departments, hierarchies) interact, regardless of the density of the connections within each group.
-
-There are several packages that implement different kinds of (stochastic) blockmodels. The most basic approaches are implemented in the package `blockmodeling`.
+There are several packages that implement different kinds of blockmodels. The most basic deterministic approaches are implemented in the package `blockmodeling`.
 
 ```{r}
 #| label: lib-blockmodel
@@ -345,11 +394,11 @@ There are several packages that implement different kinds of (stochastic) blockm
 library(blockmodeling)
 ```
 
-In principle, blockmodels can also be used for clustering, as we will illustrate on this random network with 3 dense blocks of size 20.
+We illustrate blockmodeling on a random network with 3 dense blocks of size 20.
 
 ```{r}
 #| label: random-graph2
-#| echo: FALSE
+#| echo: false
 n1 <- 3
 n2 <- 20
 
@@ -364,130 +413,44 @@ ggraph(g, "stress") +
 
 ```
 
-The disadvantage is that we need to specify a lot more parameters than for community detection. 
+Compared to community detection, blockmodeling requires us to specify more parameters. We need to define the number of blocks, the type of approach (binary or valued), and what block types we expect to find.
+
 ```{r}
 #| label: calc-rnd-block
 A <- as_adj(g)
+## define expected block structure: complete on diagonal, null off-diagonal
 blk <- matrix(
   c(
-    "com",
-    "nul",
-    "nul",
-    "nul",
-    "com",
-    "nul",
-    "nul",
-    "nul",
-    "com"
+    "com", "nul", "nul",
+    "nul", "com", "nul",
+    "nul", "nul", "com"
   ),
   nrow = 3
 )
 blk
 res <- optRandomParC(
   M = A,
-  k = 3,
-  approaches = "bin",
-  blocks = blk,
-  rep = 5,
-  mingr = 20,
-  maxgr = 20
+  k = 3,               ## number of blocks
+  approaches = "bin",   ## binary blockmodel
+  blocks = blk,         ## expected block structure
+  rep = 5,              ## random starting partitions
+  mingr = 20,           ## min block size
+  maxgr = 20            ## max block size
 )
 ```
 
-- `k`: number of blocks needs to be specified beforehand
-- `approaches`: defines the type of blockmodel approach to be used. "bin" is for binary and "val" for valued blockmodeling. There are several more possibilities available in the help of the function
-- `blocks`: allowed block types. Basically, what defines a block in the network. In our example we give a strict patterning that corresponds to a clustering. The diagonal blocks should be complete ("com") and offdiagonals should be empty ("nul"). So in the best case, we have 3 disconnected cliques. Again, consult the help for more available block options.
-- `rep`: number of random starting partitions to start the iteration from
-- `mingr` and `maxgr`: min and max size of the blocks. 
-
-the result can be accessed with `clu`.
+The result can be accessed with `clu()`.
 ```{r}
 clu(res)
 ```
 
-Note that this type of Blockmodeling is computationally expensive and best suited for small networks. 
-
-Looking at a more realistic dataset, we load the `baker` dataset from the `blockmodeling` package. The dataset includes citation data between social work journals for 1985-86.
-
-```{r}
-#| label: load-baker
-data("baker")
-diag(baker) <- 0
-
-plotMat(baker, main = "Baker Network Data", mar = c(1, 1, 3, 1), title.line = 2)
-```
-
-First, we run a binary blockmodel. This time we increase the number of repetions to 1000 and instead of giving a lear block structure, we just specify, what type of blocks we want our result to include. How they are distributed, we do not care and let the algorithm decide. We run the optimization in parallel (`nCores = 0`), which requires the packages `doParallel` and `doRNG` to be installed.
-```{r}
-#| label: baker_binary
-baker_binary <- baker
-baker_binary[baker_binary > 0] <- 1
-
-res_baker_binary <- optRandomParC(
-  M = baker_binary,
-  k = 3,
-  rep = 1000,
-  nCores = 0,
-  blocks = c("nul", "com"),
-  approach = "bin"
-)
-```
-
-The obtained optimal block structure can be accessed via `IM`.
-
-```{r}
-#| label: baker_binary_IM
-IM(res_baker_binary)
-``` 
-
-The resulting blocks can be visualized via the `plot` function.
-```{r}
-#| label: baker-bin
-plot(
-  res_baker_binary,
-  main = "Baker Binary Network Data",
-  mar = c(1, 2, 3, 1),
-  title.line = 2
-)
-```
-
-Now we run a valued blockmodel on the original data. The parameter `preSpecM` is set to the median of the non-zero entries and defines a kind of cutoff for when to consider a value high enough to be a block internal tie.
-```{r}
-#| label: baker_valued
-res_baker_valued <- optRandomParC(
-  M = baker,
-  k = 3,
-  rep = 1000,
-  preSpecM = 13,
-  approach = "val",
-  blocks = c("nul", "com"),
-  nCores = 0
-)
-
-```
-
-
-```{r}
-#| label: baker_valued_IM
-IM(res_baker_valued)
-``` 
-
-
-```{r}
-#| label: baker-val
-plot(
-  res_baker_valued,
-  main = "Baker Valued Network Data",
-  mar = c(1, 2, 3, 1),
-  title.line = 2
-)
-```
+Note that blockmodeling is computationally expensive and best suited for small networks. The `blocks` parameter controls what types of blocks are allowed: "com" (complete) means all ties present within, "nul" (null) means no ties. Consult the package documentation for more block types. For signed networks, a dedicated blockmodeling approach is available in the `signnet` package (see @sec-signed-networks).
 
 ## Core-Periphery
 
 Community detection aims to find clusters or groups of nodes within the network that are more densely connected to each other than to nodes outside the group. The core-periphery structure, in contrast, posits that a network is organized into a densely connected core and a sparsely connected periphery. The core consists of central nodes that are highly connected to each other and also to peripheral nodes. Peripheral nodes, on the other hand, have fewer connections and are mostly connected to nodes in the core rather than to each other. 
 
-the `netutils` package includes a function `core_periphery()` which allows to fit a discrete core-periphery model to a network. 
+The `netUtils` package includes a function `core_periphery()` which allows to fit a discrete core-periphery model to a network.
 
 ```{r}
 #| label: load_netUtils
@@ -551,9 +514,9 @@ core_periphery(sg1, method = "GA")
 
 `rk1_dc` and `rk1_ec` are so called rank-one matix approximation methods which infer an idealized structure via the degrees and eigenvectors of the adjacency matrix. These methods are extremely fast but might result in a lower quality of the result compared to `GA` which runs a genetic algorithm. 
 
-There are several extensions to this simple discrete core-periphery model. An extension for weighted networks is implemented in the package `ITNr`.
+There are several extensions to this simple discrete core-periphery model, including versions for weighted and directed networks. An extension for weighted networks, designed for international trade data, is implemented in the package `ITNr`.
 
-## Scientific Reading
+## References {.unnumbered}
 
 Clauset, A.; Newman, M. E. J. & Moore, C. Finding community structure in very large networks, Physical Review E 2004, 70, 066111
 
