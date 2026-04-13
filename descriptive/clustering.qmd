@@ -31,7 +31,8 @@ data("clique_graph")
 
 ```{r}
 #| label: plot-clique-graph-blank
-#| echo: FALSE
+#| echo: false
+#| fig-cap: "The example network used to illustrate cliques and k-core decomposition."
 ggraph(clique_graph, "stress") +
   geom_edge_link0(edge_color = "grey66") +
   geom_node_point(shape = 21, size = 8, fill = "grey25") +
@@ -51,7 +52,8 @@ The figure shows the network and the uncovered maximal cliques.
 
 ```{r}
 #| label: plot-clique-graph
-#| echo: FALSE
+#| echo: false
+#| fig-cap: "Maximal cliques of size 3 or more highlighted in the example network."
 
 xy <- graphlayouts::layout_with_stress(clique_graph)
 
@@ -98,7 +100,8 @@ kcore
 
 ```{r}
 #| label: kcore_plot
-#| echo: FALSE
+#| echo: false
+#| fig-cap: "K-core decomposition of the example network. Nested hulls show the 2-core, 3-core, and 4-core."
 
 cl_df <- as.data.frame(do.call(
   "rbind",
@@ -131,6 +134,7 @@ The example below shows a network with a visible and intuitive cluster structure
 ```{r}
 #| label: clustered-graph
 #| echo: false
+#| fig-cap: "A network with a clearly visible cluster structure."
 
 n1 <- 5
 n2 <- 20
@@ -140,7 +144,7 @@ g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
 ggraph(g, "stress") +
   geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
-  geom_node_point(shape = 21, size = 5, aes(fill = grp), show.legend = FALSE) +
+  geom_node_point(shape = 21, size = 5, fill = "grey66") +
   theme_void()
 ```
 
@@ -148,7 +152,8 @@ In contrast, the network below does not really seem to have any well defined clu
 
 ```{r}
 #| label: random-graph
-#| echo: FALSE
+#| echo: false
+#| fig-cap: "A network without obvious cluster structure."
 n1 <- 5
 n2 <- 20
 
@@ -189,6 +194,7 @@ data("karate")
 ```{r}
 #| label: karate-plot
 #| echo: false
+#| fig-cap: "Zachary's karate club network."
 ggraph(karate, "stress") +
   geom_edge_link0(edge_color = "grey66") +
   geom_node_point(shape = 21, size = 5, fill = "grey66") +
@@ -239,6 +245,7 @@ The corresponding clustering is shown below.
 ```{r}
 #| label: karate-plot-clu
 #| echo: false
+#| fig-cap: "Karate club network coloured by community membership (spinglass algorithm)."
 V(karate)$clu <- membership(sgc)
 ggraph(karate, "stress") +
   geom_edge_link0(edge_color = "grey66") +
@@ -279,6 +286,7 @@ The figure below shows such a graph, consisting of 50 cliques of size 5.
 ```{r}
 #| label: plot-K50-blank
 #| echo: false
+#| fig-cap: "A ring of 50 cliques of size 5, used to illustrate the resolution limit."
 #| width: 8
 #| height: 8
 ggraph(K50, "stress") +
@@ -315,6 +323,7 @@ The figure below shows the clusters computed with the Louvain method in grey and
 ```{r}
 #| label: plot-K50-clu
 #| echo: false
+#| fig-cap: "Louvain clusters (grey) vs. Leiden clusters (red) on the ring-of-cliques network."
 #| width: 8
 #| height: 8
 V(K50)$louvain <- membership(clu_louvain)
@@ -399,6 +408,7 @@ We illustrate blockmodeling on a random network with 3 dense blocks of size 20.
 ```{r}
 #| label: random-graph2
 #| echo: false
+#| fig-cap: "A random network with three dense blocks of 20 nodes each."
 n1 <- 3
 n2 <- 20
 
@@ -470,6 +480,7 @@ The created graph has 50 nodes and 30% of all nodes are in the core. The probabi
 ```{r}
 #| label: split-graph-img
 #| echo: false
+#| fig-cap: "A split graph with a perfect core-periphery structure. Left: network layout with core and periphery nodes. Right: adjacency matrix showing the block pattern."
 V(sg)$type <- c("periphery", "core")[V(sg)$core + 1]
 p1 <- ggraph(sg, "stress") +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
