@@ -1,6 +1,6 @@
 # Signed Networks {#sec-signed-networks}
 
-Most of social network analysis deals with relations that are inherently positive: friendship, collaboration, advice seeking, trade. The tools we use to study networks, from centrality indices to community detection, were largely developed with these positive ties in mind. But social life is not only about who we like. People form rivalries, nations go to war, and online communities upvote *and* downvote content. When we want to study networks that contain both positive and negative ties, we enter the realm of signed networks.
+Most of social network analysis deals with relations that are inherently positive: friendship, collaboration, advice seeking, trade. The tools we use to study networks, from centrality indices to community detection, were largely developed with these positive ties in mind. But social life is not only about who we like. People form rivalries, nations go to war, and online communities like *and* dislike content. When we want to study networks that contain both positive and negative ties, we enter the topic of signed networks.
 
 Signed networks require their own analytical toolkit. Standard centrality measures do not account for the difference between a node connected to five friends versus one connected to five enemies. Community detection algorithms that look for dense subgroups miss the point when the structure is defined by who is *against* whom, not just who is *with* whom. In this chapter, we introduce the key concepts and methods for analysing signed networks: structural balance, blockmodeling, and centrality.
 
@@ -65,7 +65,7 @@ laplacian_matrix_signed(tribes)[1:5, 1:5]
 
 ## Structural Balance
 
-Structural balance theory originates in the social psychology of Fritz Heider in the 1940s and was formalised for graphs by Cartwright and Harary in the 1950s. The core idea is intuitive: consider three people. If Alice and Bob are friends, and Bob and Carol are friends, we expect Alice and Carol to also be friends -- "the friend of my friend is my friend." Similarly, if Alice and Bob are enemies and Bob and Carol are enemies, we expect Alice and Carol to be friends -- "the enemy of my enemy is my friend." These configurations are *balanced*. A triangle where all three pairs are enemies, or where two pairs are friends but one pair are enemies, feels unstable and is considered *unbalanced*.
+Structural balance theory originates in the social psychology of Fritz Heider in the 1940s and was formalised for graphs by Cartwright and Harary in the 1950s. The core idea is intuitive: consider three people. If Alice and Bob are friends, and Bob and Carol are friends, we expect Alice and Carol to also be friends: "the friend of my friend is my friend." Similarly, if Alice and Bob are enemies and Bob and Carol are enemies, we expect Alice and Carol to be friends: "the enemy of my enemy is my friend." These configurations are *balanced*. A triangle where all three pairs are enemies, or where two pairs are friends but one pair are enemies, feels unstable and is considered *unbalanced*.
 
 ![](img/balance_triples.png)
 
@@ -75,8 +75,12 @@ We can generate a balanced network with `sample_islands_signed()`, which creates
 
 ```{r}
 #| label: balanced-example
-g_bal <- sample_islands_signed(islands.n = 2, islands.size = 10,
-                               islands.pin = 0.8, n.inter = 5)
+g_bal <- sample_islands_signed(
+  islands.n = 2, 
+  islands.size = 10, 
+  islands.pin = 0.8, 
+  n.inter = 5
+)
 ```
 
 ```{r}
@@ -216,7 +220,7 @@ A lower criterion value indicates a better fit. The general model should perform
 
 ## Centrality
 
-In unsigned networks, having many connections is straightforwardly advantageous. But in signed networks, the picture is more nuanced. A tribe with five alliances and no enemies is in a very different position from one with five alliances and five enemies, even though both have the same number of ties. Centrality indices for signed networks must account for this distinction.
+In unsigned networks, having many connections is straightforwardly advantageous. But in signed networks, the picture is more nuanced. A tribe with six alliances and no enemies is in a very different position from one with three alliances and three enemies, even though both have the same number of ties. Centrality indices for signed networks must account for this distinction.
 
 ### Signed Degree
 
@@ -268,7 +272,7 @@ Note that the adjacency matrix of a signed network may not have a dominant eigen
 
 ## Signed Two-Mode Networks
 
-The `signnet` package also provides tools for working with signed two-mode (bipartite) networks. Projecting a signed two-mode network onto one of its modes is less straightforward than in the unsigned case, because paths through negative ties can change the sign of the resulting projection. The package implements a duplication approach that resolves this issue and also accounts for ambivalent ties, where both positive and negative paths exist between two nodes. For details, see the `signnet` package vignette on signed two-mode networks.
+The `signnet` package also provides tools for working with signed two-mode networks. Projecting a signed two-mode network onto one of its modes is less straightforward than in the unsigned case, because paths through negative ties can change the sign of the resulting projection. The package implements a duplication approach that resolves this issue and also accounts for ambivalent ties, where both positive and negative paths exist between two nodes. For details, see the `signnet` package vignette on signed two-mode networks.
 
 ## Use Case: International Relations
 
@@ -333,7 +337,7 @@ The block membership can be inspected alongside the country names to see which s
 split(V(cow_cold)$name, clu_cold$membership)
 ```
 
-## Scientific Reading
+## References {.unnumbered}
 
 Heider, Fritz. 1946. "Attitudes and Cognitive Organization." *The Journal of Psychology* 21 (1): 107--12.
 
