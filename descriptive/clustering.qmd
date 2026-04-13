@@ -196,7 +196,7 @@ ggraph(karate, "stress") +
   coord_equal()
 ```
 
-First, we pick an algorithm and run it on the network. Here, we use the Louvain method for Modularity maximization via `cluster_louvain()`. The result is a community object from which we can extract a membership vector (which community each node belongs to) and a list of communities (which nodes belong to each community).
+First, we pick an algorithm and run it on the network. Here, we use the Louvain method for modularity maximization via `cluster_louvain()`. The result is a community object from which we can extract a membership vector (which community each node belongs to) and a list of communities (which nodes belong to each community).
 
 ```{r}
 #| label: cluster_ex
@@ -232,7 +232,7 @@ scores
 ```
 
 For the karate network, `cluster_spinglass()` produces the highest modularity score.
-In practice, the choice of algorithm depends on more than just modularity. `cluster_louvain()` and `cluster_leiden()` scale well to large networks, while `cluster_spinglass()` tends to produce high-quality results but is only feasible for smaller networks. When in doubt, `cluster_leiden()` with the CPM objective function is a good default, as it avoids the resolution limit problem discussed below.
+In practice, the choice of algorithm depends on more than just modularity. `cluster_louvain()` scales well to large networks, while `cluster_spinglass()` tends to produce high-quality results but is only feasible for smaller networks.
 
 The corresponding clustering is shown below.
 
@@ -297,7 +297,7 @@ table(membership(clu_louvain))
 
 ```
 
-A clustering algorithm that fixes this issue is the leiden algorithm.
+A clustering algorithm that fixes this issue is the Leiden algorithm. It is available in `igraph` via `cluster_leiden()` and can be used as a drop-in replacement for `cluster_louvain()`. When used with the CPM (Constant Potts Model) objective function, it avoids the resolution limit entirely.
 
 ```{r}
 #| label: clu-leiden-K50
@@ -310,7 +310,7 @@ table(membership(clu_leiden))
 
 ```
 
-The figure below shows the clusters computed with the louvain method in grey and the leiden method in red.
+The figure below shows the clusters computed with the Louvain method in grey and the Leiden method in red.
 
 ```{r}
 #| label: plot-K50-clu
@@ -512,7 +512,7 @@ core_periphery(sg1, method = "rk1_ec")
 core_periphery(sg1, method = "GA")
 ```
 
-`rk1_dc` and `rk1_ec` are so called rank-one matix approximation methods which infer an idealized structure via the degrees and eigenvectors of the adjacency matrix. These methods are extremely fast but might result in a lower quality of the result compared to `GA` which runs a genetic algorithm. 
+`rk1_dc` and `rk1_ec` are so called rank-one matrix approximation methods which infer an idealized structure via the degrees and eigenvectors of the adjacency matrix. These methods are extremely fast but might result in a lower quality of the result compared to `GA` which runs a genetic algorithm. 
 
 There are several extensions to this simple discrete core-periphery model, including versions for weighted and directed networks. An extension for weighted networks, designed for international trade data, is implemented in the package `ITNr`.
 
