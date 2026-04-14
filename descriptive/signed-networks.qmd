@@ -32,32 +32,29 @@ We will use the `tribes` dataset to illustrate some basic functionality of the p
 data("tribes")
 ```
 
-The function `ggsigned()` provides a convenient way to visualise signed networks. It requires the `ggraph` package to be installed.
+The function `ggsigned()` provides a convenient way to visualise signed networks. @fig-tribes shows the `tribes` network visualised with `ggsigned()`, where blue edges represent positive ties and red edges represent negative ties.  
 
 ```{r}
-#| label: plot-tribes
+#| label: fig-tribes
+#| fig-cap: "The `tribes` network visualised with `ggsigned()`."
 ggsigned(tribes)
 ```
 
-The parameter `weights` can be used to artificially "pull" negative ties apart and positive ties together, which can help to visually separate potential groups of positive ties.
+The color of the edges can be customised with the `edge_cols` parameter.
+
+The parameter `weights` can be used to artificially "pull" nodes connected with negative ties apart, which can help to visually separate potential groups of positive ties as shown in @fig-tribes-weighted.
 
 ```{r}
-#| label: plot-tribes-2
+#| label: fig-tribes-weighted
+#| fig-cap: "The `tribes` network visualised with `ggsigned()` using weights to separate negative ties."
 ggsigned(tribes, weights = TRUE)
 ```
 
-Under the hood, a signed network is represented by a signed adjacency matrix, where entries are 1, -1, or 0. We can extract it with `as_adj_signed()`.
+A signed network is represented by a signed adjacency matrix, where entries are 1, -1, or 0. It can be extracted with the function `as_adj_signed()`.
 
 ```{r}
 #| label: signed-adj
 as_adj_signed(tribes)
-```
-
-The signed Laplacian matrix, used in several spectral methods, is obtained with `laplacian_matrix_signed()`.
-
-```{r}
-#| label: signed-lap
-laplacian_matrix_signed(tribes)
 ```
 
 ## Structural Balance
@@ -130,8 +127,11 @@ g_bal <- sample_islands_signed(
 )
 ```
 
+The network is shown in @fig-balanced.
+
 ```{r}
-#| label: plot-balanced
+#| label: fig-balanced
+#| fig-cap: "A synthetic perfectly balanced network with two groups."
 ggsigned(g_bal)
 ```
 
@@ -144,11 +144,9 @@ count_signed_triangles(g_bal)
 
 Increasing the `islands.n` parameter to more than two creates networks that are not balanced in the strict two-group sense but are "clusterable" as defined by @davis1967clustering -- they can be partitioned into more than two groups with the same within-positive, between-negative pattern.
 
-### Measuring Balancedness
+Real-world networks are rarely perfectly balanced. The question then becomes: how balanced a given network is. The `signnet` package offers three methods for measuring the degree of balancedness via `balance_score()`. All return a value between zero (perfectly unbalanced) and one (perfectly balanced).
 
-Real-world networks are rarely perfectly balanced. The question then becomes: *how balanced* is a given network? The `signnet` package offers three methods for measuring the degree of balancedness via `balance_score()`. All return a value between zero (perfectly unbalanced) and one (perfectly balanced).
-
-For our perfectly balanced synthetic network, all three methods agree:
+For our perfectly balanced synthetic network, all three methods obviously agree.
 
 ```{r}
 #| label: balance-perfect
@@ -157,13 +155,12 @@ balance_score(g_bal, method = "walk")
 balance_score(g_bal, method = "frustration")
 ```
 
-The **triangles** method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.
+The *triangles* method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.
 
-The **walk** method uses eigenvalues of the signed and unsigned adjacency matrices to capture balance at all scales, not just triangles. It is based on the work of @estrada2019rethinking.
+The *walk* method uses eigenvalues of the signed and unsigned adjacency matrices to capture balance at all scales, not just triangles. It is based on the work of @estrada2019rethinking.
 
-The **frustration** method finds a partition of the network into two groups and counts how many edges violate the balance pattern (negative ties within groups and positive ties between groups). The fewer violations, the more balanced the network [@aref2018measuring]. Since finding the optimal partition is computationally hard (NP-complete), the function uses simulated annealing and returns an upper bound. For exact results, `frustration_exact()` solves the problem via integer programming.
-
-For the `tribes` network, which is not perfectly balanced, the three methods give very different scores:
+The *frustration* method finds a partition of the network into two groups and counts how many edges violate the balance pattern (negative ties within groups and positive ties between groups). The fewer violations, the more balanced the network [@aref2018measuring]. Since finding the optimal partition is computationally hard, the function uses simulated annealing and returns an upper bound. For exact results, `frustration_exact()` solves the problem via integer programming for small networks.
+For the `tribes` network, which is not perfectly balanced, the three methods give the following results.
 
 ```{r}
 #| label: balance-tribes
@@ -174,15 +171,11 @@ balance_score(tribes, method = "frustration")
 
 This disagreement is common for empirical networks and reflects the fact that each method captures different aspects of balance. 
 
-### Signed Triad Census
-
-For directed signed networks, the function `triad_census_signed()` computes the signed triad census. While the unsigned triad census distinguishes 16 types of triads, the signed version distinguishes 138 non-isomorphic types. The naming scheme follows the pattern "xxx-yyyyyy", where "xxx" is the unsigned triad type and "yyyyyy" describes the signs of the ties present (P for positive, N for negative, 0 for absent).
-
 ## Blockmodeling
 
-Structural balance theory predicts that a balanced network can be partitioned into groups with positive intra-group ties and negative inter-group ties. Blockmodeling is the computational approach to finding such partitions [@doreian1996partitioning].
+Structural balance theory dictates that a balanced network can be partitioned into groups with positive intra-group ties and negative inter-group ties. Blockmodeling is a computational approach to finding such partitions [@doreian1996partitioning].
 
-The function `signed_blockmodel()` partitions a network into `k` blocks, optimising for positive ties within blocks and negative ties between blocks. The objective function is $P(C) = \alpha N + (1-\alpha)P$, where $N$ is the total number of negative ties within blocks and $P$ is the total number of positive ties between blocks. The parameter `alpha` controls the trade-off between these two goals.
+The function `signed_blockmodel()` partitions a network into `k` predefined blocks, optimising for positive ties within blocks and negative ties between blocks. The objective function to be optimized is $P(C) = \alpha N + (1-\alpha)P$, where $N$ is the total number of negative ties within blocks and $P$ is the total number of positive ties between blocks. The parameter `alpha` controls the trade-off between these two values. The closer `alpha` is to 1, the more the algorithm prioritises negative ties within blocks. The closer to 0, the more it prioritises positive ties between blocks. Setting `alpha = 0.5` gives equal weight to both types of errors.
 
 For the `tribes` network, we try to find a partition into three blocks, which is the known structure of the Gahuku-Gama alliance system.
 
@@ -194,20 +187,24 @@ clu$membership
 clu$criterion
 ```
 
-The function returns a list with two entries: the block membership of each node and the value of $P(C)$, where lower values indicate a better fit. Setting `annealing = TRUE` uses simulated annealing in the optimisation, which generally produces better results at the cost of longer running time.
+The function returns a list with two entries: the block membership of each node and the value of $P(C)$, where lower values indicate a better fit. Setting `annealing = TRUE` uses simulated annealing in the optimisation, which generally produces better results at the cost of longer running time. The result shows that only `r clu$criterion` edges are either positive intergroup ties or negative intragroup ties.
 
-The block structure can be visualized with `ggblock()`.
+The obtained block structure can be visualized with `ggblock()` as shown in @fig-blockmodel-tribes.
 
 ```{r}
-#| label: plot-blockmodel-tribes
+#| label: fig-blockmodel-tribes
+#| fig-cap: "Block structure of the `tribes` network."
 ggblock(tribes, clu$membership, show_blocks = TRUE)
 ```
 
-The matrix plot shows positive ties (within-block) and negative ties (between-block), giving a visual assessment of how well the blockmodel captures the signed structure of the network.
+The figure shows that the two edges that violate the balance pattern are between groups two and three, which have two positive ties between them. The rest of the structure is perfectly balanced, with positive ties within groups and negative ties between groups.
 
-The traditional blockmodeling assumes a single pattern of positive blocks on the diagonal and negative blocks off the diagonal. But most networks have more complex structures [@doreian2009partitioning]. For instance, two groups might be allies (positive ties between them) while both are enemies of a third group.
 
-The function `signed_blockmodel_general()` allows us to specify arbitrary block structures via the `blockmat` parameter. Each entry in the matrix indicates whether we expect the corresponding block to be positive (1) or negative (-1). In the following we construct a synthetic network with three groups, with a structure which cannot be captured by the traditional blockmodel but can be specified in the general blockmodel.
+The traditional blockmodeling assumes a single pattern of positive blocks on the diagonal and negative blocks off the diagonal. But many networks have more complex structures [@doreian2009partitioning]. For instance, two groups might be allies (positive ties between them) while both are enemies of a third group.
+
+The function `signed_blockmodel_general()` allows us to specify arbitrary block structures via the `blockmat` parameter. Each entry in the matrix indicates whether we expect the corresponding block to be positive (1) or negative (-1). 
+
+In the following we construct a synthetic network with three groups, with a structure which cannot be captured by the traditional blockmodel but can be specified in the general blockmodel.
 
 ```{r}
 #| label: general-setup
@@ -225,26 +222,38 @@ g <- add_edges(g, c(rbind(1:5, 11:15)), attr = list(sign = -1))
 g <- add_edges(g, c(rbind(11:15, 6:10)), attr = list(sign = 1))
 ```
 
-Here, groups two and three have positive ties between them, while both have negative ties with group one. The block structure matrix reflects this:
+```{r}
+#| label: fig-general-setup
+#| fig-cap: "A synthetic network with a non-standard block structure."
+ggsigned(g, weights = TRUE)
+```
+
+Here, groups two and three have positive ties between them, while both have negative ties with group one. The block structure matrix specified below reflects this.
 
 ```{r}
 #| label: general-blockmat
 set.seed(424)
-blockmat <- matrix(c(1, -1, -1,
-                     -1, 1, 1,
-                     -1, 1, -1), 3, 3, byrow = TRUE)
+blockmat <- matrix(
+  c(1, -1, -1,
+   -1, 1, 1,
+   -1, 1, -1),
+    3, 3, byrow = TRUE)
+
 blockmat
 
 general <- signed_blockmodel_general(g, blockmat, alpha = 0.5)
 general$criterion
 ```
 
+The obained block structure is shown in @fig-general-blockmodel.
+
 ```{r}
-#| label: plot-general-blockmodel
+#| label: fig-general-blockmodel
+#| fig-cap: "Block structure of the synthetic network with a non-standard block structure."
 ggblock(g, general$membership, show_blocks = TRUE)
 ```
 
-Comparing the general model with the traditional model on this network shows the benefit of specifying the correct block structure:
+Comparing the general model with the traditional model on this network shows the benefit of specifying the correct block structure.
 
 ```{r}
 #| label: compare-blockmodels
@@ -252,7 +261,7 @@ traditional <- signed_blockmodel(g, k = 3, alpha = 0.5, annealing = TRUE)
 c(general = general$criterion, traditional = traditional$criterion)
 ```
 
-A lower criterion value indicates a better fit. The general model should perform better here because it matches the actual structure of the network.
+A lower criterion value indicates a better fit. The general model performs better here because it matches the actual structure of the network.
 
 ## Centrality
 
@@ -308,7 +317,7 @@ The `signnet` package also provides tools for working with signed two-mode netwo
 
 ## Use Case: International Relations
 
-The `cowList` dataset [included in the `signnet` package; see @doreian2015structural] contains 51 signed networks of inter-state relations in overlapping four-year windows from 1946 to 1999, derived from the [Correlates of War](https://correlatesofwar.org/) project. Two countries are connected by a positive tie if they formed an alliance or signed a peace treaty, and by a negative tie if they were at war or involved in other conflicts.
+The `cowList` dataset (included in the `signnet` package; see @doreian2015structural) contains 51 signed networks of inter-state relations in overlapping four-year windows from 1946 to 1999, derived from the [Correlates of War](https://correlatesofwar.org/) project. Two countries are connected by a positive tie if they formed an alliance or signed a peace treaty, and by a negative tie if they were at war or involved in other conflicts.
 
 ```{r}
 #| label: load-cow
@@ -318,6 +327,11 @@ names(cowList)[c(1, 20, 51)]
 
 Each network covers a four-year window (e.g., "65-68" covers 1965--1968). Let us examine two snapshots: one from the height of the Cold War and one from the post-Cold War period.
 
+```{r}
+#| echo: false
+
+cowList <- lapply(cowList, igraph::upgrade_graph)
+```
 ```{r}
 #| label: cow-years
 cow_cold <- cowList[["65-68"]]
