@@ -442,29 +442,12 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">References</span></a>
+ <span class="menu-text">Appendices</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../references.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">References</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
- <span class="menu-text">Appendices</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../appendix/ucnets-egor.html" class="sidebar-item-text sidebar-link">
@@ -530,6 +513,7 @@ window.Quarto = {
   <li><a href="#predicted-counts" id="toc-predicted-counts" class="nav-link" data-scroll-target="#predicted-counts"><span class="header-section-number">8.5.4.1</span> Predicted Counts</a></li>
   </ul></li>
   </ul></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/descriptive/ego-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -592,7 +576,7 @@ window.Quarto = {
 <section id="constructing-an-ego-network-with-egor" class="level3" data-number="8.2.1">
 <h3 data-number="8.2.1" class="anchored" data-anchor-id="constructing-an-ego-network-with-egor"><span class="header-section-number">8.2.1</span> Constructing an Ego Network with <code>egor</code></h3>
 <p>An <code>egor</code> object stores the multiple data levels required for ego-centered network analysis. These levels include <strong>ego-level data</strong> (attributes of respondents), <strong>alter-level data</strong> (attributes of the individuals named by the respondent), and <strong>alter–alter ties</strong> (relationships among those alters).</p>
-<p>In this chapter, we draw on ego network data from the <strong>UC Berkeley Social Networks Study (UCNets)</strong> <span class="citation" data-cites="fischer2020uc">(<a href="../references.html#ref-fischer2020uc" role="doc-biblioref">Fischer 2020</a>)</span>, a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the <em>first wave</em> and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in the <a href="../appendix/ucnets-egor.html" class="quarto-xref"><span>Appendix A</span></a>. This code already processes the raw survey files and combines them into an <code>egor</code> object, the data structure used by the <code>egor</code> package for ego-centered network analysis. An <code>egor</code> object contains three linked levels of data: ego-level attributes (characteristics of the respondents), alter-level attributes (characteristics of the individuals named in each respondent’s personal network), and alter–alter ties (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the <a href="https://ucnets.berkeley.edu/">UCNets project website</a>.</p>
+<p>In this chapter, we draw on ego network data from the <strong>UC Berkeley Social Networks Study (UCNets)</strong> <span class="citation" data-cites="fischer2020uc">(<a href="#ref-fischer2020uc" role="doc-biblioref">Fischer 2020</a>)</span>, a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the <em>first wave</em> and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in the <a href="../appendix/ucnets-egor.html" class="quarto-xref"><span>Appendix A</span></a>. This code already processes the raw survey files and combines them into an <code>egor</code> object, the data structure used by the <code>egor</code> package for ego-centered network analysis. An <code>egor</code> object contains three linked levels of data: ego-level attributes (characteristics of the respondents), alter-level attributes (characteristics of the individuals named in each respondent’s personal network), and alter–alter ties (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the <a href="https://ucnets.berkeley.edu/">UCNets project website</a>.</p>
 <p>We begin by exploring each of the three components of the <code>egor</code> object (ego attributes, alter attributes, and alter–alter ties), in order to understand how the ego network data are structured before proceeding to the analysis.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ego_net_w1<span class="sc">$</span>ego) <span class="co"># ego level</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -653,26 +637,26 @@ window.Quarto = {
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect the first three ego networks</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$`3000000000036`
-IGRAPH 7e207d8 UNW- 6 2 -- 
-+ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
-| (v/n), same_age (v/n), weight (e/n)
-+ edges from 7e207d8 (vertex names):
-[1] 2--5 2--5
+<pre><code>[[1]]
+IGRAPH 495ccbc DNW- 6 2 -- 
++ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
+| (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
++ edges from 495ccbc (vertex names):
+[1] 2-&gt;5 2-&gt;5
 
-$`3000000000156`
-IGRAPH 3e7c400 UNW- 15 8 -- 
-+ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
-| (v/n), same_age (v/n), weight (e/n)
-+ edges from 3e7c400 (vertex names):
-[1] 2--3 3--5 2--3 2--5 1--4 2--5 3--5 1--4
+[[2]]
+IGRAPH 8be9421 DNW- 15 8 -- 
++ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
+| (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
++ edges from 8be9421 (vertex names):
+[1] 2-&gt;3 3-&gt;5 2-&gt;3 2-&gt;5 1-&gt;4 2-&gt;5 3-&gt;5 1-&gt;4
 
-$`3000000000271`
-IGRAPH 1185cf8 UNW- 5 6 -- 
-+ attr: .egoID (g/c), name (v/c), gender (v/n), family (v/n), same_race
-| (v/n), same_age (v/n), weight (e/n)
-+ edges from 1185cf8 (vertex names):
-[1] 1--2 1--3 1--2 2--3 1--3 2--3</code></pre>
+[[3]]
+IGRAPH ef9c070 DNW- 5 6 -- 
++ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
+| (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
++ edges from ef9c070 (vertex names):
+[1] 1-&gt;2 1-&gt;3 1-&gt;2 2-&gt;3 1-&gt;3 2-&gt;3</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -741,7 +725,7 @@ Figure&nbsp;8.1: The first nine ego networks derived from the egor object based 
 <p>One of the most commonly used structural measures in ego network analysis is <strong>density</strong>. Density captures the proportion of all possible alter–alter ties that are actually present in an ego network. In other words, it tells us how interconnected an ego’s alters are with one another. For example, if an ego has 5 alters, there are <span class="math display">\[
 \frac{5 \times (5 - 1)}{2} = 10
 \]</span> possible undirected ties among those alters. If all 10 ties are present, density equals 1 (a fully connected clique). If only 8 of the 10 possible ties are present, density equals 0.8.</p>
-<p>Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to <strong>structural hole theory</strong> <span class="citation" data-cites="burt1992structural">(<a href="../references.html#ref-burt1992structural" role="doc-biblioref">Burt 1992</a>)</span>, dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. The key advantages of social capital derive not primarily from the attributes of one’s alters, but from the <em>structure</em> of the ego network itself. Individuals benefit when they bridge gaps, so-called structural holes, between otherwise disconnected groups. In low-density networks, ego may occupy a brokerage position linking clusters that are not directly connected to each other, thereby gaining access to diverse, non-redundant information and potential strategic advantages (such as faster promotion within organizations). Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.</p>
+<p>Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to <strong>structural hole theory</strong> <span class="citation" data-cites="burt1992structural">(<a href="#ref-burt1992structural" role="doc-biblioref">Burt 1992</a>)</span>, dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. The key advantages of social capital derive not primarily from the attributes of one’s alters, but from the <em>structure</em> of the ego network itself. Individuals benefit when they bridge gaps, so-called structural holes, between otherwise disconnected groups. In low-density networks, ego may occupy a brokerage position linking clusters that are not directly connected to each other, thereby gaining access to diverse, non-redundant information and potential strategic advantages (such as faster promotion within organizations). Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.</p>
 <p>We can calculate density for each ego network using the <code>ego_density()</code> function applied to our <code>egor</code> object. Note that ego networks with 0 or 1 alters will have density equal to <code>NaN</code>, because density is undefined when no alter–alter ties are possible. There are 10 such values and they are removed from the plot below.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dens <span class="ot">&lt;-</span> <span class="fu">ego_density</span>(ego_net_w1)</span>
@@ -1004,7 +988,7 @@ H = - \sum_i p_i \log(p_i)
 </div>
 </div>
 <p>The distributions reveal several interesting patterns in the composition of ego networks. The proportion of family members varies widely across respondents, indicating substantial heterogeneity in the extent to which personal networks are centered around kin. The gender composition measure is broadly distributed around intermediate values, suggesting that many respondents’ networks contain a mixture of male and female alters rather than being strongly gender-segregated. The gender diversity measure is concentrated toward higher values, indicating that many ego networks contain a relatively balanced mix of male and female alters. Finally, the distribution of racial homophily is highly skewed toward 1, suggesting that most respondents name alters who share their racial background.</p>
-<p>These patterns are consistent with well-known findings on homophily in social networks, that is, the tendency for individuals to form ties with others who are similar to themselves <span class="citation" data-cites="mcpherson2001birds">(<a href="../references.html#ref-mcpherson2001birds" role="doc-biblioref">McPherson et al. 2001</a>)</span>. In particular, the concentration of prop_same_race near one indicates strong racial homophily in personal networks. At the same time, the distributions of prop_female and gender_entropy suggest that many networks remain gender-mixed rather than fully gender-segregated. Together, these measures show that ego networks are shaped by both similarity and diversity in the social contexts from which alters are drawn.</p>
+<p>These patterns are consistent with well-known findings on homophily in social networks, that is, the tendency for individuals to form ties with others who are similar to themselves <span class="citation" data-cites="mcpherson2001birds">(<a href="#ref-mcpherson2001birds" role="doc-biblioref">McPherson et al. 2001</a>)</span>. In particular, the concentration of prop_same_race near one indicates strong racial homophily in personal networks. At the same time, the distributions of prop_female and gender_entropy suggest that many networks remain gender-mixed rather than fully gender-segregated. Together, these measures show that ego networks are shaped by both similarity and diversity in the social contexts from which alters are drawn.</p>
 </section>
 </section>
 <section id="predicting-individual-outcomes-using-ego-network-measures" class="level2" data-number="8.5">
@@ -1702,7 +1686,12 @@ Number of Fisher Scoring iterations: 6</code></pre>
 <p>Taken together, the predicted counts reinforce the main results of the Poisson model. Larger ego networks are associated with somewhat more frequent drinking, whereas networks with a higher proportion of family members are associated with less frequent drinking. At the same time, women are predicted to drink less frequently than men. As in the previous examples, these predictions are model-based associations rather than causal effects. In particular, whether alters themselves drink alcohol would likely matter for understanding social influence more directly, but the present dataset does not include alter-level information on drinking behavior.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+</section>
+</section>
+</section>
+<section id="bibliography" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-burt1992structural" class="csl-entry" role="listitem">
 Burt, Ronald. 1992. <em>Structural Holes: The Social Structure of Competition</em>. Harvard University Press.
 </div>
@@ -1713,8 +1702,6 @@ Fischer, Claude S. 2020. <em>UC Berkeley Social Networks Study (UCNets), San Fra
 McPherson, Miller, Lynn Smith-Lovin, and James M Cook. 2001. <span>“Birds of a Feather: Homophily in Social Networks.”</span> <em>Annual Review of Sociology</em> 27 (1): 415–44.
 </div>
 </div>
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->
