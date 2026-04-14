@@ -59,7 +59,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -142,15 +161,15 @@ window.Quarto = {
 
 <meta property="og:title" content="7&nbsp; Signed Networks – R for Social Network Analysis">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://schochastics.io/R4SNA/descriptive/img/balance_triples.png">
+<meta property="og:image" content="https://schochastics.io/R4SNA/descriptive/signed-networks_files/figure-html/fig-tribes-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
-<meta property="og:image:height" content="300">
-<meta property="og:image:width" content="1300">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="1344">
 <meta name="twitter:title" content="7&nbsp; Signed Networks – R for Social Network Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://schochastics.io/R4SNA/descriptive/img/balance_triples.png">
-<meta name="twitter:image-height" content="300">
-<meta name="twitter:image-width" content="1300">
+<meta name="twitter:image" content="https://schochastics.io/R4SNA/descriptive/signed-networks_files/figure-html/fig-tribes-1.png">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="1344">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -448,17 +467,13 @@ window.Quarto = {
    
   <ul>
   <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">7.1</span> Packages Needed for this Chapter</a></li>
-  <li><a href="#data-structures-for-signed-networks" id="toc-data-structures-for-signed-networks" class="nav-link" data-scroll-target="#data-structures-for-signed-networks"><span class="header-section-number">7.2</span> Data structures for signed networks</a></li>
+  <li><a href="#basic-tools-for-signed-networks" id="toc-basic-tools-for-signed-networks" class="nav-link" data-scroll-target="#basic-tools-for-signed-networks"><span class="header-section-number">7.2</span> Basic Tools for Signed Networks</a></li>
   <li><a href="#structural-balance" id="toc-structural-balance" class="nav-link" data-scroll-target="#structural-balance"><span class="header-section-number">7.3</span> Structural Balance</a></li>
-  <li><a href="#balancedness" id="toc-balancedness" class="nav-link" data-scroll-target="#balancedness"><span class="header-section-number">7.4</span> Balancedness</a></li>
-  <li><a href="#triangles" id="toc-triangles" class="nav-link" data-scroll-target="#triangles"><span class="header-section-number">7.5</span> Triangles</a></li>
-  <li><a href="#traditional-blockmodeling" id="toc-traditional-blockmodeling" class="nav-link" data-scroll-target="#traditional-blockmodeling"><span class="header-section-number">7.6</span> Traditional Blockmodeling</a></li>
-  <li><a href="#generalized-blockmodeling" id="toc-generalized-blockmodeling" class="nav-link" data-scroll-target="#generalized-blockmodeling"><span class="header-section-number">7.7</span> Generalized Blockmodeling</a></li>
-  <li><a href="#centrality" id="toc-centrality" class="nav-link" data-scroll-target="#centrality"><span class="header-section-number">7.8</span> Centrality</a>
-  <ul>
-  <li><a href="#a-note-on-eigenvector-centrality" id="toc-a-note-on-eigenvector-centrality" class="nav-link" data-scroll-target="#a-note-on-eigenvector-centrality"><span class="header-section-number">7.8.1</span> A note on eigenvector centrality</a></li>
-  </ul></li>
-  <li><a href="#scientific-reading" id="toc-scientific-reading" class="nav-link" data-scroll-target="#scientific-reading"><span class="header-section-number">7.9</span> Scientific Reading</a></li>
+  <li><a href="#blockmodeling" id="toc-blockmodeling" class="nav-link" data-scroll-target="#blockmodeling"><span class="header-section-number">7.4</span> Blockmodeling</a></li>
+  <li><a href="#centrality" id="toc-centrality" class="nav-link" data-scroll-target="#centrality"><span class="header-section-number">7.5</span> Centrality</a></li>
+  <li><a href="#signed-two-mode-networks" id="toc-signed-two-mode-networks" class="nav-link" data-scroll-target="#signed-two-mode-networks"><span class="header-section-number">7.6</span> Signed Two-Mode Networks</a></li>
+  <li><a href="#use-case-international-relations" id="toc-use-case-international-relations" class="nav-link" data-scroll-target="#use-case-international-relations"><span class="header-section-number">7.7</span> Use Case: International Relations</a></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/descriptive/signed-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -484,15 +499,8 @@ window.Quarto = {
 </header>
 
 
-<p>Traditional SNA usually deals with relations among entities (e.g.&nbsp;people) that are positive, including “friendship”, “advice seeking”, etc. Most network analytic tools are devised under this premise, be that centrality indices, clustering tools and so forth. But of course not all occurring relations are positive. People can be friends but also foes.</p>
-<p>This gives rise to signed networks. These networks are usually composed of both, positive and negative, ties measured among a set of entities. Traditional network analytic tools are not applicable to such networks without adapting for negative ties.</p>
-<p>The <code>signnet</code> package brings together methods that have been developed to analyse signed networks. This includes</p>
-<ul>
-<li>Structural balance</li>
-<li>Blockmodeling</li>
-<li>Centrality</li>
-<li>Signed two-mode networks</li>
-</ul>
+<p>Most of social network analysis deals with relations that are inherently positive: friendship, collaboration, advice seeking, trade. The tools we use to study networks, from centrality indices to community detection, were largely developed with these positive ties in mind. But social life is not only about who we like. People form rivalries, nations go to war, and online communities like <em>and</em> dislike content. When we want to study networks that contain both positive and negative ties, we enter the topic of signed networks.</p>
+<p>Signed networks require their own analytical toolkit. Standard centrality measures do not account for the difference between a node connected to five friends versus one connected to five enemies. Community detection algorithms that look for dense subgroups miss the point when the structure is defined by who is <em>against</em> whom, not just who is <em>with</em> whom. In this chapter, we introduce the key concepts and methods for analysing signed networks: structural balance, blockmodeling, and centrality.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">7.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
@@ -501,312 +509,489 @@ window.Quarto = {
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="data-structures-for-signed-networks" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="data-structures-for-signed-networks"><span class="header-section-number">7.2</span> Data structures for signed networks</h2>
-<p>The foundation of <code>signnet</code> is provided by <code>igraph</code>. All functions in the package assume that an igraph object is a signed network if it has an edge attribute “sign” with values 1 (positive) or -1 (negative).</p>
+<section id="basic-tools-for-signed-networks" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="basic-tools-for-signed-networks"><span class="header-section-number">7.2</span> Basic Tools for Signed Networks</h2>
+<p>The <code>signnet</code> package provides dedicated tools for analysing signed networks in R. The package builds on <code>igraph</code> and assumes that a signed network is an igraph object with an edge attribute <code>sign</code>, containing values 1 (positive) or -1 (negative). All functions in the package check for this attribute and will throw an error if it is missing or contains other values.</p>
+<p>We will use the <code>tribes</code> dataset to illustrate some basic functionality of the package. This dataset is a signed social network of sixteen tribes from the Gahuku-Gama alliance structure of the Eastern Central Highlands of New Guinea. Tribes are connected by friendship ties (“rova”) and enmity ties (“hina”).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">graph.full</span>(<span class="dv">5</span>, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">loops =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: `graph.full()` was deprecated in igraph 2.1.0.
-ℹ Please use `make_full_graph()` instead.</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"tribes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(g)<span class="sc">$</span>sign <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>g</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH 5ad69bd U--- 5 10 -- Full graph
-+ attr: name (g/c), loops (g/l), sign (e/n)
-+ edges from 5ad69bd:
- [1] 1--2 1--3 1--4 1--5 2--3 2--4 2--5 3--4 3--5 4--5</code></pre>
-</div>
-</div>
-<p>All methods throw an error if the sign attribute is missing or contains other values than -1 and 1.</p>
-<p>Matrices associated with a signed network follow the <code>igraph</code> naming scheme. The signed adjacency matrix can be obtained with <code>as_adj_signed()</code>.</p>
+<p>The function <code>ggsigned()</code> provides a convenient way to visualise signed networks. <a href="#fig-tribes" class="quarto-xref">Figure&nbsp;<span>7.1</span></a> shows the <code>tribes</code> network visualised with <code>ggsigned()</code>, where blue edges represent positive ties and red edges represent negative ties.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"tribes"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as_adj_signed</span>(tribes)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>      Gavev Kotun Ove Alika Nagam
-Gavev     0     1  -1    -1    -1
-Kotun     1     0  -1     0    -1
-Ove      -1    -1   0     1     0
-Alika    -1     0   1     0     0
-Nagam    -1    -1   0     0     0</code></pre>
-</div>
-</div>
-<p>The signed Laplacian matrix is obtained by <code>laplacian_matrix_signed()</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">laplacian_matrix_signed</span>(tribes)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>      Gavev Kotun Ove Alika Nagam
-Gavev     8    -1   1     1     1
-Kotun    -1     8   1     0     1
-Ove       1     1   6    -1     0
-Alika     1     0  -1     3     0
-Nagam     1     1   0     0     7</code></pre>
-</div>
-</div>
-<p>The <code>signnet</code> package includes two well known example datasets.</p>
-<p>The “tribes” dataset is a signed social network of tribes of the Gahuku–Gama alliance structure of the Eastern Central Highlands of New Guinea. The network contains sixteen tribes connected by friendship (“rova”) and enmity (“hina”).</p>
-<p>The “cowList” dataset contains a list of 52 signed networks of inter-state relations over time (1946-1999). Two countries are connected by a positive tie if they form an alliance or have a peace treaty. A negative tie exists between countries who are at war or in other kinds of conflicts. The dataset is derrived from the <a href="https://correlatesofwar.org/">correlates of war</a>.</p>
-</section>
-<section id="structural-balance" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="structural-balance"><span class="header-section-number">7.3</span> Structural Balance</h2>
-<p>The principles underlying structural balance are based on a theory in social psychology dating back to the work of Heider in the 1940s, which was generalized and extended to graphs by Cartwright and Harary in the 1950s. In its simplest form, it is defined via triangles. A triangle is balanced if all ties are positive (“the friend of a friend is a friend”) or only one tie is positive (“the enemy of my enemy is my friend”). The remaining configurations are said to be unbalanced.</p>
-<p><img src="img/balance_triples.png" class="img-fluid"></p>
-<p>A network is balanced if i.a., it can be partitioned into two vertex subsets, such that intra-group edges are all positive and inter-group edges are all negative.</p>
-<p>A (random) balanced network can be obtained with the function <code>sample_islands_signed()</code> which is pretty much the same as <code>sample_islands()</code> from the <code>igraph</code> package.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_islands_signed</span>(<span class="at">islands.n =</span> <span class="dv">2</span>,<span class="at">islands.size =</span> <span class="dv">10</span>,</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">islands.pin =</span> <span class="fl">0.8</span>,<span class="at">n.inter =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>(The function <code>ggsigned()</code> can be used to visualize signed networks. Note that this requires the package <code>ggraph</code> to be installed.) Increasing <code>islands.n</code> leads to “clusterable” networks as defined by Davis.</p>
-<p>A balanced network only contains balanced triangles. This can be verified with <code>count_signed_triangles()</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count_signed_triangles</span>(g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>+++ ++- +-- --- 
-106   0   8   0 </code></pre>
-</div>
-</div>
-<p>Note the absence of <code>++-</code> and <code>---</code> triangles.</p>
-<p>To list all triangles use <code>signed_triangles()</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">signed_triangles</span>(g))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>     V1 V2 V3 P
-[1,]  6  1  3 3
-[2,]  6  1  4 3
-[3,]  6  1  8 3
-[4,]  6  1  9 3
-[5,]  6  2  3 3
-[6,]  6  2  4 3</code></pre>
-</div>
-</div>
-<p>The column P indicated the number of positive ties in the triangle. A value of 3 indicates that the triangle is “+++”.</p>
-</section>
-<section id="balancedness" class="level2" data-number="7.4">
-<h2 data-number="7.4" class="anchored" data-anchor-id="balancedness"><span class="header-section-number">7.4</span> Balancedness</h2>
-<p>Determining if a network is balanced or not is easy, but measuring a degree of balancedness (i.e.&nbsp;how close is a network to be balanced?) is not. The package, so far, implements three methods to calculate balance scores. All are defined such that a value of one indicates perfect balance and zero perfect unbalance. Though for intermediate networks, results may vary significantly. Check the paper by Samin Aref (and his other work) for more details.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g, <span class="at">method =</span> <span class="st">"triangles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g, <span class="at">method =</span> <span class="st">"walk"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g, <span class="at">method =</span> <span class="st">"frustration"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
-</div>
-</div>
-<p>“triangles” returns the fraction of balanced triangles.</p>
-<p>“walk” is based on eigenvalues of the signed and underlying unsigned network. Check the paper by Estrada for details.</p>
-<p>“frustration” assumes that the network can be partitioned into two groups, where intra group edges are positive and inter group edges are negative. The index is defined as the sum of intra group negative and inter group positive edges. Note that the problem is NP complete and only an upper bound is returned (based on simulated annealing). The function <code>frustration_exact()</code> implements an integer program to solve the exact optimization problem. More details can be found in the work of Aref.</p>
-<p>There disagreement for non-balanced networks can be seen with the included “tribes” dataset.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"tribes"</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(tribes, <span class="at">method =</span> <span class="st">"triangles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8676471</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(tribes, <span class="at">method =</span> <span class="st">"walk"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3575761</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(tribes, <span class="at">method =</span> <span class="st">"frustration"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.7586207</code></pre>
-</div>
-</div>
-</section>
-<section id="triangles" class="level2" data-number="7.5">
-<h2 data-number="7.5" class="anchored" data-anchor-id="triangles"><span class="header-section-number">7.5</span> Triangles</h2>
-<p>The function <code>triad_census_signed()</code> calculates the signed triad census of a directed signed network. While the unsigned triad census has only 16 possible outcomes, there are 138 non-isomorphic signed triads, shown below.</p>
-<p><img src="img/signed_triads.png" class="img-fluid"></p>
-<p>The naming scheme is “xxx-yyyyyy” where “xxx” corresponds to the name of the respective unsigned triad and “yyyyyy” is a string of “0”, “N”, “P”, describing the type of ties present. So “300-NNNNNN” is a triad with all ties present and all ties are negative.</p>
-</section>
-<section id="traditional-blockmodeling" class="level2" data-number="7.6">
-<h2 data-number="7.6" class="anchored" data-anchor-id="traditional-blockmodeling"><span class="header-section-number">7.6</span> Traditional Blockmodeling</h2>
-<p>In signed blockmodeling, the goal is to determine <code>k</code> blocks of nodes such that all intra-block edges are positive and inter-block edges are negative. In the example below, we construct a network with a perfect block structure with <code>sample_islands_signed()</code>. The network consists of 10 blocks with 10 vertices each, where each block has a density of 1 (of positive edges). The function <code>signed_blockmodel()</code> is used to construct the blockmodel. The parameter <code>k</code> is the number of desired blocks. <code>alpha</code> is a trade-off parameter. The function minimizes <span class="math inline">\(P(C)=\alpha N+(1-\alpha)P\)</span>, where <span class="math inline">\(N\)</span> is the total number of negative ties within blocks and <span class="math inline">\(P\)</span> be the total number of positive ties between blocks.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_islands_signed</span>(<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">1</span>,<span class="dv">20</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>clu <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel</span>(g,<span class="at">k =</span> <span class="dv">10</span>,<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(clu<span class="sc">$</span>membership)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
- 1  2  3  4  5  6  7  8  9 10 
-10 10 10 10 10 10 10 10 10 10 </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>clu<span class="sc">$</span>criterion</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0</code></pre>
-</div>
-</div>
-<p>The function returns a list with two entries. The block membership of nodes and the value of <span class="math inline">\(P(C)\)</span>.</p>
-<p>The function <code>ggblock()</code> can be used to plot the outcome of the blockmodel (<code>ggplot2</code> is required).</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggblock</span>(g,clu<span class="sc">$</span>membership,<span class="at">show_blocks =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsigned</span>(tribes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="signed-networks_files/figure-html/blockmodel-ex-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-tribes" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tribes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="signed-networks_files/figure-html/fig-tribes-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tribes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.1: The <code>tribes</code> network visualised with <code>ggsigned()</code>.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>If the parameter <code>annealing</code> is set to TRUE, simulated annealing is used in the optimization step. This generally leads to better results but longer runtimes.</p>
+<p>The color of the edges can be customised with the <code>edge_cols</code> parameter.</p>
+<p>The parameter <code>weights</code> can be used to artificially “pull” nodes connected with negative ties apart, which can help to visually separate potential groups of positive ties as shown in <a href="#fig-tribes-weighted" class="quarto-xref">Figure&nbsp;<span>7.2</span></a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"tribes"</span>)</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">44</span>) <span class="co">#for reproducibility</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">signed_blockmodel</span>(tribes,<span class="at">k =</span> <span class="dv">3</span>,<span class="at">alpha=</span><span class="fl">0.5</span>,<span class="at">annealing =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$membership
- [1] 1 1 2 2 3 2 2 2 3 3 2 2 3 3 1 1
-
-$criterion
-[1] 2</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsigned</span>(tribes, <span class="at">weights =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-tribes-weighted" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tribes-weighted-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="signed-networks_files/figure-html/fig-tribes-weighted-1.png" class="img-fluid figure-img" width="672">
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">signed_blockmodel</span>(tribes,<span class="at">k =</span> <span class="dv">3</span>,<span class="at">alpha=</span><span class="fl">0.5</span>,<span class="at">annealing =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tribes-weighted-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.2: The <code>tribes</code> network visualised with <code>ggsigned()</code> using weights to separate negative ties.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>A signed network is represented by a signed adjacency matrix, where entries are 1, -1, or 0. It can be extracted with the function <code>as_adj_signed()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_adj_signed</span>(tribes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$membership
- [1] 1 1 2 2 3 2 2 2 3 3 2 2 3 3 1 1
-
-$criterion
-[1] 2</code></pre>
+<pre><code>      Gavev Kotun Ove Alika Nagam Gahuk Masil Ukudz Notoh Kohik Geham Asaro
+Gavev     0     1  -1    -1    -1    -1     0     0     0     0     0    -1
+Kotun     1     0  -1     0    -1    -1     0     0    -1    -1     0     0
+Ove      -1    -1   0     1     0     1     1     1     0     0     0     0
+Alika    -1     0   1     0     0     0     0     1     0     0     0     0
+Nagam    -1    -1   0     0     0     0     1     0     1     0     0     0
+Gahuk    -1    -1   1     0     0     0     1     1    -1     0     1     1
+Masil     0     0   1     0     1     1     0     1     0     0     1     1
+Ukudz     0     0   1     1     0     1     1     0     0     0     1     1
+Notoh     0    -1   0     0     1    -1     0     0     0     1    -1     0
+Kohik     0    -1   0     0     0     0     0     0     1     0    -1     0
+Geham     0     0   0     0     0     1     1     1    -1    -1     0     1
+Asaro    -1     0   0     0     0     1     1     1     0     0     1     0
+Uheto     0     0   0     0     0    -1     1     0     1     1    -1     0
+Seuve     0     0   0     0     1     0     0    -1     0     0     0    -1
+Nagad     1     1   0     0    -1     0     0     0    -1    -1    -1    -1
+Gama      1     1   0     0    -1    -1     0     0     0     0    -1    -1
+      Uheto Seuve Nagad Gama
+Gavev     0     0     1    1
+Kotun     0     0     1    1
+Ove       0     0     0    0
+Alika     0     0     0    0
+Nagam     0     1    -1   -1
+Gahuk    -1     0     0   -1
+Masil     1     0     0    0
+Ukudz     0    -1     0    0
+Notoh     1     0    -1    0
+Kohik     1     0    -1    0
+Geham    -1     0    -1   -1
+Asaro     0    -1    -1   -1
+Uheto     0     1    -1   -1
+Seuve     1     0     0   -1
+Nagad    -1     0     0    1
+Gama     -1    -1     1    0</code></pre>
 </div>
 </div>
 </section>
-<section id="generalized-blockmodeling" class="level2" data-number="7.7">
-<h2 data-number="7.7" class="anchored" data-anchor-id="generalized-blockmodeling"><span class="header-section-number">7.7</span> Generalized Blockmodeling</h2>
-<p>The function <code>signed_blockmodel()</code> is only able to provide a blockmodel where the diagonal blocks are positive and off-diagonal blocks are negative. The function <code>signed_blockmodel_general()</code> can be used to specify different block structures. In the below example, we construct a network that contains three blocks. Two have positive and one has negative intra-group ties. The inter-group edges are negative between group one and two, and one and three. Between group two and three, all edges are positive.</p>
+<section id="structural-balance" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="structural-balance"><span class="header-section-number">7.3</span> Structural Balance</h2>
+<p>Structural balance theory originates in the social psychology of Fritz Heider <span class="citation" data-cites="heider1946attitudes">(<a href="#ref-heider1946attitudes" role="doc-biblioref">1946</a>)</span> and was formalised for graphs by <span class="citation" data-cites="cartwright1956structural">Cartwright and Harary (<a href="#ref-cartwright1956structural" role="doc-biblioref">1956</a>)</span>. The core idea is intuitive: consider three people. If Alice and Bob are friends, and Bob and Carol are friends, we expect Alice and Carol to also be friends: “the friend of my friend is my friend.” Similarly, if Alice and Bob are enemies and Bob and Carol are enemies, we expect Alice and Carol to be friends: “the enemy of my enemy is my friend.” These configurations are <em>balanced</em>. A triangle where all three pairs are enemies, or where two pairs are friends but one pair are enemies, feels unstable and is considered <em>unbalanced</em>.</p>
+<p>More formally, a triangle is balanced if it has an even number of negative ties (zero or two), and unbalanced if it has an odd number (one or three). All four possible configurations are shown in <a href="#fig-balance-triples" class="quarto-xref">Figure&nbsp;<span>7.3</span></a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> g2 <span class="ot">&lt;-</span> g3 <span class="ot">&lt;-</span> <span class="fu">graph.full</span>(<span class="dv">5</span>)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g1)<span class="sc">$</span>name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g2)<span class="sc">$</span>name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g3)<span class="sc">$</span>name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>)</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">"%u%"</span>,<span class="fu">list</span>(g1,g2,g3))</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(g)<span class="sc">$</span>sign <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(g)<span class="sc">$</span>sign[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">add.edges</span>(g,<span class="fu">c</span>(<span class="fu">rbind</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>)),<span class="at">attr =</span> <span class="fu">list</span>(<span class="at">sign=</span><span class="sc">-</span><span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: `add.edges()` was deprecated in igraph 2.0.0.
-ℹ Please use `add_edges()` instead.</code></pre>
+<div class="cell-output-display">
+<div id="fig-balance-triples" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-balance-triples-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="signed-networks_files/figure-html/fig-balance-triples-1.png" class="img-fluid figure-img" width="672">
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">add.edges</span>(g,<span class="fu">c</span>(<span class="fu">rbind</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>)),<span class="at">attr =</span> <span class="fu">list</span>(<span class="at">sign=</span><span class="sc">-</span><span class="dv">1</span>))</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">add.edges</span>(g,<span class="fu">c</span>(<span class="fu">rbind</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>,<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>)),<span class="at">attr =</span> <span class="fu">list</span>(<span class="at">sign=</span><span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-balance-triples-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.3: The four possible signed triangles and their balancedness.
+</figcaption>
+</figure>
 </div>
-<p>The parameter <code>blockmat</code> is used to specify the desired block structure.</p>
+</div>
+</div>
+<p>A network is <em>balanced</em> if it can be partitioned into two groups such that all ties within groups are positive and all ties between groups are negative.</p>
+<p>We can generate such a simple balanced network with <code>sample_islands_signed()</code>, which creates groups with positive intra-group ties and negative inter-group ties. It follows the logic of the function <code>sample_islands()</code> from <code>igraph</code>, with the added twist of making inter group edges negative. Setting <code>islands.n = 2</code> creates a perfectly balanced network with two groups.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">424</span>)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>blockmat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="dv">3</span>,<span class="dv">3</span>,<span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>blockmat</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>g_bal <span class="ot">&lt;-</span> <span class="fu">sample_islands_signed</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">islands.n =</span> <span class="dv">2</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">islands.size =</span> <span class="dv">10</span>, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">islands.pin =</span> <span class="fl">0.8</span>, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">n.inter =</span> <span class="dv">5</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The network is shown in <a href="#fig-balanced" class="quarto-xref">Figure&nbsp;<span>7.4</span></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsigned</span>(g_bal)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-balanced" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-balanced-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="signed-networks_files/figure-html/fig-balanced-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-balanced-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.4: A synthetic perfectly balanced network with two groups.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We can verify that this network is perfectly balanced by counting its triangles. Balanced networks contain only “+++” and “+–” triangles, with no “++-” or “—” triangles.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count_signed_triangles</span>(g_bal)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>+++ ++- +-- --- 
+ 86   0   8   0 </code></pre>
+</div>
+</div>
+<p>Increasing the <code>islands.n</code> parameter to more than two creates networks that are not balanced in the strict two-group sense but are “clusterable” as defined by <span class="citation" data-cites="davis1967clustering">Davis (<a href="#ref-davis1967clustering" role="doc-biblioref">1967</a>)</span> – they can be partitioned into more than two groups with the same within-positive, between-negative pattern.</p>
+<p>Real-world networks are rarely perfectly balanced. The question then becomes: how balanced a given network is. The <code>signnet</code> package offers three methods for measuring the degree of balancedness via <code>balance_score()</code>. All return a value between zero (perfectly unbalanced) and one (perfectly balanced).</p>
+<p>For our perfectly balanced synthetic network, all three methods obviously agree.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g_bal, <span class="at">method =</span> <span class="st">"triangles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g_bal, <span class="at">method =</span> <span class="st">"walk"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g_bal, <span class="at">method =</span> <span class="st">"frustration"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8108108</code></pre>
+</div>
+</div>
+<p>The <em>triangles</em> method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.</p>
+<p>The <em>walk</em> method uses eigenvalues of the signed and unsigned adjacency matrices to capture balance at all scales, not just triangles. It is based on the work of <span class="citation" data-cites="estrada2019rethinking">Estrada (<a href="#ref-estrada2019rethinking" role="doc-biblioref">2019</a>)</span>.</p>
+<p>The <em>frustration</em> method finds a partition of the network into two groups and counts how many edges violate the balance pattern (negative ties within groups and positive ties between groups). The fewer violations, the more balanced the network <span class="citation" data-cites="aref2018measuring">(<a href="#ref-aref2018measuring" role="doc-biblioref">Aref and Wilson 2018</a>)</span>. Since finding the optimal partition is computationally hard, the function uses simulated annealing and returns an upper bound. For exact results, <code>frustration_exact()</code> solves the problem via integer programming for small networks. For the <code>tribes</code> network, which is not perfectly balanced, the three methods give the following results.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(tribes, <span class="at">method =</span> <span class="st">"triangles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8676471</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(tribes, <span class="at">method =</span> <span class="st">"walk"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3575761</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(tribes, <span class="at">method =</span> <span class="st">"frustration"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7586207</code></pre>
+</div>
+</div>
+<p>This disagreement is common for empirical networks and reflects the fact that each method captures different aspects of balance.</p>
+</section>
+<section id="blockmodeling" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="blockmodeling"><span class="header-section-number">7.4</span> Blockmodeling</h2>
+<p>Structural balance theory dictates that a balanced network can be partitioned into groups with positive intra-group ties and negative inter-group ties. Blockmodeling is a computational approach to finding such partitions <span class="citation" data-cites="doreian1996partitioning">(<a href="#ref-doreian1996partitioning" role="doc-biblioref">Doreian and Mrvar 1996</a>)</span>.</p>
+<p>The function <code>signed_blockmodel()</code> partitions a network into <code>k</code> predefined blocks, optimising for positive ties within blocks and negative ties between blocks. The objective function to be optimized is <span class="math inline">\(P(C) = \alpha N + (1-\alpha)P\)</span>, where <span class="math inline">\(N\)</span> is the total number of negative ties within blocks and <span class="math inline">\(P\)</span> is the total number of positive ties between blocks. The parameter <code>alpha</code> controls the trade-off between these two values. The closer <code>alpha</code> is to 1, the more the algorithm prioritises negative ties within blocks. The closer to 0, the more it prioritises positive ties between blocks. Setting <code>alpha = 0.5</code> gives equal weight to both types of errors.</p>
+<p>For the <code>tribes</code> network, we try to find a partition into three blocks, which is the known structure of the Gahuku-Gama alliance system.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">44</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>clu <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel</span>(tribes, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">annealing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>clu<span class="sc">$</span>membership</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 1 1 2 2 3 2 2 2 3 3 2 2 3 3 1 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>clu<span class="sc">$</span>criterion</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>The function returns a list with two entries: the block membership of each node and the value of <span class="math inline">\(P(C)\)</span>, where lower values indicate a better fit. Setting <code>annealing = TRUE</code> uses simulated annealing in the optimisation, which generally produces better results at the cost of longer running time. The result shows that only 2 edges are either positive intergroup ties or negative intragroup ties.</p>
+<p>The obtained block structure can be visualized with <code>ggblock()</code> as shown in <a href="#fig-blockmodel-tribes" class="quarto-xref">Figure&nbsp;<span>7.5</span></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggblock</span>(tribes, clu<span class="sc">$</span>membership, <span class="at">show_blocks =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-blockmodel-tribes" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-blockmodel-tribes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="signed-networks_files/figure-html/fig-blockmodel-tribes-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-blockmodel-tribes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.5: Block structure of the <code>tribes</code> network.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure shows that the two edges that violate the balance pattern are between groups two and three, which have two positive ties between them. The rest of the structure is perfectly balanced, with positive ties within groups and negative ties between groups.</p>
+<p>The traditional blockmodeling assumes a single pattern of positive blocks on the diagonal and negative blocks off the diagonal. But many networks have more complex structures <span class="citation" data-cites="doreian2009partitioning">(<a href="#ref-doreian2009partitioning" role="doc-biblioref">Doreian and Mrvar 2009</a>)</span>. For instance, two groups might be allies (positive ties between them) while both are enemies of a third group.</p>
+<p>The function <code>signed_blockmodel_general()</code> allows us to specify arbitrary block structures via the <code>blockmat</code> parameter. Each entry in the matrix indicates whether we expect the corresponding block to be positive (1) or negative (-1).</p>
+<p>In the following we construct a synthetic network with three groups, with a structure which cannot be captured by the traditional blockmodel but can be specified in the general blockmodel.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## construct a network with a non-standard block structure</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> g2 <span class="ot">&lt;-</span> g3 <span class="ot">&lt;-</span> <span class="fu">make_full_graph</span>(<span class="dv">5</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g1)<span class="sc">$</span>name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g2)<span class="sc">$</span>name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g3)<span class="sc">$</span>name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">"%u%"</span>, <span class="fu">list</span>(g1, g2, g3))</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(g)<span class="sc">$</span>sign <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(g)<span class="sc">$</span>sign[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">add_edges</span>(g, <span class="fu">c</span>(<span class="fu">rbind</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>)), <span class="at">attr =</span> <span class="fu">list</span>(<span class="at">sign =</span> <span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">add_edges</span>(g, <span class="fu">c</span>(<span class="fu">rbind</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>)), <span class="at">attr =</span> <span class="fu">list</span>(<span class="at">sign =</span> <span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">add_edges</span>(g, <span class="fu">c</span>(<span class="fu">rbind</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>, <span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>)), <span class="at">attr =</span> <span class="fu">list</span>(<span class="at">sign =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsigned</span>(g, <span class="at">weights =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-general-setup" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-general-setup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="signed-networks_files/figure-html/fig-general-setup-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-general-setup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.6: A synthetic network with a non-standard block structure.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Here, groups two and three have positive ties between them, while both have negative ties with group one. The block structure matrix specified below reflects this.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">424</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>blockmat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>   <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="dv">3</span>, <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>blockmat</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2] [,3]
 [1,]    1   -1   -1
 [2,]   -1    1    1
 [3,]   -1    1   -1</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>general <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel_general</span>(g,blockmat,<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>traditional <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel</span>(g,<span class="at">k =</span> <span class="dv">3</span>,<span class="at">alpha =</span> <span class="fl">0.5</span>,<span class="at">annealing =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(general<span class="sc">$</span>criterion,traditional<span class="sc">$</span>criterion)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>general <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel_general</span>(g, blockmat, <span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>general<span class="sc">$</span>criterion</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0 6</code></pre>
+<pre><code>[1] 0</code></pre>
 </div>
 </div>
-<p><img src="img/blockmodel_general.png" class="img-fluid"></p>
+<p>The obained block structure is shown in <a href="#fig-general-blockmodel" class="quarto-xref">Figure&nbsp;<span>7.7</span></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggblock</span>(g, general<span class="sc">$</span>membership, <span class="at">show_blocks =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-general-blockmodel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-general-blockmodel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="signed-networks_files/figure-html/fig-general-blockmodel-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-general-blockmodel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.7: Block structure of the synthetic network with a non-standard block structure.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Comparing the general model with the traditional model on this network shows the benefit of specifying the correct block structure.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>traditional <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel</span>(g, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">annealing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">general =</span> general<span class="sc">$</span>criterion, <span class="at">traditional =</span> traditional<span class="sc">$</span>criterion)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    general traditional 
+          0           6 </code></pre>
+</div>
+</div>
+<p>A lower criterion value indicates a better fit. The general model performs better here because it matches the actual structure of the network.</p>
 </section>
-<section id="centrality" class="level2" data-number="7.8">
-<h2 data-number="7.8" class="anchored" data-anchor-id="centrality"><span class="header-section-number">7.8</span> Centrality</h2>
-<p>There exist dozens of indices for networks with positive ties, but for signed networks they are rather scarce. The package implements three indices so far. Versions of degree and eigenvector centrality, and PN centrality by Everett &amp; Borgatti.</p>
-<p>Degree centrality can be calculated in four different ways with <code>degree_signed()</code>, specified by the <code>type</code> parameter:</p>
+<section id="centrality" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="centrality"><span class="header-section-number">7.5</span> Centrality</h2>
+<p>In unsigned networks, having many connections is straightforwardly advantageous. But in signed networks, the picture is more nuanced. A tribe with six alliances and no enemies is in a very different position from one with three alliances and three enemies, even though both have the same number of ties. Centrality indices for signed networks must account for this distinction.</p>
+<p>The function <code>degree_signed()</code> offers four variants, controlled by the <code>type</code> parameter:</p>
 <ul>
-<li><code>type="pos"</code> count only positive neighbors</li>
-<li><code>type="neg"</code> count only negative neighbors</li>
-<li><code>type="ratio"</code> positive neighbors/(positive neighbors+negative neighbors)</li>
-<li><code>type="net"</code> positive neighbors-negative neighbors</li>
+<li><code>type = "pos"</code>: count only positive neighbors</li>
+<li><code>type = "neg"</code>: count only negative neighbors</li>
+<li><code>type = "ratio"</code>: positive neighbors / (positive + negative neighbors)</li>
+<li><code>type = "net"</code>: positive neighbors minus negative neighbors</li>
 </ul>
-<p>The <code>mode</code> parameter can be used to get “in” and “out” versions for directed networks.</p>
-<p>The PN index is very similar to Katz status and Hubbell’s measure for networks with only positive ties. The technical details can be found in the paper by Everett &amp; Borgatti.</p>
-<p>The below example illustrates all indices with a network where signed degree can not distinguish vertices.</p>
+<p>For directed networks, the <code>mode</code> parameter distinguishes “in” and “out” versions.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  </span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>               <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  </span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  </span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>               <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  </span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  </span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  </span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>,  </span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>              <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  </span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>              <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  </span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>),<span class="dv">10</span>,<span class="dv">10</span>)</span>
-<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(A,<span class="st">"undirected"</span>,<span class="at">weighted =</span> <span class="st">"sign"</span>)</span>
-<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a><span class="fu">degree_signed</span>(g,<span class="at">type =</span> <span class="st">"ratio"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">tribe =</span> <span class="fu">V</span>(tribes)<span class="sc">$</span>name,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pos =</span> <span class="fu">degree_signed</span>(tribes, <span class="at">type =</span> <span class="st">"pos"</span>),</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">neg =</span> <span class="fu">degree_signed</span>(tribes, <span class="at">type =</span> <span class="st">"neg"</span>),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ratio =</span> <span class="fu">round</span>(<span class="fu">degree_signed</span>(tribes, <span class="at">type =</span> <span class="st">"ratio"</span>), <span class="dv">2</span>),</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">net =</span> <span class="fu">degree_signed</span>(tribes, <span class="at">type =</span> <span class="st">"net"</span>)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5</code></pre>
+<pre><code>      tribe pos neg ratio net
+Gavev Gavev   3   5  0.38  -2
+Kotun Kotun   3   5  0.38  -2
+Ove     Ove   4   2  0.67   2
+Alika Alika   2   1  0.67   1
+Nagam Nagam   3   4  0.43  -1
+Gahuk Gahuk   5   5  0.50   0
+Masil Masil   7   0  1.00   7
+Ukudz Ukudz   6   1  0.86   5
+Notoh Notoh   3   4  0.43  -1
+Kohik Kohik   2   3  0.40  -1
+Geham Geham   4   5  0.44  -1
+Asaro Asaro   4   4  0.50   0
+Uheto Uheto   4   4  0.50   0
+Seuve Seuve   2   3  0.40  -1
+Nagad Nagad   3   6  0.33  -3
+Gama   Gama   3   6  0.33  -3</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eigen_centrality_signed</span>(g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] 0.62214960 1.00000000 0.74518850 1.00000000 0.89990041 0.64289592
- [7] 0.35828159 0.37471921 0.28087411 0.07834568</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pn_index</span>(g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] 0.9009747 0.8613482 0.9076997 0.8613482 0.8410658 0.8496558 0.8617321
- [8] 0.9015909 0.8509848 0.9072930</code></pre>
-</div>
-</div>
-<p>Note that PN centrality and eigenvector centrality differ significantly for this network.</p>
+<p>Beyond degree, the <code>signnet</code> package implements two more centrality indices. The <strong>PN index</strong> by <span class="citation" data-cites="everett2014networks">Everett and Borgatti (<a href="#ref-everett2014networks" role="doc-biblioref">2014</a>)</span> is conceptually similar to Katz status for unsigned networks. It takes into account not just direct ties but also the signs of indirect paths through the network.</p>
+<p><strong>Eigenvector centrality</strong> (<code>eigen_centrality_signed()</code>) extends the idea that a node is central if it is connected to other central nodes, adapted for signed networks <span class="citation" data-cites="bonacich2004calculating">(<a href="#ref-bonacich2004calculating" role="doc-biblioref">Bonacich and Lloyd 2004</a>)</span>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">eigen_centrality_signed</span>(g),<span class="fu">pn_index</span>(g),<span class="at">method =</span> <span class="st">"kendall"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>cent_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">tribe =</span> <span class="fu">V</span>(tribes)<span class="sc">$</span>name,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree_net =</span> <span class="fu">degree_signed</span>(tribes, <span class="at">type =</span> <span class="st">"net"</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">eigen =</span> <span class="fu">round</span>(<span class="fu">eigen_centrality_signed</span>(tribes), <span class="dv">3</span>),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">pn =</span> <span class="fu">round</span>(<span class="fu">pn_index</span>(tribes), <span class="dv">3</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>cent_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.2444444</code></pre>
+<pre><code>      tribe degree_net eigen    pn
+Gavev Gavev         -2 1.000 0.753
+Kotun Kotun         -2 0.889 0.764
+Ove     Ove          2 0.716 1.042
+Alika Alika          1 0.368 1.023
+Nagam Nagam         -1 0.743 0.903
+Gahuk Gahuk          0 0.955 0.905
+Masil Masil          7 0.760 1.224
+Ukudz Ukudz          5 0.671 1.141
+Notoh Notoh         -1 0.211 0.874
+Kohik Kohik         -1 0.239 0.903
+Geham Geham         -1 0.696 0.865
+Asaro Asaro          0 0.914 0.934
+Uheto Uheto          0 0.234 0.916
+Seuve Seuve         -1 0.059 0.875
+Nagad Nagad         -3 0.912 0.715
+Gama   Gama         -3 0.987 0.715</code></pre>
 </div>
 </div>
-<section id="a-note-on-eigenvector-centrality" class="level3" data-number="7.8.1">
-<h3 data-number="7.8.1" class="anchored" data-anchor-id="a-note-on-eigenvector-centrality"><span class="header-section-number">7.8.1</span> A note on eigenvector centrality</h3>
-<p>The adjacency matrix of a signed network may not have a dominant eigenvalue. This means it is not clear which eigenvector should be used. In addition it is possible for the adjacency matrix to have repeated eigenvalues and hence multiple linearly independent eigenvectors. In this case certain centralities can be arbitrarily assigned. The <code>eigen_centrality_signed()</code> function returns an error if this is the case.</p>
+<p>The correlation between eigenvector centrality and the PN index tells us how much these two measures agree.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>( <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, </span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>               <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>, </span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>               <span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, </span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>              <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, </span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>, </span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, </span>
-<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>              <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">1</span>, </span>
-<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">1</span>, </span>
-<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>               <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">0</span>,  <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">1</span>, <span class="dv">0</span>), <span class="dv">9</span>, <span class="dv">9</span>)</span>
-<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> igraph<span class="sc">::</span><span class="fu">graph_from_adjacency_matrix</span>(A,<span class="st">"undirected"</span>,<span class="at">weighted =</span> <span class="st">"sign"</span>)</span>
-<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="fu">eigen_centrality_signed</span>(g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `eigen_centrality_signed()`:
-! no dominant eigenvalue exists</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">eigen_centrality_signed</span>(tribes), <span class="fu">pn_index</span>(tribes), <span class="at">method =</span> <span class="st">"kendall"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.2</code></pre>
 </div>
 </div>
+<p>Note that the adjacency matrix of a signed network may not have a dominant eigenvalue. When this occurs, eigenvector centrality is not well-defined and <code>eigen_centrality_signed()</code> will return an error. In such cases, the PN index provides a more robust alternative.</p>
 </section>
+<section id="signed-two-mode-networks" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="signed-two-mode-networks"><span class="header-section-number">7.6</span> Signed Two-Mode Networks</h2>
+<p>The <code>signnet</code> package also provides tools for working with signed two-mode networks. Projecting a signed two-mode network onto one of its modes is less straightforward than in the unsigned case, because paths through negative ties can change the sign of the resulting projection. The package implements a duplication approach that resolves this issue and also accounts for ambivalent ties, where both positive and negative paths exist between two nodes. For details, see the <code>signnet</code> package vignette on signed two-mode networks.</p>
 </section>
-<section id="scientific-reading" class="level2" data-number="7.9">
-<h2 data-number="7.9" class="anchored" data-anchor-id="scientific-reading"><span class="header-section-number">7.9</span> Scientific Reading</h2>
-<p>Everett, Martin G., and Stephen P. Borgatti. 2014. “Networks Containing Negative Ties.” Social Networks 38: 111–20.</p>
-<p>Bonacich, Phillip, and Paulette Lloyd. 2004. “Calculating Status with Negative Relations.” Social Networks 26 (4): 331–38.</p>
-<p>Doreian, Patrick, and Andrej Mrvar. 1996. “A Partitioning Approach to Structural Balance.” Social Networks 18 (2): 149–68.</p>
-<p>Doreian, Patrick, and Andrej Mrvar. 2009. “Partitioning Signed Social Networks.” Social Networks 31 (1): 1–11.</p>
-<p>Doreian, Patrick, and Andrej Mrvar. 2015. “Structural Balance and Signed International Relations.” Journal of Social Structure 16: 1.</p>
-<p>Heider, Fritz. 1946. “Attitudes and Cognitive Organization.” The Journal of Psychology 21 (1): 107–12.</p>
-<p>Cartwright, Dorwin, and Frank Harary. 1956. “Structural Balance: A Generalization of Heider’s Theory.” Psychological Review 63 (5): 277.</p>
-<p>Davis, James A. 1967. “Clustering and Structural Balance in Graphs.” Human Relations 20 (2): 181–87.</p>
-<p>Aref, Samin, and Mark C. Wilson. 2018. “Measuring Partial Balance in Signed Networks.” Journal of Complex Networks 6 (4): 566–95.</p>
-<p>Estrada, Ernesto. 2019. “Rethinking Structural Balance in Signed Social Networks.” Discrete Applied Mathematics</p>
+<section id="use-case-international-relations" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="use-case-international-relations"><span class="header-section-number">7.7</span> Use Case: International Relations</h2>
+<p>The <code>cowList</code> dataset (included in the <code>signnet</code> package; see <span class="citation" data-cites="doreian2015structural">Doreian and Mrvar (<a href="#ref-doreian2015structural" role="doc-biblioref">2015</a>)</span>) contains 51 signed networks of inter-state relations in overlapping four-year windows from 1946 to 1999, derived from the <a href="https://correlatesofwar.org/">Correlates of War</a> project. Two countries are connected by a positive tie if they formed an alliance or signed a peace treaty, and by a negative tie if they were at war or involved in other conflicts.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"cowList"</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(cowList)[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="dv">51</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "46-49" "65-68" "96-99"</code></pre>
+</div>
+</div>
+<p>Each network covers a four-year window (e.g., “65-68” covers 1965–1968). Let us examine two snapshots: one from the height of the Cold War and one from the post-Cold War period.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>cow_cold <span class="ot">&lt;-</span> cowList[[<span class="st">"65-68"</span>]]</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>cow_post <span class="ot">&lt;-</span> cowList[[<span class="st">"93-96"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">nodes_cold =</span> <span class="fu">vcount</span>(cow_cold), <span class="at">edges_cold =</span> <span class="fu">ecount</span>(cow_cold),</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">nodes_post =</span> <span class="fu">vcount</span>(cow_post), <span class="at">edges_post =</span> <span class="fu">ecount</span>(cow_post))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>nodes_cold edges_cold nodes_post edges_post 
+       107        590        148       1181 </code></pre>
+</div>
+</div>
+<p>We can assess how balanced the international system was in each period:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="fu">c</span>(<span class="st">"triangles"</span>, <span class="st">"walk"</span>, <span class="st">"frustration"</span>),</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cold_war =</span> <span class="fu">c</span>(</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">balance_score</span>(cow_cold, <span class="at">method =</span> <span class="st">"triangles"</span>),</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">balance_score</span>(cow_cold, <span class="at">method =</span> <span class="st">"walk"</span>),</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">balance_score</span>(cow_cold, <span class="at">method =</span> <span class="st">"frustration"</span>)</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">post_cold_war =</span> <span class="fu">c</span>(</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">balance_score</span>(cow_post, <span class="at">method =</span> <span class="st">"triangles"</span>),</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">balance_score</span>(cow_post, <span class="at">method =</span> <span class="st">"walk"</span>),</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">balance_score</span>(cow_post, <span class="at">method =</span> <span class="st">"frustration"</span>)</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       method  cold_war post_cold_war
+1   triangles 0.9450199     0.9264774
+2        walk 0.6916381     0.2566049
+3 frustration 0.8711864     0.8933108</code></pre>
+</div>
+</div>
+<p>Applying blockmodeling reveals the alliance structure. During the Cold War, we would expect to find blocs corresponding to the Western and Eastern alliances:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>clu_cold <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel</span>(cow_cold, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">annealing =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggblock</span>(cow_cold, clu_cold<span class="sc">$</span>membership, <span class="at">show_blocks =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="signed-networks_files/figure-html/plot-cow-blockmodel-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The block membership can be inspected alongside the country names to see which states cluster together:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">split</span>(<span class="fu">V</span>(cow_cold)<span class="sc">$</span>name, clu_cold<span class="sc">$</span>membership)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$`1`
+ [1] "ALG" "ARG" "AUS" "BAR" "BEL" "BOL" "BRA" "CAN" "CAF" "CHA" "CHL" "COL"
+[13] "CON" "COS" "CZE" "DEN" "DOM" "ECU" "EGY" "ELS" "FRA" "GAB" "GFR" "GHA"
+[25] "GRC" "GUA" "HAI" "HON" "ICE" "IND" "IRN" "IRQ" "ITA" "CDI" "JPN" "JOR"
+[37] "KUW" "LAO" "LEB" "LYB" "LUX" "MAG" "MYS" "MAS" "MEX" "MOR" "MYR" "NDL"
+[49] "NZD" "NIC" "NOR" "PAK" "PAN" "PAR" "PER" "PHL" "PRG" "RVN" "SAU" "SOM"
+[61] "SAF" "KOR" "ESP" "SUD" "SYR" "TWN" "THA" "TRI" "TUN" "TUR" "UGA" "GBR"
+[73] "USA" "URU" "VZA" "YAR" "YUG"
+
+$`2`
+ [1] "AFG" "ALB" "BUL" "BUI" "CMB" "CHN" "CUB" "CYP" "DRC" "ETH" "FIN" "GDR"
+[13] "GUI" "GUY" "HUN" "INS" "ISR" "KEN" "MLI" "MON" "NEP" "NKR" "POL" "ROM"
+[25] "RUS" "RWA" "TGO" "VTN" "ZAM" "ZIM"</code></pre>
+</div>
+</div>
 
 
+</section>
+<section id="bibliography" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-aref2018measuring" class="csl-entry" role="listitem">
+Aref, Samin, and Mark C Wilson. 2018. <span>“Measuring Partial Balance in Signed Networks.”</span> <em>Journal of Complex Networks</em> 6 (4): 566–95.
+</div>
+<div id="ref-bonacich2004calculating" class="csl-entry" role="listitem">
+Bonacich, Phillip, and Paulette Lloyd. 2004. <span>“Calculating Status with Negative Relations.”</span> <em>Social Networks</em> 26 (4): 331–38.
+</div>
+<div id="ref-cartwright1956structural" class="csl-entry" role="listitem">
+Cartwright, Dorwin, and Frank Harary. 1956. <span>“Structural Balance: A Generalization of Heider’s Theory.”</span> <em>Psychological Review</em> 63 (5): 277.
+</div>
+<div id="ref-davis1967clustering" class="csl-entry" role="listitem">
+Davis, James A. 1967. <span>“Clustering and Structural Balance in Graphs.”</span> <em>Human Relations</em> 20 (2): 181–87.
+</div>
+<div id="ref-doreian1996partitioning" class="csl-entry" role="listitem">
+Doreian, Patrick, and Andrej Mrvar. 1996. <span>“A Partitioning Approach to Structural Balance.”</span> <em>Social Networks</em> 18 (2): 149–68.
+</div>
+<div id="ref-doreian2009partitioning" class="csl-entry" role="listitem">
+Doreian, Patrick, and Andrej Mrvar. 2009. <span>“Partitioning Signed Social Networks.”</span> <em>Social Networks</em> 31 (1): 1–11.
+</div>
+<div id="ref-doreian2015structural" class="csl-entry" role="listitem">
+Doreian, Patrick, and Andrej Mrvar. 2015. <span>“Structural Balance and Signed International Relations.”</span> <em>Journal of Social Structure</em> 16: 1.
+</div>
+<div id="ref-estrada2019rethinking" class="csl-entry" role="listitem">
+Estrada, Ernesto. 2019. <span>“Rethinking Structural Balance in Signed Social Networks.”</span> <em>Discrete Applied Mathematics</em>.
+</div>
+<div id="ref-everett2014networks" class="csl-entry" role="listitem">
+Everett, Martin G, and Stephen P Borgatti. 2014. <span>“Networks Containing Negative Ties.”</span> <em>Social Networks</em> 38: 111–20.
+</div>
+<div id="ref-heider1946attitudes" class="csl-entry" role="listitem">
+Heider, Fritz. 1946. <span>“Attitudes and Cognitive Organization.”</span> <em>The Journal of Psychology</em> 21 (1): 107–12.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
