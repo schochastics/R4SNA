@@ -10,6 +10,8 @@ In this chapter, we explore cohesive subgroups within networks, focusing on cliq
 #| message: false
 library(igraph)
 library(networkdata)
+library(blockmodeling)
+library(netUtils)
 ```
 
 ```{r}
@@ -207,7 +209,7 @@ ggraph(karate, "stress") +
   coord_equal()
 ```
 
-For the cluster analysis, we first pick an algorithm and run it on the network. Here, we use the Louvain method for modularity maximization via `cluster_louvain()`. The result is a community object from which we can extract a membership vector (which community each node belongs to) and a list of communities (which nodes belong to each community).
+For the cluster analysis, we first pick an algorithm and run it on the network. Here, we use the Louvain method [@blondel2008louvain] for modularity maximization via `cluster_louvain()`. The result is a community object from which we can extract a membership vector (which community each node belongs to) and a list of communities (which nodes belong to each community).
 
 ```{r}
 #| label: cluster_ex
@@ -223,7 +225,7 @@ com <- communities(clu)
 com
 ```
 
-Finding the partition that maximises modularity is a computationally hard problem (NP-hard, to be precise). No algorithm can guarantee finding the global optimum in reasonable time, so all practical methods rely on heuristics. Different heuristics explore the space of possible partitions in different ways, which means they can arrive at different solutions on the same network. To see how much results vary, we run several algorithms and compare their modularity scores.
+Finding the partition that maximises modularity is a computationally hard problem (NP-hard, to be precise). No algorithm can guarantee finding the global optimum in reasonable time, so all practical methods rely on heuristics, such as the fast greedy approach [@clauset2004community]. Different heuristics explore the space of possible partitions in different ways, which means they can arrive at different solutions on the same network. To see how much results vary, we run several algorithms and compare their modularity scores.
 
 ```{r}
 #| label: karate-cluster
@@ -320,7 +322,7 @@ table(membership(clu_louvain))
 
 However, the Louvain method merges multiple cliques together to form a rather unintuitive clustering. This is a consequence of the resolution limit. The algorithm fails to resolve the smaller clusters because merging them into bigger clusters actually increases the modularity. 
 
-A clustering algorithm that fixes this issue is the so called Leiden algorithm. It is available in `igraph` via `cluster_leiden()` and can essentially be used as a drop-in replacement for `cluster_louvain()`. When used with the CPM (Constant Potts Model) objective function, it avoids the resolution limit entirely.
+A clustering algorithm that fixes this issue is the so called Leiden algorithm [@traag2019leiden]. It is available in `igraph` via `cluster_leiden()` and can essentially be used as a drop-in replacement for `cluster_louvain()`. When used with the CPM (Constant Potts Model) objective function, it avoids the resolution limit entirely.
 
 ```{r}
 #| label: clu-leiden-K50
@@ -376,13 +378,7 @@ In practice, this means that community detection results should always be interp
 
 Community detection focuses on finding groups of nodes that are densely connected internally. Blockmodeling takes a slightly different perspective: it groups nodes based on *patterns* of connections, not just density. Two nodes belong to the same block if they relate to other blocks in similar ways, regardless of whether they are connected to each other. This makes blockmodeling particularly useful for role analysis in sociology and organisational context.
 
-Several packages implement different kinds of blockmodels but the most basic deterministic and commonly used approaches can be found in the package `blockmodeling`.
-
-```{r}
-#| label: lib-blockmodel
-#| message: false
-library(blockmodeling)
-```
+Several packages implement different kinds of blockmodels but the most basic deterministic and commonly used approaches can be found in the package `blockmodeling` [@ziberna2007blockmodeling; @ziberna2008blockmodeling; @ziberna2014blockmodeling].
 
 We illustrate blockmodeling on a random network with 3 dense blocks of size 20.
 
@@ -435,93 +431,170 @@ The result can be accessed with `clu()`.
 clu(res)
 ```
 
+```{r}
+#| label: fig-blockmodel-result
+#| echo: false
+#| fig.cap: "Blockmodeling result for the random network."
+
+V(g)$clu <- clu(res)
+ggraph(g, "stress") +
+  geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 5, aes(fill = as.factor(clu)), show.legend = FALSE) +
+  theme_void()
+
+```
+
 Note that blockmodeling is computationally expensive and best suited for small networks. Consult the package documentation for more involved block types. For signed networks, a dedicated blockmodeling approach is available in the `signnet` package (see @sec-signed-networks).
 
 ## Core-Periphery
 
 Community detection aims to find clusters or groups of nodes within the network that are more densely connected to each other than to nodes outside the group. The core-periphery structure, in contrast, posits that a network is organized into a densely connected core and a sparsely connected periphery. The core consists of central nodes that are highly connected to each other and also to peripheral nodes. Peripheral nodes, on the other hand, have fewer connections and are mostly connected to nodes in the core rather than to each other.
 
-Core-periphery structures appear in many different contexts. In international trade networks, a small number of wealthy, industrialised countries form a densely interconnected core, while developing nations at the periphery trade primarily with core countries but rarely with each other. In scientific collaboration networks, a core of highly productive researchers co-author with many others and with each other, while peripheral researchers have fewer and more localised collaborations. The concept was originally formalised by Borgatti and Everett (2000), who proposed the idealised model we use below.
-
-Since `igraph` does not implement any models for core-periphery analyses, we use the `netUtils` package which includes the function `core_periphery()`. This function allows to fit a discrete core-periphery model to a network.
+The difference between the two concepts becomes clear when looking at the adjacency matrix. In a community structure, dense blocks appear along the diagonal, each corresponding to a tightly connected group (@fig-compare-clu-cp, left). In a core-periphery structure, a single dense block sits in one corner of the matrix, representing the core, while the rest remains sparse (@fig-compare-clu-cp, right).
 
 ```{r}
-#| label: load_netUtils
-library(netUtils)
-```
-
-To illustrate the function, we construct a graph which has a perfect core-periphery structure using the `split_graph()` function from `netUtils`. The function takes the number of nodes `n`, the probability of connection between core and periphery nodes `p`, and the proportion of core nodes `core` as arguments.
-
-```{r}
-#| label: split-graph
-set.seed(1234)
-sg <- split_graph(n = 50, p = 0.35, core = 0.3)
-```
-
-@fig-split-graph shows the resulting graph. The left panel shows the network layout with core and periphery nodes coloured differently. The right panel shows the adjacency matrix of the graph, where the block pattern of a core-periphery structure is clearly visible: a dense block in the top-left corner (the core) and a sparse block in the bottom-right corner (the periphery), with intermediate density in the off-diagonal blocks representing connections between core and periphery nodes.
-
-```{r}
-#| label: fig-split-graph
+#| label: fig-compare-clu-cp
 #| echo: false
-#| fig-cap: "A split graph with a perfect core-periphery structure. Left: network layout with core and periphery nodes. Right: adjacency matrix showing the block pattern."
-V(sg)$type <- c("periphery", "core")[V(sg)$core + 1]
-p1 <- ggraph(sg, "stress") +
-  geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
-  geom_node_point(shape = 21, size = 5, aes(fill = type)) +
-  theme_graph() +
-  theme(legend.position = "bottom")
-
-E(sg)$col <- apply(
-  matrix(V(sg)$core[as_edgelist(sg, names = FALSE)], ncol = 2),
-  1,
-  all
+#| fig-cap: "Comparison of community structure and core-periphery structure by patterns in the adjacency matrix. Left: community structure with dense blocks along the diagonal. Right: core-periphery structure with a dense block in the top-left corner and sparse connections elsewhere."
+set.seed(42)
+g_clu <- sample_islands(3, 8, 0.8, 2)
+V(g_clu)$clu <- rep(1:3, each = 8)
+g_clu <- permute(g_clu, order(V(g_clu)$clu))
+V(g_clu)$clu <- rep(1:3, each = 8)
+E(g_clu)$type <- apply(
+  matrix(V(g_clu)$clu[as_edgelist(g_clu, names = FALSE)], ncol = 2),
+  1, function(x) if (x[1] == x[2]) paste("community", x[1]) else "between"
 )
-E(sg)$type <- c("core - periphery", "core - core")[E(sg)$col + 1]
-p2 <- ggraph(sg, "matrix") +
+
+p1 <- ggraph(g_clu, "matrix") +
   geom_edge_point(mirror = TRUE, aes(edge_color = type)) +
   coord_fixed() +
   scale_y_reverse() +
   theme_graph() +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  labs(title = "Community structure")
+
+set.seed(42)
+g_cp <- netUtils::split_graph(n = 24, p = 0.3, core = 0.3)
+V(g_cp)$type <- c("periphery", "core")[V(g_cp)$core + 1]
+E(g_cp)$type <- apply(
+  matrix(V(g_cp)$core[as_edgelist(g_cp, names = FALSE)], ncol = 2),
+  1, function(x) if (all(x == 1)) "core - core" else "core - periphery"
+)
+
+p2 <- ggraph(g_cp, "matrix") +
+  geom_edge_point(mirror = TRUE, aes(edge_color = type)) +
+  coord_fixed() +
+  scale_y_reverse() +
+  theme_graph() +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  labs(title = "Core-periphery structure")
 
 p1 + p2
 ```
 
-Running the `core_periphery()` function on this idealized graph should give the optimal result.
-```{r}
-#| label: split-cp
-core_periphery(sg)
-```
+Core-periphery structures can appear in many different contexts. In international trade networks, a small number of wealthy, industrialised countries form a densely interconnected core, while developing nations at the periphery trade primarily with core countries but rarely with each other. In scientific collaboration networks, a core of highly productive researchers co-author with many others and with each other, while peripheral researchers have fewer and more localised collaborations. The concept was originally formalised by @borgatti2000core, who proposed a *discrete core-periphery model*. 
 
-The function returns a list with two entries. The first, `vec`, returns the membership of nodes. It is one if a node is in the core and zero if not. The second entry `corr` is the correlation of the adjacency matrix with the ideal adjacency matrix given from the `vec` memberships. In this case, the correlation is one meaning that we have discovered a perfect core-periphery structure. In empirical applications, we rarely expect such a good fit. 
+The idea of the model is that nodes either belong to the core, or the periphery. The membership of nodes is derived by optimizing the correlation between the observed adjacency matrix and an idealized adjacency matrix as shown in @fig-compare-clu-cp (right). 
 
-The function also has an argument which allows to use different optimization techniques to find core-periphery structures (the problem of finding the optimal solution is computationally too complex). For illustration, we rewire some edges of the graph `sg` to destroy the idealized structure and use all implemented optimization methods.
+Several such optimization techniques are implemented in the function `core_periphery()` of the `netUtils` package. 
+
+To illustrate the function, we use the `core_graph` from the `networkdata` package, a small network with a perfect core-periphery structure.
 
 ```{r}
-#| label: rewired-cp
-set.seed(45)
-sg1 <- rewire(sg, each_edge(0.25))
-core_periphery(sg1, method = "rk1_dc")
-core_periphery(sg1, method = "rk1_ec")
-core_periphery(sg1, method = "GA")
+#| label: load-core-graph
+data("core_graph")
 ```
 
-`rk1_dc` and `rk1_ec` are so called rank-one matrix approximation methods which infer an idealized structure via the degrees and eigenvectors of the adjacency matrix. These methods are extremely fast but might result in a lower quality of the result compared to `GA` which runs a genetic algorithm. 
+@fig-core-graph shows the graph together with its adjacency matrix. 
+```{r}
+#| label: fig-core-graph
+#| echo: false
+#| fig-cap: "A graph with a perfect core-periphery structure. Left: network layout with core and periphery nodes. Right: adjacency matrix showing the block pattern."
+cp <- core_periphery(core_graph)
+V(core_graph)$type <- c("periphery", "core")[cp$vec + 1]
+p1 <- ggraph(core_graph, "stress") +
+  geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
+  geom_node_point(shape = 21, size = 3, aes(fill = type)) +
+  theme_graph() +
+  theme(legend.position = "bottom",legend.title = element_blank())
 
-There are several extensions to this simple discrete core-periphery model, including versions for weighted and directed networks. An extension for weighted networks, designed for international trade data, is implemented in the package `ITNr`.
+E(core_graph)$col <- apply(
+  matrix(as.logical(cp$vec[as_edgelist(core_graph, names = FALSE)]), ncol = 2),
+  1,
+  all
+)
+E(core_graph)$type <- c("core - periphery", "core - core")[E(core_graph)$col + 1]
+p2 <- ggraph(core_graph, "matrix") +
+  geom_edge_point(mirror = TRUE, aes(edge_color = type),edge_size = 0.2) +
+  coord_fixed() +
+  scale_y_reverse() +
+  guides(edge_color = guide_legend(override.aes = list(edge_size = 3))) +
+  theme_graph() +
+  theme(legend.position = "bottom",legend.title = element_blank())
 
-## References {.unnumbered}
+p1 + p2
+```
 
-Clauset, A.; Newman, M. E. J. & Moore, C. Finding community structure in very large networks, Physical Review E 2004, 70, 066111
+Using the `core_periphery()` function, we try to recover the core-periphery structure of this graph.
 
-Vincent D. Blondel, Jean-Loup Guillaume, Renaud Lambiotte, Etienne Lefebvre: Fast unfolding of communities in large networks. J. Stat. Mech. (2008) P10008
+```{r}
+#| label: core-graph-cp
+cp <- core_periphery(core_graph)
+cp
+```
 
-Traag, V. A., Waltman, L., & van Eck, N. J. (2019). From Louvain to Leiden: guaranteeing well-connected communities. Scientific reports, 9(1), 5233.
+The function returns a list with two entries. The first, `vec`, returns the membership of nodes. It is one if a node is in the core and zero if not. The second entry `corr` represents the correlation of the adjacency matrix with the ideal adjacency matrix derived from the `vec` memberships. In this case, the correlation is one meaning that we have discovered a perfect core-periphery structure. 
 
-Žiberna, A. (2007). Generalized Blockmodeling of Valued Networks. Social Networks, 29(1), 105-126. doi: 10.1016/j.socnet.2006.04.002
+The function also has an argument which allows to use different optimization techniques to find core-periphery structures (the problem of finding the optimal solution is computationally too complex). To illustrate this on a real-world network, we use the US domestic flights network from the `networkdata` package. This network connects 276 airports based on scheduled flights and is a natural candidate for core-periphery analysis: major hub airports (Atlanta, Denver, Dallas-Fort Worth, etc.) serve as a densely interconnected core, while smaller regional airports on the periphery connect primarily to these hubs.
 
-Žiberna, A. (2008). Direct and indirect approaches to blockmodeling of valued networks in terms of regular equivalence. Journal of Mathematical Sociology, 32(1), 57-84. doi: 10.1080/00222500701790207
+```{r}
+#| label: us-flights-cp
+data("us_flights")
+cp_dc <- core_periphery(us_flights, method = "rk1_dc")
+cp_dc$corr
+sum(cp_dc$vec)
+```
 
-Žiberna, A. (2014). Blockmodeling of multilevel networks. Social Networks, 39(1), 46-61. doi: 10.1016/j.socnet.2014.04.002
+The rank-one approximation via degrees (`rk1_dc`) identifies `r sum(cp_dc$vec)` core airports with a correlation of `r round(cp_dc$corr, 2)`. This is a strong sign that the structure of the US airline system follows a core-periphery pattern. We can compare the three available optimization methods.
 
-Borgatti, Stephen P., and Martin G. Everett. "Models of core/periphery structures." Social networks 21.4 (2000): 375-395.
+```{r}
+#| label: us-flights-cp-methods
+#| cache: true
+cp_ec <- core_periphery(us_flights, method = "rk1_ec")
+cp_ga <- core_periphery(us_flights, method = "GA", iter = 2500)
+c(rk1_dc = cp_dc$corr, rk1_ec = cp_ec$corr, GA = cp_ga$corr)
+```
+
+Similar as `rk1_dc`, `rk1_ec` is a rank-one matrix approximation methods which infers an idealized structure from the eigenvectors of the adjacency matrix instead of the degrees. These methods are extremely fast but might result in a lower quality of the result compared to `GA` which runs a genetic algorithm to search for the optimal solution. In our case, however, the genetic algorithm does not seem to find a much better solution than the rank-one approximations, which is a good sign that the fast methods are sufficient for the US domestic flights network.
+
+```{r}
+#| label: fig-us-flights-cp
+#| echo: false
+#| fig-cap: "Core-periphery structure of the US domestic flights network. Left: network layout with core and periphery airports. Right: adjacency matrix showing the block pattern."
+V(us_flights)$type <- c("periphery", "core")[cp_dc$vec + 1]
+p1 <- ggraph(us_flights, "stress") +
+  geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
+  geom_node_point(shape = 21, size = 3, aes(fill = type)) +
+  theme_graph() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+el_cp <- matrix(cp_dc$vec[as_edgelist(us_flights, names = FALSE)], ncol = 2)
+E(us_flights)$type <- ifelse(
+  el_cp[, 1] == 1 & el_cp[, 2] == 1, "core - core",
+  ifelse(el_cp[, 1] == 0 & el_cp[, 2] == 0, "periphery - periphery",
+    "core - periphery")
+)
+p2 <- ggraph(us_flights, "matrix", sort.by = type) +
+  geom_edge_point(mirror = TRUE, aes(edge_color = type), edge_size = 0.2) +
+  scale_edge_color_manual(values = c(
+    "core - core" = "#F8766D",
+    "core - periphery" = "#00BA38",
+    "periphery - periphery" = "grey70"
+  )) +
+  coord_fixed() +
+  scale_y_reverse() +
+  guides(edge_color = guide_legend(override.aes = list(edge_size = 3))) +
+  theme_graph() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+p1 + p2
+```
