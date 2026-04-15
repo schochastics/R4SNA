@@ -1,4 +1,4 @@
-# Exponential Random Graph Models (ERGMs)
+# Exponential Random Graph Models (ERGMs)  {#sec-ergm}
 
 So far, the models we’ve considered have treated tie formation as mostly random or locally constrained: ties are formed with fixed probabilities ($G(n, p)$), rewired at random (small-world), or arranged to match node degrees (configuration model). However, real-world networks are shaped by richer and more structured processes. People don’t form ties independently or at random, they’re influenced by patterns like mutual friendships, popularity, shared group membership, and social norms like reciprocity and transitivity. For example, two people who share a common friend may be more likely to form a tie themselves (triadic closure), or individuals may be more likely to reciprocate a connection that is initiated by someone else. These kinds of dependencies are central to many social theories, and they give rise to complex patterns of self-organization in networks.
 
@@ -833,5 +833,31 @@ Lastly, the model terms explicitly included in the formula (`edges`, `nodecov.pr
 
 These diagnostics together indicate that the model performs well. It reproduces the modeled terms accurately, and also generalizes to capture broader structural features such as degree variation and path lengths. Since the model has also passed MCMC convergence diagnostics, we can conclude that the ERGM is both well-estimated and substantively valid in representing the network-generating processes in the Lazega law firm.
 	
-	
-## References {.unnumbered}
+
+## Variants and Extensions of ERGMs
+
+The ERGMframework has been extended in several ways to address different types of network data and research questions. While standard ERGMs are typically applied to a single cross-sectional binary network, the following variants expand the framework to model temporal dynamics, multi-mode structures, alternative estimation approaches, and non-binary ties.
+
+- **Temporal ERGMs (TERGMs).**  
+  TERGMs extend ERGMs to longitudinal network data, modeling network evolution across discrete time steps. They allow researchers to estimate how past network structure influences the probability of ties in subsequent time periods.
+
+- **Separable Temporal ERGMs (STERGMs).**  
+  STERGMs explicitly separate the processes of tie formation and tie dissolution, allowing these mechanisms to be modeled independently. This is useful when the drivers of tie creation differ from those governing tie persistence.
+
+- **Curved ERGMs.**  
+  Curved ERGMs introduce nonlinear parameterizations of model terms, allowing complex dependence structures (such as geometrically weighted degree or shared partner statistics) to be modeled with fewer parameters and improved stability.
+
+- **ERGM for Two-Mode Networks (ERGM-2mode).**  
+  Specialized ERGM formulations allow the modeling of bipartite networks (e.g., actors–events or authors–papers), accounting for structural constraints inherent to two-mode data.
+
+- **Valued and Count ERGMs.**  
+  Extensions of ERGMs allow modeling valued or weighted ties rather than only binary relationships. These models can represent tie strength, interaction frequency, or counts of interactions between nodes.
+
+- **Bayesian ERGMs (BERGMs).**  
+  Bayesian ERGMs estimate model parameters using Bayesian inference, combining prior distributions with the likelihood of the observed network. Posterior distributions are typically approximated using Markov chain Monte Carlo (MCMC) methods. This framework allows incorporating prior knowledge and provides full posterior uncertainty estimates for parameters.
+
+- **ERGMito.**  
+  ERGMito extends the ERGM framework to collections of small independent networks (e.g., multiple ego networks or networks observed across different groups). Because the networks are modeled as independent realizations, the likelihood can often be computed exactly, allowing exact parameter estimation without relying on MCMC-based approximation, which can substantially reduce computational complexity.
+
+These extensions highlight the flexibility of the ERGM framework and allow researchers to study a broad range of network structures and dynamics beyond a single static binary network.
+
