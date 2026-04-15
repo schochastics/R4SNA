@@ -18,23 +18,21 @@ The packages `visNetwork`, `networkD3`, and `threejs` only appear briefly in the
 
 ## Data Preparation
 
-As in the previous chapters, we use the Game of Thrones character interaction network from season 1.
+We use Zachary's karate club network, which also appears in the [clustering chapter](../descriptive/clustering.qmd). With 34 nodes and 78 edges, it is small enough that every interactive example in this chapter renders without lag.
 
 ```{r}
 #| label: data
-data("got")
-gotS1 <- got[[1]]
+is_html <- knitr::is_html_output()
+data("karate")
+V(karate)$name <- as.character(seq_len(vcount(karate)))
 
-got_palette <- c(
-  "#1A5878", "#C44237", "#AD8941", "#E99093",
-  "#50594B", "#8968CD", "#9ACD32"
-)
+palette4 <- c("#1A5878", "#C44237", "#AD8941", "#E99093")
 
 ## compute a clustering for node colors
-V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
+V(karate)$clu <- as.character(membership(cluster_louvain(karate)))
 
 ## compute degree as node size
-V(gotS1)$size <- degree(gotS1)
+V(karate)$size <- degree(karate)
 ```
 
 ## Interactive Network Visualization Tools in R
@@ -47,14 +45,15 @@ The `visNetwork` package wraps the vis.js library and offers a broad toolkit for
 
 ```{r}
 #| label: fig-visnetwork
-#| fig-cap: "GoT network rendered with `visNetwork`."
+#| eval: !expr is_html
+#| fig-cap: "Karate club network rendered with `visNetwork`."
 
 ## visNetwork expects columns: label, group, value
-V(gotS1)$label <- V(gotS1)$name
-V(gotS1)$group <- V(gotS1)$clu
-V(gotS1)$value <- V(gotS1)$size
+V(karate)$label <- V(karate)$name
+V(karate)$group <- V(karate)$clu
+V(karate)$value <- V(karate)$size
 
-vis_data <- toVisNetworkData(gotS1)
+vis_data <- toVisNetworkData(karate)
 visNetwork(vis_data$nodes, vis_data$edges, width = "100%", height = "400px") |>
   visOptions(highlightNearest = TRUE)
 ```
@@ -67,9 +66,10 @@ The `networkD3` package wraps D3.js and produces force-directed layouts.
 
 ```{r}
 #| label: fig-networkd3
-#| fig-cap: "GoT network rendered with `networkD3`."
-d3_data <- igraph_to_networkD3(gotS1,
-  group = as.numeric(V(gotS1)$clu)
+#| eval: !expr is_html
+#| fig-cap: "Karate club network rendered with `networkD3`."
+d3_data <- igraph_to_networkD3(karate,
+  group = as.numeric(V(karate)$clu)
 )
 
 forceNetwork(
@@ -91,10 +91,11 @@ The `threejs` package renders networks in 3D using WebGL. The result is visually
 
 ```{r}
 #| label: fig-threejs
-#| fig-cap: "GoT network in 3D with `threejs`."
-graphjs(gotS1,
-  vertex.size = V(gotS1)$size * 0.2,
-  vertex.color = got_palette[as.numeric(V(gotS1)$clu)]
+#| eval: !expr is_html
+#| fig-cap: "Karate club network in 3D with `threejs`."
+graphjs(karate,
+  vertex.size = V(karate)$size * 0.2,
+  vertex.color = palette4[as.numeric(V(karate)$clu)]
 )
 ```
 
@@ -110,8 +111,9 @@ The simplest way to get an interactive visualization is to pass an `igraph` obje
 
 ```{r}
 #| label: fig-g6r-first
-#| fig-cap: "GoT network with `g6R` using default settings."
-g6_igraph(gotS1)
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with `g6R` using default settings."
+g6_igraph(karate)
 ```
 
 With no additional configuration, `g6R` applies a default force-directed layout and renders an interactive canvas where you can drag nodes and zoom. The next sections show how to progressively customize this output.
@@ -121,7 +123,7 @@ With no additional configuration, `g6R` applies a default force-directed layout 
 Customization in `g6R` follows a pipe-based workflow. Starting from the initial graph, you chain together functions that each control a different aspect of the visualization:
 
 ```r
-g6_igraph(gotS1) |>
+g6_igraph(karate) |>
   g6_layout(...)     |>   # spatial arrangement
   g6_options(...)    |>   # node/edge styling
   g6_behaviors(...)  |>   # user interactions
@@ -140,8 +142,9 @@ The default layout in `g6R` is `d3_force_layout()`, which simulates physical for
 
 ```{r}
 #| label: fig-g6r-d3force
-#| fig-cap: "GoT network with D3 force-directed layout."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with D3 force-directed layout."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
 ```
@@ -150,8 +153,9 @@ Try dragging a node in @fig-g6r-d3force: the force simulation reacts in real tim
 
 ```{r}
 #| label: fig-g6r-fruchterman
-#| fig-cap: "GoT network with Fruchterman-Reingold layout."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with Fruchterman-Reingold layout."
+g6_igraph(karate) |>
   g6_layout(fruchterman_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
 ```
@@ -162,8 +166,9 @@ A circular layout arranges all nodes evenly along a circle, which can be useful 
 
 ```{r}
 #| label: fig-g6r-circular
-#| fig-cap: "GoT network with circular layout."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with circular layout."
+g6_igraph(karate) |>
   g6_layout(circular_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas())
 ```
@@ -172,9 +177,10 @@ A radial layout places a focal node at the center and arranges the remaining nod
 
 ```{r}
 #| label: fig-g6r-radial
-#| fig-cap: "GoT network with radial layout centered on Eddard."
-g6_igraph(gotS1) |>
-  g6_layout(radial_layout(focusNode = "Eddard")) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with radial layout centered on node 1."
+g6_igraph(karate) |>
+  g6_layout(radial_layout(focusNode = "1")) |>
   g6_behaviors(drag_canvas(), zoom_canvas())
 ```
 
@@ -184,12 +190,13 @@ The concentric layout arranges nodes in concentric circles sorted by a numeric a
 
 ```{r}
 #| label: fig-g6r-concentric
-#| fig-cap: "GoT network with concentric layout sorted by degree."
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with concentric layout sorted by degree."
 
 ## g6R needs a 'degree' attribute on the nodes
-V(gotS1)$degree <- degree(gotS1)
+V(karate)$degree <- degree(karate)
 
-g6_igraph(gotS1) |>
+g6_igraph(karate) |>
   g6_layout(concentric_layout(sortBy = "degree")) |>
   g6_behaviors(drag_canvas(), zoom_canvas())
 ```
@@ -204,17 +211,18 @@ The `g6_igraph()` function reads vertex and edge attributes that match G6 style 
 
 ```{r}
 #| label: fig-g6r-igraph-style
-#| fig-cap: "GoT network styled via igraph vertex and edge attributes."
+#| eval: !expr is_html
+#| fig-cap: "Karate club network styled via igraph vertex and edge attributes."
 
 ## Map community membership to fill color
-V(gotS1)$fill <- got_palette[as.numeric(V(gotS1)$clu)]
-V(gotS1)$stroke <- "#555555"
-V(gotS1)$lineWidth <- 1.5
+V(karate)$fill <- palette4[as.numeric(V(karate)$clu)]
+V(karate)$stroke <- "#555555"
+V(karate)$lineWidth <- 1.5
 
 ## Style edges
-E(gotS1)$stroke <- "#cccccc"
+E(karate)$stroke <- "#cccccc"
 
-g6_igraph(gotS1) |>
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
 ```
@@ -227,8 +235,9 @@ For more control, `g6_options()` lets you set global defaults using `node_option
 
 ```{r}
 #| label: fig-g6r-options-style
-#| fig-cap: "GoT network styled with `g6_options()`."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network styled with `g6_options()`."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_options(
     node = node_options(
@@ -259,8 +268,9 @@ The most basic behaviors allow users to navigate the canvas. `drag_canvas()` ena
 
 ```{r}
 #| label: fig-g6r-nav
-#| fig-cap: "GoT network with basic navigation behaviors."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with basic navigation behaviors."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas())
 ```
@@ -271,8 +281,9 @@ Beyond canvas navigation, users can interact with individual elements. `drag_ele
 
 ```{r}
 #| label: fig-g6r-interact
-#| fig-cap: "GoT network with drag, hover, and click-select behaviors."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with drag, hover, and click-select behaviors."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(
     drag_canvas(),
@@ -291,8 +302,9 @@ For selecting groups of nodes, `g6R` provides two area-selection tools. `brush_s
 
 ```{r}
 #| label: fig-g6r-lasso
-#| fig-cap: "GoT network with lasso and brush selection."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with lasso and brush selection."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(
     drag_canvas(),
@@ -312,8 +324,9 @@ A minimap provides a thumbnail overview of the entire graph, which is useful for
 
 ```{r}
 #| label: fig-g6r-minimap
-#| fig-cap: "GoT network with a minimap for navigation."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with a minimap for navigation."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force()) |>
   g6_plugins(minimap())
@@ -325,8 +338,9 @@ Tooltips display information when the user hovers over a node. By default, the t
 
 ```{r}
 #| label: fig-g6r-tooltip
-#| fig-cap: "GoT network with hover tooltips."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with hover tooltips."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas(), hover_activate()) |>
   g6_plugins(tooltips())
@@ -338,26 +352,31 @@ In @fig-network-grps-sol of the previous chapter, we used `geom_mark_hull()` fro
 
 ```{r}
 #| label: fig-g6r-hull
-#| fig-cap: "GoT network with hull grouping by community."
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with hull grouping by community."
 
 ## Split nodes by community membership
-clu_members <- split(V(gotS1)$name, V(gotS1)$clu)
+clu_members <- split(V(karate)$name, V(karate)$clu)
 
-g6_igraph(gotS1) |>
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force()) |>
   g6_plugins(
     hull(
       key = "hull-1", members = clu_members[["1"]],
-      fill = got_palette[1], stroke = got_palette[1]
+      fill = palette4[1], stroke = palette4[1]
     ),
     hull(
       key = "hull-2", members = clu_members[["2"]],
-      fill = got_palette[2], stroke = got_palette[2]
+      fill = palette4[2], stroke = palette4[2]
     ),
     hull(
       key = "hull-3", members = clu_members[["3"]],
-      fill = got_palette[3], stroke = got_palette[3]
+      fill = palette4[3], stroke = palette4[3]
+    ),
+    hull(
+      key = "hull-4", members = clu_members[["4"]],
+      fill = palette4[4], stroke = palette4[4]
     )
   )
 ```
@@ -366,22 +385,27 @@ The `bubble_sets()` plugin offers an alternative visual style. Instead of sharp 
 
 ```{r}
 #| label: fig-g6r-bubble
-#| fig-cap: "GoT network with bubble-set grouping."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with bubble-set grouping."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force()) |>
   g6_plugins(
     bubble_sets(
       key = "bs-1", members = clu_members[["1"]],
-      fill = got_palette[1], stroke = got_palette[1]
+      fill = palette4[1], stroke = palette4[1]
     ),
     bubble_sets(
       key = "bs-2", members = clu_members[["2"]],
-      fill = got_palette[2], stroke = got_palette[2]
+      fill = palette4[2], stroke = palette4[2]
     ),
     bubble_sets(
       key = "bs-3", members = clu_members[["3"]],
-      fill = got_palette[3], stroke = got_palette[3]
+      fill = palette4[3], stroke = palette4[3]
+    ),
+    bubble_sets(
+      key = "bs-4", members = clu_members[["4"]],
+      fill = palette4[4], stroke = palette4[4]
     )
   )
 ```
@@ -392,8 +416,9 @@ The fisheye plugin applies a focus-plus-context distortion: the area under the c
 
 ```{r}
 #| label: fig-g6r-fisheye
-#| fig-cap: "GoT network with fisheye distortion."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with fisheye distortion."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas()) |>
   g6_plugins(fish_eye())
@@ -405,8 +430,9 @@ A legend plugin can display categorical groupings directly on the canvas.
 
 ```{r}
 #| label: fig-g6r-legend
-#| fig-cap: "GoT network with legend showing community membership."
-g6_igraph(gotS1) |>
+#| eval: !expr is_html
+#| fig-cap: "Karate club network with legend showing community membership."
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force()) |>
   g6_plugins(legend(nodeField = "clu"))
@@ -418,16 +444,17 @@ The following example combines styled nodes and edges, interactive behaviors, an
 
 ```{r}
 #| label: fig-g6r-final
-#| fig-cap: "Complete interactive GoT character network with `g6R`."
+#| eval: !expr is_html
+#| fig-cap: "Complete interactive karate club network with `g6R`."
 
-V(gotS1)$fill <- got_palette[as.numeric(V(gotS1)$clu)]
-V(gotS1)$stroke <- "#555555"
-V(gotS1)$lineWidth <- 1
+V(karate)$fill <- palette4[as.numeric(V(karate)$clu)]
+V(karate)$stroke <- "#555555"
+V(karate)$lineWidth <- 1
 
-E(gotS1)$stroke <- "#cccccc"
-E(gotS1)$lineWidth <- 0.5
+E(karate)$stroke <- "#cccccc"
+E(karate)$lineWidth <- 0.5
 
-g6_igraph(gotS1) |>
+g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
   g6_options(
     node = node_options(
