@@ -1,2 +1,454 @@
 # Interactive Visualization
 
+The previous chapters focused on creating static network plots with `ggraph`. Static visualizations are essential for publications and reports, but interactive visualizations open up a different mode of exploration: users can pan across the canvas, zoom into dense regions, hover over nodes for details, and drag elements to untangle complex structures. This chapter surveys the landscape of interactive network visualization in R and then provides a thorough introduction to `g6R`, a modern and feature-rich package for building interactive network graphics.
+
+## Packages Needed for this Chapter
+```{r}
+#| label: libraries
+#| message: false
+library(igraph)
+library(networkdata)
+library(visNetwork)
+library(networkD3)
+library(threejs)
+library(g6R)
+```
+
+The packages `visNetwork`, `networkD3`, and `threejs` only appear briefly in the overview. The remainder of the chapter focuses on `g6R`.
+
+## Data Preparation
+
+As in the previous chapters, we use the Game of Thrones character interaction network from season 1.
+
+```{r}
+#| label: data
+data("got")
+gotS1 <- got[[1]]
+
+got_palette <- c(
+  "#1A5878", "#C44237", "#AD8941", "#E99093",
+  "#50594B", "#8968CD", "#9ACD32"
+)
+
+## compute a clustering for node colors
+V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
+
+## compute degree as node size
+V(gotS1)$size <- degree(gotS1)
+```
+
+## Interactive Network Visualization Tools in R
+
+There exist several R packages that can produce interactive network visualizations, each wrapping a different JavaScript library. We briefly survey three popular options before diving into `g6R`.
+
+### visNetwork
+
+The `visNetwork` package wraps the vis.js library and offers a broad toolkit for interactive networks. Converting an `igraph` object requires mapping a few vertex attributes to the column names that `visNetwork` expects.
+
+```{r}
+#| label: fig-visnetwork
+#| fig-cap: "GoT network rendered with `visNetwork`."
+
+## visNetwork expects columns: label, group, value
+V(gotS1)$label <- V(gotS1)$name
+V(gotS1)$group <- V(gotS1)$clu
+V(gotS1)$value <- V(gotS1)$size
+
+vis_data <- toVisNetworkData(gotS1)
+visNetwork(vis_data$nodes, vis_data$edges, width = "100%", height = "400px") |>
+  visOptions(highlightNearest = TRUE)
+```
+
+Out of the box, `visNetwork` provides draggable nodes, zoom, and hover highlighting. It is well suited for quick interactive previews that do not require much customization.
+
+### networkD3
+
+The `networkD3` package wraps D3.js and produces force-directed layouts.
+
+```{r}
+#| label: fig-networkd3
+#| fig-cap: "GoT network rendered with `networkD3`."
+d3_data <- igraph_to_networkD3(gotS1,
+  group = as.numeric(V(gotS1)$clu)
+)
+
+forceNetwork(
+  Links = d3_data$links,
+  Nodes = d3_data$nodes,
+  Source = "source",
+  Target = "target",
+  NodeID = "name",
+  Group = "group",
+  opacity = 0.9,
+  zoom = TRUE,
+  fontSize = 12
+)
+```
+
+### threejs
+
+The `threejs` package renders networks in 3D using WebGL. The result is visually striking, although 3D layouts can make it harder to judge distances and read labels.
+
+```{r}
+#| label: fig-threejs
+#| fig-cap: "GoT network in 3D with `threejs`."
+graphjs(gotS1,
+  vertex.size = V(gotS1)$size * 0.2,
+  vertex.color = got_palette[as.numeric(V(gotS1)$clu)]
+)
+```
+
+Each of these packages has its place. `visNetwork` is mature and full-featured, `networkD3` leverages the power of D3.js, and `threejs` offers 3D rendering. For the remainder of this chapter we focus on `g6R`, which provides the most comprehensive framework for interactive graph visualization in R, with deep `igraph` integration, a rich plugin system, and high-performance rendering.
+
+## Getting Started with g6R
+
+The `g6R` package is an R binding to AntV's G6 graph visualization engine. It produces `htmlwidgets` that render in Quarto documents, the RStudio viewer, and Shiny applications. For `igraph` users, the key entry point is `g6_igraph()`.
+
+### A First Interactive Network
+
+The simplest way to get an interactive visualization is to pass an `igraph` object directly to `g6_igraph()`.
+
+```{r}
+#| label: fig-g6r-first
+#| fig-cap: "GoT network with `g6R` using default settings."
+g6_igraph(gotS1)
+```
+
+With no additional configuration, `g6R` applies a default force-directed layout and renders an interactive canvas where you can drag nodes and zoom. The next sections show how to progressively customize this output.
+
+### The g6R Workflow
+
+Customization in `g6R` follows a pipe-based workflow. Starting from the initial graph, you chain together functions that each control a different aspect of the visualization:
+
+```r
+g6_igraph(gotS1) |>
+  g6_layout(...)     |>   # spatial arrangement
+  g6_options(...)    |>   # node/edge styling
+  g6_behaviors(...)  |>   # user interactions
+  g6_plugins(...)          # add-on features
+```
+
+Each of these building blocks is covered in its own section below.
+
+## Layouts
+
+Layout algorithms determine where nodes are placed on the canvas. Unlike the static layouts computed by `igraph` or `graphlayouts`, the layouts in `g6R` run client-side in the browser. Force-directed layouts animate as nodes settle into position, making the layout process itself part of the interactive experience.
+
+### Force-Directed Layouts
+
+The default layout in `g6R` is `d3_force_layout()`, which simulates physical forces to position nodes. Linked nodes attract each other while all nodes repel, producing a layout that tends to place densely connected groups close together.
+
+```{r}
+#| label: fig-g6r-d3force
+#| fig-cap: "GoT network with D3 force-directed layout."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
+```
+
+Try dragging a node in @fig-g6r-d3force: the force simulation reacts in real time, and neighboring nodes adjust their positions accordingly. The `fruchterman_layout()` is another force-directed option based on the Fruchterman-Reingold algorithm.
+
+```{r}
+#| label: fig-g6r-fruchterman
+#| fig-cap: "GoT network with Fruchterman-Reingold layout."
+g6_igraph(gotS1) |>
+  g6_layout(fruchterman_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
+```
+
+### Circular and Radial Layouts
+
+A circular layout arranges all nodes evenly along a circle, which can be useful for spotting symmetric structures or for smaller networks.
+
+```{r}
+#| label: fig-g6r-circular
+#| fig-cap: "GoT network with circular layout."
+g6_igraph(gotS1) |>
+  g6_layout(circular_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas())
+```
+
+A radial layout places a focal node at the center and arranges the remaining nodes in concentric rings based on their graph distance from the focus. This is useful for ego-centric exploration.
+
+```{r}
+#| label: fig-g6r-radial
+#| fig-cap: "GoT network with radial layout centered on Eddard."
+g6_igraph(gotS1) |>
+  g6_layout(radial_layout(focusNode = "Eddard")) |>
+  g6_behaviors(drag_canvas(), zoom_canvas())
+```
+
+### Concentric Layout
+
+The concentric layout arranges nodes in concentric circles sorted by a numeric attribute. Here we use degree centrality, placing the most connected characters at the center.
+
+```{r}
+#| label: fig-g6r-concentric
+#| fig-cap: "GoT network with concentric layout sorted by degree."
+
+## g6R needs a 'degree' attribute on the nodes
+V(gotS1)$degree <- degree(gotS1)
+
+g6_igraph(gotS1) |>
+  g6_layout(concentric_layout(sortBy = "degree")) |>
+  g6_behaviors(drag_canvas(), zoom_canvas())
+```
+
+## Styling Nodes and Edges
+
+A bare `g6_igraph()` call produces a functional but unstyled visualization. There are two main approaches to styling: setting attributes directly on the `igraph` object, or using `g6_options()` for global configuration.
+
+### Styling via igraph Attributes
+
+The `g6_igraph()` function reads vertex and edge attributes that match G6 style property names. For example, setting a `fill` attribute on vertices controls node color.
+
+```{r}
+#| label: fig-g6r-igraph-style
+#| fig-cap: "GoT network styled via igraph vertex and edge attributes."
+
+## Map community membership to fill color
+V(gotS1)$fill <- got_palette[as.numeric(V(gotS1)$clu)]
+V(gotS1)$stroke <- "#555555"
+V(gotS1)$lineWidth <- 1.5
+
+## Style edges
+E(gotS1)$stroke <- "#cccccc"
+
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
+```
+
+This approach is natural for `igraph` users: styling stays close to the data, and the mapping is straightforward.
+
+### Styling via g6_options()
+
+For more control, `g6_options()` lets you set global defaults using `node_options()` and `edge_options()`. You can also use JavaScript callbacks via `htmlwidgets::JS()` to create data-driven styling.
+
+```{r}
+#| label: fig-g6r-options-style
+#| fig-cap: "GoT network styled with `g6_options()`."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_options(
+    node = node_options(
+      style = node_style_options(
+        labelText = JS("(d) => d.id"),
+        labelFontSize = 10
+      )
+    ),
+    edge = edge_options(
+      style = edge_style_options(
+        stroke = "#999999",
+        lineWidth = 0.5
+      )
+    )
+  ) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
+```
+
+The `JS()` function from `htmlwidgets` lets you pass small JavaScript expressions that are evaluated for each element. In this example, `(d) => d.id` extracts the node identifier to use as a label.
+
+## Behaviors
+
+Behaviors define how users can interact with the visualization. They are added through `g6_behaviors()` and can be mixed freely.
+
+### Navigation: Drag and Zoom
+
+The most basic behaviors allow users to navigate the canvas. `drag_canvas()` enables click-and-drag panning, while `zoom_canvas()` enables scroll-wheel zooming.
+
+```{r}
+#| label: fig-g6r-nav
+#| fig-cap: "GoT network with basic navigation behaviors."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas())
+```
+
+### Element Interaction
+
+Beyond canvas navigation, users can interact with individual elements. `drag_element_force()` lets you reposition nodes while the force simulation adjusts around them. Setting `fixed = TRUE` keeps a node where you drop it rather than letting the simulation pull it back. `hover_activate()` highlights a node and its direct neighbors on mouseover. `click_select()` allows selecting individual nodes with a click.
+
+```{r}
+#| label: fig-g6r-interact
+#| fig-cap: "GoT network with drag, hover, and click-select behaviors."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(
+    drag_canvas(),
+    zoom_canvas(),
+    drag_element_force(fixed = TRUE),
+    hover_activate(),
+    click_select(multiple = TRUE)
+  )
+```
+
+In @fig-g6r-interact, try hovering over a node to see its neighborhood highlighted, or shift-click to select multiple nodes.
+
+### Lasso and Brush Selection
+
+For selecting groups of nodes, `g6R` provides two area-selection tools. `brush_select()` draws a rectangular selection box, while `lasso_select()` allows freehand drawing around the nodes of interest.
+
+```{r}
+#| label: fig-g6r-lasso
+#| fig-cap: "GoT network with lasso and brush selection."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(
+    drag_canvas(),
+    zoom_canvas(),
+    lasso_select(),
+    brush_select()
+  )
+```
+
+## Plugins
+
+Plugins add features on top of the base visualization. They are activated through `g6_plugins()` and can be combined freely.
+
+### Minimap
+
+A minimap provides a thumbnail overview of the entire graph, which is useful for navigating large networks. The shaded rectangle shows the currently visible viewport.
+
+```{r}
+#| label: fig-g6r-minimap
+#| fig-cap: "GoT network with a minimap for navigation."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force()) |>
+  g6_plugins(minimap())
+```
+
+### Tooltips
+
+Tooltips display information when the user hovers over a node. By default, the tooltip shows the node's data attributes.
+
+```{r}
+#| label: fig-g6r-tooltip
+#| fig-cap: "GoT network with hover tooltips."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), hover_activate()) |>
+  g6_plugins(tooltips())
+```
+
+### Visual Grouping: Hulls and Bubble Sets
+
+In @fig-network-grps-sol of the previous chapter, we used `geom_mark_hull()` from `ggforce` to highlight clusters in a static plot. The `g6R` package offers interactive equivalents. The `hull()` plugin draws convex polygons around groups of nodes, while `bubble_sets()` produces smoother, organic contours.
+
+```{r}
+#| label: fig-g6r-hull
+#| fig-cap: "GoT network with hull grouping by community."
+
+## Split nodes by community membership
+clu_members <- split(V(gotS1)$name, V(gotS1)$clu)
+
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force()) |>
+  g6_plugins(
+    hull(
+      key = "hull-1", members = clu_members[["1"]],
+      fill = got_palette[1], stroke = got_palette[1]
+    ),
+    hull(
+      key = "hull-2", members = clu_members[["2"]],
+      fill = got_palette[2], stroke = got_palette[2]
+    ),
+    hull(
+      key = "hull-3", members = clu_members[["3"]],
+      fill = got_palette[3], stroke = got_palette[3]
+    )
+  )
+```
+
+The `bubble_sets()` plugin offers an alternative visual style. Instead of sharp convex hulls, it wraps groups in smooth, rounded contours that can overlap organically.
+
+```{r}
+#| label: fig-g6r-bubble
+#| fig-cap: "GoT network with bubble-set grouping."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force()) |>
+  g6_plugins(
+    bubble_sets(
+      key = "bs-1", members = clu_members[["1"]],
+      fill = got_palette[1], stroke = got_palette[1]
+    ),
+    bubble_sets(
+      key = "bs-2", members = clu_members[["2"]],
+      fill = got_palette[2], stroke = got_palette[2]
+    ),
+    bubble_sets(
+      key = "bs-3", members = clu_members[["3"]],
+      fill = got_palette[3], stroke = got_palette[3]
+    )
+  )
+```
+
+### Fisheye Lens
+
+The fisheye plugin applies a focus-plus-context distortion: the area under the cursor is magnified while the rest of the graph remains visible at a reduced scale. This is particularly helpful for dense networks where zooming alone would lose the global context.
+
+```{r}
+#| label: fig-g6r-fisheye
+#| fig-cap: "GoT network with fisheye distortion."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas()) |>
+  g6_plugins(fish_eye())
+```
+
+### Legend
+
+A legend plugin can display categorical groupings directly on the canvas.
+
+```{r}
+#| label: fig-g6r-legend
+#| fig-cap: "GoT network with legend showing community membership."
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force()) |>
+  g6_plugins(legend(nodeField = "clu"))
+```
+
+## Putting It All Together
+
+The following example combines styled nodes and edges, interactive behaviors, and several plugins into a single polished visualization.
+
+```{r}
+#| label: fig-g6r-final
+#| fig-cap: "Complete interactive GoT character network with `g6R`."
+
+V(gotS1)$fill <- got_palette[as.numeric(V(gotS1)$clu)]
+V(gotS1)$stroke <- "#555555"
+V(gotS1)$lineWidth <- 1
+
+E(gotS1)$stroke <- "#cccccc"
+E(gotS1)$lineWidth <- 0.5
+
+g6_igraph(gotS1) |>
+  g6_layout(d3_force_layout()) |>
+  g6_options(
+    node = node_options(
+      style = node_style_options(
+        labelText = JS("(d) => d.id"),
+        labelFontSize = 10
+      )
+    )
+  ) |>
+  g6_behaviors(
+    drag_canvas(),
+    zoom_canvas(),
+    drag_element_force(fixed = TRUE),
+    hover_activate(),
+    click_select(multiple = TRUE)
+  ) |>
+  g6_plugins(
+    minimap(),
+    tooltips(),
+    legend(nodeField = "clu")
+  )
+```
+
+This visualization supports panning and zooming, node dragging with force simulation, hover highlighting of neighborhoods, multi-selection via click, a minimap for navigation, tooltips for detail on demand, and a legend for community membership. The `g6R` package also offers first-class Shiny integration through `g6_output()`, `render_g6()`, and `g6_proxy()` for building fully reactive network applications. For more details, see the [g6R documentation](https://cynkra.github.io/g6R/).
