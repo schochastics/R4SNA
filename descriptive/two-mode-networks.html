@@ -161,13 +161,13 @@ window.Quarto = {
 
 <meta property="og:title" content="6&nbsp; Two-Mode Networks – R for Social Network Analysis">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://schochastics.io/R4SNA/descriptive/two-mode-networks_files/figure-html/southern-dat-mat-plot-1.png">
+<meta property="og:image" content="https://schochastics.io/R4SNA/descriptive/two-mode-networks_files/figure-html/fig-incmat-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
 <meta property="og:image:height" content="960">
 <meta property="og:image:width" content="1344">
 <meta name="twitter:title" content="6&nbsp; Two-Mode Networks – R for Social Network Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://schochastics.io/R4SNA/descriptive/two-mode-networks_files/figure-html/southern-dat-mat-plot-1.png">
+<meta name="twitter:image" content="https://schochastics.io/R4SNA/descriptive/two-mode-networks_files/figure-html/fig-incmat-1.png">
 <meta name="twitter:image-height" content="960">
 <meta name="twitter:image-width" content="1344">
 <meta name="twitter:card" content="summary_large_image">
@@ -475,7 +475,6 @@ window.Quarto = {
   <li><a href="#simple-binary-projections" id="toc-simple-binary-projections" class="nav-link" data-scroll-target="#simple-binary-projections"><span class="header-section-number">6.4.2</span> Simple Binary Projections</a></li>
   <li><a href="#model-based-binary-projections" id="toc-model-based-binary-projections" class="nav-link" data-scroll-target="#model-based-binary-projections"><span class="header-section-number">6.4.3</span> Model-based Binary Projections</a></li>
   </ul></li>
-  <li><a href="#notable-packages" id="toc-notable-packages" class="nav-link" data-scroll-target="#notable-packages"><span class="header-section-number">6.5</span> Notable Packages</a></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/descriptive/two-mode-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -502,7 +501,7 @@ window.Quarto = {
 </header>
 
 
-<p>A <strong>two-mode network</strong> is a network that consists of two disjoint sets of nodes (like people and events). Ties connect the two sets, for example participation of people in events. Other examples are</p>
+<p>A <em>two-mode network</em> is a network that consists of two disjoint sets of nodes (like people and events). Ties connect the two sets, for example participation of people in events. Other examples are</p>
 <ul>
 <li>Affiliation networks (Membership in institutions/clubs)</li>
 <li>Voting/Sponsorship networks (politicians and bills)</li>
@@ -521,9 +520,10 @@ window.Quarto = {
 </section>
 <section id="two-mode-data-structure" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="two-mode-data-structure"><span class="header-section-number">6.2</span> Two-Mode Data Structure</h2>
-<p>Two-mode network data (also called bipartite network data) represent relationships between two distinct types of entities rather than ties among members of a single set. Typical examples include individuals and organizations, students and courses, or authors and publications. Instead of being represented as a standard actor-by-actor adjacency matrix, two-mode networks are stored as an <strong>incidence matrix</strong> or <strong>biadjacency matrix</strong>, in which rows represent one type of node (e.g., individuals) and columns represent the other type (e.g., events or organizations). The entries in the matrix indicate whether a tie exists across the two sets—for instance, whether a person attended an event or belongs to an organization. This incidence matrix structure makes it possible to analyze affiliation patterns, shared participation, and broader forms of social or institutional embeddedness.</p>
+<p>Two-mode network data represent relationships between two distinct types of entities rather than ties among members of a single set. Typical examples include individuals and organizations, students and courses, or authors and publications. Instead of being represented as a standard actor-by-actor adjacency matrix, two-mode networks are stored as an <strong>incidence matrix</strong> or <strong>biadjacency matrix</strong>, in which rows represent one type of node (e.g., individuals) and columns represent the other type (e.g., events or organizations). The entries in the matrix indicate whether a tie exists across the two sets—for instance, whether a person attended an event or belongs to an organization. This incidence matrix structure makes it possible to analyze affiliation patterns, shared participation, and broader forms of social or institutional embeddedness.</p>
 <p>Two-mode networks are especially useful for analyzing how connections emerge indirectly, for example, when two individuals are linked because they attend the same event or belong to the same organization.</p>
-<p>To illustrate methods tailored for two-mode networks, we will use the well-known <em>Southern Women</em> dataset <span class="citation" data-cites="davis2009deep">(<a href="#ref-davis2009deep" role="doc-biblioref">Davis et al. 2009</a>)</span>. This classic dataset records the attendance patterns of 18 women at 14 social events in the American South, and has become a foundational example in network analysis. The network is included in the <code>networkdata</code> package and provides a canonical example of an affiliation (incidence) matrix suitable for demonstrating two-mode network methods and one-mode projections. The biadjacency matrix and can be obtained via <code>as_biadjacency_matrix()</code>. This matrix is visualized in <a href="#fig-incmat" class="quarto-xref">Figure&nbsp;<span>6.1</span></a>.</p>
+<p>To illustrate methods tailored for two-mode networks, we will use the well-known <em>Southern Women</em> dataset <span class="citation" data-cites="davis2009deep">(<a href="#ref-davis2009deep" role="doc-biblioref">Davis et al. 2009</a>)</span>. This classic dataset records the attendance patterns of 18 women at 14 social events in the American South, and has become a foundational example in network analysis. The network is included in the <code>networkdata</code> package and provides a canonical example of an affiliation (incidence) matrix suitable for demonstrating two-mode network methods and one-mode projections.</p>
+<p>The biadjacency matrix and can be obtained via <code>as_biadjacency_matrix()</code>. This matrix is shown in <a href="#fig-incmat" class="quarto-xref">Figure&nbsp;<span>6.1</span></a> and the network itself in <a href="#fig-southern-women-plot" class="quarto-xref">Figure&nbsp;<span>6.2</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"southern_women"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>southern_women</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -566,26 +566,36 @@ OLIVIA       0   0    0    0    0    0    0    0   1    0    1   0     0   0
 FLORA        0   0    0    0    0    0    0    0   1    0    1   0     0   0</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="cell-output-display">
 <div id="fig-incmat" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-incmat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="two-mode-networks_files/figure-html/southern-dat-mat-plot-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<img src="two-mode-networks_files/figure-html/fig-incmat-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-incmat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6.1: Incidence matrix representation of the Southern Women two-mode network. Rows correspond to the 18 women and columns to the 14 social events; black cells indicate attendance at an event, and white cells indicate non-attendance. The block structure visible in the matrix reflects patterns of shared participation that later analyses identify as cohesive subgroups and overlapping social circles within the community.
+Figure&nbsp;6.1: Incidence matrix representation of the Southern Women two-mode network. Rows correspond to the 18 women and columns to the 14 social events; black cells indicate attendance at an event, and white cells indicate non-attendance.
 </figcaption>
 </figure>
 </div>
-<p>In <code>igraph</code>, a graph is recognized as a two-mode (bipartite) network when its vertices contain a logical attribute named <code>type</code>. This attribute distinguishes the two node sets: typically, one mode is coded as <code>FALSE</code> and the other as <code>TRUE</code>. Rather than relying on separate data structures, <code>igraph</code> uses this vertex-level attribute to determine how functions for bipartite graphs, such as projections or incidence matrix extraction, should behave.</p>
-<p>We can inspect how many vertices belong to each mode using:</p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-southern-women-plot" class="quarto-float quarto-figure quarto-figure-center anchored" width="864">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-southern-women-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="two-mode-networks_files/figure-html/fig-southern-women-plot-1.png" id="fig-southern-women-plot" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-southern-women-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.2
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <code>igraph</code>, a graph is recognized as a two-mode network when its vertices contain a logical attribute named <code>type</code>. This attribute distinguishes the two node sets: One mode is coded as <code>FALSE</code> and the other as <code>TRUE</code>. Rather than relying on separate data structures, <code>igraph</code> uses this vertex-level attribute to determine how functions for bipartite graphs, such as projections or incidence matrix extraction, should behave.</p>
+<p>We can inspect how many vertices belong to each mode using the <code>table()</code> function on the <code>type</code> attribute.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">V</span>(southern_women)<span class="sc">$</span>type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -594,39 +604,19 @@ FALSE  TRUE
    18    14 </code></pre>
 </div>
 </div>
-<p>The logical <code>type</code> attribute is also used directly in visualization. Because <code>igraph</code> stores information about which nodes belong to which mode, we can map this attribute to visual aesthetics in <code>ggraph</code>. In the plot below, <code>type</code> determines both the shape and fill color of the nodes, allowing us to clearly distinguish between women and events in the bipartite network.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(southern_women, <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(<span class="at">edge_color =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> type, <span class="at">shape =</span> type),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">8</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="dv">22</span>)) <span class="sc">+</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="two-mode-networks_files/figure-html/southern-women-plot-1.png" class="img-fluid figure-img" width="864"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>In the following sections, we will examine both analytical strategies introduced above. First, we briefly consider direct approaches that analyze the two-mode (incidence) structure without transforming it, thereby preserving the full information contained in the bipartite network. We then turn to the more commonly used projection approach, in which the two-mode network is converted into one-mode networks (e.g., women-to-women or event-to-event). While projections rely on more familiar network representations and measures, they inevitably involve some information loss. For this reason, we introduce both perspectives, though the main focus of this chapter will be on the projection-based analysis.</p>
+<p>In the following sections, we will examine direct and indirect analytical strategies as introduced above. First, we briefly consider direct approaches that analyze the two-mode structure without transforming it, thereby preserving the full information contained in the network. We then turn to the more commonly used projection approach, in which the two-mode network is converted into one-mode networks (e.g., women-to-women or event-to-event). While projections rely on more familiar network representations and measures, they inevitably involve some information loss. For this reason, we introduce both perspectives, though the main focus of this chapter will be on the projection-based analysis.</p>
 </section>
 <section id="direct-approach" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="direct-approach"><span class="header-section-number">6.3</span> Direct Approach</h2>
 <p>Several packages provide methods for analyzing two-mode networks directly, without first projecting them into one-mode structures. In particular, the <code>tnet</code> and <code>bipartite</code> packages extend familiar one-mode concepts (such as clustering or centrality) to bipartite settings.</p>
-<p>For example, recall that the standard (one-mode) clustering coefficient is based on counting triangles, i.e.&nbsp;closed triplets of nodes. However, triangles cannot exist in a two-mode network because ties only occur between the two distinct node sets (e.g., women <span class="math inline">\(\leftrightarrow\)</span> events), not within them. This means the usual definition of transitivity must be adapted <span class="citation" data-cites="opsahl2013triadic">(<a href="#ref-opsahl2013triadic" role="doc-biblioref">Opsahl 2013</a>)</span>.</p>
-<p>If we naively apply <code>igraph</code>’s transitivity function to the bipartite graph, it will return zero (or undefined local values), precisely because triangles are structurally impossible:</p>
+<p>For example, recall that the standard clustering coefficient is based on counting triangles, i.e.&nbsp;closed triplets of nodes. However, triangles cannot exist in a two-mode network because ties only occur between the two distinct node sets (e.g., women <span class="math inline">\(\leftrightarrow\)</span> events), not within them. This means the usual definition of transitivity must be adapted <span class="citation" data-cites="opsahl2013triadic">(<a href="#ref-opsahl2013triadic" role="doc-biblioref">Opsahl 2013</a>)</span>.</p>
+<p>If we naively apply <code>igraph</code>’s transitivity function to the bipartite graph, it will return zero or undefined local values, precisely because triangles are structurally impossible.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transitivity</span>(southern_women)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transitivity</span>(southern_women)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transitivity</span>(southern_women, <span class="at">type =</span> <span class="st">"local"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transitivity</span>(southern_women, <span class="at">type =</span> <span class="st">"local"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   EVELYN     LAURA   THERESA    BRENDA CHARLOTTE   FRANCES   ELEANOR     PEARL 
         0         0         0         0         0         0         0         0 
@@ -640,15 +630,13 @@ FALSE  TRUE
 </div>
 <p>To address this limitation, the <code>tnet</code> package defines a two-mode clustering coefficient based on cycles of length six, which involve three nodes from each mode (e.g., woman <span class="math inline">\(\rightarrow\)</span> event <span class="math inline">\(\rightarrow\)</span> woman <span class="math inline">\(\rightarrow\)</span> event <span class="math inline">\(\rightarrow\)</span> woman <span class="math inline">\(\rightarrow\)</span> event <span class="math inline">\(\rightarrow\)</span> back to the first woman). These six-step cycles are the bipartite analogue of triangles in one-mode networks.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tnet)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>el_women <span class="ot">&lt;-</span> <span class="fu">as_edgelist</span>(southern_women, <span class="at">names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">clustering_tm</span>(el_women)              <span class="co"># global clustering (first mode)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>el_women <span class="ot">&lt;-</span> <span class="fu">as_edgelist</span>(southern_women, <span class="at">names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">clustering_tm</span>(el_women)              <span class="co"># global clustering (first mode)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.7718968</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clustering_local_tm</span>(el_women)        <span class="co"># local clustering (first mode)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clustering_local_tm</span>(el_women)        <span class="co"># local clustering (first mode)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   node        lc
 1     1 0.7666667
@@ -670,7 +658,7 @@ FALSE  TRUE
 17   17 0.5806452
 18   18 0.5806452</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clustering_local_tm</span>(el_women[,<span class="dv">2</span><span class="sc">:</span><span class="dv">1</span>])  <span class="co"># local clustering (second mode)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clustering_local_tm</span>(el_women[,<span class="dv">2</span><span class="sc">:</span><span class="dv">1</span>])  <span class="co"># local clustering (second mode)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   node        lc
 1     1       NaN
@@ -708,7 +696,7 @@ FALSE  TRUE
 </div>
 </div>
 <p>The <code>NaN</code> values indicate that for those nodes the two-mode clustering coefficient is undefined, because they do not participate in any valid six-cycle (the bipartite equivalent of a triangle).</p>
-<p>Because counting such six-cycles is computationally intensive, these measures are best applied to relatively small networks. The <code>tnet</code> package includes additional two-mode–specific functions (look for <code>*_tm()</code>), though in many cases similar insights can be obtained via standard igraph tools</p>
+<p>Because counting such six-cycles is computationally intensive, these measures are best applied to relatively small networks. The <code>tnet</code> package includes additional two-mode–specific functions with naming scheme <code>*_tm()</code>, though in many cases similar insights can be obtained via standard igraph tools.</p>
 <p>The <code>bipartite</code> package is tailored towards ecological network analysis. Relevant functions for standard two-mode networks are the same as in <code>tnet</code>.</p>
 </section>
 <section id="projection-approach" class="level2" data-number="6.4">
@@ -719,8 +707,8 @@ FALSE  TRUE
 <p>This operation is performed using matrix multiplication on the incidence matrix <span class="math inline">\(A\)</span>. Projecting onto the first mode (e.g., women) is obtained by computing <span class="math inline">\(AA^T\)</span>, while projecting onto the second mode (e.g., events) is obtained via <span class="math inline">\(A^TA\)</span>. The resulting matrix is a weighted adjacency matrix, where entries indicate the number of shared affiliations between pairs of nodes.</p>
 <p>As an illustration, we project the Southern Women incidence matrix onto the women:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> A <span class="sc">%*%</span> <span class="fu">t</span>(A)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> A <span class="sc">%*%</span> <span class="fu">t</span>(A)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          EVELYN LAURA THERESA BRENDA CHARLOTTE FRANCES ELEANOR PEARL RUTH
 EVELYN         8     6       7      6         3       4       3     3    3
@@ -763,15 +751,15 @@ FLORA         1     1         1      1    2     1       1      2     2</code></p
 </div>
 </div>
 <p>This matrix can now be interpreted as a weighted network among the 18 women. Each entry corresponds to the number of times two women went to the same event.</p>
-<p>We can obtain the same projections directly from the bipartite <code>igraph</code> object using <code>bipartite_projection()</code>, which returns both one-mode projections (women–women and event–event):</p>
+<p>We can obtain the same projections directly from the <code>igraph</code> object using <code>bipartite_projection()</code>, which returns both one-mode projections (women–women and event–event):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>projs <span class="ot">&lt;-</span> <span class="fu">bipartite_projection</span>(southern_women)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>projs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>projs <span class="ot">&lt;-</span> <span class="fu">bipartite_projection</span>(southern_women)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>projs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$proj1
-IGRAPH daa53b8 UNW- 18 139 -- 
+IGRAPH 5c144a9 UNW- 18 139 -- 
 + attr: name (v/c), weight (e/n)
-+ edges from daa53b8 (vertex names):
++ edges from 5c144a9 (vertex names):
  [1] EVELYN --LAURA     EVELYN --BRENDA    EVELYN --THERESA   EVELYN --CHARLOTTE
  [5] EVELYN --FRANCES   EVELYN --ELEANOR   EVELYN --RUTH      EVELYN --PEARL    
  [9] EVELYN --NORA      EVELYN --VERNE     EVELYN --MYRNA     EVELYN --KATHERINE
@@ -783,9 +771,9 @@ IGRAPH daa53b8 UNW- 18 139 --
 + ... omitted several edges
 
 $proj2
-IGRAPH cda3a64 UNW- 14 66 -- 
+IGRAPH 842f056 UNW- 14 66 -- 
 + attr: name (v/c), weight (e/n)
-+ edges from cda3a64 (vertex names):
++ edges from 842f056 (vertex names):
  [1] 6/27--3/2   6/27--4/12  6/27--9/26  6/27--2/25  6/27--5/19  6/27--9/16 
  [7] 6/27--4/8   6/27--3/15  3/2 --4/12  3/2 --9/26  3/2 --2/25  3/2 --5/19 
 [13] 3/2 --9/16  3/2 --4/8   3/2 --3/15  4/12--9/26  4/12--2/25  4/12--5/19 
@@ -797,52 +785,39 @@ IGRAPH cda3a64 UNW- 14 66 --
 + ... omitted several edges</code></pre>
 </div>
 </div>
-<p>To visualize the weighted women–women projection, we convert <span class="math inline">\(B\)</span> into an <code>igraph</code> object and plot it, scaling edge widths by the tie weights:</p>
+<p><a href="#fig-plot_weighted_proj" class="quarto-xref">Figure&nbsp;<span>6.3</span></a> visualizes the weighted women–women projection. The edge widths are scaled according to the number of shared events, so thicker edges indicate pairs of women who attended more events together.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>proj <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  B,</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">weighted =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">diag =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"undirected"</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(proj, <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight),</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_color =</span> <span class="st">"grey66"</span>,</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>, <span class="at">size =</span> <span class="dv">8</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>)) <span class="sc">+</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">"off"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="two-mode-networks_files/figure-html/plot_weighted_proj-1.png" class="img-fluid figure-img" width="960"></p>
+<div id="fig-plot_weighted_proj" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-plot_weighted_proj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="two-mode-networks_files/figure-html/fig-plot_weighted_proj-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plot_weighted_proj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.3: Weighted projection of the Southern Women network onto the women.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>As the plot makes clear, the projected network is both weighted and typically very dense, since many pairs of women share at least one event. While it is possible to analyze this weighted projection as-is, a common next step is to binarize the projection, treating any positive weight as a tie (1) and zero as no tie (0). This transforms the projection into a simple undirected one-mode network, making the standard tools from earlier sections directly applicable (at least in theory).</p>
+<p>As the figure shows, the projected network is typically very dense, since many pairs of women share at least one event. While it is possible to analyze this weighted projection as-is, a common next step is to binarize the projection, converting weighted edges either as a tie or no tie. This transforms the projection into a simple undirected one-mode network, making the standard tools from earlier sections directly applicable. At least in theory.</p>
 </section>
 <section id="simple-binary-projections" class="level3" data-number="6.4.2">
 <h3 data-number="6.4.2" class="anchored" data-anchor-id="simple-binary-projections"><span class="header-section-number">6.4.2</span> Simple Binary Projections</h3>
 <p>The simplest way to binarize a weighted projection is to define a global threshold and remove all ties whose weights fall below that threshold. A commonly used benchmark is the mean edge weight, sometimes adjusted upward by adding one or two standard deviations.</p>
-<p>The rationale for using the mean (or the mean plus 1–2 standard deviations) is statistical and substantive. In many projected networks, especially those derived from affiliation data, the distribution of edge weights is highly skewed: most pairs share only one or two affiliations, while a smaller number share many. Using the mean as a cutoff removes very weak and potentially incidental connections. Adding one or two standard deviations makes the criterion stricter, retaining only ties that are substantially stronger than average. In effect, this approach filters out background noise and highlights particularly cohesive relationships.</p>
+<p>The rationale for using the mean is statistical and substantive. In many projected networks, especially those derived from affiliation data, the distribution of edge weights is highly skewed: most pairs share only one or two affiliations, while a smaller number share many. Using the mean as a cutoff removes very weak and potentially incidental connections. Adding one or two standard deviations makes the criterion stricter, retaining only ties that are substantially stronger than average. In effect, this approach filters out background noise and highlights particularly cohesive relationships.</p>
 <p>However, this choice is heuristic rather than theoretically mandated. The appropriate threshold depends on the research question: lower thresholds preserve more information but may produce very dense graphs, while higher thresholds emphasize strong ties but risk discarding meaningful structure. Consequently, it is often useful to explore how results change across different threshold values.</p>
-<p>In the following code, we binarize the weighted women–women projection using the mean edge weight as a global threshold. First, we extract the women’s projection from the list returned by <code>bipartite_projection()</code>. We then compute the mean of the edge weights and remove all ties whose weights are less than or equal to this threshold. Finally, we delete the <code>weight</code> attribute so that the resulting graph is treated as a simple unweighted (binary) network.</p>
+<p>Below,, we binarize the weighted women–women projection using the mean edge weight as a global threshold. First, we extract the women’s projection from the list returned by <code>bipartite_projection()</code>. We then compute the mean of the edge weights and remove all ties whose weights are less than or equal to this threshold. Finally, we delete the <code>weight</code> attribute so that the resulting graph is treated as a simple unweighted (binary) network.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>women_proj <span class="ot">&lt;-</span> projs<span class="sc">$</span>proj1</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>threshold <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">E</span>(projs<span class="sc">$</span>proj1)<span class="sc">$</span>weight)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>women_bin <span class="ot">&lt;-</span> <span class="fu">delete_edges</span>(women_proj, <span class="fu">which</span>(<span class="fu">E</span>(women_proj)<span class="sc">$</span>weight <span class="sc">&lt;=</span> threshold))</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>women_bin <span class="ot">&lt;-</span> <span class="fu">delete_edge_attr</span>(women_bin, <span class="st">"weight"</span>)</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>women_bin</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>women_proj <span class="ot">&lt;-</span> projs<span class="sc">$</span>proj1</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>threshold <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">E</span>(projs<span class="sc">$</span>proj1)<span class="sc">$</span>weight)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>women_bin <span class="ot">&lt;-</span> <span class="fu">delete_edges</span>(women_proj, <span class="fu">which</span>(<span class="fu">E</span>(women_proj)<span class="sc">$</span>weight <span class="sc">&lt;=</span> threshold))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>women_bin <span class="ot">&lt;-</span> <span class="fu">delete_edge_attr</span>(women_bin, <span class="st">"weight"</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>women_bin</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH f4969ed UN-- 18 46 -- 
+<pre><code>IGRAPH 508ddcc UN-- 18 46 -- 
 + attr: name (v/c)
-+ edges from f4969ed (vertex names):
++ edges from 508ddcc (vertex names):
  [1] EVELYN --LAURA     EVELYN --BRENDA    EVELYN --THERESA   EVELYN --CHARLOTTE
  [5] EVELYN --FRANCES   EVELYN --ELEANOR   EVELYN --RUTH      EVELYN --PEARL    
  [9] LAURA  --BRENDA    LAURA  --THERESA   LAURA  --CHARLOTTE LAURA  --FRANCES  
@@ -855,26 +830,26 @@ IGRAPH cda3a64 UNW- 14 66 --
 </div>
 </div>
 <p>The resulting object, <code>women_bin</code>, is now a binary one-mode network in which only stronger-than-average shared-event ties are retained. In other words, two women are connected only if they attended more events together than the average pair.</p>
-<p>The plot below visualizes this thresholded projection. Compared to the fully weighted projection, the network is noticeably sparser, highlighting more cohesive and substantively stronger connections while filtering out weaker, potentially incidental overlaps.</p>
+<p><a href="#fig-southern-women-bin-plot" class="quarto-xref">Figure&nbsp;<span>6.4</span></a> shows this binarized projection.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(women_bin, <span class="st">"stress"</span>, <span class="at">bbox =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(<span class="at">edge_color =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>, <span class="at">size =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">"off"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="two-mode-networks_files/figure-html/southern-women-bin-plot-1.png" class="img-fluid figure-img" width="1056"></p>
+<div id="fig-southern-women-bin-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-southern-women-bin-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="two-mode-networks_files/figure-html/fig-southern-women-bin-plot-1.png" class="img-fluid figure-img" width="1056">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-southern-women-bin-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.4: Binary projection of the Southern Women network onto the women using a global threshold based on the mean edge weight.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p>Compared to the fully weighted projection, the network is noticeably sparser, highlighting more cohesive and substantively stronger connections while filtering out weaker, potentially incidental overlaps.</p>
 </section>
 <section id="model-based-binary-projections" class="level3" data-number="6.4.3">
 <h3 data-number="6.4.3" class="anchored" data-anchor-id="model-based-binary-projections"><span class="header-section-number">6.4.3</span> Model-based Binary Projections</h3>
-<p>The global threshold method is very simple but in many cases leads to undesirable structural features. More sophisticated tools work with statistical models in the background <span class="citation" data-cites="neal2014backbone">(<a href="#ref-neal2014backbone" role="doc-biblioref">Neal 2014</a>)</span> which determine if an edge weight differs enough from the expected value of an underlying null model. If so, the edge is kept in the binary projection. Many of such models are implemented in the <code>backbone</code> package.</p>
+<p>The global threshold method is very simple but can lead to undesirable structural features. More sophisticated tools work with statistical models which determine if an edge weight differs enough from the expected value of an underlying null model <span class="citation" data-cites="neal2014backbone">(<a href="#ref-neal2014backbone" role="doc-biblioref">Neal 2014</a>)</span>. If so, the edge is kept in the binary projection. Many of such models are implemented in the <code>backbone</code> package.</p>
 <p>The idea behind all of the models is always the same:</p>
 <ol type="1">
 <li>Create the weighted projection of interest, e.g.&nbsp;<code>B &lt;- A%*%t(A)</code></li>
@@ -889,17 +864,17 @@ IGRAPH cda3a64 UNW- 14 66 --
 <li><strong>Fixed Fill Model</strong> <code>fixedfill()</code>: Create random two-mode networks with the same number of ones as <code>A</code>.</li>
 <li><strong>Stochastic Degree Sequence Model</strong> <code>sdsm()</code>: Create random two-mode networks with <em>approximately</em> the same row and column sums as <code>A</code>.</li>
 </ul>
-<p>Before we move to an actual use case, you may ask: So which model is the right one for me? That is actually quite a tricky question. There is some guidance available <span class="citation" data-cites="neal2021comparing">(<a href="#ref-neal2021comparing" role="doc-biblioref">Neal et al. 2021</a>)</span>, but in general you can follow these rough guidelines:</p>
+<p>Before we move to an actual use case, you may ask: Which model is the correct one for me? That is actually quite a tricky question. There is some guidance available <span class="citation" data-cites="neal2021comparing">(<a href="#ref-neal2021comparing" role="doc-biblioref">Neal et al. 2021</a>)</span>, but in general you can follow these rough questions:</p>
 <ol type="1">
-<li>Use the model that fits you empirical setting or a known link formation process. If that link formation process dictates that row sums are fixed but column sums not, then choose <code>fixedow()</code>.</li>
+<li>Use the model that fits your empirical setting or a known link formation process. If that link formation process dictates that row sums are fixed but column sums not, then choose <code>fixedrow()</code>.</li>
 <li>Use <code>fdsm()</code> if your network is small enough. Sampling from the FDSM is quite expensive.</li>
 <li>Use the <code>sdsm()</code> for large networks.</li>
 </ol>
-<p>Given that there is never a “ground-truth” binary projection, any choice of model is fine as long as it is motivated substantively and not merely because it fits the papers narrative best.</p>
+<p>Given that there is never a “ground-truth” binary projection, any choice of model is at least not inherently wrong as long as it is motivated substantively and not merely because it fits the narrative best.</p>
 <p>To illustrate model fitting in a substantive setting, we use a bill cosponsorship network from the U.S. Senate in 2015 (available in the <code>networkdata</code> package). The data form a two-mode network in which one set of nodes represents senators and the other represents bills; a tie between a senator and a bill indicates sponsorship or cosponsorship. We are interested in examining the binary one-mode projection onto senators, i.e.&nbsp;a network in which two senators are connected if they sponsored at least one bill together.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"cosponsor"</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>cosponsor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"cosponsor"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>cosponsor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>IGRAPH 6eddec8 UN-B 3984 26392 -- 
 + attr: name (v/c), type (v/l), party (v/c)
@@ -917,7 +892,7 @@ IGRAPH cda3a64 UNW- 14 66 --
 </div>
 <p>Because the resulting network is fairly large, we will rely on the SDSM (Stochastic Degree Sequence Model) for modeling. It is important to note that the implemented projection models automatically generate the one-mode projection for the node set where <code>type == FALSE</code>. If the goal is instead to project onto the nodes with <code>type == TRUE</code>, the <code>type</code> attribute must first be inverted. In other words, the coding of the bipartite membership determines which mode is projected by default, so care must be taken to ensure that the correct node set is being analyzed.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>senators <span class="ot">&lt;-</span> <span class="fu">sdsm</span>(cosponsor, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">signed =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>senators <span class="ot">&lt;-</span> <span class="fu">sdsm</span>(cosponsor, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">signed =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in sdsm(cosponsor, alpha = 0.05, signed = FALSE): 'sdsm' is deprecated.
 Use 'backbone_from_projection(model = "sdsm")' instead.
@@ -930,12 +905,12 @@ Neal, Z. P. 2025. backbone: An R Package to Extract Network Backbones. CRAN. htt
 
 Neal, Z. P., Domagalski, R., and Sagan, B. (2021). Comparing Alternatives to the Fixed Degree Sequence Model for Extracting the Backbone of Bipartite Projections. Scientific Reports, 11, 23929. https://doi.org/10.1038/s41598-021-03238-3</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>senators</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>senators</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH 70563dc UN-- 110 1591 -- sdsm backbone
+<pre><code>IGRAPH e9a33e8 UN-- 110 1591 -- sdsm backbone
 + attr: name (g/c), call (g/x), narrative (g/c), name (v/c), party
 | (v/c), oldweight (e/n)
-+ edges from 70563dc (vertex names):
++ edges from e9a33e8 (vertex names):
  [1] Enzi, Michael B.--Moran, Jerry     Enzi, Michael B.--Scott, Tim      
  [3] Enzi, Michael B.--Daines, Steve    Enzi, Michael B.--Perdue, David   
  [5] Enzi, Michael B.--Blunt, Roy       Enzi, Michael B.--Inhofe, James M.
@@ -948,40 +923,26 @@ Neal, Z. P., Domagalski, R., and Sagan, B. (2021). Comparing Alternatives to the
 </div>
 <p>With <code>signed = FALSE</code>, the procedure performs a one-tailed test for each edge that has a non-zero weight in the weighted projection. The output is a filtered (or “backbone”) projection that retains only those senator–senator ties whose co-sponsorship strength is significantly greater than expected in the null model at the chosen significance level (<code>alpha = 0.05</code>). In other words, the projection keeps unusually strong co-sponsorship relationships and discards ties that could plausibly arise from baseline activity levels alone.</p>
 <p>When <code>signed = TRUE</code>, the procedure performs a two-tailed test for every pair of nodes. This yields a signed backbone: positive edges indicate pairs that co-sponsor significantly more than expected, while negative edges indicate pairs that co-sponsor significantly less than expected under the same null model. The resulting projection is therefore a signed network (see <a href="signed-networks.html" class="quarto-xref"><span>Chapter 7</span></a>).</p>
-<p>The figure below visualizes the backbone projection (restricted to the largest connected component) with nodes colored by party.</p>
+<p><a href="#fig-cosponsor-plot" class="quarto-xref">Figure&nbsp;<span>6.5</span></a> shows the backbone projection (restricted to the largest connected component) with nodes colored by party.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(senators)<span class="sc">$</span>party <span class="ot">&lt;-</span> <span class="fu">V</span>(cosponsor)<span class="sc">$</span>party[<span class="fu">match</span>(</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">V</span>(senators)<span class="sc">$</span>name,</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">V</span>(cosponsor)<span class="sc">$</span>name</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>)]</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>senators <span class="ot">&lt;-</span> <span class="fu">largest_component</span>(senators)</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>party_cols <span class="ot">&lt;-</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">D =</span> <span class="st">"#104E8B"</span>, <span class="at">R =</span> <span class="st">"#CD3333"</span>, <span class="at">I =</span> <span class="st">"#EEB422"</span>)</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(senators, <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="at">edge_linewidth =</span> <span class="fl">0.1</span>, <span class="at">edge_color =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="fu">aes</span>(<span class="at">fill =</span> party), <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> party_cols) <span class="sc">+</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_graph</span>() <span class="sc">+</span></span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="two-mode-networks_files/figure-html/cosponsor-plot-1.png" class="img-fluid figure-img" width="768"></p>
+<div id="fig-cosponsor-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cosponsor-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="two-mode-networks_files/figure-html/fig-cosponsor-plot-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cosponsor-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.5: Backbone projection of the U.S. Senate cosponsorship network, with nodes colored by party affiliation. Edges represent statistically significant co-sponsorship ties based on the SDSM null model.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>The backbone projection reveals a strongly polarized cosponsorship structure. Nodes are senators, colored by party, and the layout places more strongly connected senators closer together. The most salient feature is the clear separation into two large clusters: a predominantly Republican cluster on the left (red) and a predominantly Democratic cluster on the right (blue). Within each party cluster, the network is very dense, indicating that many pairs of same-party senators cosponsor bills together at rates that are <em>significantly stronger than expected</em> given their overall cosponsorship activity (as captured by the SDSM null model).</p>
 <p>In contrast, there are only a small number of edges spanning the gap between the two clusters. These cross-party ties represent relatively rare cases of unusually strong bipartisan cosponsorship. Senators positioned near the boundary between the clusters, and the few cross-cluster edges attached to them, can be interpreted as potential “broker-like” actors in this backbone, in the sense that they are among the limited set of senators whose cosponsorship patterns connect the two partisan blocs. The Independent senators (yellow) appear closer to one side but near the interface, consistent with the idea that independents often align with one coalition while occasionally participating in cross-party collaborations. Overall, the figure shows that once we filter the projection to retain only statistically meaningful ties, cosponsorship is dominated by within-party collaboration, with comparatively little bipartisan structure.</p>
-</section>
-</section>
-<section id="notable-packages" class="level2" data-number="6.5">
-<h2 data-number="6.5" class="anchored" data-anchor-id="notable-packages"><span class="header-section-number">6.5</span> Notable Packages</h2>
-<ul>
-<li><code>incidentally</code> to create random two-mode networks with given structural features</li>
-</ul>
 
 
+</section>
 </section>
 <section id="bibliography" class="level1 unnumbered">
 <h1 class="unnumbered">References</h1>
