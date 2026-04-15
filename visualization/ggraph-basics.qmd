@@ -19,14 +19,14 @@ library(networkdata)
 
 ## Data Preparation
 
-We use the network of characters in the first season of Game of Thrones (GoT) as a running example. The dataset is included in the `networkdata` package.
+As a running example in this chapter, we use the network of character interactions in the first season of Game of Thrones (GoT). This dataset is included in the `networkdata` package.
 
 ```{r}
 data("got")
 gotS1 <- got[[1]]
 ```
 
-We add some more node attributes to the GoT network that can be used for visualization purposes.
+To make use of many different styling options, we need to prepare the data a little bit. We define a custom color palette, compute a clustering for node colors and compute degree as node size.
 
 ```{r}
 #| label: prep_got
@@ -74,10 +74,10 @@ ggraph(gotS1, layout = "stress") +
 ggraph(gotS1, layout = "stress")
 ```
 
-The first layer includes the calculation of a **layout**. Unlike traditional data visualization where variables naturally map to x and y coordinates, networks usually lack inherent spatial positions. This makes choosing a layout algorithm the most fundamental decision in network visualization. Layout algorithms assign coordinates to 
+The first layer includes the calculation of a layout. Unlike traditional data visualization where variables naturally map to x and y coordinates, networks usually lack inherent spatial positions. This makes choosing a layout algorithm the most fundamental decision in network visualization. Layout algorithms assign coordinates to 
 nodes based on the network's structure, aiming to reveal patterns and relationships that support your analytical goals. 
 
-The package `graphlayouts` provides a wide range of layout algorithms that can be used with `ggraph`. The "stress" layout for example is always a safe choice since it is deterministic and produces *nice* layouts for almost any graph. Beyond this fairly general layout, there are many more specialized algorithms included in `graphlayouts` that may be better suited for specific types of networks or analytical goals. These algorithms will be discussed later. The `igraph` package also provides a variety of standard layout algorithms, that can be used with `ggraph`. 
+The package `graphlayouts` provides a wide range of layout algorithms that can be used with `ggraph`. The "stress" layout for example is always a safe choice since it is deterministic and produces *nice* layouts for most standard networks. Beyond this fairly general layout, there are many more specialized algorithms which may be better suited for specific types of networks or analytical goals. These algorithms will be discussed later. The `igraph` package also provides a variety of standard layout algorithms, that can be used with `ggraph`. 
 
 ```r
 c(
@@ -88,7 +88,7 @@ c(
 )
 ```
 
-To use any of these, you just need to use the last part of the name.
+To use any of these, you just need to plugin the name of the underlying algorithm.
 ```r
 ggraph(gotS1, layout = "dh") +
   ...
@@ -182,7 +182,7 @@ c(
   "geom_edge_loop", "geom_edge_loop0"
 )
 ```
-You can do a lot of fancy things with these geoms but for a standard network plot, you should almost always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it also reduces readability. It is best to always go with straight lines. If a network has multiple edges between two nodes, one can switch to `geom_edge_parallel()` (@fig-parallel).
+You can do a lot of fancy things with these geoms but for a standard network plot, you should almost always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it also reduces readability. It is best to always go with straight lines. If a network has multiple edges between two nodes, one can switch to `geom_edge_parallel()` (see @fig-parallel).
 
 ```{r}
 #| label: fig-parallel
@@ -212,7 +212,7 @@ ggraph(g, layout = "stress") +
   theme_graph()
 ```
 
-Most edge geoms come in three flavors. The standard `geom_edge_link()` draws 100 dots on each edge compared to only two dots (the endpoints) in `geom_edge_link0()`. This is done to allow gradients along the edge (@fig-got-plot-grad). 
+Most edge geoms come in three flavors. The standard `geom_edge_link()` draws 100 dots on each edge compared to only two dots (the endpoints) in `geom_edge_link0()`. This is done to allow gradients along the edge as shown in @fig-got-plot-grad. 
 
 ```{r}
 #| label: fig-got-plot-grad
@@ -255,7 +255,7 @@ geom_edge_link0(aes(...), ...,
 )
 ```
 
-The default arrowhead type is "open", yet "closed" usually has a nicer appearance (@fig-arrow).
+The default arrowhead type is "open", yet "closed" usually has a nicer appearance (see @fig-arrow).
 
 ```{r}
 #| label: fig-arrow
@@ -301,14 +301,12 @@ and `geom_node_text()` to add node labels. You can also use `geom_node_label()`,
 
 The mapping of node attributes to aesthetics is similar to edge attributes. In the example code, we map the fill attribute of the node shape to the "clu" attribute, which holds the result of a clustering, and the size of the nodes to the attribute "size". The shape of the node is globally set to 21.
 
-The figure below shows all possible shapes that can be used for the nodes.
+@fig-points-symbols shows all possible shapes that can be used for the nodes.
 
-![](img/points-symbols.png)
+![Available point shapes in R. Shapes 0-20 only have a border (set via `colour`), while shapes 21-25 have both a border (`colour`) and a fill (`fill`).](img/points-symbols.png){#fig-points-symbols}
 
-Personally, I prefer "21" since it draws a border around the nodes. If you prefer another
-shape, say "19", you have to be aware of several things. To change the color of shapes 1-20,
-you need to use the colour parameter. For shapes 21-25 you need to use fill. The colour parameter 
-only controls the border for these cases. 
+For networks, "21" is a solid choice since it draws a border around the nodes. If other
+shapes are used, say "19", several things need to be considered. To change the color of shapes 1-20, the colour parameter needs to be set. For shapes 21-25 the fill parameter. The colour parameter only controls the border for these cases. 
 
 The following aesthetics can be used within `geom_node_point()` either within `aes()` or globally:
 
@@ -327,9 +325,9 @@ For `geom_node_text()`, there are a lot more options available, but the most imp
 - size (font size)
 
 Note that we also used a filter within `aes()` of `geom_node_text()`. The filter 
-parameter allows you to specify a rule for when to apply the aesthetic mappings.
+parameter allows to specify a rule for when to apply the aesthetic mappings.
 The most frequent use case is for node labels (but can also be used for edges or nodes).
-In the example, we only display the node label if the size attribute is larger than 26.
+In the example, the node label is only displayed if the size attribute is larger than 26.
 
 ## Scales
 
@@ -340,7 +338,7 @@ scale_size_continuous(range = c(1, 6))
 ```
 
 The `scale_*` functions are used to control aesthetics that are mapped within `aes()`.
-You do not necessarily need to set them, since `ggraph` can take care of it automatically (@fig-no-scales).
+Setting those are optional, since `ggraph` can take care of it automatically as shown in @fig-no-scales.
 ```{r}
 #| label: fig-no-scales
 #| fig-cap: "GoT network without explicit scale adjustments."
@@ -355,16 +353,15 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "none")
 ```
 
-While the node fill and size seem reasonable, the edges are a little too thick.
-In general, it is always a good idea to add a `scale_*` for each aesthetic within `aes()`.
+While the node fill and size seem reasonable, the edges are, however, a little too thick.
+In general, it is always a good idea to add a `scale_*` for each aesthetic mapping within `aes()`.
 
-What kind of `scale_*` function you need depends on the aesthetic and on the type of attribute you are mapping.
-Generally, scale functions are structured like this:  
+What kind of `scale_*` function is needed depends on the aesthetic and on the type of attribute.
+Generally, scale functions are structured as  
 `scale_<aes>_<variable type>()`.  
 
-The "aes" part is easy. Just us the type you specified within `aes()`. For edges, however, you have to prepend `edge_`.
-The "variable type" part depends on which scale the attribute is on. Before we continue, it may be 
-a good idea to briefly discuss what aesthetics make sense for which variable type. 
+The "aes" part is easy. It is just the type specified within `aes()`. For edges, however, `edge_` needs to be prepended to the aesthetic name.
+The "variable type" depends on which scale the attribute is on. The following table gives an overview of which aesthetics can be used for which variable type and some notes on when to use which aesthetic.
 
 | aesthetic | variable type | notes |
 |--------|----------|--------------|
@@ -377,19 +374,18 @@ a good idea to briefly discuss what aesthetics make sense for which variable typ
 | node/edge alpha| continuous | |
 
 The easiest to use scales are those for continuous variables mapped to edge width and node size (also the alpha value, which is not used here). While there are several parameters within `scale_edge_width_continuous()` and `scale_size_continuous()`, the
-most important one is "range" which fixes the minimum and maximum width/size. It usually suffices to
-adjust this parameter.
+most important one is "range" which fixes the minimum and maximum width and size respectively. In most cases it suffices to only adjust this parameter.
 
-For continuous variables that are mapped to node/edge colour, you can use `scale_colour_gradient()`
+For continuous variables which are mapped to node/edge colour, one can use `scale_colour_gradient()`
 `scale_colour_gradient2()` or `scale_colour_gradientn()` (add edge_ before colour for edge colours).
 The difference between these functions is in how the gradient is constructed. `gradient` creates a two
-colour gradient (low-high). Simply specify the the two colours to be used (e.g. low = "blue", high = "red").
-`gradient2` creates a diverging colour gradient (low-mid-high) (e.g. low = "blue", mid = "white", high = "red") 
+colour gradient (low-high). So just two colours need to be specified (e.g. `low = "blue"`, `high = "red"`).
+`gradient2` creates a diverging colour gradient (low-mid-high) (e.g. `low = "blue"`, `mid = "white"`, `high = "red"`) 
 and `gradientn` a gradient consisting of more than three colours (specified with the colours parameter).
 
-For categorical variables that are mapped to node colours (or fill in our example), you can
-use `scale_fill_manual()`. This forces you to choose a color for each category yourself. 
-Simply create a vector of colors (see the got_palette) and pass it to the function with the parameter values.
+For categorical variables that are mapped to node colours (or fill in our example), one can
+use `scale_fill_manual()` to choose a color for each category manually. 
+To do so, simply create a vector of colors (like the `got_palette`) and pass it to the function with the parameter values.
 
 `ggraph` then assigns the colors in the order of the unique values of the categorical variable. This 
 are either the factor levels (if the variable is a factor) or the result of sorting the unique values (if the variable is a character).
@@ -397,8 +393,7 @@ are either the factor levels (if the variable is a factor) or the result of sort
 #| label: order-color
 sort(unique(V(gotS1)$clu))
 ```
-If you want more control over which value is mapped to which colour, you can pass the vector of colours
-as a named vector. The difference between unnamed and named palettes is shown in @fig-got-plot-pal2.
+To avoid automatic assignment of colors, one can pass the vector of colours as a named vector. The difference between unnamed and named palettes is shown in @fig-got-plot-pal2.
 ```{r}
 #| label: named_palette
 got_palette2 <- c(
@@ -441,9 +436,9 @@ ggraph(gotS1, layout = "stress") +
 p1 + p2
 ```
 
-Using your own colour palette gives your network a unique touch. If you can't be bothered with 
-choosing colours, you may want to consider `scale_fill_brewer()` and `scale_colour_brewer()`.
-The function offers all palettes available at [colorbrewer2.org](http://colorbrewer2.org/), as shown in @fig-got-plot-brewer. 
+Using a manual colour palette gives the network a unique touch but `scale_fill_brewer()` and `scale_colour_brewer()` can also be used to apply predefined color palettes.
+
+The function offers all palettes available at [colorbrewer2.org](http://colorbrewer2.org/). An example is shown in @fig-got-plot-brewer. 
 
 ```{r}
 #| label: fig-got-plot-brewer
@@ -469,9 +464,9 @@ theme_graph() +
 ```
 
 themes control the overall look of the plot. There are a lot of options within the `theme()`
-function of `ggplot2`. Luckily, we really don't need any of those. `theme_graph()` is used
+function of `ggplot2`. However, there is really no need to use any of those. `theme_graph()` is used
 to erase all of the default ggplot theme (e.g. axis, background, grids, etc.) since they are irrelevant for networks. 
-The only option worthwhile in `theme()` is `legend.position`, which we set to "none", i.e. don't show the legend.
+The only option worthwhile in `theme()` is `legend.position`, which we set to `"none"`, i.e. do not show the legend.
 
 @fig-got-plot-legend gives an example for a plot with a legend.
 ```{r}
@@ -490,13 +485,13 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "bottom")
 ```
 
-This covers all the necessary steps to produce a standard network plot with `ggraph`. More advanced techniques will be covered in the next sections. We conclude the introductory part by recreating a quite famous network visualization 
+This covers all the necessary steps to produce a standard network plot with `ggraph`. More advanced techniques will be covered in the next sections. We will conclude the introductory part by recreating a famous network visualization using `ggraph` to see how the different components work together in practice.
 
-## Another full example
+## Use case: Political Blogs
 
-In this section, we do a little code through to recreate the figure shown below.
+In this section, we to recreate the figure shown below.
 
-![](img/polblogs_orig.png)
+![Original visualization of the political blogs network by @adamic2005political.](img/polblogs_orig.png){#fig-polblogs-orig}
 The network shows the linking between political blogs during the 2004 election in the US. Red nodes are conservative leaning blogs and blue ones liberal.
 
 The dataset is included in the `networkdata` package.
@@ -508,7 +503,7 @@ data("polblogs")
 V(polblogs)$deg <- degree(polblogs, mode = "in")
 ```
 
-We start with a simple plot without any styling (@fig-polblogs1).
+We start with a simple plot without any styling as shown in @fig-polblogs1.
 ```{r}
 #| label: fig-polblogs1
 #| fig-cap: "Initial plot of the political blogs network without styling."
@@ -527,14 +522,19 @@ ggraph(lay) +
     geom_node_point()
 ```
 
-There is obviously a lot missing. First, we delete all isolates and plot again (@fig-polblogs2).
+As a first cleanup step, we delete all isolates nodes and the small disconnected component (see @fig-polblogs2).
 
 ```{r}
 #| label: fig-polblogs2
-#| fig-cap: "Political blogs network after removing isolates."
+#| fig-cap: "Political blogs network after removing isolates and a small disconnected component."
 #| fig-width: 10
 #| fig-height: 8
 polblogs <- delete_vertices(polblogs, which(degree(polblogs) == 0))
+
+comps <- components(polblogs)
+polblogs <- delete_vertices(polblogs, which(comps$membership == which.min(comps$csize)))
+
+
 lay <- create_layout(polblogs, "stress")
 
 ggraph(lay) +
@@ -548,30 +548,8 @@ ggraph(lay) +
     geom_node_point()
 ```
 
-The original does feature a small disconnected component, but we remove this here (@fig-polblogs2a).
 
-```{r}
-#| label: fig-polblogs2a
-#| fig-cap: "Political blogs network after removing the small disconnected component."
-#| fig-width: 10
-#| fig-height: 8
-comps <- components(polblogs)
-polblogs <- delete_vertices(polblogs, which(comps$membership == which.min(comps$csize)))
-
-lay <- create_layout(polblogs, "stress")
-ggraph(lay) +
-    geom_edge_link0(
-        edge_linewidth = 0.2, edge_colour = "grey66",
-        arrow = arrow(
-            angle = 15, length = unit(0.15, "inches"),
-            ends = "last", type = "closed"
-        )
-    ) +
-    geom_node_point()
-```
-
-
-Let us now start with some styling of the nodes (@fig-polblogs3).
+@fig-polblogs3 shows the network with styling applied to the nodes. Political orientation is mapped to node colour and indegree to node size. The colors are manually set to match the original visualization and the size range is adjusted to make the differences in node size more visible.
 
 ```{r}
 #| label: fig-polblogs3
@@ -583,44 +561,6 @@ ggraph(lay) +
         edge_linewidth = 0.2, edge_colour = "grey66",
         arrow = arrow(
             angle = 15, length = unit(0.15, "inches"),
-            ends = "last", type = "closed"
-        )
-    ) +
-    geom_node_point(shape = 21, aes(fill = pol))
-```
-
-The colors are obviously wrong, so we fix this with a `scale_fill_manual()`. Additionally,
-we map the degree to node size (@fig-polblogs4).
-
-```{r}
-#| label: fig-polblogs4
-#| fig-cap: "Political blogs network with corrected colours and degree-based node size."
-#| fig-width: 10
-#| fig-height: 8
-ggraph(lay) +
-    geom_edge_link0(
-        edge_linewidth = 0.2, edge_colour = "grey66",
-        arrow = arrow(
-            angle = 15, length = unit(0.15, "inches"),
-            ends = "last", type = "closed"
-        )
-    ) +
-    geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
-    scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3"))
-```
-
-The node sizes are also not that satisfactory, so we fix the range with `scale_size()` (@fig-polblogs5).
-
-```{r}
-#| label: fig-polblogs5
-#| fig-cap: "Political blogs network with adjusted node size range."
-#| fig-width: 10
-#| fig-height: 8
-ggraph(lay) +
-    geom_edge_link0(
-        edge_linewidth = 0.2, edge_colour = "grey66",
-        arrow = arrow(
-            angle = 10, length = unit(0.1, "inches"),
             ends = "last", type = "closed"
         )
     ) +
@@ -638,9 +578,9 @@ This new variable is mapped to the edge color (@fig-polblogs6).
 #| fig-cap: "Political blogs network with edge colour mapped to within/between political orientation."
 #| fig-width: 10
 #| fig-height: 8
-el <- as_edgelist(polblogs, names = FALSE)
-el_pol <- cbind(V(polblogs)$pol[el[, 1]], V(polblogs)$pol[el[, 2]])
-E(polblogs)$col <- ifelse(el_pol[, 1] == el_pol[, 2], el_pol[, 1], "mixed")
+pol_from <- V(polblogs)$pol[tail_of(polblogs, E(polblogs))]
+pol_to <- V(polblogs)$pol[head_of(polblogs, E(polblogs))]
+E(polblogs)$col <- ifelse(pol_from == pol_to, pol_from, "mixed")
 
 
 lay <- create_layout(polblogs, "stress")
@@ -654,34 +594,14 @@ ggraph(lay) +
     ) +
     geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
     scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
-    scale_size(range = c(0.5, 7))
-```
-
-Similar to the node colors, we add a `scale_edge_colour_manual()` to adjust the edge colors (@fig-polblogs7).
-
-```{r}
-#| label: fig-polblogs7
-#| fig-cap: "Political blogs network with manually set edge colours."
-#| fig-width: 10
-#| fig-height: 8
-ggraph(lay) +
-    geom_edge_link0(
-        edge_linewidth = 0.2, aes(edge_colour = col),
-        arrow = arrow(
-            angle = 10, length = unit(0.1, "inches"),
-            ends = "last", type = "closed"
-        ), show.legend = FALSE
-    ) +
-    geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
-    scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
     scale_edge_colour_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
     scale_size(range = c(0.5, 7))
 ```
 
-Almost, but it seems there are a lot of yellow edges which run over blue edges. It looks as
-if these should run below according to the original viz. To achieve this, we use a filter trick.
+Almost finished but it seems there are a lot of yellow edges which run over blue edges. It looks as
+if these should run below according to the original viz. To achieve this, there are different options, but we here use a filter trick.
 We add two `geom_edge_link0()` layers: First, for the mixed edges and then for the remaining edges.
-In that way, the mixed edges are getting plotted below (@fig-polblogs8).
+In that way, the mixed edges are plotted first and thus below the intra group edges as seen in @fig-polblogs8.
 
 ```{r}
 #| label: fig-polblogs8
@@ -709,7 +629,7 @@ ggraph(lay) +
     scale_size(range = c(0.5, 7))
 ```
 
-Now let us just add the `theme_graph()` to finalize the plot (@fig-polblogs9).
+Finally, we add the `theme_graph()` in @fig-polblogs9 to  finalize the plot.
 ```{r}
 #| label: fig-polblogs9
 #| fig-cap: "Final political blogs network visualization with `theme_graph()`."
