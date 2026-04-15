@@ -22,6 +22,7 @@ We use Zachary's karate club network, which also appears in the [clustering chap
 
 ```{r}
 #| label: data
+is_html <- knitr::is_html_output()
 data("karate")
 V(karate)$name <- as.character(seq_len(vcount(karate)))
 
@@ -44,6 +45,7 @@ The `visNetwork` package wraps the vis.js library and offers a broad toolkit for
 
 ```{r}
 #| label: fig-visnetwork
+#| eval: !expr is_html
 #| fig-cap: "Karate club network rendered with `visNetwork`."
 
 ## visNetwork expects columns: label, group, value
@@ -64,6 +66,7 @@ The `networkD3` package wraps D3.js and produces force-directed layouts.
 
 ```{r}
 #| label: fig-networkd3
+#| eval: !expr is_html
 #| fig-cap: "Karate club network rendered with `networkD3`."
 d3_data <- igraph_to_networkD3(karate,
   group = as.numeric(V(karate)$clu)
@@ -88,6 +91,7 @@ The `threejs` package renders networks in 3D using WebGL. The result is visually
 
 ```{r}
 #| label: fig-threejs
+#| eval: !expr is_html
 #| fig-cap: "Karate club network in 3D with `threejs`."
 graphjs(karate,
   vertex.size = V(karate)$size * 0.2,
@@ -107,6 +111,7 @@ The simplest way to get an interactive visualization is to pass an `igraph` obje
 
 ```{r}
 #| label: fig-g6r-first
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with `g6R` using default settings."
 g6_igraph(karate)
 ```
@@ -137,6 +142,7 @@ The default layout in `g6R` is `d3_force_layout()`, which simulates physical for
 
 ```{r}
 #| label: fig-g6r-d3force
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with D3 force-directed layout."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -147,6 +153,7 @@ Try dragging a node in @fig-g6r-d3force: the force simulation reacts in real tim
 
 ```{r}
 #| label: fig-g6r-fruchterman
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with Fruchterman-Reingold layout."
 g6_igraph(karate) |>
   g6_layout(fruchterman_layout()) |>
@@ -159,6 +166,7 @@ A circular layout arranges all nodes evenly along a circle, which can be useful 
 
 ```{r}
 #| label: fig-g6r-circular
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with circular layout."
 g6_igraph(karate) |>
   g6_layout(circular_layout()) |>
@@ -169,6 +177,7 @@ A radial layout places a focal node at the center and arranges the remaining nod
 
 ```{r}
 #| label: fig-g6r-radial
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with radial layout centered on node 1."
 g6_igraph(karate) |>
   g6_layout(radial_layout(focusNode = "1")) |>
@@ -181,6 +190,7 @@ The concentric layout arranges nodes in concentric circles sorted by a numeric a
 
 ```{r}
 #| label: fig-g6r-concentric
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with concentric layout sorted by degree."
 
 ## g6R needs a 'degree' attribute on the nodes
@@ -201,6 +211,7 @@ The `g6_igraph()` function reads vertex and edge attributes that match G6 style 
 
 ```{r}
 #| label: fig-g6r-igraph-style
+#| eval: !expr is_html
 #| fig-cap: "Karate club network styled via igraph vertex and edge attributes."
 
 ## Map community membership to fill color
@@ -224,6 +235,7 @@ For more control, `g6_options()` lets you set global defaults using `node_option
 
 ```{r}
 #| label: fig-g6r-options-style
+#| eval: !expr is_html
 #| fig-cap: "Karate club network styled with `g6_options()`."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -256,6 +268,7 @@ The most basic behaviors allow users to navigate the canvas. `drag_canvas()` ena
 
 ```{r}
 #| label: fig-g6r-nav
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with basic navigation behaviors."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -268,6 +281,7 @@ Beyond canvas navigation, users can interact with individual elements. `drag_ele
 
 ```{r}
 #| label: fig-g6r-interact
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with drag, hover, and click-select behaviors."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -288,6 +302,7 @@ For selecting groups of nodes, `g6R` provides two area-selection tools. `brush_s
 
 ```{r}
 #| label: fig-g6r-lasso
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with lasso and brush selection."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -309,6 +324,7 @@ A minimap provides a thumbnail overview of the entire graph, which is useful for
 
 ```{r}
 #| label: fig-g6r-minimap
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with a minimap for navigation."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -322,6 +338,7 @@ Tooltips display information when the user hovers over a node. By default, the t
 
 ```{r}
 #| label: fig-g6r-tooltip
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with hover tooltips."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -335,6 +352,7 @@ In @fig-network-grps-sol of the previous chapter, we used `geom_mark_hull()` fro
 
 ```{r}
 #| label: fig-g6r-hull
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with hull grouping by community."
 
 ## Split nodes by community membership
@@ -367,6 +385,7 @@ The `bubble_sets()` plugin offers an alternative visual style. Instead of sharp 
 
 ```{r}
 #| label: fig-g6r-bubble
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with bubble-set grouping."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -397,6 +416,7 @@ The fisheye plugin applies a focus-plus-context distortion: the area under the c
 
 ```{r}
 #| label: fig-g6r-fisheye
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with fisheye distortion."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -410,6 +430,7 @@ A legend plugin can display categorical groupings directly on the canvas.
 
 ```{r}
 #| label: fig-g6r-legend
+#| eval: !expr is_html
 #| fig-cap: "Karate club network with legend showing community membership."
 g6_igraph(karate) |>
   g6_layout(d3_force_layout()) |>
@@ -423,6 +444,7 @@ The following example combines styled nodes and edges, interactive behaviors, an
 
 ```{r}
 #| label: fig-g6r-final
+#| eval: !expr is_html
 #| fig-cap: "Complete interactive karate club network with `g6R`."
 
 V(karate)$fill <- palette4[as.numeric(V(karate)$clu)]
