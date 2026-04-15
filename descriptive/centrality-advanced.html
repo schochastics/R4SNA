@@ -464,7 +464,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../descriptive/introduction.html">Descriptive Network Analysis</a></li><li class="breadcrumb-item"><a href="../descriptive/centrality-advanced.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Advanced Centrality Concepts</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Advanced Centrality Concepts</span></h1>
+<h1 class="title"><span id="sec-advanced-centrality-concepts" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Advanced Centrality Concepts</span></span></h1>
 </div>
 
 
@@ -566,25 +566,41 @@ For now we convert it on the fly...</code></pre>
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>disc2 <span class="ot">&lt;-</span> <span class="fu">compare_ranks</span>(<span class="fu">betweenness</span>(tg3_noise),<span class="fu">closeness</span>(tg3_noise))<span class="sc">$</span>discordant</span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(disc1,disc2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1]   0 669</code></pre>
+<pre><code>[1]   0 645</code></pre>
 </div>
 </div>
-<p>On the threshold graph we do not observe any discordant pairs for the two indices. However, the little noise we added to the threshold graph was enough to introduce 669 pairs of nodes that are now ranked differently. In general, we can say that</p>
+<p>On the threshold graph we do not observe any discordant pairs for the two indices. However, the little noise we added to the threshold graph was enough to introduce 645 pairs of nodes that are now ranked differently. In general, we can say that</p>
 <p><em>The closer a network is to be a threshold graph, the higher we expect the correlation of any pair of centrality indices to be, independent of their definition.</em></p>
 <p>But how to define <em>being close</em> to a threshold graph? One obvious choice is to use the function <code>comparable_pairs()</code>. The more pairs are comparable, the less possibilities for indices to rank the nodes differently. Hence, we are close to a unique ranking obtained for threshold graphs. A second option is to use an appropriate distance measure for graphs. <code>netrankr</code> implements the so called <em>majorization gap</em> which operates on the degree sequences of graphs. In its essence, it returns the number of edges that need to be rewired, in order to turn an arbitrary graph into a threshold graph.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mg1 <span class="ot">&lt;-</span> <span class="fu">majorization_gap</span>(tg3)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mg2 <span class="ot">&lt;-</span> <span class="fu">majorization_gap</span>(tg3_noise)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(mg1,mg2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mg2 <span class="ot">&lt;-</span> <span class="fu">majorization_gap</span>(tg3_noise)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in majorization_gap(tg3_noise): graph is not connected. Computing for
+each component separately and returning sum.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in deg.cor - deg.sorted: longer object length is not a multiple of
+shorter object length</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(mg1,mg2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.00000000 0.03343166</code></pre>
+<pre><code>[1] 0.00000000 0.02593193</code></pre>
 </div>
 </div>
 <p>The result is given as a fraction of the total number of edges. So 12% of edges need to be rewired in the noisy graph to turn it into a threshold graph. To get the raw count, set <code>norm=FALSE</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">majorization_gap</span>(tg3_noise,<span class="at">norm =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">majorization_gap</span>(tg3_noise,<span class="at">norm =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in majorization_gap(tg3_noise, norm = FALSE): graph is not connected.
+Computing for each component separately and returning sum.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in deg.cor - deg.sorted: longer object length is not a multiple of
+shorter object length</code></pre>
+</div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 34</code></pre>
+<pre><code>[1] 32</code></pre>
 </div>
 </div>
 </section>
@@ -592,12 +608,12 @@ For now we convert it on the fly...</code></pre>
 <h2 data-number="4.4" class="anchored" data-anchor-id="partial-centrality"><span class="header-section-number">4.4</span> Partial Centrality</h2>
 <p>The function <code>rank_intervals()</code> is used to calculate the maximal and minimal possible rank for each node in any ranking that is in accordance with a given partial ranking.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dbces11"</span>)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#neighborhood inclusion </span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">neighborhood_inclusion</span>(dbces11, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rank_intervals</span>(P)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dbces11"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">#neighborhood inclusion </span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">neighborhood_inclusion</span>(dbces11, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rank_intervals</span>(P)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> node:A rank interval: [1, 6]
  node:B rank interval: [1, 9]
@@ -618,14 +634,14 @@ Rank intervals are useful to assess the ambiguity of ranking nodes. The bigger t
 <br>
 The intervals can be visualized with its own <code>plot()</code> function. The function can take a data frame of centrality scores as an additional parameter <code>cent_scores</code>. The ranks of each node for each index are then plotted within each interval. Again, the higher the numerical rank the higher ranked the node is according to the index.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>cent_scores <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>   <span class="at">degree=</span><span class="fu">degree</span>(dbces11),</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>   <span class="at">betweenness=</span><span class="fu">round</span>(<span class="fu">betweenness</span>(dbces11),<span class="dv">4</span>),</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">closeness=</span><span class="fu">round</span>(<span class="fu">closeness</span>(dbces11),<span class="dv">4</span>),</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>   <span class="at">eigenvector=</span><span class="fu">round</span>(<span class="fu">eigen_centrality</span>(dbces11)<span class="sc">$</span>vector,<span class="dv">4</span>))</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>rk_int <span class="ot">&lt;-</span> <span class="fu">rank_intervals</span>(P)</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rk_int,<span class="at">cent_scores =</span> cent_scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cent_scores <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>   <span class="at">degree=</span><span class="fu">degree</span>(dbces11),</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>   <span class="at">betweenness=</span><span class="fu">round</span>(<span class="fu">betweenness</span>(dbces11),<span class="dv">4</span>),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">closeness=</span><span class="fu">round</span>(<span class="fu">closeness</span>(dbces11),<span class="dv">4</span>),</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>   <span class="at">eigenvector=</span><span class="fu">round</span>(<span class="fu">eigen_centrality</span>(dbces11)<span class="sc">$</span>vector,<span class="dv">4</span>))</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>rk_int <span class="ot">&lt;-</span> <span class="fu">rank_intervals</span>(P)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rk_int,<span class="at">cent_scores =</span> cent_scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -642,15 +658,15 @@ N(u)\subseteq N[v] \text{ and } N(v)\not\subseteq N[u] \implies c(u)&lt;c(v)
 <br>
 The intervals reduce to single points for threshold graphs, since all nodes are pairwise comparable by neighborhood-inclusion.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>tg <span class="ot">&lt;-</span> <span class="fu">threshold_graph</span>(<span class="dv">20</span>,<span class="fl">0.2</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">#neighborhood inclusion </span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> tg <span class="sc">%&gt;%</span> <span class="fu">neighborhood_inclusion</span>(<span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">#without %&gt;% operator:</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co"># P &lt;- neighborhood_inclusion(tg,sparse = FALSE)</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">rank_intervals</span>(P))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>tg <span class="ot">&lt;-</span> <span class="fu">threshold_graph</span>(<span class="dv">20</span>,<span class="fl">0.2</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co">#neighborhood inclusion </span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> tg <span class="sc">%&gt;%</span> <span class="fu">neighborhood_inclusion</span>(<span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co">#without %&gt;% operator:</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co"># P &lt;- neighborhood_inclusion(tg,sparse = FALSE)</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">rank_intervals</span>(P))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -661,14 +677,14 @@ The intervals reduce to single points for threshold graphs, since all nodes are 
 </div>
 <p>The described betweenness inconsistancy is most evident for threshold graphs as shown in the rank intervals below.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>cent_scores <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>   <span class="at">degree=</span><span class="fu">degree</span>(tg),</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>   <span class="at">betweenness=</span><span class="fu">round</span>(<span class="fu">betweenness</span>(tg),<span class="dv">4</span>),</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">closeness=</span><span class="fu">round</span>(<span class="fu">closeness</span>(tg),<span class="dv">4</span>),</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>   <span class="at">eigenvector=</span><span class="fu">round</span>(<span class="fu">eigen_centrality</span>(tg)<span class="sc">$</span>vector,<span class="dv">4</span>))</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">rank_intervals</span>(P),<span class="at">cent_scores =</span> cent_scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>cent_scores <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>   <span class="at">degree=</span><span class="fu">degree</span>(tg),</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>   <span class="at">betweenness=</span><span class="fu">round</span>(<span class="fu">betweenness</span>(tg),<span class="dv">4</span>),</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">closeness=</span><span class="fu">round</span>(<span class="fu">closeness</span>(tg),<span class="dv">4</span>),</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>   <span class="at">eigenvector=</span><span class="fu">round</span>(<span class="fu">eigen_centrality</span>(tg)<span class="sc">$</span>vector,<span class="dv">4</span>))</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">rank_intervals</span>(P),<span class="at">cent_scores =</span> cent_scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -684,12 +700,12 @@ The intervals reduce to single points for threshold graphs, since all nodes are 
 <p>[MORE TEXT]</p>
 <p>But first, let us briefly look at all the return values.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">exact_rank_prob</span>(P)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">exact_rank_prob</span>(P)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in exact_rank_prob(P): P is already a ranking.
 Expected Ranks correspond to the only possible ranking.</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>res</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>res</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Number of possible centrality rankings:  1 
 Equivalence Classes (max. possible): 8 (20)
@@ -757,8 +773,8 @@ SD of Rank Probabilities
 P(rk(u)=k)=\frac{\lvert \{rk \in  \mathcal{R}(\leq) \; : \; rk(u)=k\} \rvert}{\lvert \mathcal{R}(\leq) \rvert}.
 \]</span> Rank probabilities are given by the return value <code>rank.prob</code> of the <code>exact_rank_prob()</code> function.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>rp <span class="ot">&lt;-</span> <span class="fu">round</span>(res<span class="sc">$</span>rank.prob,<span class="dv">2</span>)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>rp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>rp <span class="ot">&lt;-</span> <span class="fu">round</span>(res<span class="sc">$</span>rank.prob,<span class="dv">2</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>rp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 V1  0 0 0 0 0 0 0 0 0  0  0  0  0  0  0  1  0  0  0  0
@@ -787,7 +803,7 @@ V20 0 0 0 0 0 0 0 0 0  0  0  0  0  0  0  0  0  0  0  1</code></pre>
 <br>
 The most interesting probabilities are certainly <span class="math inline">\(P(rk(u)=n)\)</span>, that is how likely is it for a node to be the most central.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>rp[,<span class="dv">11</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>rp[,<span class="dv">11</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> V1  V2  V3  V4  V5  V6  V7  V8  V9 V10 V11 V12 V13 V14 V15 V16 V17 V18 V19 V20 
   0   0   0   0   0   0   1   1   1   1   1   1   1   1   0   0   0   0   0   0 </code></pre>
@@ -801,8 +817,8 @@ The most interesting probabilities are certainly <span class="math inline">\(P(r
 P(rk(u)\leq rk(v))=\frac{\lvert \{rk \in  \mathcal{R}(\leq) \; : \; rk(u)\leq rk(v)\} \rvert}{\lvert \mathcal{R}(\leq) \rvert}.
 \]</span> Relative rank probabilities are given by the return value <code>relative.rank</code> of the <code>exact_rank_prob()</code> function.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>rrp <span class="ot">&lt;-</span> <span class="fu">round</span>(res<span class="sc">$</span>relative.rank,<span class="dv">2</span>)</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>rrp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>rrp <span class="ot">&lt;-</span> <span class="fu">round</span>(res<span class="sc">$</span>relative.rank,<span class="dv">2</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>rrp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    V1 V2 V3 V4 V5 V6 V7 V8 V9 V10 V11 V12 V13 V14 V15 V16 V17 V18 V19 V20
 V1   0  0  0  0  0  1  0  0  0   0   0   0   0   0   1   0   0   1   0   1
@@ -834,8 +850,8 @@ The more a value <code>rrp[u,v]</code> deviates from <span class="math inline">\
 \rho(u)=\sum_{k=1}^n k\cdot P(rk(u)=k).
 \]</span> Expected ranks are given by the return value <code>expected.rank</code> of the <code>exact_rank_prob()</code> function.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>ex_rk <span class="ot">&lt;-</span> <span class="fu">round</span>(res<span class="sc">$</span>expected.rank,<span class="dv">2</span>)</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>ex_rk</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>ex_rk <span class="ot">&lt;-</span> <span class="fu">round</span>(res<span class="sc">$</span>expected.rank,<span class="dv">2</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>ex_rk</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> V1  V2  V3  V4  V5  V6  V7  V8  V9 V10 V11 V12 V13 V14 V15 V16 V17 V18 V19 V20 
  16  16  16  16  16  17  11  11  11  11  11  11  11  11  18   3   3  19   1  20 </code></pre>

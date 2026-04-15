@@ -110,16 +110,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="3&nbsp; Centrality – R for Social Network Analysis">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://schochastics.io/R4SNA/descriptive/centrality-basic_files/figure-html/dbces11_basic_plot-1.png">
+<meta property="og:image" content="https://schochastics.io/R4SNA/descriptive/centrality-basic_files/figure-html/fig-dbces11-basic-plot-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
 <meta property="og:image:height" content="960">
 <meta property="og:image:width" content="1344">
 <meta name="twitter:title" content="3&nbsp; Centrality – R for Social Network Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://schochastics.io/R4SNA/descriptive/centrality-basic_files/figure-html/dbces11_basic_plot-1.png">
+<meta name="twitter:image" content="https://schochastics.io/R4SNA/descriptive/centrality-basic_files/figure-html/fig-dbces11-basic-plot-1.png">
 <meta name="twitter:image-height" content="960">
 <meta name="twitter:image-width" content="1344">
 <meta name="twitter:card" content="summary_large_image">
@@ -419,11 +448,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">3.1</span> Packages Needed for this Chapter</a></li>
-  <li><a href="#centrality-indices-igraph" id="toc-centrality-indices-igraph" class="nav-link" data-scroll-target="#centrality-indices-igraph"><span class="header-section-number">3.2</span> Centrality Indices <code>igraph</code></a></li>
-  <li><a href="#centrality-indices-sna" id="toc-centrality-indices-sna" class="nav-link" data-scroll-target="#centrality-indices-sna"><span class="header-section-number">3.3</span> Centrality indices <code>sna</code></a></li>
-  <li><a href="#other-centrality-packages" id="toc-other-centrality-packages" class="nav-link" data-scroll-target="#other-centrality-packages"><span class="header-section-number">3.4</span> Other Centrality Packages</a></li>
-  <li><a href="#thoughts" id="toc-thoughts" class="nav-link" data-scroll-target="#thoughts"><span class="header-section-number">3.5</span> Thoughts</a></li>
-  <li><a href="#use-case-florentine-families" id="toc-use-case-florentine-families" class="nav-link" data-scroll-target="#use-case-florentine-families"><span class="header-section-number">3.6</span> Use case: Florentine Families</a></li>
+  <li><a href="#what-is-centrality" id="toc-what-is-centrality" class="nav-link" data-scroll-target="#what-is-centrality"><span class="header-section-number">3.2</span> What Is Centrality?</a></li>
+  <li><a href="#centrality-indices-in-igraph" id="toc-centrality-indices-in-igraph" class="nav-link" data-scroll-target="#centrality-indices-in-igraph"><span class="header-section-number">3.3</span> Centrality Indices in <code>igraph</code></a>
+  <ul>
+  <li><a href="#degree" id="toc-degree" class="nav-link" data-scroll-target="#degree"><span class="header-section-number">3.3.1</span> Degree</a></li>
+  <li><a href="#closeness" id="toc-closeness" class="nav-link" data-scroll-target="#closeness"><span class="header-section-number">3.3.2</span> Closeness</a></li>
+  <li><a href="#betweenness" id="toc-betweenness" class="nav-link" data-scroll-target="#betweenness"><span class="header-section-number">3.3.3</span> Betweenness</a></li>
+  <li><a href="#eigenvector-centrality" id="toc-eigenvector-centrality" class="nav-link" data-scroll-target="#eigenvector-centrality"><span class="header-section-number">3.3.4</span> Eigenvector Centrality</a></li>
+  <li><a href="#subgraph-centrality" id="toc-subgraph-centrality" class="nav-link" data-scroll-target="#subgraph-centrality"><span class="header-section-number">3.3.5</span> Subgraph Centrality</a></li>
+  <li><a href="#comparing-indices" id="toc-comparing-indices" class="nav-link" data-scroll-target="#comparing-indices"><span class="header-section-number">3.3.6</span> Comparing Indices</a></li>
+  <li><a href="#directed-networks-pagerank-hubs-and-authorities" id="toc-directed-networks-pagerank-hubs-and-authorities" class="nav-link" data-scroll-target="#directed-networks-pagerank-hubs-and-authorities"><span class="header-section-number">3.3.7</span> Directed Networks: PageRank, Hubs, and Authorities</a></li>
+  <li><a href="#correlation-between-indices" id="toc-correlation-between-indices" class="nav-link" data-scroll-target="#correlation-between-indices"><span class="header-section-number">3.3.8</span> Correlation Between Indices</a></li>
+  </ul></li>
+  <li><a href="#normalization" id="toc-normalization" class="nav-link" data-scroll-target="#normalization"><span class="header-section-number">3.4</span> Normalization</a></li>
+  <li><a href="#centralization" id="toc-centralization" class="nav-link" data-scroll-target="#centralization"><span class="header-section-number">3.5</span> Centralization</a></li>
+  <li><a href="#other-centrality-packages" id="toc-other-centrality-packages" class="nav-link" data-scroll-target="#other-centrality-packages"><span class="header-section-number">3.6</span> Other Centrality Packages</a></li>
+  <li><a href="#choosing-a-centrality-index" id="toc-choosing-a-centrality-index" class="nav-link" data-scroll-target="#choosing-a-centrality-index"><span class="header-section-number">3.7</span> Choosing a Centrality Index</a></li>
+  <li><a href="#use-case-florentine-families" id="toc-use-case-florentine-families" class="nav-link" data-scroll-target="#use-case-florentine-families"><span class="header-section-number">3.8</span> Use Case: Florentine Families</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/descriptive/centrality-basic.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -432,7 +473,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../descriptive/introduction.html">Descriptive Network Analysis</a></li><li class="breadcrumb-item"><a href="../descriptive/centrality-basic.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></h1>
+<h1 class="title"><span id="sec-centrality" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></span></h1>
 </div>
 
 
@@ -449,8 +490,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>In this chapter, we learn about network centrality, a key concept for identifying the most influential nodes within networks. In a nutshell, a measure of centrality is an index that assigns a numeric values to the nodes of the network. The higher the value, the more central the node. “Being central” is a very ambiguous term and it is thus no surprise that there exists a large variety of indices that assess centrality with very different structural properties of the network.</p>
-<p>[INSERT PERIODIC TABLE]</p>
+<p>Centrality is one of the most fundamental concepts in network analysis. It provides a way to quantify the importance or prominence of individual nodes within a network. In social networks, centrality helps answer questions like: Who is the most influential person? Who controls the flow of information? Who can reach others most efficiently? There is no single answer to “who is most central” because importance depends on the structural feature we consider relevant. This chapter introduces the most commonly used centrality indices, discusses their interpretation, and demonstrates how to compute them in R.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">3.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
@@ -459,36 +499,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="centrality-indices-igraph" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="centrality-indices-igraph"><span class="header-section-number">3.2</span> Centrality Indices <code>igraph</code></h2>
-<p>The package <code>igraph</code> implements the following 10 indices:</p>
+<section id="what-is-centrality" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="what-is-centrality"><span class="header-section-number">3.2</span> What Is Centrality?</h2>
+<p>At its core, a centrality index assigns a numeric value to each node in a network. Higher values indicate greater centrality, but what “central” means depends on the index. Different indices capture fundamentally different notions of importance, each tied to a different structural property of the network. The four most widely used families of centrality can be mapped to distinct social intuitions:</p>
 <ul>
-<li>degree (<code>degree()</code>)</li>
-<li>weighted degree (<code>strength()</code>)</li>
-<li>betweenness (<code>betweenness()</code>)</li>
-<li>closeness (<code>closeness()</code>)</li>
-<li>eigenvector (<code>eigen_centrality()</code>)</li>
-<li>alpha centrality (<code>alpha_centrality()</code>)</li>
-<li>power centrality (<code>power_centrality()</code>)</li>
-<li>PageRank (<code>page_rank()</code>)</li>
-<li>eccentricity (<code>eccentricity()</code>)</li>
-<li>hubs and authorities (<code>authority_score()</code> and <code>hub_score()</code>)</li>
-<li>subgraph centrality (<code>subgraph_centrality()</code>)</li>
+<li><strong>Degree</strong> measures <em>activity</em>: How many direct connections does a node have? A node with many ties is active, popular, or well-connected.</li>
+<li><strong>Closeness</strong> measures <em>efficiency</em>: How quickly can a node reach all others? A node that is close to everyone can spread information or access resources with minimal steps.</li>
+<li><strong>Betweenness</strong> measures <em>brokerage</em>: How often does a node sit on the shortest path between others? A node with high betweenness controls or mediates the flow between other parts of the network.</li>
+<li><strong>Eigenvector centrality</strong> measures <em>prestige</em>: Is a node connected to other well-connected nodes? A node may have few ties, but if those ties are to important nodes, it is central by association.</li>
 </ul>
-<p>To illustrate some of the indices, we use the “dbces11” graph which is part of the <code>netrankr</code> package.</p>
+<p>These four intuitions are not interchangeable. A broker (high betweenness) need not be popular (high degree), and a prestigious node (high eigenvector) need not be efficient at reaching everyone (high closeness). This is precisely why multiple indices exist and why the choice of index should be guided by the research question at hand.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For a more formal treatment of what constitutes a centrality index and the structural properties that underlie different indices, see <a href="centrality-advanced.html" class="quarto-xref"><span>Chapter 4</span></a>.</p>
+</div>
+</div>
+</section>
+<section id="centrality-indices-in-igraph" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="centrality-indices-in-igraph"><span class="header-section-number">3.3</span> Centrality Indices in <code>igraph</code></h2>
+<p>The <code>igraph</code> package implements a broad range of centrality indices. To illustrate them, we use the <code>dbces11</code> graph from the <code>netrankr</code> package, shown in <a href="#fig-dbces11-basic-plot" class="quarto-xref">Figure&nbsp;<span>3.1</span></a>. This small network is useful because different indices disagree on which node is most central, making the distinctions between indices visible.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dbces11"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="centrality-basic_files/figure-html/dbces11_basic_plot-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-dbces11-basic-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dbces11-basic-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="centrality-basic_files/figure-html/fig-dbces11-basic-plot-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dbces11-basic-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.1: The dbces11 example network used to illustrate centrality indices.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p><strong>degree</strong> simply counts the number of neighbors a node has.</p>
+<section id="degree" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="degree"><span class="header-section-number">3.3.1</span> Degree</h3>
+<p>The most straightforward centrality index is <em>degree</em>, which counts the number of neighbors a node has. A node with high degree is directly connected to many others, making it active or popular in a social sense.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">degree</span>(dbces11)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -496,18 +553,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 1 1 2 2 3 4 4 4 4 4 5 </code></pre>
 </div>
 </div>
+<p>For weighted networks, <em>strength</em> (also called weighted degree) sums the edge weights instead of simply counting ties. This is useful when ties carry different intensities, such as frequency of communication or volume of trade.</p>
 <div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="centrality-basic_files/figure-html/degree_dbces11_plot-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">strength</span>(g, <span class="at">weights =</span> <span class="fu">E</span>(g)<span class="sc">$</span>weight)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-</div>
-<p><strong>closeness</strong> computes the shortest path distances among nodes. The most central node has the minimum distance to all other nodes (Since high scores are associated with central nodes, the distances are inverted).</p>
+</section>
+<section id="closeness" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="closeness"><span class="header-section-number">3.3.2</span> Closeness</h3>
+<p><em>Closeness centrality</em> is based on the shortest path distances between nodes. The idea is that a central node can reach all other nodes quickly. Formally, it is defined as the inverse of the sum of distances from a node to all others, so that nodes with shorter total distances receive higher scores.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">closeness</span>(dbces11)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">closeness</span>(dbces11)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         A          B          C          D          E          F          G 
 0.03703704 0.02941176 0.04000000 0.04000000 0.05000000 0.05882353 0.05263158 
@@ -515,10 +570,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 0.05555556 0.05555556 0.05263158 0.05555556 </code></pre>
 </div>
 </div>
-<p>The animation below gives an intuition on the calculation for one node. <img src="img/closeness.gif" class="img-fluid"></p>
-<p><strong>betweeness</strong> is the number of shortest paths that pass through a node (divided by the total number of shortest paths)</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Closeness centrality is only well-defined for connected networks. In disconnected networks, distances between components are infinite. <code>igraph</code> handles this by only considering reachable nodes, but results should be interpreted with caution. Alternatives like <em>harmonic closeness</em> (the sum of inverse distances) handle disconnected networks more gracefully.</p>
+</div>
+</div>
+</section>
+<section id="betweenness" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="betweenness"><span class="header-section-number">3.3.3</span> Betweenness</h3>
+<p><em>Betweenness centrality</em> counts how often a node lies on the shortest path between pairs of other nodes. A node with high betweenness acts as a bridge or broker: removing it would increase distances or disconnect parts of the network. The raw count is typically normalized by the total number of shortest paths.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">betweenness</span>(dbces11)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">betweenness</span>(dbces11)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        A         B         C         D         E         F         G         H 
  0.000000  0.000000  0.000000  9.000000  3.833333  9.833333  2.666667 16.333333 
@@ -526,28 +596,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  7.333333  1.333333 14.666667 </code></pre>
 </div>
 </div>
-<p>To get an intuition what it means to have a high betweenness, check the network below.</p>
+</section>
+<section id="eigenvector-centrality" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="eigenvector-centrality"><span class="header-section-number">3.3.4</span> Eigenvector Centrality</h3>
+<p><em>Eigenvector centrality</em> extends the idea of degree by weighting each connection by the centrality of the neighbor. A node is central if it is connected to other central nodes. This recursive definition is resolved by computing the leading eigenvector of the adjacency matrix.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: `add.vertices()` was deprecated in igraph 2.0.0.
-ℹ Please use `add_vertices()` instead.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: `add.edges()` was deprecated in igraph 2.0.0.
-ℹ Please use `add_edges()` instead.</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="centrality-basic_files/figure-html/betweenness_bridge-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Any shortest path from the right will pass through the red node and vice versa. The red note is thus a sort of “gatekeeper” for any information that is passed from left to right.</p>
-<p><strong>eigenvector centrality</strong> extends the idea of degree by assuming that a node is central if it is connected to other central nodes.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eigen_centrality</span>(dbces11)<span class="sc">$</span>vector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eigen_centrality</span>(dbces11)<span class="sc">$</span>vector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        A         B         C         D         E         F         G         H 
 0.2259630 0.0645825 0.3786244 0.2415182 0.5709057 0.9846544 1.0000000 0.8386195 
@@ -555,9 +609,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 0.9113529 0.9986474 0.8450304 </code></pre>
 </div>
 </div>
-<p><strong>subgraph centrality</strong> is a bit more abstract but what it does is summing up all closed walks weighting them by the inverse factorial of its length.</p>
+</section>
+<section id="subgraph-centrality" class="level3" data-number="3.3.5">
+<h3 data-number="3.3.5" class="anchored" data-anchor-id="subgraph-centrality"><span class="header-section-number">3.3.5</span> Subgraph Centrality</h3>
+<p><em>Subgraph centrality</em> quantifies the participation of each node in all subgraphs of the network, weighted by the inverse factorial of their size. It captures how embedded a node is in the local structure of the network, counting closed walks of all lengths.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">subgraph_centrality</span>(dbces11)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">subgraph_centrality</span>(dbces11)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       A        B        C        D        E        F        G        H 
 1.825100 1.595400 3.148571 2.423091 4.387127 7.807257 7.939410 6.672783 
@@ -565,94 +622,242 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 7.032672 8.242124 7.389559 </code></pre>
 </div>
 </div>
-<p>The remaining indices are mostly designed for directed networks, <strong>page rank</strong> being the prime example. Note, though that the indices above can also be applied to directed networks.</p>
-<p>If we highlight the most central node for the calculated indices, we get the following.</p>
+</section>
+<section id="comparing-indices" class="level3" data-number="3.3.6">
+<h3 data-number="3.3.6" class="anchored" data-anchor-id="comparing-indices"><span class="header-section-number">3.3.6</span> Comparing Indices</h3>
+<p><a href="#fig-dbces11-centrality" class="quarto-xref">Figure&nbsp;<span>3.2</span></a> shows the most central node according to each of the indices computed above. Each index picks a different node as most central, highlighting how the choice of index determines what we consider “important.”</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="centrality-basic_files/figure-html/dbces11_plot-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-dbces11-centrality" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dbces11-centrality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="centrality-basic_files/figure-html/fig-dbces11-centrality-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dbces11-centrality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.2: Most central node for different centrality indices in the dbces11 graph. DC = degree, BC = betweenness, CC = closeness, EC = eigenvector, SC = subgraph centrality.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>So each index picks a different node as most central. While this is just a toy example, it highlights how influential the choice of indices can be in empirical settings.</p>
+<p>While this is a toy example, it illustrates an important point: centrality indices can produce substantially different rankings. In empirical settings, this means the choice of index is consequential and should be driven by the research question rather than convenience.</p>
 </section>
-<section id="centrality-indices-sna" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="centrality-indices-sna"><span class="header-section-number">3.3</span> Centrality indices <code>sna</code></h2>
-<p>The <code>sna</code> package implements roughly the same indices as <code>igraph</code> but adds:</p>
-<ul>
-<li>flow betweenness (<code>flowbet()</code>)</li>
-<li>load centrality (<code>loadcent()</code>)</li>
-<li>Gil-Schmidt Power Index (<code>gilschmidt()</code>)</li>
-<li>information centrality (<code>infocent()</code>)</li>
-<li>stress centrality (<code>stresscent()</code>)</li>
-</ul>
-</section>
-<section id="other-centrality-packages" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="other-centrality-packages"><span class="header-section-number">3.4</span> Other Centrality Packages</h2>
-<p>There are also some dedicated centrality packages, such as <code>centiserve</code>, <code>CINNA</code>, <code>influenceR</code> and <code>keyplayer</code>. The biggest in terms of implemented indices is currently <code>centiserve</code> with a total of 33 indices.</p>
+<section id="directed-networks-pagerank-hubs-and-authorities" class="level3" data-number="3.3.7">
+<h3 data-number="3.3.7" class="anchored" data-anchor-id="directed-networks-pagerank-hubs-and-authorities"><span class="header-section-number">3.3.7</span> Directed Networks: PageRank, Hubs, and Authorities</h3>
+<p>Several centrality indices are specifically designed for directed networks. <em>PageRank</em> is perhaps the most well-known, originally developed to rank web pages. It assigns importance based on the number and quality of incoming links. <em>Hub and authority scores</em> distinguish between two roles: a good <em>hub</em> points to many good <em>authorities</em>, and a good <em>authority</em> is pointed to by many good <em>hubs</em>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(centiserve)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Matrix</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>g_dir <span class="ot">&lt;-</span> <span class="fu">sample_pa</span>(<span class="dv">20</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.character</span>(<span class="fu">lsf.str</span>(<span class="st">"package:centiserve"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">page_rank</span>(g_dir)<span class="sc">$</span>vector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] "averagedis"            "barycenter"            "bottleneck"           
- [4] "centroid"              "closeness.currentflow" "closeness.freeman"    
- [7] "closeness.latora"      "closeness.residual"    "closeness.vitality"   
-[10] "clusterrank"           "communibet"            "communitycent"        
-[13] "crossclique"           "decay"                 "diffusion.degree"     
-[16] "dmnc"                  "entropy"               "epc"                  
-[19] "geokpath"              "hubbell"               "katzcent"             
-[22] "laplacian"             "leaderrank"            "leverage"             
-[25] "lincent"               "lobby"                 "markovcent"           
-[28] "mnc"                   "pairwisedis"           "radiality"            
-[31] "salsa"                 "semilocal"             "topocoefficient"      </code></pre>
+<pre><code> [1] 0.19857238 0.21486241 0.13201548 0.07961693 0.07013303 0.02948775
+ [7] 0.01593933 0.01593933 0.01593933 0.01593933 0.01593933 0.01593933
+[13] 0.02948775 0.01593933 0.01593933 0.04100392 0.01593933 0.02948775
+[19] 0.01593933 0.01593933</code></pre>
 </div>
 </div>
-<p>The description of <code>CINNA</code> says “Functions for computing, comparing and demonstrating top informative centrality measures within a network.” Most of the indices in the package are imported from other package, such as <code>centiserve</code>. In addition, there are:</p>
-<ul>
-<li>Dangalchev closeness (<code>dangalchev_closeness_centrality()</code>)</li>
-<li>group centrality (<code>group_centrality()</code>)</li>
-<li>harmonic closeness (<code>harmonic_centrality()</code>)</li>
-<li>local bridging centrality (<code>local_bridging_centrality()</code>)</li>
-</ul>
-<p>The function <code>calculate_centralities()</code> can be used to calculate all applicable indices to a network. The primary purpose of the package is to facilitate the choice of indices by visual and statistical tools. If you are interested in the details, see this <a href="https://www.datacamp.com/community/tutorials/centrality-network-analysis-R">tutorial</a> and this <a href="https://cran.r-project.org/web/packages/CINNA/vignettes/CINNA.html">vignette</a>.</p>
-<p><code>influenceR</code> and <code>keyplayer</code> are comparably small packages which implement only a small number of indices.</p>
-</section>
-<section id="thoughts" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="thoughts"><span class="header-section-number">3.5</span> Thoughts</h2>
-<p>The choice of indices can be overwhelming and little guidelines exist on when to choose what. The worst thing to do in any case is to apply a handful of indices and pick the result that suits your interpretation best. In best case, you have substantive arguments to apply an index and the result does match the hypothesis (or not).</p>
-</section>
-<section id="use-case-florentine-families" class="level2" data-number="3.6">
-<h2 data-number="3.6" class="anchored" data-anchor-id="use-case-florentine-families"><span class="header-section-number">3.6</span> Use case: Florentine Families</h2>
-<p>A classic example application of centrality indices is the “Florentine Families” dataset, which is included in the <code>networkdata</code> package.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hub_score</span>(g_dir)<span class="sc">$</span>vector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `hub_score()` was deprecated in igraph 2.0.3.
+ℹ Please use `hits_scores()` instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 2.140924e-19 0.000000e+00 1.000000e+00 0.000000e+00 1.000000e+00
+ [6] 2.225879e-16 2.225873e-16 0.000000e+00 0.000000e+00 1.000000e+00
+[11] 0.000000e+00 0.000000e+00 2.225857e-16 0.000000e+00 1.440822e-16
+[16] 0.000000e+00 0.000000e+00 6.556735e-17 0.000000e+00 1.000000e+00</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">authority_score</span>(g_dir)<span class="sc">$</span>vector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `authority_score()` was deprecated in igraph 2.1.0.
+ℹ Please use `hits_scores()` instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 0.000000e+00 0.000000e+00 1.669389e-16 1.080591e-16 1.000000e+00
+ [6] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+[11] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+[16] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00</code></pre>
+</div>
+</div>
+<p>In directed social networks, PageRank can identify individuals who receive attention or endorsement from well-connected others, while hub and authority scores can distinguish between those who actively seek out connections (hubs) and those who attract them (authorities).</p>
+</section>
+<section id="correlation-between-indices" class="level3" data-number="3.3.8">
+<h3 data-number="3.3.8" class="anchored" data-anchor-id="correlation-between-indices"><span class="header-section-number">3.3.8</span> Correlation Between Indices</h3>
+<p>Because different centrality indices measure different structural properties, it is useful to examine how they relate to each other on a given network. On some networks, all indices will largely agree; on others, they will diverge considerably. We can examine this using a larger network.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"karate"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cent_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree =</span> <span class="fu">degree</span>(karate),</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">closeness =</span> <span class="fu">closeness</span>(karate),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">betweenness =</span> <span class="fu">betweenness</span>(karate),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">eigen =</span> <span class="fu">eigen_centrality</span>(karate)<span class="sc">$</span>vector</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(cent_df), <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            degree closeness betweenness eigen
+degree        1.00      0.77        0.91  0.92
+closeness     0.77      1.00        0.72  0.90
+betweenness   0.91      0.72        1.00  0.80
+eigen         0.92      0.90        0.80  1.00</code></pre>
+</div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="centrality-basic_files/figure-html/flo_plot-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-centrality-pairs" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-centrality-pairs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="centrality-basic_files/figure-html/fig-centrality-pairs-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-centrality-pairs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.3: Pairwise scatter plots of four centrality indices computed on the karate club network.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Th network shows marriage ties among Renaissance Families in Florence. Marriages at that time were strategic to improve the standing of families in society. The size of the names is proportional to the wealth of the families. Although the Strozzi were the wealthiest family, it was ultimately the Medici who became the most powerful family. This is in part due to their central position within this marriage network.</p>
-<p>The table bellow shows the ranking for the four most commonly used centrality indices (1=top rank).</p>
+<p>The correlation matrix and scatter plots reveal which indices capture similar information and where they diverge. High correlations (e.g., between degree and eigenvector centrality) suggest that the structural features they measure overlap in this network, while low correlations indicate genuinely different dimensions of centrality.</p>
+</section>
+</section>
+<section id="normalization" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="normalization"><span class="header-section-number">3.4</span> Normalization</h2>
+<p>Many centrality indices can be <em>normalized</em> to produce values that are comparable across networks of different sizes. For instance, raw degree depends on the number of nodes in the network, making it difficult to compare across networks. Normalized degree divides by the maximum possible degree (<span class="math inline">\(n - 1\)</span>), yielding a proportion.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">degree</span>(dbces11)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>A B C D E F G H I J K 
+1 1 2 2 3 4 4 4 4 4 5 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">degree</span>(dbces11, <span class="at">normalized =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  A   B   C   D   E   F   G   H   I   J   K 
+0.1 0.1 0.2 0.2 0.3 0.4 0.4 0.4 0.4 0.4 0.5 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Normalization is essential when comparing centrality across networks of different sizes. Within a single network, the ranking of nodes is unaffected by normalization, so it only matters when you need scores on a comparable scale.</p>
+</div>
+</div>
+<p>Most <code>igraph</code> centrality functions accept a <code>normalized</code> argument. For betweenness and closeness, normalization adjusts for both network size and directedness.</p>
+</section>
+<section id="centralization" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="centralization"><span class="header-section-number">3.5</span> Centralization</h2>
+<p>While centrality is a node-level property, <em>centralization</em> is a network-level summary that captures how unequal the distribution of centrality is across all nodes. Freeman’s centralization compares the observed network to the theoretical maximum inequality, which occurs in a <em>star graph</em> (one node connected to all others, no other edges).</p>
+<p>A centralization score of 1 means the network is maximally centralized (like a star), while a score near 0 means centrality is evenly distributed (like a ring or complete graph).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-centralization-contrast" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-centralization-contrast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="centrality-basic_files/figure-html/fig-centralization-contrast-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-centralization-contrast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.4: A star graph (left) has maximum centralization while a ring graph (right) has minimum centralization.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">centr_degree</span>(<span class="fu">make_star</span>(<span class="dv">10</span>, <span class="at">mode =</span> <span class="st">"undirected"</span>))<span class="sc">$</span>centralization</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">centr_degree</span>(<span class="fu">make_ring</span>(<span class="dv">10</span>))<span class="sc">$</span>centralization</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p><code>igraph</code> provides centralization functions for degree (<code>centr_degree()</code>), betweenness (<code>centr_betw()</code>), closeness (<code>centr_clo()</code>), and eigenvector centrality (<code>centr_eigen()</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree =</span> <span class="fu">centr_degree</span>(karate)<span class="sc">$</span>centralization,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">betweenness =</span> <span class="fu">centr_betw</span>(karate)<span class="sc">$</span>centralization,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">closeness =</span> <span class="fu">centr_clo</span>(karate)<span class="sc">$</span>centralization,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">eigen =</span> <span class="fu">centr_eigen</span>(karate)<span class="sc">$</span>centralization</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     degree betweenness   closeness       eigen 
+  0.3761141   0.4055572   0.2981949   0.6458497 </code></pre>
+</div>
+</div>
+<p>These scores tell us not just <em>who</em> is central, but <em>how centralized</em> the network is as a whole. A highly centralized network depends heavily on a few key nodes, making it potentially vulnerable if those nodes are removed.</p>
+</section>
+<section id="other-centrality-packages" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="other-centrality-packages"><span class="header-section-number">3.6</span> Other Centrality Packages</h2>
+<p>Beyond <code>igraph</code>, several R packages offer additional centrality indices. The <code>sna</code> package implements indices such as <em>flow betweenness</em> (based on maximum flow rather than shortest paths), <em>information centrality</em> (based on information-theoretic measures), and <em>stress centrality</em> (counting all shortest paths through a node, without normalization).</p>
+<p>The <code>centiserve</code> package provides the largest collection, with over 30 additional indices. Packages like <code>CINNA</code>, <code>influenceR</code>, and <code>keyplayer</code> offer smaller, more specialized selections.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The sheer number of available centrality indices can be overwhelming. More indices does not mean better analysis. It is generally more productive to choose one or two indices that align with your research question than to compute all available options and pick the most favorable result.</p>
+</div>
+</div>
+</section>
+<section id="choosing-a-centrality-index" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="choosing-a-centrality-index"><span class="header-section-number">3.7</span> Choosing a Centrality Index</h2>
+<p>With so many indices available, how should one choose? The key is to let the research question guide the choice rather than the other way around:</p>
+<ul>
+<li>If you are interested in <strong>activity</strong> or <strong>popularity</strong>, degree (or strength for weighted networks) is the natural choice.</li>
+<li>If you care about <strong>efficiency of communication</strong> or <strong>independence</strong>, closeness captures how quickly a node can reach others.</li>
+<li>If <strong>brokerage</strong> or <strong>control</strong> is your focus, betweenness identifies nodes that bridge different parts of the network.</li>
+<li>If you are interested in <strong>influence through connections</strong>, eigenvector centrality or PageRank captures prestige by association.</li>
+</ul>
+<p>The worst practice is to compute several indices and then selectively report whichever supports the desired narrative. In the best case, you have a substantive argument for why a specific structural property matters, apply the corresponding index, and let the result speak to your hypothesis.</p>
+<p>When multiple indices seem equally defensible and you are uncertain which to choose, the approach introduced in <a href="centrality-advanced.html" class="quarto-xref"><span>Chapter 4</span></a> offers a principled alternative: rather than committing to a single index, you can analyse the partial ordering that most indices agree on.</p>
+</section>
+<section id="use-case-florentine-families" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="use-case-florentine-families"><span class="header-section-number">3.8</span> Use Case: Florentine Families</h2>
+<p>A classic application of centrality analysis is the <em>Florentine Families</em> dataset, which records marriage ties among prominent Renaissance families in Florence. This network is included in the <code>networkdata</code> package.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-flo-marriage" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-flo-marriage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="centrality-basic_files/figure-html/fig-flo-marriage-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-flo-marriage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.5: Marriage network among Florentine families. Node size is proportional to the wealth of each family.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Marriages in Renaissance Florence were strategic alliances designed to improve a family’s political standing and access to resources. The network in <a href="#fig-flo-marriage" class="quarto-xref">Figure&nbsp;<span>3.5</span></a> shows these marriage ties, with node sizes proportional to each family’s wealth. Although the Strozzi were the wealthiest family, it was ultimately the Medici who rose to become the most powerful. A centrality analysis helps explain why.</p>
+<p>The table below shows the centrality ranking of each family across the four most commonly used indices (1 = highest rank).</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: right;">degree</th>
-<th style="text-align: right;">betweenness</th>
-<th style="text-align: right;">closeness</th>
-<th style="text-align: right;">eigen</th>
+<th style="text-align: left;">Family</th>
+<th style="text-align: right;">Degree</th>
+<th style="text-align: right;">Betweenness</th>
+<th style="text-align: right;">Closeness</th>
+<th style="text-align: right;">Eigenvector</th>
 </tr>
 </thead>
 <tbody>
@@ -772,7 +977,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>No matter what structural feature we consider to be important, the Medici always have the most advantageous position.</p>
+<p>The Medici rank first (or nearly first) on every index. Their high <em>degree</em> means they had the most marriage ties, making them the most active family in forming alliances. Their top <em>betweenness</em> ranking reveals that they occupied a critical brokerage position: many of the shortest paths between other families passed through them, giving the Medici control over the flow of information and political favors. Their high <em>closeness</em> means they could reach any other family through fewer intermediaries than anyone else. And their <em>eigenvector centrality</em> shows that they were not just well-connected, but connected to other well-connected families.</p>
+<p>The Strozzi, despite their wealth, were structurally peripheral. Their marriage ties connected them to less central families, limiting their ability to broker relationships or influence the network as a whole. This case illustrates a key insight of network analysis: structural position can matter more than individual attributes like wealth.</p>
+<p>We can also examine centralization to characterize the network as a whole:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree =</span> <span class="fu">centr_degree</span>(flo_marriage)<span class="sc">$</span>centralization,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">betweenness =</span> <span class="fu">centr_betw</span>(flo_marriage)<span class="sc">$</span>centralization</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     degree betweenness 
+  0.2333333   0.3834921 </code></pre>
+</div>
+</div>
+<p>The moderately high betweenness centralization confirms that brokerage in this network was concentrated in a few families, with the Medici at the center.</p>
+<p>In the next chapter, we explore more advanced questions about centrality: what structural properties underlie different indices, and how to analyse centrality when the choice of index is uncertain.</p>
 
 
 </section>
