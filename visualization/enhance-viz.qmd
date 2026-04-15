@@ -56,6 +56,7 @@ V(g)$grp <- as.character(rep(1:9, each = 40))
 
 ```{r}
 #| label:  fig-network-grps-sol
+#| fig-cap: "Network with group structure highlighted using `geom_mark_hull()`."
 ggraph(g, layout = "backbone", keep = 0.4) +
   geom_edge_link0(edge_color = "grey66", edge_width = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
@@ -72,10 +73,11 @@ ggraph(g, layout = "backbone", keep = 0.4) +
   theme(legend.position = "none")
 ```
 
-It is also possible to add labels to the clusters.
+@fig-network-grps-sol shows the result. It is also possible to add labels to the clusters.
 
 ```{r}
 #| label: fig-network-grps-label-sol
+#| fig-cap: "Network with labelled group hulls."
 ggraph(g, layout = "backbone", keep = 0.4) +
   geom_edge_link0(edge_color = "grey66", edge_width = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
@@ -92,15 +94,18 @@ ggraph(g, layout = "backbone", keep = 0.4) +
   theme(legend.position = "none")
 ```
 
+The labelled version is shown in @fig-network-grps-label-sol.
+
 ## Small tricks for common problems 
 
 > "How can I achieve that my directed edges stop at the node border, independent from the node size?" 
 
 This one has given me headaches for the longest time. No matter what I tried, I always ended up with
-something like the below plot.
+something like @fig-arrow-size.
 
 ```{r}
-#| label: arrow-size
+#| label: fig-arrow-size
+#| fig-cap: "Directed network where arrows overlap with nodes of varying size."
 ## create a random network
 set.seed(1071)
 g <- sample_pa(30, 1)
@@ -128,7 +133,8 @@ a circle with radius (or diameter?) "5pt". Since this means, that you have no co
 you need to do that beforehand.
 
 ```{r}
-#| label: arrows-size-sol
+#| label: fig-arrows-size-sol
+#| fig-cap: "Directed network with corrected arrow endpoints using `I()` for node sizes."
 ## this function is borrowed from the ambient package
 normalise <- function(x, from = range(x), to = c(0, 1)) {
   x <- (x - from[1]) / (from[2] - from[1])
@@ -156,16 +162,17 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-I would not be surprised though if there is an even easier fix for this problem.
+The corrected version is shown in @fig-arrows-size-sol. I would not be surprised though if there is an even easier fix for this problem.
 
 > "How can I lower the opacity of nodes without making edges visible underneath?"
 
 One of the rules I try to follow is that edges should not be visible on top of nodes.
-Usually that is easy to achieve by drawing the edges before the nodes. But if you 
-want to lower the opacity of nodes, they do become visible again.
+Usually that is easy to achieve by drawing the edges before the nodes. But if you
+want to lower the opacity of nodes, they do become visible again, as shown in @fig-alpha-nodes.
 
 ```{r}
-#| label: alpha-nodes
+#| label: fig-alpha-nodes
+#| fig-cap: "Network with transparent nodes where edges are visible underneath."
 g <- sample_gnp(20, 0.5)
 V(g)$degree <- degree(g)
 
@@ -183,7 +190,8 @@ ggraph(g, "stress") +
 The solution is rather simple. Just add a node layer with the same aesthetics below with
 `alpha=1` (default) and `color="white"` (or the background color of the plot).
 ```{r}
-#| label: alpha-nodes-sol
+#| label: fig-alpha-nodes-sol
+#| fig-cap: "Network with opaque white background layer to hide edges beneath transparent nodes."
 ggraph(g, "stress") +
   geom_edge_link(edge_colour = "grey66") +
   geom_node_point(size = 8, col = "white") +
@@ -196,14 +204,15 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-Of course you could also use `start_cap` and `end_cap` here, but you may have to fiddle again as in the last example. 
+The result is shown in @fig-alpha-nodes-sol. Of course you could also use `start_cap` and `end_cap` here, but you may have to fiddle again as in the last example. 
 
 > "How can I enhance readability of node labels in hairball graphs?"
 
-Sometimes it is really hard to make labels readable when the network is very cluttered
+Sometimes it is really hard to make labels readable when the network is very cluttered (see @fig-unreadable-labels).
 
 ```{r}
-#| label: unreadable-labels
+#| label: fig-unreadable-labels
+#| fig-cap: "Dense network with hard-to-read node labels."
 #| fig-width: 8
 #| fig-height: 8
 g <- sample_gnp(50, 0.7)
@@ -223,10 +232,11 @@ ggraph(g) +
   coord_fixed()
 ```
 
-Here you can make use of the fact that the layout of the nodes are stored in a "hidden" data frame when a `ggraph` object is constructed. That means you can use other geoms from other packages. In this case, the `shadowtext` package as shown below.
+Here you can make use of the fact that the layout of the nodes are stored in a "hidden" data frame when a `ggraph` object is constructed. That means you can use other geoms from other packages. In this case, the `shadowtext` package as shown in @fig-shadowtext-labels.
 
 ```{r}
-#| label: shadowtext-labels
+#| label: fig-shadowtext-labels
+#| fig-cap: "Dense network with improved label readability using `shadowtext`."
 #| fig-width: 8
 #| fig-height: 8
 

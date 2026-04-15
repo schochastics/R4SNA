@@ -57,10 +57,11 @@ These are capable to deal with networks with around 100,000 nodes. At this size,
 
 ## Concentric Layouts
 
-Circular layouts, as in `layout_in_circle()` from `igraph` are generally not advisable. 
+Circular layouts, as in `layout_in_circle()` from `igraph` are generally not advisable (@fig-circular-layout). 
 
 ```{r}
 #| label: fig-circular-layout
+#| fig-cap: "GoT network with a circular layout."
 #| fig-width: 8
 #| fig-height: 8
 
@@ -78,9 +79,10 @@ ggraph(gotS1, layout = "circle") +
 
 Concentric circles, on the other hand, help to emphasize the position of certain nodes in the network. The `graphlayouts` package has two function to create concentric layouts, `layout_with_focus()` and `layout_with_centrality()`.
 
-The first one allows to focus the network on a specific node and arrange all other nodes in concentric circles (depending on the geodesic distance). Below we focus on the character *Ned Stark*.
+The first one allows to focus the network on a specific node and arrange all other nodes in concentric circles (depending on the geodesic distance). In @fig-concentric-ned, we focus on the character *Ned Stark*.
 ```{r}
 #| label: fig-concentric-ned
+#| fig-cap: "GoT network with concentric layout focused on Ned Stark."
 #| fig-width: 8
 #| fig-height: 8
 ggraph(gotS1, layout = "focus", focus = 1) +
@@ -100,9 +102,10 @@ ggraph(gotS1, layout = "focus", focus = 1) +
 
 The parameter `focus` in the first line is used to choose the node id of the focal node. The function `coord_fixed()` is used to always keep the aspect ratio at one (i.e. the circles always appear as a circle and not an ellipse). 
 
-The function `draw_circle()` can be used to add the circles explicitly.
+The function `draw_circle()` can be used to add the circles explicitly (@fig-concentric-ned1).
 ```{r}
-#| label: concentric-ned1
+#| label: fig-concentric-ned1
+#| fig-cap: "Concentric layout focused on Ned Stark with explicit circles drawn."
 #| fig-width: 8
 #| fig-height: 8
 ggraph(gotS1, layout = "focus", focus = 1) +
@@ -121,9 +124,10 @@ ggraph(gotS1, layout = "focus", focus = 1) +
   theme(legend.position = "none")
 ```
 
-`layout_with_centrality()` works in a similar way. You can specify any centrality index (or any numeric vector for that matter), and create a concentric layout where the most central nodes are put in the center and the most peripheral nodes in the biggest circle. The numeric attribute used for the layout is specified with the `cent` parameter. Here, we use the weighted degree of the characters.
+`layout_with_centrality()` works in a similar way. You can specify any centrality index (or any numeric vector for that matter), and create a concentric layout where the most central nodes are put in the center and the most peripheral nodes in the biggest circle. The numeric attribute used for the layout is specified with the `cent` parameter. Here, we use the weighted degree of the characters (@fig-concentric-weighted-deg).
 ```{r}
 #| label: fig-concentric-weighted-deg
+#| fig-cap: "GoT network with concentric layout based on weighted degree centrality."
 #| fig-width: 8
 #| fig-height: 8
 ggraph(gotS1, layout = "centrality", cent = graph.strength(gotS1)) +
@@ -157,10 +161,11 @@ V(g)$grp <- as.character(rep(1:9, each = 40))
 
 The network consists of 9 groups with 40 vertices each. The density within each group is
 0.4 and there are 15 edges running between each pair of groups. Let us try to
-visualize the network with what we have learned so far.
+visualize the network with what we have learned so far (@fig-island-stress).
 
 ```{r}
-#| label: island_stress
+#| label: fig-island-stress
+#| fig-cap: "Island network drawn with the stress layout showing a hairball structure."
 #| fig-width: 8
 #| fig-height: 8
 ggraph(g, layout = "stress") +
@@ -184,6 +189,7 @@ network and the stress layout algorithm is applied to this network. Once the lay
 
 ```{r}
 #| label: fig-backbone-plot
+#| fig-cap: "Island network rendered with the backbone layout."
 #| fig-width: 8
 #| fig-height: 6
 ggraph(g, layout = "backbone", keep = 0.4) +
@@ -195,7 +201,7 @@ ggraph(g, layout = "backbone", keep = 0.4) +
   theme(legend.position = "none")
 ```
 
-The groups are now clearly visible. Of course the network used in the example is specifically tailored to illustrate the power of the algorithm. Using the backbone layout in real world networks may not always result in such a clear division of groups. It should thus not be seen as a universal remedy for drawing hairball networks. Keep in mind: It can **only** emphasize a hidden group structure **if it exists**.
+The groups are now clearly visible in @fig-backbone-plot. Of course the network used in the example is specifically tailored to illustrate the power of the algorithm. Using the backbone layout in real world networks may not always result in such a clear division of groups. It should thus not be seen as a universal remedy for drawing hairball networks. Keep in mind: It can **only** emphasize a hidden group structure **if it exists**.
 
 The plot below shows an empirical example where the algorithm was able to uncover a hidden group structure. The network shows facebook friendships of a university in the US. Node colour corresponds to dormitory of students.
 Left is the ordinary stress layout and right the backbone layout.
@@ -228,10 +234,11 @@ The function `layout_as_dynamic()` from `graphlayouts` can be used to visualize 
 xy <- layout_as_dynamic(s50, alpha = 0.2)
 ```
 
-Now we can use `ggraph` in conjunction with `patchwork` to produce a static plot with the three networks side-by-side.
+Now we can use `ggraph` in conjunction with `patchwork` to produce a static plot with the three networks side-by-side (@fig-static_plot).
 
 ```{r}
 #| label: fig-static_plot
+#| fig-cap: "Longitudinal network of 50 students across three waves."
 #| fig-width: 14
 #| fig-height: 8
 pList <- vector("list", length(s50))
@@ -300,10 +307,11 @@ xy <- layout_as_multilevel(multilvl_ex, type = "all", alpha = 25, beta = 45)
 
 To visualize the network with `ggraph`, you may want to draw the edges for each level (and inter level edges)
 with a different edge geom. This gives you more flexibility to control aesthetics and can easily be achieved
-with a filter.
+with a filter (@fig-multi-all-example).
 
 ```{r}
 #| label: fig-multi-all-example
+#| fig-cap: "Multilevel network with a complete 3D stress layout."
 #| fig-height: 7
 ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
   geom_edge_link0(
@@ -347,7 +355,7 @@ argument. Note that this version optimizes inter-level edges only minimally. The
 intra-level structures.
 
 ```{r}
-#| lbel: fig-separate-layout
+#| label: separate-layout
 xy <- layout_as_multilevel(
   multilvl_ex,
   type = "separate",
@@ -358,10 +366,11 @@ xy <- layout_as_multilevel(
 )
 ```
 
-Again, try to include an edge geom for each level.
+Again, try to include an edge geom for each level (@fig-multi-separate-example).
 
 ```{r}
 #| label: fig-multi-separate-example
+#| fig-cap: "Multilevel network with separate layouts for each level."
 #| fig-height: 7
 cols2 <- c(
   "#3A5FCD",
@@ -416,11 +425,12 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
 
 This layout can be used to emphasize one intra-level structure. The layout 
 of the second level is calculated in a way that optimizes inter-level edge placement. 
-Set `type = "fix1"` and specify  `FUN1` and possibly `params1` to fix level 1 or set `type = "fix2"` and specify 
-`FUN2` and possibly `params2` to fix level 2.
+Set `type = "fix1"` and specify  `FUN1` and possibly `params1` to fix level 1 or set `type = "fix2"` and specify
+`FUN2` and possibly `params2` to fix level 2 (@fig-multi-fix2-example).
 
 ```{r}
-#| label: multi-fix2-example
+#| label: fig-multi-fix2-example
+#| fig-cap: "Multilevel network with level 2 fixed and level 1 optimized for inter-level edges."
 #| fig-height: 7
 xy <- layout_as_multilevel(
   multilvl_ex,
@@ -470,14 +480,15 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
 
 ## Edge bundling
 
-Edge bundling is a technique to reduce visual clutter in dense networks. The idea is to group edges together into bundles, which can help to reveal underlying structures and patterns that may be hidden in a traditional edge representation. The `ggraph` package provides two functions for edge bundling: `geom_edge_bundle_force()` and `geom_edge_bundle_path()`. The first one uses a force-directed algorithm to create bundles, while the second one creates bundles based on the shortest path between nodes. 
+Edge bundling is a technique to reduce visual clutter in dense networks. The idea is to group edges together into bundles, which can help to reveal underlying structures and patterns that may be hidden in a traditional edge representation. The `ggraph` package provides two functions for edge bundling: `geom_edge_bundle_force()` and `geom_edge_bundle_path()`. The first one uses a force-directed algorithm to create bundles, while the second one creates bundles based on the shortest path between nodes.
 
-To illustrate the difference between the two algorithms, we use the network of US flights from the `networkdata` package. 
+To illustrate the difference between the two algorithms, we use the network of US flights from the `networkdata` package. @fig-force-bundle shows the force-directed approach and @fig-path-bundle shows the path-based approach.
 
 ```{r}
 #| label: fig-force-bundle
+#| fig-cap: "US flights network with force-directed edge bundling."
 data("us_flights")
-states <- ggplot::map_data("state")
+states <- ggplot2::map_data("state")
 
 ggraph(us_flights, x = longitude, y = latitude) +
   geom_polygon(
@@ -492,6 +503,7 @@ ggraph(us_flights, x = longitude, y = latitude) +
 
 ```{r}
 #| label: fig-path-bundle
+#| fig-cap: "US flights network with path-based edge bundling."
 ggraph(us_flights, x = longitude, y = latitude) +
   geom_polygon(
     aes(long, lat, group = group),

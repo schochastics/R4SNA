@@ -48,10 +48,11 @@ V(gotS1)$size <- degree(gotS1)
 To master `ggraph` you need to understand the basics of, or at least develop a feeling for, the **grammar of graphics**. 
 The grammar is implemented in R through `ggplot2` and provides a systematic framework for constructing visualizations by combining independent components. Rather than thinking of plots as pre-defined chart types, the grammar decomposes graphics into fundamental elements: data, aesthetic mappings, geometric objects, scales, and coordinate systems. This approach allows to build complex visualizations layer by layer, making it easier to customize and extend plots. For networks, `ggraph` extends this grammar to handle the unique structure of graph data, treating nodes and edges as separate geometric layers that can be styled and composed independently.
 
-The code and figure below shows a standard network plot created with `ggraph`. We will go through the code step-by-step in the following sections to understand how to use each component effectively.
+@fig-got-plot shows a standard network plot created with `ggraph`. We will go through the code step-by-step in the following sections to understand how to use each component effectively.
 
 ```{r}
 #| label: fig-got-plot
+#| fig-cap: "Game of Thrones season 1 character network."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -95,6 +96,7 @@ ggraph(gotS1, layout = "dh") +
 
 ```{r}
 #| label: fig-got-plot-layouts
+#| fig-cap: "Game of Thrones network rendered with four different layout algorithms."
 #| fig-width: 10
 #| fig-height: 10
 #| echo: false
@@ -150,7 +152,7 @@ p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
 ```
 
 
-Note that there technically is no right or wrong choice. All layout algorithms are in a sense arbitrary since 
+@fig-got-plot-layouts illustrates how the choice of layout algorithm affects the appearance of the network. Note that there technically is no right or wrong choice. All layout algorithms are in a sense arbitrary since 
 we can choose x and y coordinates freely as compared to ordinary data visualization where the "layout" is guided by existing "coordinates". For networks, it is mostly, but not exclusively, about aesthetics.
 
 You can also precompute the layout with the `create_layout()` function. This makes sense in cases where the calculation
@@ -180,10 +182,11 @@ c(
   "geom_edge_loop", "geom_edge_loop0"
 )
 ```
-You can do a lot of fancy things with these geoms but for a standard network plot, you should almost always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it also reduces readability. It is best to always go with straight lines. If a network has multiple edges between two nodes, one can switch to `geom_edge_parallel()`.
+You can do a lot of fancy things with these geoms but for a standard network plot, you should almost always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it also reduces readability. It is best to always go with straight lines. If a network has multiple edges between two nodes, one can switch to `geom_edge_parallel()` (@fig-parallel).
 
 ```{r}
 #| label: fig-parallel
+#| fig-cap: "Multi-edge network drawn with `geom_edge_parallel()`."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -195,10 +198,11 @@ ggraph(g, layout = "stress") +
   theme_graph()
 ```
 
-The curved equivalent of `geom_edge_parallel()` is `geom_edge_fan()`. The figure below shows the difference between the two.
+The curved equivalent of `geom_edge_parallel()` is `geom_edge_fan()`. @fig-fan shows the difference between the two.
 
 ```{r}
 #| label: fig-fan
+#| fig-cap: "Multi-edge network drawn with `geom_edge_fan()`."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -208,10 +212,11 @@ ggraph(g, layout = "stress") +
   theme_graph()
 ```
 
-Most edge geoms come in three flavors. The standard `geom_edge_link()` draws 100 dots on each edge compared to only two dots (the endpoints) in `geom_edge_link0()`. This is done to allow gradients along the edge. 
+Most edge geoms come in three flavors. The standard `geom_edge_link()` draws 100 dots on each edge compared to only two dots (the endpoints) in `geom_edge_link0()`. This is done to allow gradients along the edge (@fig-got-plot-grad). 
 
 ```{r}
 #| label: fig-got-plot-grad
+#| fig-cap: "Edge gradient showing directionality using `geom_edge_link()`."
 #| fig-width: 10
 #| fig-height: 6
 ggraph(gotS1, layout = "stress") +
@@ -250,10 +255,11 @@ geom_edge_link0(aes(...), ...,
 )
 ```
 
-The default arrowhead type is "open", yet "closed" usually has a nicer appearance.
+The default arrowhead type is "open", yet "closed" usually has a nicer appearance (@fig-arrow).
 
 ```{r}
 #| label: fig-arrow
+#| fig-cap: "Directed network with closed arrowheads."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -334,9 +340,10 @@ scale_size_continuous(range = c(1, 6))
 ```
 
 The `scale_*` functions are used to control aesthetics that are mapped within `aes()`.
-You do not necessarily need to set them, since `ggraph` can take care of it automatically.
+You do not necessarily need to set them, since `ggraph` can take care of it automatically (@fig-no-scales).
 ```{r}
-#| label: no-scales
+#| label: fig-no-scales
+#| fig-cap: "GoT network without explicit scale adjustments."
 #| fig-width: 10
 #| fig-height: 6
 
@@ -391,7 +398,7 @@ are either the factor levels (if the variable is a factor) or the result of sort
 sort(unique(V(gotS1)$clu))
 ```
 If you want more control over which value is mapped to which colour, you can pass the vector of colours
-as a named vector.
+as a named vector. The difference between unnamed and named palettes is shown in @fig-got-plot-pal2.
 ```{r}
 #| label: named_palette
 got_palette2 <- c(
@@ -401,7 +408,8 @@ got_palette2 <- c(
 ```
 
 ```{r}
-#| label: got-plot-pal2
+#| label: fig-got-plot-pal2
+#| fig-cap: "Comparison of unnamed and named colour palettes."
 #| fig-width: 13
 #| fig-height: 5
 #| echo: false
@@ -435,10 +443,11 @@ p1 + p2
 
 Using your own colour palette gives your network a unique touch. If you can't be bothered with 
 choosing colours, you may want to consider `scale_fill_brewer()` and `scale_colour_brewer()`.
-The function offers all palettes available at [colorbrewer2.org](http://colorbrewer2.org/). 
+The function offers all palettes available at [colorbrewer2.org](http://colorbrewer2.org/), as shown in @fig-got-plot-brewer. 
 
 ```{r}
-#| label: got-plot-brewer
+#| label: fig-got-plot-brewer
+#| fig-cap: "GoT network coloured with a ColorBrewer palette."
 #| fig-width: 10
 #| fig-height: 6
 ggraph(gotS1, layout = "stress") +
@@ -464,9 +473,10 @@ function of `ggplot2`. Luckily, we really don't need any of those. `theme_graph(
 to erase all of the default ggplot theme (e.g. axis, background, grids, etc.) since they are irrelevant for networks. 
 The only option worthwhile in `theme()` is `legend.position`, which we set to "none", i.e. don't show the legend.
 
-The code below gives an example for a plot with a legend.
+@fig-got-plot-legend gives an example for a plot with a legend.
 ```{r}
-#| label: got-plot-legend
+#| label: fig-got-plot-legend
+#| fig-cap: "GoT network with legend displayed at the bottom."
 #| fig-width: 10
 #| fig-height: 6
 ggraph(gotS1, layout = "stress") +
@@ -498,9 +508,10 @@ data("polblogs")
 V(polblogs)$deg <- degree(polblogs, mode = "in")
 ```
 
-We start with a simple plot without any styling.
+We start with a simple plot without any styling (@fig-polblogs1).
 ```{r}
-#| label: polblogs1
+#| label: fig-polblogs1
+#| fig-cap: "Initial plot of the political blogs network without styling."
 #| fig-width: 10
 #| fig-height: 8
 lay <- create_layout(polblogs, "stress")
@@ -516,10 +527,11 @@ ggraph(lay) +
     geom_node_point()
 ```
 
-There is obviously a lot missing. First, we delete all isolates and plot again. 
+There is obviously a lot missing. First, we delete all isolates and plot again (@fig-polblogs2).
 
 ```{r}
-#| label: polblogs2
+#| label: fig-polblogs2
+#| fig-cap: "Political blogs network after removing isolates."
 #| fig-width: 10
 #| fig-height: 8
 polblogs <- delete_vertices(polblogs, which(degree(polblogs) == 0))
@@ -536,10 +548,11 @@ ggraph(lay) +
     geom_node_point()
 ```
 
-The original does feature a small disconnected component, but we remove this here.
+The original does feature a small disconnected component, but we remove this here (@fig-polblogs2a).
 
 ```{r}
-#| label: polblogs2a
+#| label: fig-polblogs2a
+#| fig-cap: "Political blogs network after removing the small disconnected component."
 #| fig-width: 10
 #| fig-height: 8
 comps <- components(polblogs)
@@ -558,10 +571,11 @@ ggraph(lay) +
 ```
 
 
-Let us now start with some styling of the nodes.
+Let us now start with some styling of the nodes (@fig-polblogs3).
 
 ```{r}
-#| label: polblogs3
+#| label: fig-polblogs3
+#| fig-cap: "Political blogs network with node colour mapped to political orientation."
 #| fig-width: 10
 #| fig-height: 8
 ggraph(lay) +
@@ -576,10 +590,11 @@ ggraph(lay) +
 ```
 
 The colors are obviously wrong, so we fix this with a `scale_fill_manual()`. Additionally,
-we map the degree to node size.
+we map the degree to node size (@fig-polblogs4).
 
 ```{r}
-#| label: polblogs4
+#| label: fig-polblogs4
+#| fig-cap: "Political blogs network with corrected colours and degree-based node size."
 #| fig-width: 10
 #| fig-height: 8
 ggraph(lay) +
@@ -594,10 +609,11 @@ ggraph(lay) +
     scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3"))
 ```
 
-The node sizes are also not that satisfactory, so we fix the range with `scale_size()`.
+The node sizes are also not that satisfactory, so we fix the range with `scale_size()` (@fig-polblogs5).
 
 ```{r}
-#| label: polblogs5
+#| label: fig-polblogs5
+#| fig-cap: "Political blogs network with adjusted node size range."
 #| fig-width: 10
 #| fig-height: 8
 ggraph(lay) +
@@ -615,10 +631,11 @@ ggraph(lay) +
 
 Now we move on to the edges. This is a bit more complicated since we have to 
 create an edge variable first which indicates if an edge is within or between political orientations.
-This new variable is mapped to the edge color.
+This new variable is mapped to the edge color (@fig-polblogs6).
 
 ```{r}
-#| label: polblogs6
+#| label: fig-polblogs6
+#| fig-cap: "Political blogs network with edge colour mapped to within/between political orientation."
 #| fig-width: 10
 #| fig-height: 8
 el <- as_edgelist(polblogs, names = FALSE)
@@ -640,10 +657,11 @@ ggraph(lay) +
     scale_size(range = c(0.5, 7))
 ```
 
-Similar to the node colors, we add a `scale_edge_colour_manual()` to adjust the edge colors.
+Similar to the node colors, we add a `scale_edge_colour_manual()` to adjust the edge colors (@fig-polblogs7).
 
 ```{r}
-#| label: polblogs7
+#| label: fig-polblogs7
+#| fig-cap: "Political blogs network with manually set edge colours."
 #| fig-width: 10
 #| fig-height: 8
 ggraph(lay) +
@@ -663,10 +681,11 @@ ggraph(lay) +
 Almost, but it seems there are a lot of yellow edges which run over blue edges. It looks as
 if these should run below according to the original viz. To achieve this, we use a filter trick.
 We add two `geom_edge_link0()` layers: First, for the mixed edges and then for the remaining edges.
-In that way, the mixed edges are getting plotted below.
+In that way, the mixed edges are getting plotted below (@fig-polblogs8).
 
 ```{r}
-#| label: polblogs8
+#| label: fig-polblogs8
+#| fig-cap: "Political blogs network with mixed edges drawn below same-orientation edges."
 #| fig-width: 10
 #| fig-height: 8
 ggraph(lay) +
@@ -690,9 +709,10 @@ ggraph(lay) +
     scale_size(range = c(0.5, 7))
 ```
 
-Now let us just add the `theme_graph()` to finalize the plot
+Now let us just add the `theme_graph()` to finalize the plot (@fig-polblogs9).
 ```{r}
-#| label: polblogs9
+#| label: fig-polblogs9
+#| fig-cap: "Final political blogs network visualization with `theme_graph()`."
 #| fig-width: 10
 #| fig-height: 8
 ggraph(lay) +
