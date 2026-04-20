@@ -466,7 +466,10 @@ window.Quarto = {
   <li><a href="#joint-entropies-and-association-graphs" id="toc-joint-entropies-and-association-graphs" class="nav-link" data-scroll-target="#joint-entropies-and-association-graphs"><span class="header-section-number">9.3.3</span> Joint Entropies and Association Graphs</a>
   <ul>
   <li><a href="#vertex-variables-2" id="toc-vertex-variables-2" class="nav-link" data-scroll-target="#vertex-variables-2">Vertex Variables</a></li>
+  <li><a href="#dyad-variables-2" id="toc-dyad-variables-2" class="nav-link" data-scroll-target="#dyad-variables-2">Dyad Variables</a></li>
+  <li><a href="#triad-variables-2" id="toc-triad-variables-2" class="nav-link" data-scroll-target="#triad-variables-2">Triad Variables</a></li>
   </ul></li>
+  <li><a href="#trivariate-entropies-and-prediction-power" id="toc-trivariate-entropies-and-prediction-power" class="nav-link" data-scroll-target="#trivariate-entropies-and-prediction-power"><span class="header-section-number">9.3.4</span> Trivariate Entropies and Prediction Power</a></li>
   </ul></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
   </ul>
@@ -503,8 +506,7 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netropy)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="network-data-representation-and-transformation" class="level2" data-number="9.2">
@@ -2904,9 +2906,43 @@ Table&nbsp;9.8: Frequency distribution of unique joint entropy values for vertex
 </div>
 </div>
 </div>
-
-
 </section>
+<section id="dyad-variables-2" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dyad-variables-2">Dyad Variables</h4>
+<p>Joint entropies for the dyad variables are computed in the same way as for the vertex variables. Rather than presenting the full output, we focus on visualizing the dependence structure using an association graph. We set a threshold of 0.10 to display the strongest associations:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(dyad_var, <span class="fl">0.10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="netropy_files/figure-html/dyad-assoc-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>From the graph, several patterns can be observed. There is a strong dependence among the variables (<code>status</code>, <code>years</code>, <code>age</code>), as well as notable associations among (<code>lawschool</code>, <code>years</code>, <code>age</code>) and (<code>status</code>, <code>years</code>, <code>gender</code>).</p>
+<p>In addition, the graph suggests that the relations <code>cowork</code> and <code>friend</code> are conditionally independent given <code>advice</code>. That is, any observed dependence between <code>cowork</code> and <code>friend</code> can be explained through their association with <code>advice</code>.</p>
+</section>
+<section id="triad-variables-2" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="triad-variables-2">Triad Variables</h4>
+<p>Similarly, joint entropies for the triad variables are computed for the reduced data frame (with redundant variables removed). The dependence structure is again visualized using an association graph. We set a threshold of 0.25 to focus on the strongest associations:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(triad_var, <span class="fl">0.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="netropy_files/figure-html/triad-assoc-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The triad variables exhibit similar dependence patterns as the dyad variables, but with generally stronger associations. In particular, joint entropy values are higher for all pairs of <code>cowork</code>, <code>friend</code>, and <code>advice</code>, indicating stronger interactions among these variables. This further supports the conditional independence observed earlier, suggesting that the relationship between <code>cowork</code> and <code>friend</code> is increasingly explained by <code>advice</code> at the triadic level.</p>
+</section>
+</section>
+<section id="trivariate-entropies-and-prediction-power" class="level3" data-number="9.3.4">
+<h3 data-number="9.3.4" class="anchored" data-anchor-id="trivariate-entropies-and-prediction-power"><span class="header-section-number">9.3.4</span> Trivariate Entropies and Prediction Power</h3>
+
+
 </section>
 </section>
 <section id="bibliography" class="level1 unnumbered">
