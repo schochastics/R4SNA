@@ -453,8 +453,19 @@ window.Quarto = {
   <ul>
   <li><a href="#data-editing" id="toc-data-editing" class="nav-link" data-scroll-target="#data-editing"><span class="header-section-number">9.3.1</span> Data Editing</a>
   <ul>
-  <li><a href="#vertex-variables-observed" id="toc-vertex-variables-observed" class="nav-link" data-scroll-target="#vertex-variables-observed">Vertex Variables: Observed</a></li>
-  <li><a href="#vertex-variables-transformed" id="toc-vertex-variables-transformed" class="nav-link" data-scroll-target="#vertex-variables-transformed">Vertex Variables: Transformed</a></li>
+  <li><a href="#vertex-variables" id="toc-vertex-variables" class="nav-link" data-scroll-target="#vertex-variables">Vertex Variables</a></li>
+  <li><a href="#dyad-variables" id="toc-dyad-variables" class="nav-link" data-scroll-target="#dyad-variables">Dyad Variables</a></li>
+  <li><a href="#triad-variables" id="toc-triad-variables" class="nav-link" data-scroll-target="#triad-variables">Triad Variables</a></li>
+  </ul></li>
+  <li><a href="#univariate-and-bivariate-entropies" id="toc-univariate-and-bivariate-entropies" class="nav-link" data-scroll-target="#univariate-and-bivariate-entropies"><span class="header-section-number">9.3.2</span> Univariate and Bivariate Entropies</a>
+  <ul>
+  <li><a href="#vertex-variables-1" id="toc-vertex-variables-1" class="nav-link" data-scroll-target="#vertex-variables-1">Vertex Variables</a></li>
+  <li><a href="#dyad-variables-1" id="toc-dyad-variables-1" class="nav-link" data-scroll-target="#dyad-variables-1">Dyad Variables</a></li>
+  <li><a href="#triad-variables-1" id="toc-triad-variables-1" class="nav-link" data-scroll-target="#triad-variables-1">Triad Variables</a></li>
+  </ul></li>
+  <li><a href="#joint-entropies-and-association-graphs" id="toc-joint-entropies-and-association-graphs" class="nav-link" data-scroll-target="#joint-entropies-and-association-graphs"><span class="header-section-number">9.3.3</span> Joint Entropies and Association Graphs</a>
+  <ul>
+  <li><a href="#vertex-variables-2" id="toc-vertex-variables-2" class="nav-link" data-scroll-target="#vertex-variables-2">Vertex Variables</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
@@ -677,12 +688,12 @@ window.Quarto = {
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># likely friendship </span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>g_frn <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(adj_friend, <span class="at">mode=</span><span class="st">"directed"</span>) </span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>g_likfrn <span class="ot">&lt;-</span> <span class="fu">as_undirected</span>(g_frn)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>adj_likfrn <span class="ot">&lt;-</span>  <span class="fu">as_adjacency_matrix</span>(g_likfrn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>adj_likfrn <span class="ot">&lt;-</span>  <span class="fu">as_adjacency_matrix</span>(g_likfrn, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="data-editing" class="level3" data-number="9.3.1">
 <h3 data-number="9.3.1" class="anchored" data-anchor-id="data-editing"><span class="header-section-number">9.3.1</span> Data Editing</h3>
-<section id="vertex-variables-observed" class="level4 unnumbered">
-<h4 class="unnumbered anchored" data-anchor-id="vertex-variables-observed">Vertex Variables: Observed</h4>
+<section id="vertex-variables" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="vertex-variables">Vertex Variables</h4>
 <p>Observed node variables are the attributes in the data frame <code>df_att</code>. The first 5 lines of this data frame are:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_att, <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -770,9 +781,6 @@ Figure&nbsp;9.2: Frequency distributions of the discretized variables <code>age<
 </figure>
 </div>
 <p>This preprocessing step yields a set of discrete variables with manageable range sizes, making them appropriate for estimating joint and conditional entropies in the subsequent network analysis.</p>
-</section>
-<section id="vertex-variables-transformed" class="level4 unnumbered">
-<h4 class="unnumbered anchored" data-anchor-id="vertex-variables-transformed">Vertex Variables: Transformed</h4>
 <p>Next, we transform the observed dyad variables into node-level variables. This is achieved by aggregating edge information into node-based measures. In particular, we use degree-based summaries: in-degree and out-degree for the directed advice and friendship networks, and degree (number of ties) for the undirected co-work network, as well as for the mutual advice, mutual friendship, and likely friendship networks.</p>
 <p>To compute these measures, we first construct graph objects from each adjacency matrix (note that the directed friendship graph <code>g_frn</code> and the undirected likely-friendship graph <code>g_likfrn</code> were already created above):</p>
 <div class="cell">
@@ -1032,6 +1040,1869 @@ Table&nbsp;9.1: First 10 rows of the vertex-level dataset.
 </div>
 </div>
 </figure>
+</div>
+</section>
+<section id="dyad-variables" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dyad-variables">Dyad Variables</h4>
+<p>Dyad variables are constructed as pairs of incident vertex variables, resulting in <span class="math inline">\(\binom{71}{2} = 2485\)</span> observations (i.e., the number of rows in the dyadic data frames created below).</p>
+<p>The observed node attributes in the data frame <code>att_var</code> are therefore transformed into dyadic attributes by pairing the values of two connected vertices. For example, the binary variable <code>status</code> yields four possible dyadic outcomes: <span class="math inline">\((0,0)\)</span>, <span class="math inline">\((0,1)\)</span>, <span class="math inline">\((1,0)\)</span>, and <span class="math inline">\((1,1)\)</span>. Similarly, the categorical variable <code>office</code> with three levels results in nine possible dyadic outcomes: <span class="math inline">\((0,0)\)</span>, <span class="math inline">\((0,1)\)</span>, <span class="math inline">\((0,2)\)</span>, <span class="math inline">\((1,0)\)</span>, <span class="math inline">\((1,1)\)</span>, <span class="math inline">\((1,2)\)</span>, <span class="math inline">\((2,0)\)</span>, <span class="math inline">\((2,1)\)</span>, and <span class="math inline">\((2,2)\)</span>.</p>
+<p>These transformations can be carried out using the function <code>get_dyad_var()</code>, where the argument <code>type = "att"</code> specifies that the input consists of vertex attributes. This procedure is applied to all vertex variables in the dataset:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dyad_status    <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>status, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dyad_gender    <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>gender, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>dyad_office    <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>office, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>dyad_years     <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>years, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>dyad_age       <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>age, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>dyad_practice  <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>practice, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>dyad_lawschool <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>lawschool, <span class="at">type =</span> <span class="st">"att"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Note that the dyadic outcomes are recoded to numerical values to avoid character objects when performing the entropy analysis. In practice, the actual labels of the categories are irrelevant, as entropy depends only on the frequencies of occurrence. For example, the variable <code>status</code> takes values <span class="math inline">\(0\)</span>–<span class="math inline">\(3\)</span>, while <code>office</code> takes values <span class="math inline">\(0\)</span>–<span class="math inline">\(8\)</span>.</p>
+<p>In a similar way, we construct dyad variables based on observed and derived ties. For undirected networks, dyad variables are simple indicator variables obtained directly from the adjacency matrix. For directed networks, each dyad is represented by a pair of indicators corresponding to sending and receiving ties, resulting in four possible outcomes (e.g., for <code>advice</code> and <code>friendship</code>).</p>
+<p>Using the same function as above, we now set the argument <code>type = "tie"</code> and provide the adjacency matrix as input. The function automatically determines whether the network is directed or undirected and creates the appropriate dyadic variable.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dyad_cwk    <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_cowork, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dyad_adv    <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_advice, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>four outcomes based on pairs of indicators for the directed relation is created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dyad_mutadv <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_mutadv, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dyad_frn    <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_friend, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>four outcomes based on pairs of indicators for the directed relation is created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>dyad_mutfrn <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_mutfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dyad_likfrn <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_likfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
+</div>
+</div>
+<p>Next, all dyad variables are merged into a single data frame for subsequent entropy analysis:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dyad_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status    =</span> dyad_status<span class="sc">$</span>var,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender    =</span> dyad_gender<span class="sc">$</span>var,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">office    =</span> dyad_office<span class="sc">$</span>var,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years     =</span> dyad_years<span class="sc">$</span>var,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">age       =</span> dyad_age<span class="sc">$</span>var,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">practice  =</span> dyad_practice<span class="sc">$</span>var,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">lawschool =</span> dyad_lawschool<span class="sc">$</span>var,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cowork    =</span> dyad_cwk<span class="sc">$</span>var,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">advice    =</span> dyad_adv<span class="sc">$</span>var,</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutadv    =</span> dyad_mutadv<span class="sc">$</span>var,</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">friend    =</span> dyad_frn<span class="sc">$</span>var,</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutfrn    =</span> dyad_mutfrn<span class="sc">$</span>var,</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">likfrn    =</span> dyad_likfrn<span class="sc">$</span>var</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The resulting dataset <code>dyad_var</code> contains all dyadic variables used in the entropy analysis. The first rows are shown in <a href="#tbl-dyad-var" class="quarto-xref">Table&nbsp;<span>9.2</span></a>.</p>
+<div id="tbl-dyad-var" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dyad-var-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.2: First 10 rows of the dyadic dataset.
+</figcaption>
+<div aria-describedby="tbl-dyad-var-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">status</th>
+<th style="text-align: right;">gender</th>
+<th style="text-align: right;">office</th>
+<th style="text-align: right;">years</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">practice</th>
+<th style="text-align: right;">lawschool</th>
+<th style="text-align: right;">cowork</th>
+<th style="text-align: right;">advice</th>
+<th style="text-align: right;">mutadv</th>
+<th style="text-align: right;">friend</th>
+<th style="text-align: right;">mutfrn</th>
+<th style="text-align: right;">likfrn</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</section>
+<section id="triad-variables" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="triad-variables">Triad Variables</h4>
+<p>A similar function, <code>get_triad_var()</code>, is used to transform vertex variables and different relation types into triad-level variables. These variables represent combinations of three nodes and therefore yield <span class="math inline">\(\binom{71}{3} = 57155\)</span> observations in the law firm dataset. Each observation corresponds either to a triple of individual attributes or to the configuration of relations among three nodes.</p>
+<p>As for dyad variables, the function requires specifying the type of input: <code>type = "att"</code> for vertex attributes (given as column vectors) and <code>type = "tie"</code> for relational data (given as adjacency matrices).</p>
+<p>For vertex variables, triad variables are constructed as follows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>triad_status    <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>status, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>triad_gender    <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>gender, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>triad_office    <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>office, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>triad_years     <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>years, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>triad_age       <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>age, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>triad_practice  <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>practice, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>triad_lawschool <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>lawschool, <span class="at">type =</span> <span class="st">"att"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Binary vertex attributes result in <span class="math inline">\(2^3 = 8\)</span> possible triadic outcomes: <span class="math display">\[
+(0,0,0), (1,0,0), (0,1,0), (1,1,0), (0,0,1), (1,0,1), (0,1,1), (1,1,1),
+\]</span> which are recoded as integers from <span class="math inline">\(0\)</span> to <span class="math inline">\(7\)</span>. Similarly, attributes with three categories yield <span class="math inline">\(3^3 = 27\)</span> possible triadic outcomes, coded from <span class="math inline">\(0\)</span> to <span class="math inline">\(26\)</span>.</p>
+<p>For relational variables, undirected ties are transformed from binary outcomes into triad variables with <span class="math inline">\(8\)</span> possible configurations, while directed ties are transformed from <span class="math inline">\(4\)</span> dyadic outcomes into <span class="math inline">\(4^3 = 64\)</span> triadic configurations, capturing all possible combinations of sending and receiving ties among three nodes.</p>
+<p>The triad variables based on ties are constructed as follows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>triad_cwk    <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_cowork, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>triad_adv    <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_advice, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>64 outcomes based on a sequence of 6 indicators for the directed relation are created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>triad_mutadv <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_mutadv, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>triad_frn    <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_friend, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>64 outcomes based on a sequence of 6 indicators for the directed relation are created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>triad_mutfrn <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_mutfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>triad_likfrn <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_likfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
+</div>
+</div>
+<p>All triad variables are then merged into a single data frame for subsequent entropy analysis:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>triad_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status    =</span> triad_status<span class="sc">$</span>var,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender    =</span> triad_gender<span class="sc">$</span>var,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">office    =</span> triad_office<span class="sc">$</span>var,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years     =</span> triad_years<span class="sc">$</span>var,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">age       =</span> triad_age<span class="sc">$</span>var,</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">practice  =</span> triad_practice<span class="sc">$</span>var,</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">lawschool =</span> triad_lawschool<span class="sc">$</span>var,</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cowork    =</span> triad_cwk<span class="sc">$</span>var,</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">advice    =</span> triad_adv<span class="sc">$</span>var,</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutadv    =</span> triad_mutadv<span class="sc">$</span>var,</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">friend    =</span> triad_frn<span class="sc">$</span>var,</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutfrn    =</span> triad_mutfrn<span class="sc">$</span>var,</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">likfrn    =</span> triad_likfrn<span class="sc">$</span>var</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The resulting dataset <code>triad_var</code> contains all triad-level variables used in the entropy analysis. The first rows are shown in <a href="#tbl-triad-var" class="quarto-xref">Table&nbsp;<span>9.3</span></a>.</p>
+<div id="tbl-triad-var" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-triad-var-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.3: First 10 rows of the triad-level dataset.
+</figcaption>
+<div aria-describedby="tbl-triad-var-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">status</th>
+<th style="text-align: right;">gender</th>
+<th style="text-align: right;">office</th>
+<th style="text-align: right;">years</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">practice</th>
+<th style="text-align: right;">lawschool</th>
+<th style="text-align: right;">cowork</th>
+<th style="text-align: right;">advice</th>
+<th style="text-align: right;">mutadv</th>
+<th style="text-align: right;">friend</th>
+<th style="text-align: right;">mutfrn</th>
+<th style="text-align: right;">likfrn</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</section>
+</section>
+<section id="univariate-and-bivariate-entropies" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="univariate-and-bivariate-entropies"><span class="header-section-number">9.3.2</span> Univariate and Bivariate Entropies</h3>
+<p>The function <code>entropy_bivar()</code> computes the bivariate entropies for all pairs of variables in a data frame. The results are returned as an upper triangular matrix, where each cell contains the joint entropy of the corresponding row and column variables. The diagonal entries represent the univariate entropies of each variable.</p>
+<section id="vertex-variables-1" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="vertex-variables-1">Vertex Variables</h4>
+<p>We apply the function to the data frame containing all observed and transformed vertex variables.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>h2_vertex <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(vertex_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The output, rounded to 2 decimals, is shown in <a href="#tbl-ent-vertvar" class="quarto-xref">Table&nbsp;<span>9.4</span></a>.</p>
+<div id="tbl-ent-vertvar" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ent-vertvar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.4: Bivariate entropy matrix for vertex variables.
+</figcaption>
+<div aria-describedby="tbl-ent-vertvar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">status</th>
+<th style="text-align: right;">gender</th>
+<th style="text-align: right;">office</th>
+<th style="text-align: right;">years</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">practice</th>
+<th style="text-align: right;">lawschool</th>
+<th style="text-align: right;">deg_cwk</th>
+<th style="text-align: right;">indeg_adv</th>
+<th style="text-align: right;">outdeg_adv</th>
+<th style="text-align: right;">deg_mutadv</th>
+<th style="text-align: right;">indeg_frn</th>
+<th style="text-align: right;">outdeg_frn</th>
+<th style="text-align: right;">deg_mutfrn</th>
+<th style="text-align: right;">deg_likfrn</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">status</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.70</td>
+<td style="text-align: right;">2.08</td>
+<td style="text-align: right;">2.01</td>
+<td style="text-align: right;">2.28</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">2.46</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">1.72</td>
+<td style="text-align: right;">2.00</td>
+<td style="text-align: right;">1.91</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: right;">1.98</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gender</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">1.93</td>
+<td style="text-align: right;">2.23</td>
+<td style="text-align: right;">2.38</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">2.32</td>
+<td style="text-align: right;">1.79</td>
+<td style="text-align: right;">1.76</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">1.81</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">office</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.12</td>
+<td style="text-align: right;">2.69</td>
+<td style="text-align: right;">2.67</td>
+<td style="text-align: right;">2.09</td>
+<td style="text-align: right;">2.61</td>
+<td style="text-align: right;">2.11</td>
+<td style="text-align: right;">2.11</td>
+<td style="text-align: right;">2.06</td>
+<td style="text-align: right;">2.11</td>
+<td style="text-align: right;">2.03</td>
+<td style="text-align: right;">2.06</td>
+<td style="text-align: right;">2.05</td>
+<td style="text-align: right;">2.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">years</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.58</td>
+<td style="text-align: right;">2.75</td>
+<td style="text-align: right;">2.56</td>
+<td style="text-align: right;">3.01</td>
+<td style="text-align: right;">2.52</td>
+<td style="text-align: right;">2.29</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.52</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.54</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.52</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.58</td>
+<td style="text-align: right;">2.56</td>
+<td style="text-align: right;">2.88</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.46</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.58</td>
+<td style="text-align: right;">2.57</td>
+<td style="text-align: right;">2.58</td>
+<td style="text-align: right;">2.57</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">practice</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">2.51</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">1.97</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">1.98</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lawschool</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.53</td>
+<td style="text-align: right;">2.52</td>
+<td style="text-align: right;">2.46</td>
+<td style="text-align: right;">2.52</td>
+<td style="text-align: right;">2.49</td>
+<td style="text-align: right;">2.48</td>
+<td style="text-align: right;">2.52</td>
+<td style="text-align: right;">2.48</td>
+<td style="text-align: right;">2.52</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">deg_cwk</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.91</td>
+<td style="text-align: right;">1.94</td>
+<td style="text-align: right;">1.89</td>
+<td style="text-align: right;">1.94</td>
+<td style="text-align: right;">1.97</td>
+<td style="text-align: right;">1.95</td>
+<td style="text-align: right;">1.97</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">indeg_adv</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2.00</td>
+<td style="text-align: right;">1.79</td>
+<td style="text-align: right;">1.92</td>
+<td style="text-align: right;">1.91</td>
+<td style="text-align: right;">1.91</td>
+<td style="text-align: right;">1.94</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">outdeg_adv</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.94</td>
+<td style="text-align: right;">1.92</td>
+<td style="text-align: right;">1.88</td>
+<td style="text-align: right;">1.94</td>
+<td style="text-align: right;">1.91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">deg_mutadv</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.84</td>
+<td style="text-align: right;">1.89</td>
+<td style="text-align: right;">1.89</td>
+<td style="text-align: right;">1.89</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">indeg_frn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.69</td>
+<td style="text-align: right;">1.45</td>
+<td style="text-align: right;">1.46</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">outdeg_frn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.58</td>
+<td style="text-align: right;">1.51</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">deg_mutfrn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.50</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">deg_likfrn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<p>Bivariate entropies can be used to detect redundant variables that do not contribute additional information and may therefore be omitted from further analysis. Redundancy can be identified by comparing diagonal entries (univariate entropies) with the corresponding off-diagonal values in the same rows or columns. If these values are equal, it indicates that one variable does not provide additional information beyond another.</p>
+<p>This can also be assessed using the function <code>redundancy()</code>. The output of <code>redundancy()</code> is a binary matrix indicating whether one variable is redundant with respect to another. A value of <code>1</code> means that the corresponding column variable does not provide additional information beyond the row variable, while <code>0</code> indicates that the variables contain distinct information.</p>
+<p>For the vertex variables in this dataset, no redundancy is detected:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>red_vertex <span class="ot">&lt;-</span> <span class="fu">redundancy</span>(vertex_var, <span class="at">dec =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>no redundant variables</code></pre>
+</div>
+</div>
+<p>Note that the argument <code>dec</code> affects the detection of redundant variables, as it controls the rounding of bivariate entropies. Using fewer decimal places increases the likelihood that two variables will appear to have identical entropy values and thus be flagged as redundant.</p>
+<p>For illustration, we apply the <code>redundancy()</code> function to the original attribute data frame <code>df_att</code>. Recall that the variable <code>senior</code> consists entirely of unique values and is therefore identified as redundant, as shown below:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>red_vertex2 <span class="ot">&lt;-</span> <span class="fu">redundancy</span>(df_att, <span class="at">dec =</span> <span class="dv">2</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>red_vertex2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          senior status gender office years age practice lawschool
+senior         0      1      1      1     1   1        1         1
+status         0      0      0      0     0   0        0         0
+gender         0      0      0      0     0   0        0         0
+office         0      0      0      0     0   0        0         0
+years          0      0      0      0     0   0        0         0
+age            0      0      0      0     0   0        0         0
+practice       0      0      0      0     0   0        0         0
+lawschool      0      0      0      0     0   0        0         0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># find columns that are redundant with any other variable</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(red_vertex2)[<span class="fu">rowSums</span>(red_vertex2) <span class="sc">&gt;=</span> <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "senior"</code></pre>
+</div>
+</div>
+<p>Here, the variable <code>senior</code> is flagged as redundant with respect to all other variables, as indicated by the row of ones. This occurs because <code>senior</code> consists entirely of unique values, meaning it does not share any repeated structure with other variables and therefore does not contribute meaningful information for entropy-based analysis. In contrast, all other variables show zeros, indicating no redundancy among them.</p>
+</section>
+<section id="dyad-variables-1" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dyad-variables-1">Dyad Variables</h4>
+<p>The data frame <code>dyad_var</code> contains 13 observed and transformed dyad-level variables. To compute the univariate and bivariate entropies, we apply the function <code>entropy_bivar()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>h2_dyad <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The results shown in <a href="#tbl-ent-dyadvar" class="quarto-xref">Table&nbsp;<span>9.5</span></a> indicate redundancy among the different variants of the advice and friendship relations. This is expected, as these variables are derived from the same underlying ties.</p>
+<div id="tbl-ent-dyadvar" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ent-dyadvar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.5: Bivariate entropy matrix for dyad variables. Redundancy is observed among the advice and friendship variants: the variables <code>mutadv</code>, <code>mutfrn</code>, and <code>likfrn</code> do not provide additional information beyond <code>advice</code> and <code>friend</code>, respectively, and should therefore excluded from subsequent analyses.
+</figcaption>
+<div aria-describedby="tbl-ent-dyadvar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">status</th>
+<th style="text-align: right;">gender</th>
+<th style="text-align: right;">office</th>
+<th style="text-align: right;">years</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">practice</th>
+<th style="text-align: right;">lawschool</th>
+<th style="text-align: right;">cowork</th>
+<th style="text-align: right;">advice</th>
+<th style="text-align: right;">mutadv</th>
+<th style="text-align: right;">friend</th>
+<th style="text-align: right;">mutfrn</th>
+<th style="text-align: right;">likfrn</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">status</td>
+<td style="text-align: right;">1.49</td>
+<td style="text-align: right;">2.87</td>
+<td style="text-align: right;">3.64</td>
+<td style="text-align: right;">3.37</td>
+<td style="text-align: right;">3.91</td>
+<td style="text-align: right;">3.45</td>
+<td style="text-align: right;">4.36</td>
+<td style="text-align: right;">2.09</td>
+<td style="text-align: right;">2.69</td>
+<td style="text-align: right;">1.82</td>
+<td style="text-align: right;">2.32</td>
+<td style="text-align: right;">1.84</td>
+<td style="text-align: right;">2.08</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gender</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.55</td>
+<td style="text-align: right;">3.76</td>
+<td style="text-align: right;">3.94</td>
+<td style="text-align: right;">4.27</td>
+<td style="text-align: right;">3.51</td>
+<td style="text-align: right;">4.44</td>
+<td style="text-align: right;">2.16</td>
+<td style="text-align: right;">2.79</td>
+<td style="text-align: right;">1.91</td>
+<td style="text-align: right;">2.42</td>
+<td style="text-align: right;">1.91</td>
+<td style="text-align: right;">2.18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">office</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.24</td>
+<td style="text-align: right;">4.83</td>
+<td style="text-align: right;">4.90</td>
+<td style="text-align: right;">4.15</td>
+<td style="text-align: right;">5.06</td>
+<td style="text-align: right;">2.79</td>
+<td style="text-align: right;">3.39</td>
+<td style="text-align: right;">2.58</td>
+<td style="text-align: right;">3.04</td>
+<td style="text-align: right;">2.57</td>
+<td style="text-align: right;">2.81</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">years</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.67</td>
+<td style="text-align: right;">4.86</td>
+<td style="text-align: right;">4.58</td>
+<td style="text-align: right;">5.42</td>
+<td style="text-align: right;">3.27</td>
+<td style="text-align: right;">3.87</td>
+<td style="text-align: right;">3.01</td>
+<td style="text-align: right;">3.48</td>
+<td style="text-align: right;">3.00</td>
+<td style="text-align: right;">3.25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.80</td>
+<td style="text-align: right;">4.74</td>
+<td style="text-align: right;">5.35</td>
+<td style="text-align: right;">3.41</td>
+<td style="text-align: right;">4.03</td>
+<td style="text-align: right;">3.16</td>
+<td style="text-align: right;">3.64</td>
+<td style="text-align: right;">3.15</td>
+<td style="text-align: right;">3.40</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">practice</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.96</td>
+<td style="text-align: right;">4.88</td>
+<td style="text-align: right;">2.53</td>
+<td style="text-align: right;">3.13</td>
+<td style="text-align: right;">2.31</td>
+<td style="text-align: right;">2.83</td>
+<td style="text-align: right;">2.33</td>
+<td style="text-align: right;">2.59</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lawschool</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.95</td>
+<td style="text-align: right;">3.57</td>
+<td style="text-align: right;">4.19</td>
+<td style="text-align: right;">3.32</td>
+<td style="text-align: right;">3.81</td>
+<td style="text-align: right;">3.31</td>
+<td style="text-align: right;">3.58</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cowork</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">1.69</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">1.46</td>
+<td style="text-align: right;">0.96</td>
+<td style="text-align: right;">1.21</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">advice</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.25</td>
+<td style="text-align: right;">1.25</td>
+<td style="text-align: right;">1.95</td>
+<td style="text-align: right;">1.52</td>
+<td style="text-align: right;">1.73</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mutadv</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">1.15</td>
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">0.92</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">friend</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">0.88</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mutfrn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">0.80</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">likfrn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.64</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<p>The redundancy can also be confirmed using the <code>redundancy()</code> function. Based on this analysis, we remove the redundant variables mutadv, mutfrn, and likfrn (columns 10, 12, and 13) from the data frame:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>dyad_var <span class="ot">&lt;-</span> dyad_var[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span><span class="sc">:</span><span class="dv">13</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The resulting data frame contains the non-redundant dyad variables used in the subsequent entropy analysis.</p>
+</section>
+<section id="triad-variables-1" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="triad-variables-1">Triad Variables</h4>
+<p>The data frame <code>triad_var</code> contains the observed and transformed triad-level variables. To compute the univariate and bivariate entropies, we apply the function <code>entropy_bivar()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>h2_triad <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(triad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The results shown in <a href="#tbl-ent-triadvar" class="quarto-xref">Table&nbsp;<span>9.6</span></a> reveal redundancy among the triad variables derived from the different variants of the advice and friendship relations. As in the dyadic case, this is expected since these variables originate from the same underlying ties.</p>
+<div id="tbl-ent-triadvar" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ent-triadvar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.6: Bivariate entropy matrix for triad variables. Redundancy is observed among the triad variables derived from the different variants of the advice and friendship relations.
+</figcaption>
+<div aria-describedby="tbl-ent-triadvar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">status</th>
+<th style="text-align: right;">gender</th>
+<th style="text-align: right;">office</th>
+<th style="text-align: right;">years</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">practice</th>
+<th style="text-align: right;">lawschool</th>
+<th style="text-align: right;">cowork</th>
+<th style="text-align: right;">advice</th>
+<th style="text-align: right;">mutadv</th>
+<th style="text-align: right;">friend</th>
+<th style="text-align: right;">mutfrn</th>
+<th style="text-align: right;">likfrn</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">status</td>
+<td style="text-align: right;">1.79</td>
+<td style="text-align: right;">3.84</td>
+<td style="text-align: right;">4.99</td>
+<td style="text-align: right;">4.44</td>
+<td style="text-align: right;">5.26</td>
+<td style="text-align: right;">4.73</td>
+<td style="text-align: right;">6.04</td>
+<td style="text-align: right;">3.58</td>
+<td style="text-align: right;">5.32</td>
+<td style="text-align: right;">2.78</td>
+<td style="text-align: right;">4.24</td>
+<td style="text-align: right;">2.81</td>
+<td style="text-align: right;">3.52</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gender</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.24</td>
+<td style="text-align: right;">5.54</td>
+<td style="text-align: right;">5.42</td>
+<td style="text-align: right;">5.96</td>
+<td style="text-align: right;">5.18</td>
+<td style="text-align: right;">6.48</td>
+<td style="text-align: right;">4.06</td>
+<td style="text-align: right;">5.86</td>
+<td style="text-align: right;">3.30</td>
+<td style="text-align: right;">4.75</td>
+<td style="text-align: right;">3.30</td>
+<td style="text-align: right;">4.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">office</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.34</td>
+<td style="text-align: right;">6.71</td>
+<td style="text-align: right;">6.96</td>
+<td style="text-align: right;">6.20</td>
+<td style="text-align: right;">7.44</td>
+<td style="text-align: right;">4.98</td>
+<td style="text-align: right;">6.66</td>
+<td style="text-align: right;">4.31</td>
+<td style="text-align: right;">5.64</td>
+<td style="text-align: right;">4.29</td>
+<td style="text-align: right;">4.94</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">years</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.54</td>
+<td style="text-align: right;">6.67</td>
+<td style="text-align: right;">6.38</td>
+<td style="text-align: right;">7.57</td>
+<td style="text-align: right;">5.32</td>
+<td style="text-align: right;">7.04</td>
+<td style="text-align: right;">4.53</td>
+<td style="text-align: right;">5.91</td>
+<td style="text-align: right;">4.52</td>
+<td style="text-align: right;">5.23</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.88</td>
+<td style="text-align: right;">6.79</td>
+<td style="text-align: right;">7.66</td>
+<td style="text-align: right;">5.69</td>
+<td style="text-align: right;">7.46</td>
+<td style="text-align: right;">4.92</td>
+<td style="text-align: right;">6.30</td>
+<td style="text-align: right;">4.90</td>
+<td style="text-align: right;">5.62</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">practice</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.94</td>
+<td style="text-align: right;">7.20</td>
+<td style="text-align: right;">4.62</td>
+<td style="text-align: right;">6.32</td>
+<td style="text-align: right;">3.94</td>
+<td style="text-align: right;">5.43</td>
+<td style="text-align: right;">3.99</td>
+<td style="text-align: right;">4.74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lawschool</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.34</td>
+<td style="text-align: right;">6.16</td>
+<td style="text-align: right;">7.91</td>
+<td style="text-align: right;">5.38</td>
+<td style="text-align: right;">6.80</td>
+<td style="text-align: right;">5.37</td>
+<td style="text-align: right;">6.13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cowork</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: right;">4.93</td>
+<td style="text-align: right;">2.70</td>
+<td style="text-align: right;">4.24</td>
+<td style="text-align: right;">2.82</td>
+<td style="text-align: right;">3.53</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">advice</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.65</td>
+<td style="text-align: right;">3.65</td>
+<td style="text-align: right;">5.65</td>
+<td style="text-align: right;">4.43</td>
+<td style="text-align: right;">5.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mutadv</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.06</td>
+<td style="text-align: right;">3.34</td>
+<td style="text-align: right;">1.93</td>
+<td style="text-align: right;">2.66</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">friend</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.55</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mutfrn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.07</td>
+<td style="text-align: right;">2.30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">likfrn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.83</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<p>The redundancy can be confirmed using the <code>redundancy()</code> function and after removing the redundant variables (<code>mutadv</code>, <code>mutfrn</code>, and <code>likfrn</code>), the resulting data frame contains 10 triad variables, which are used in the subsequent entropy analysis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>triad_var <span class="ot">&lt;-</span> triad_var[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span><span class="sc">:</span><span class="dv">13</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="joint-entropies-and-association-graphs" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="joint-entropies-and-association-graphs"><span class="header-section-number">9.3.3</span> Joint Entropies and Association Graphs</h3>
+<p>The function <code>joint_entropy()</code> computes the joint entropies for all pairs of variables in a data frame. The output is returned as a list containing: (i) an upper triangular matrix of joint entropy values, with univariate entropies on the diagonal, and (ii) a data frame summarizing the frequency distribution of unique joint entropy values.</p>
+<p>An optional argument controls the precision of the entropy values (number of decimal places), which is used when constructing the frequency distribution; the default is 3 decimals.</p>
+<section id="vertex-variables-2" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="vertex-variables-2">Vertex Variables</h4>
+<p>We apply the function to the data frame containing the observed and transformed vertex variables:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>j_vertex <span class="ot">&lt;-</span> <span class="fu">joint_entropy</span>(vertex_var, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The output is returned as a list containing two objects: <code>j_vertex$mat</code>, an upper triangular matrix of joint entropy values (with univariate entropies on the diagonal), and <code>j_vertex$freq</code>, a data frame summarizing the frequency distribution of unique joint entropy values.</p>
+<p>The matrix <code>j_vertex$mat</code> shown in <a href="#tbl-joint-vert" class="quarto-xref">Table&nbsp;<span>9.7</span></a> summarizes the pairwise joint entropy values. Entries equal to <span class="math inline">\(0\)</span> indicate independence between variables, while larger values indicate stronger dependence. For example, practice is independent of both status and gender.</p>
+<div id="tbl-joint-vert" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-joint-vert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.7: Upper triangular matrix of joint entropy values for vertex variables, with univariate entropies on the diagonal.
+</figcaption>
+<div aria-describedby="tbl-joint-vert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">status</th>
+<th style="text-align: right;">gender</th>
+<th style="text-align: right;">office</th>
+<th style="text-align: right;">years</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">practice</th>
+<th style="text-align: right;">lawschool</th>
+<th style="text-align: right;">deg_cwk</th>
+<th style="text-align: right;">indeg_adv</th>
+<th style="text-align: right;">outdeg_adv</th>
+<th style="text-align: right;">deg_mutadv</th>
+<th style="text-align: right;">indeg_frn</th>
+<th style="text-align: right;">outdeg_frn</th>
+<th style="text-align: right;">deg_mutfrn</th>
+<th style="text-align: right;">deg_likfrn</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">status</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.122</td>
+<td style="text-align: right;">0.041</td>
+<td style="text-align: right;">0.578</td>
+<td style="text-align: right;">0.309</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.074</td>
+<td style="text-align: right;">0.025</td>
+<td style="text-align: right;">0.284</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">0.092</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">0.025</td>
+<td style="text-align: right;">0.012</td>
+<td style="text-align: right;">0.025</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gender</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.817</td>
+<td style="text-align: right;">0.015</td>
+<td style="text-align: right;">0.176</td>
+<td style="text-align: right;">0.019</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: right;">0.026</td>
+<td style="text-align: right;">0.053</td>
+<td style="text-align: right;">0.011</td>
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.011</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.003</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">office</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.125</td>
+<td style="text-align: right;">0.017</td>
+<td style="text-align: right;">0.042</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">0.051</td>
+<td style="text-align: right;">0.012</td>
+<td style="text-align: right;">0.012</td>
+<td style="text-align: right;">0.065</td>
+<td style="text-align: right;">0.012</td>
+<td style="text-align: right;">0.096</td>
+<td style="text-align: right;">0.061</td>
+<td style="text-align: right;">0.070</td>
+<td style="text-align: right;">0.105</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">years</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.585</td>
+<td style="text-align: right;">0.420</td>
+<td style="text-align: right;">0.013</td>
+<td style="text-align: right;">0.106</td>
+<td style="text-align: right;">0.062</td>
+<td style="text-align: right;">0.299</td>
+<td style="text-align: right;">0.036</td>
+<td style="text-align: right;">0.062</td>
+<td style="text-align: right;">0.034</td>
+<td style="text-align: right;">0.044</td>
+<td style="text-align: right;">0.034</td>
+<td style="text-align: right;">0.063</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.585</td>
+<td style="text-align: right;">0.010</td>
+<td style="text-align: right;">0.242</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">0.128</td>
+<td style="text-align: right;">0.039</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.011</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.011</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">practice</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.983</td>
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.012</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.008</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lawschool</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.533</td>
+<td style="text-align: right;">0.009</td>
+<td style="text-align: right;">0.074</td>
+<td style="text-align: right;">0.012</td>
+<td style="text-align: right;">0.043</td>
+<td style="text-align: right;">0.050</td>
+<td style="text-align: right;">0.013</td>
+<td style="text-align: right;">0.053</td>
+<td style="text-align: right;">0.008</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">deg_cwk</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.092</td>
+<td style="text-align: right;">0.064</td>
+<td style="text-align: right;">0.107</td>
+<td style="text-align: right;">0.064</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">0.053</td>
+<td style="text-align: right;">0.033</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">indeg_adv</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.206</td>
+<td style="text-align: right;">0.078</td>
+<td style="text-align: right;">0.092</td>
+<td style="text-align: right;">0.092</td>
+<td style="text-align: right;">0.064</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">outdeg_adv</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.064</td>
+<td style="text-align: right;">0.078</td>
+<td style="text-align: right;">0.124</td>
+<td style="text-align: right;">0.064</td>
+<td style="text-align: right;">0.092</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">deg_mutadv</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.162</td>
+<td style="text-align: right;">0.107</td>
+<td style="text-align: right;">0.108</td>
+<td style="text-align: right;">0.107</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">indeg_frn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.999</td>
+<td style="text-align: right;">0.314</td>
+<td style="text-align: right;">0.547</td>
+<td style="text-align: right;">0.537</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">outdeg_frn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.417</td>
+<td style="text-align: right;">0.492</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">deg_mutfrn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">0.999</td>
+<td style="text-align: right;">0.496</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">deg_likfrn</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1.000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<p>The strongest associations can be identified by combining the matrix with the frequency table <code>j_vertex$freq</code>, which summarizes the distribution of joint entropy values. This is shown in <a href="#tbl-jointfrq-vert" class="quarto-xref">Table&nbsp;<span>9.8</span></a> where we see that the largest joint entropy value is <span class="math inline">\(0.58\)</span>, occurring between the variables <code>years</code> and <code>status</code>.</p>
+<div id="tbl-jointfrq-vert" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-jointfrq-vert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.8: Frequency distribution of unique joint entropy values for vertex variables. Only the first 10 rows are shown.
+</figcaption>
+<div aria-describedby="tbl-jointfrq-vert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">j</th>
+<th style="text-align: right;">#(J = j)</th>
+<th style="text-align: right;">#(J &gt;= j)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0.578</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.547</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.537</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.496</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.492</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.42</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.417</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.314</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.309</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.299</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<p>These relationships can be conveniently visualized using the function <code>assoc_graph()</code>, which returns a <code>ggraph</code> object where nodes represent variables and edges represent the strength of association (with thicker edges indicating stronger dependence). To focus on the most relevant structure, we set a threshold of <span class="math inline">\(0.25\)</span>, so that only the strongest associations are displayed:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(vertex_var, <span class="fl">0.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="netropy_files/figure-html/vert-assoc-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
 </div>
 
 
