@@ -15,7 +15,6 @@ In this chapter, we focus on the application of multivariate entropy analysis to
 library(netropy)
 library(igraph)
 library(ggplot2)
-library(patchwork)
 ```
 
 ## Network Data Representation and Transformation
@@ -130,6 +129,7 @@ We use these plots to choose cutpoints that divide the data into three approxima
 #| echo: false
 #| fig-height: 5
 #| fig-width: 10
+library(patchwork)
 pyears <- ggplot(frq_years, aes(x = years, y = cum.rel.freq)) +
   geom_step(linewidth = 1) +
   geom_point() +
@@ -563,3 +563,32 @@ These relationships can be conveniently visualized using the function `assoc_gra
 #| fig-width: 10
 assoc_graph(vertex_var, 0.25)
 ```
+
+#### Dyad Variables {.unnumbered}
+
+Joint entropies for the dyad variables are computed in the same way as for the vertex variables. Rather than presenting the full output, we focus on visualizing the dependence structure using an association graph. We set a threshold of 0.10 to display the strongest associations:
+
+```{r}
+#| label: dyad-assoc
+#| fig-height: 8
+#| fig-width: 10
+assoc_graph(dyad_var, 0.10)
+```
+
+From the graph, several patterns can be observed. There is a strong dependence among the variables (`status`, `years`, `age`), as well as notable associations among (`lawschool`, `years`, `age`) and (`status`, `years`, `gender`). 
+
+In addition, the graph suggests that the relations `cowork` and `friend` are conditionally independent given `advice`. That is, any observed dependence between `cowork` and `friend` can be explained through their association with `advice`.
+
+#### Triad Variables {.unnumbered}
+
+Similarly, joint entropies for the triad variables are computed for the reduced data frame (with redundant variables removed). The dependence structure is again visualized using an association graph. We set a threshold of 0.25 to focus on the strongest associations:
+
+```{r}
+#| label: triad-assoc
+#| fig-height: 8
+#| fig-width: 10
+assoc_graph(triad_var, 0.25)
+```
+The triad variables exhibit similar dependence patterns as the dyad variables, but with generally stronger associations. In particular, joint entropy values are higher for all pairs of `cowork`, `friend`, and `advice`, indicating stronger interactions among these variables. This further supports the conditional independence observed earlier, suggesting that the relationship between `cowork` and `friend` is increasingly explained by `advice` at the triadic level.
+
+### Trivariate Entropies and Prediction Power
