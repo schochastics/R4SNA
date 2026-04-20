@@ -1,5 +1,8 @@
 # Enhancing Visualizations
 
+The previous chapters covered the core building blocks of `ggraph` including layouts, node and edge geoms, and techniques for visualizing specific network types. With those tools alone, you can already produce clear, publication-ready network plots. This chapter goes a step further, showing how to combine `ggraph` with companion packages like `ggforce` and how to apply a number of small but effective tricks that address common visualization challenges.
+
+
 ## Packages Needed for this Chapter
 ```{r}
 #| label: libraries1
@@ -10,6 +13,8 @@ library(graphlayouts)
 library(ggforce)
 library(networkdata)
 ```
+
+As before, we use the Game of Thrones dataset using some preprocessing steps.
 
 ```{r}
 data("got")
@@ -33,12 +38,10 @@ V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 V(gotS1)$size <- degree(gotS1)
 ```
 
-Everything that was covered so far should be enough to produce nice network visualizations, especially for scientific publications. However, `ggraph` has a lot more advanced functions/parameter settings to further enhance your visualization.  If you are looking for something specific, it is always a good idea to read the documentation of the geoms. 
+## Combining `ggraph` and `ggforce`
 
-## use the ggforce
-
-The `ggforce` package works pretty nicely with `ggraph`. You can, for instance, use
-the `geom_mark_*()` functions to highlight clusters.
+The `ggforce` package and `ggraph` work pretty nicely together. For example, you can use
+the `geom_mark_*()` functions to highlight clusters. @fig-network-grps-sol shows the result.
 
 ```{r}
 #| label: network-grps
@@ -49,20 +52,13 @@ g <- sample_islands(9, 40, 0.4, 15)
 g <- igraph::simplify(g)
 V(g)$grp <- as.character(rep(1:9, each = 40))
 
-bb <- layout_as_backbone(g, keep = 0.4)
-E(g)$col <- F
-E(g)$col[bb$backbone] <- T
 ```
 
 ```{r}
-#| label:  network-grps-sol
-ggraph(
-  g, #|
-  layout = "manual",
-  x = bb$xy[, 1],
-  y = bb$xy[, 2]
-) +
-  geom_edge_link0(aes(col = col), width = 0.2) +
+#| label:  fig-network-grps-sol
+#| fig-cap: "Network with group structure highlighted using `geom_mark_hull()`."
+ggraph(g, layout = "backbone", keep = 0.4) +
+  geom_edge_link0(edge_color = "grey66", edge_width = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
   geom_mark_hull(
     aes(x, y, group = grp, fill = grp),
@@ -77,17 +73,13 @@ ggraph(
   theme(legend.position = "none")
 ```
 
-Of course you can also add a label to your clusters.
+It is also possible to add labels to the clusters as shown in @fig-network-grps-label-sol.
 
 ```{r}
-#| label: network-grps-label-sol
-ggraph(
-  g, #|
-  layout = "manual",
-  x = bb$xy[, 1],
-  y = bb$xy[, 2]
-) +
-  geom_edge_link0(aes(col = col), width = 0.2) +
+#| label: fig-network-grps-label-sol
+#| fig-cap: "Network with labelled group hulls."
+ggraph(g, layout = "backbone", keep = 0.4) +
+  geom_edge_link0(edge_color = "grey66", edge_width = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
   geom_mark_hull(
     aes(x, y, group = grp, fill = grp, label = grp),
@@ -102,43 +94,17 @@ ggraph(
   theme(legend.position = "none")
 ```
 
-If you want to avoid node overlaps, you can use `geom_node_voronoi()`.
-So this is actually already implemented in `ggraph`, but originates from `geom_voronoi_tile()`.
+## Polishing Details
+
+When building network visualizations, a few recurring challenges tend to appear once plots become more complex: arrow endpoints that overlap with nodes, edges bleeding through transparent nodes, or labels that disappear into dense graphs. The following subsections address each of these issues with targeted techniques. Note that each problem certainly has multiple solutions, and the ones shown here just illustrate one possible approach.
+
+### Aligning Arrow Endpoints with Node Size
+
+In directed networks where node size is mapped to an attribute, edges drawn with arrows often overlap with larger nodes. @fig-arrow-size illustrates the problem: `end_cap` is set based on degree, but because `ggraph` maps the size aesthetic through a scale, the actual rendered size of each node does not match the value passed to `end_cap`.
 
 ```{r}
-#| label: network-voronoi
-ggraph(g, layout = "manual", x = bb$xy[, 1], y = bb$xy[, 2]) +
-  geom_edge_link0(aes(filter = !col, col = col), width = 0.2) +
-  geom_node_voronoi(
-    aes(x, y, fill = grp),
-    max.radius = 0.4,
-    expand = unit(-0.5, "mm"),
-    colour = "black"
-  ) +
-  scale_color_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
-  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
-  theme(
-    legend.position = "none",
-    panel.grid = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank()
-  ) +
-  theme_graph() +
-  theme(legend.position = "none")
-```
-
-
-## Small tricks for common problems 
-
-> "How can I achieve that my directed edges stop at the node border, independent from the node size?" 
-
-This one has given me headaches for the longest time. No matter what I tried, I always ended up with
-something like the below plot.
-
-```{r}
-#| label: arrow-size
-## create a random network
+#| label: fig-arrow-size
+#| fig-cap: "Directed network where arrows overlap with nodes of varying size."
 set.seed(1071)
 g <- sample_pa(30, 1)
 V(g)$degree <- degree(g, mode = "in")
@@ -159,14 +125,13 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-The overlap can be avoided by using the `I()` function from base R, which
-treats the entries of a vector "as is". So we know that if a node has degree 5, it will be mapped to
-a circle with radius (or diameter?) "5pt". Since this means, that you have no control over the scaling,
-you need to do that beforehand.
+A solution is to bypass the size scale entirely using base R's `I()` function, which passes values through "as is" — a node with value 5 will be rendered at exactly 5 points. Because `I()` removes any automatic rescaling, we need to normalise the degree values to the desired size range beforehand.
+
+@fig-arrows-size-sol shows the result: the arrow endpoints now align properly with the node sizes, creating a cleaner and more accurate visualization of the directed network.
 
 ```{r}
-#| label: arrows-size-sol
-## this function is borrowed from the ambient package
+#| label: fig-arrows-size-sol
+#| fig-cap: "Directed network with corrected arrow endpoints using `I()` for node sizes."
 normalise <- function(x, from = range(x), to = c(0, 1)) {
   x <- (x - from[1]) / (from[2] - from[1])
   if (!identical(to, c(0, 1))) {
@@ -175,7 +140,7 @@ normalise <- function(x, from = range(x), to = c(0, 1)) {
   x
 }
 
-## map to the range you want
+## map degree to the desired point-size range
 V(g)$degree <- normalise(V(g)$degree, to = c(3, 11))
 
 ggraph(g, "stress") +
@@ -193,16 +158,13 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-I would not be surprised though if there is an even easier fix for this problem.
+### Transparent Nodes Without Edge Bleed-Through
 
-> "How can I lower the opacity of nodes without making edges visible underneath?"
-
-One of the rules I try to follow is that edges should not be visible on top of nodes.
-Usually that is easy to achieve by drawing the edges before the nodes. But if you 
-want to lower the opacity of nodes, they do become visible again.
+A useful principle in network visualization is that edges should not be drawn on top of nodes. Drawing edges before nodes in the layer stack normally takes care of this. However, when node opacity is mapped to an attribute, edges become visible through the semi-transparent nodes again, as shown in @fig-alpha-nodes.
 
 ```{r}
-#| label: alpha-nodes
+#| label: fig-alpha-nodes
+#| fig-cap: "Network with transparent nodes where edges are visible underneath."
 g <- sample_gnp(20, 0.5)
 V(g)$degree <- degree(g)
 
@@ -217,10 +179,16 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-The solution is rather simple. Just add a node layer with the same aesthetics below with
-`alpha=1` (default) and `color="white"` (or the background color of the plot).
+The fix is to add an extra node layer between the edges 
+and the transparent nodes: a set of fully opaque points in 
+the background colour. These act as masks that hide the 
+edges underneath, while the coloured layer on top still 
+shows the intended transparency effect. 
+@fig-alpha-nodes-sol shows the result.
+
 ```{r}
-#| label: alpha-nodes-sol
+#| label: fig-alpha-nodes-sol
+#| fig-cap: "Network with opaque white background layer to hide edges beneath transparent nodes."
 ggraph(g, "stress") +
   geom_edge_link(edge_colour = "grey66") +
   geom_node_point(size = 8, col = "white") +
@@ -233,14 +201,15 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-Of course you could also use `start_cap` and `end_cap` here, but you may have to fiddle again as in the last example. 
+Note that the background colour of the masking layer needs to match the plot background — in this case white, since `theme_graph()` uses a white background by default.
 
-> "How can I enhance readability of node labels in hairball graphs?"
+### Improving Label Readability in Dense Networks
 
-Sometimes it is really hard to make labels readable when the network is very cluttered
+In dense networks, node labels can easily become unreadable when they overlap with edges and other nodes. @fig-unreadable-labels shows a typical example where even bold labels are difficult to parse.
 
 ```{r}
-#| label: unreadable-labels
+#| label: fig-unreadable-labels
+#| fig-cap: "Dense network with hard-to-read node labels."
 #| fig-width: 8
 #| fig-height: 8
 g <- sample_gnp(50, 0.7)
@@ -260,10 +229,11 @@ ggraph(g) +
   coord_fixed()
 ```
 
-Here you can make use of the fact that the layout of the nodes are stored in a "hidden" data frame when a `ggraph` object is constructed. That means you can use other geoms from other packages. In this case, the `shadowtext` package as shown below.
+Since `ggraph` stores the node layout in a data frame accessible to all layers, we can use geoms from other packages that operate on standard `x` and `y` aesthetics. The `shadowtext` package provides `geom_shadowtext()`, which draws a coloured halo behind each label, making it stand out against both edges and nodes, shown in @fig-shadowtext-labels.
 
 ```{r}
-#| label: shadowtext-labels
+#| label: fig-shadowtext-labels
+#| fig-cap: "Dense network with improved label readability using `shadowtext`."
 #| fig-width: 8
 #| fig-height: 8
 
@@ -284,67 +254,3 @@ ggraph(g, "stress") +
   theme_graph() +
   coord_fixed()
 ```
-
-## Edge bundling
-
-```{r}
-#| label: fig-force-bundle
-gr <- edgebundle::us_flights
-states <- map_data("state")
-
-ggraph(gr, x = longitude, y = latitude) +
-  geom_polygon(
-    aes(long, lat, group = group),
-    states,
-    color = "white",
-    linewidth = 0.2
-  ) +
-  coord_sf(crs = "NAD83", default_crs = sf::st_crs(4326)) +
-  geom_edge_bundle_force(color = "white", width = 0.05)
-```
-
-```{r}
-#| label: fig-path-bundle
-ggraph(gr, x = longitude, y = latitude) +
-  geom_polygon(
-    aes(long, lat, group = group),
-    states,
-    color = "white",
-    linewidth = 0.2
-  ) +
-  coord_sf(crs = "NAD83", default_crs = sf::st_crs(4326)) +
-  geom_edge_bundle_path(color = "white", width = 0.05)
-```
-
-## snahelper
-
-Even with a lot of experience, it may still be a painful process to produce nice looking
-figures by writing `ggraph` code. Enter the `snahelper`. 
-
-```r
-install.packages("snahelper")
-```
-
-The `snahelper` is an RStudio addin which provides
-you with a GUI to plot networks. Instead of writing code, you simply use drop-down menus to assign 
-attributes to aesthetics or change appearances globally. One great feature of the addin is that you 
-can adjust the position of nodes individually if you are not satisfied with their location.
-Once you are done, you can either directly export the figure to png or automatically insert the code to produce the figure into your script. That way, you can review the code and hopefully learn something from it. Below if a demo that shows its functionality.
-
-![](https://raw.githubusercontent.com/schochastics/snahelper/master/man/figures/snahelper.gif)
-
-
-To use the addin, simply highlight the variable name of your network within an R script and
-choose the SNAhelper from the Addins drop-down menu within RStudio. You can find more about the 
-Addin on its dedicated [pkgdown page](http://snahelper.schochastics.net)
-
-
-## Misc
-
-Some things that I frequently use are the following:
-
-- change the `end_cap` in `geom_edge_link()` to end edges before reaching the node. This is helpful
-  for directed edges to not make the arrows disappear.
-- `legend.position` in `theme()` controls all legends at once. If you don't want to show a specific legend, 
- use `guide = "none"` in the respective `scale_*` function.
-- use `scale_color_viridis_c()` and `scale_color_viridis_d()`. The viridis colour palette makes plots easier to read by those with colorblindness and print well in grey scale.
