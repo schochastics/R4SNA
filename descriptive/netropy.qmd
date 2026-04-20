@@ -84,13 +84,13 @@ adj_mutfrn <- adj_friend*t(adj_friend)
 # likely friendship 
 g_frn <- graph_from_adjacency_matrix(adj_friend, mode="directed") 
 g_likfrn <- as_undirected(g_frn)
-adj_likfrn <-  as_adjacency_matrix(g_likfrn)
+adj_likfrn <-  as_adjacency_matrix(g_likfrn, sparse = FALSE)
 ```
 
 
 
 ### Data Editing
-#### Vertex Variables: Observed {.unnumbered}
+#### Vertex Variables {.unnumbered}
 
 Observed node variables are the attributes in the data frame `df_att`. The first 5 lines of this data frame are:
 ```{r}
@@ -213,7 +213,6 @@ Frequency distributions of the discretized variables `age` and `years`, showing 
 
 This preprocessing step yields a set of discrete variables with manageable range sizes, making them appropriate for estimating joint and conditional entropies in the subsequent network analysis.
 
-#### Vertex Variables: Transformed {.unnumbered}
 Next, we transform the observed dyad variables into node-level variables. This is achieved by aggregating edge information into node-based measures. In particular, we use degree-based summaries: in-degree and out-degree for the directed advice and friendship networks, and degree (number of ties) for the undirected co-work network, as well as for the mutual advice, mutual friendship, and likely friendship networks.
 
 To compute these measures, we first construct graph objects from each adjacency matrix (note that the directed friendship graph `g_frn` and the undirected likely-friendship graph `g_likfrn` were already created above):
@@ -271,3 +270,296 @@ knitr::kable(
 ```
 First 10 rows of the vertex-level dataset.
 :::
+
+
+#### Dyad Variables {.unnumbered}
+
+Dyad variables are constructed as pairs of incident vertex variables, resulting in $\binom{71}{2} = 2485$ observations (i.e., the number of rows in the dyadic data frames created below). 
+
+The observed node attributes in the data frame `att_var` are therefore transformed into dyadic attributes by pairing the values of two connected vertices. For example, the binary variable `status` yields four possible dyadic outcomes: $(0,0)$, $(0,1)$, $(1,0)$, and $(1,1)$. Similarly, the categorical variable `office` with three levels results in nine possible dyadic outcomes: $(0,0)$, $(0,1)$, $(0,2)$, $(1,0)$, $(1,1)$, $(1,2)$, $(2,0)$, $(2,1)$, and $(2,2)$.
+
+These transformations can be carried out using the function `get_dyad_var()`, where the argument `type = "att"` specifies that the input consists of vertex attributes. This procedure is applied to all vertex variables in the dataset:
+
+```{r}
+#| label: dyad-transf
+dyad_status    <- get_dyad_var(att_var$status, type = "att")
+dyad_gender    <- get_dyad_var(att_var$gender, type = "att")
+dyad_office    <- get_dyad_var(att_var$office, type = "att")
+dyad_years     <- get_dyad_var(att_var$years, type = "att")
+dyad_age       <- get_dyad_var(att_var$age, type = "att")
+dyad_practice  <- get_dyad_var(att_var$practice, type = "att")
+dyad_lawschool <- get_dyad_var(att_var$lawschool, type = "att")
+```
+
+Note that the dyadic outcomes are recoded to numerical values to avoid character objects when performing the entropy analysis. In practice, the actual labels of the categories are irrelevant, as entropy depends only on the frequencies of occurrence. For example, the variable `status` takes values $0$–$3$, while `office` takes values $0$–$8$.
+
+In a similar way, we construct dyad variables based on observed and derived ties. For undirected networks, dyad variables are simple indicator variables obtained directly from the adjacency matrix. For directed networks, each dyad is represented by a pair of indicators corresponding to sending and receiving ties, resulting in four possible outcomes (e.g., for `advice` and `friendship`).
+
+Using the same function as above, we now set the argument `type = "tie"` and provide the adjacency matrix as input. The function automatically determines whether the network is directed or undirected and creates the appropriate dyadic variable.
+
+```{r}
+#| label: dyad-transf2
+dyad_cwk    <- get_dyad_var(adj_cowork, type = "tie")
+dyad_adv    <- get_dyad_var(adj_advice, type = "tie")
+dyad_mutadv <- get_dyad_var(adj_mutadv, type = "tie")
+dyad_frn    <- get_dyad_var(adj_friend, type = "tie")
+dyad_mutfrn <- get_dyad_var(adj_mutfrn, type = "tie")
+dyad_likfrn <- get_dyad_var(adj_likfrn, type = "tie")
+```
+
+
+
+
+Next, all dyad variables are merged into a single data frame for subsequent entropy analysis:
+```{r}
+#| label: dyad-var
+dyad_var <- data.frame(
+  status    = dyad_status$var,
+  gender    = dyad_gender$var,
+  office    = dyad_office$var,
+  years     = dyad_years$var,
+  age       = dyad_age$var,
+  practice  = dyad_practice$var,
+  lawschool = dyad_lawschool$var,
+  cowork    = dyad_cwk$var,
+  advice    = dyad_adv$var,
+  mutadv    = dyad_mutadv$var,
+  friend    = dyad_frn$var,
+  mutfrn    = dyad_mutfrn$var,
+  likfrn    = dyad_likfrn$var
+)
+```
+The resulting dataset `dyad_var` contains all dyadic variables used in the entropy analysis. The first rows are shown in @tbl-dyad-var.
+
+::: {#tbl-dyad-var}
+```{r}
+#| echo: false
+knitr::kable(
+  head(dyad_var, 10)
+)
+```
+First 10 rows of the dyadic dataset.
+:::
+
+#### Triad Variables {.unnumbered}
+A similar function, `get_triad_var()`, is used to transform vertex variables and different relation types into triad-level variables. These variables represent combinations of three nodes and therefore yield $\binom{71}{3} = 57155$ observations in the law firm dataset. Each observation corresponds either to a triple of individual attributes or to the configuration of relations among three nodes.
+
+As for dyad variables, the function requires specifying the type of input: `type = "att"` for vertex attributes (given as column vectors) and `type = "tie"` for relational data (given as adjacency matrices).
+
+For vertex variables, triad variables are constructed as follows:
+
+```{r}
+#| label: triad-var
+triad_status    <- get_triad_var(att_var$status, type = "att")
+triad_gender    <- get_triad_var(att_var$gender, type = "att")
+triad_office    <- get_triad_var(att_var$office, type = "att")
+triad_years     <- get_triad_var(att_var$years, type = "att")
+triad_age       <- get_triad_var(att_var$age, type = "att")
+triad_practice  <- get_triad_var(att_var$practice, type = "att")
+triad_lawschool <- get_triad_var(att_var$lawschool, type = "att")
+```
+
+Binary vertex attributes result in $2^3 = 8$ possible triadic outcomes:
+$$
+(0,0,0), (1,0,0), (0,1,0), (1,1,0), (0,0,1), (1,0,1), (0,1,1), (1,1,1),
+$$
+which are recoded as integers from $0$ to $7$. Similarly, attributes with three categories yield $3^3 = 27$ possible triadic outcomes, coded from $0$ to $26$.
+
+For relational variables, undirected ties are transformed from binary outcomes into triad variables with $8$ possible configurations, while directed ties are transformed from $4$ dyadic outcomes into $4^3 = 64$ triadic configurations, capturing all possible combinations of sending and receiving ties among three nodes.
+
+The triad variables based on ties are constructed as follows:
+```{r}
+#| label: triad-var2
+triad_cwk    <- get_triad_var(adj_cowork, type = "tie")
+triad_adv    <- get_triad_var(adj_advice, type = "tie")
+triad_mutadv <- get_triad_var(adj_mutadv, type = "tie")
+triad_frn    <- get_triad_var(adj_friend, type = "tie")
+triad_mutfrn <- get_triad_var(adj_mutfrn, type = "tie")
+triad_likfrn <- get_triad_var(adj_likfrn, type = "tie")
+```
+All triad variables are then merged into a single data frame for subsequent entropy analysis:
+```{r}
+#| label: triad-var-df
+triad_var <- data.frame(
+  status    = triad_status$var,
+  gender    = triad_gender$var,
+  office    = triad_office$var,
+  years     = triad_years$var,
+  age       = triad_age$var,
+  practice  = triad_practice$var,
+  lawschool = triad_lawschool$var,
+  cowork    = triad_cwk$var,
+  advice    = triad_adv$var,
+  mutadv    = triad_mutadv$var,
+  friend    = triad_frn$var,
+  mutfrn    = triad_mutfrn$var,
+  likfrn    = triad_likfrn$var
+)
+```
+
+The resulting dataset `triad_var` contains all triad-level variables used in the entropy analysis. The first rows are shown in @tbl-triad-var.
+
+::: {#tbl-triad-var}
+```{r}
+#| echo: false
+knitr::kable(
+  head(triad_var, 10)
+)
+```
+First 10 rows of the triad-level dataset.
+:::
+
+
+
+### Univariate and Bivariate Entropies
+The function `entropy_bivar()` computes the bivariate entropies for all pairs of variables in a data frame. The results are returned as an upper triangular matrix, where each cell contains the joint entropy of the corresponding row and column variables. The diagonal entries represent the univariate entropies of each variable.
+
+#### Vertex Variables {.unnumbered}
+
+We apply the function to the data frame containing all observed and transformed vertex variables.
+
+```{r}
+#| label: vert-ent
+h2_vertex <- entropy_bivar(vertex_var)
+```
+
+The output, rounded to 2 decimals, is shown in @tbl-ent-vertvar.
+
+::: {#tbl-ent-vertvar}
+```{r}
+#| echo: false
+knitr::kable(
+  round(h2_vertex, 2),
+)
+```
+Bivariate entropy matrix for vertex variables.
+:::
+
+Bivariate entropies can be used to detect redundant variables that do not contribute additional information and may therefore be omitted from further analysis. Redundancy can be identified by comparing diagonal entries (univariate entropies) with the corresponding off-diagonal values in the same rows or columns. If these values are equal, it indicates that one variable does not provide additional information beyond another.
+
+This can also be assessed using the function `redundancy()`. The output of `redundancy()` is a binary matrix indicating whether one variable is redundant with respect to another. A value of `1` means that the corresponding column variable does not provide additional information beyond the row variable, while `0` indicates that the variables contain distinct information.
+
+For the vertex variables in this dataset, no redundancy is detected:
+```{r}
+#| label: ver-red
+red_vertex <- redundancy(vertex_var, dec = 3)
+```
+Note that the argument `dec` affects the detection of redundant variables, as it controls the rounding of bivariate entropies. Using fewer decimal places increases the likelihood that two variables will appear to have identical entropy values and thus be flagged as redundant.
+
+For illustration, we apply the `redundancy()` function to the original attribute data frame `df_att`. Recall that the variable `senior` consists entirely of unique values and is therefore identified as redundant, as shown below:
+
+```{r}
+#| label: ver-red2
+red_vertex2 <- redundancy(df_att, dec = 2)
+red_vertex2
+# find columns that are redundant with any other variable
+colnames(red_vertex2)[rowSums(red_vertex2) >= 1]
+
+```
+
+Here, the variable `senior` is flagged as redundant with respect to all other variables, as indicated by the row of ones. This occurs because `senior` consists entirely of unique values, meaning it does not share any repeated structure with other variables and therefore does not contribute meaningful information for entropy-based analysis. In contrast, all other variables show zeros, indicating no redundancy among them.
+
+#### Dyad Variables {.unnumbered}
+The data frame `dyad_var` contains 13 observed and transformed dyad-level variables. To compute the univariate and bivariate entropies, we apply the function `entropy_bivar()`:
+
+```{r}
+#| label: dyad-ent
+h2_dyad <- entropy_bivar(dyad_var)
+```
+The results shown in @tbl-ent-dyadvar indicate redundancy among the different variants of the advice and friendship relations. This is expected, as these variables are derived from the same underlying ties. 
+
+::: {#tbl-ent-dyadvar}
+```{r}
+#| echo: false
+knitr::kable(
+  round(h2_dyad, 2),
+)
+```
+Bivariate entropy matrix for dyad variables. Redundancy is observed among the advice and friendship variants: the variables `mutadv`, `mutfrn`, and `likfrn` do not provide additional information beyond `advice` and `friend`, respectively, and should therefore excluded from subsequent analyses.
+:::
+
+
+The redundancy can also be confirmed using the `redundancy()` function. Based on this analysis, we remove the redundant variables mutadv, mutfrn, and likfrn (columns 10, 12, and 13) from the data frame:
+```{r}
+dyad_var <- dyad_var[-c(10, 12:13)]
+```
+
+The resulting data frame contains the non-redundant dyad variables used in the subsequent entropy analysis.
+
+#### Triad Variables {.unnumbered}
+
+
+The data frame `triad_var` contains the observed and transformed triad-level variables. To compute the univariate and bivariate entropies, we apply the function `entropy_bivar()`:
+
+```{r}
+#| label: triad-ent
+h2_triad <- entropy_bivar(triad_var)
+```
+The results shown in @tbl-ent-triadvar reveal redundancy among the triad variables derived from the different variants of the advice and friendship relations. As in the dyadic case, this is expected since these variables originate from the same underlying ties.
+
+::: {#tbl-ent-triadvar}
+
+```{r}
+#| echo: false
+knitr::kable(
+  round(h2_triad, 2),
+)
+```
+
+Bivariate entropy matrix for triad variables.  Redundancy is observed among the triad variables derived from the different variants of the advice and friendship relations.
+:::
+
+The redundancy can be confirmed using the `redundancy()` function and after removing the redundant variables (`mutadv`, `mutfrn`, and `likfrn`), the resulting data frame contains 10 triad variables, which are used in the subsequent entropy analysis.
+
+```{r}
+triad_var <- triad_var[-c(10, 12:13)]
+```
+
+### Joint Entropies and Association Graphs
+
+The function `joint_entropy()` computes the joint entropies for all pairs of variables in a data frame. The output is returned as a list containing: (i) an upper triangular matrix of joint entropy values, with univariate entropies on the diagonal, and (ii) a data frame summarizing the frequency distribution of unique joint entropy values.
+
+An optional argument controls the precision of the entropy values (number of decimal places), which is used when constructing the frequency distribution; the default is 3 decimals.
+
+#### Vertex Variables {.unnumbered}
+
+We apply the function to the data frame containing the observed and transformed vertex variables:
+
+```{r}
+#| label: vert-joint
+j_vertex <- joint_entropy(vertex_var, 3)
+```
+The output is returned as a list containing two objects: `j_vertex$mat`, an upper triangular matrix of joint entropy values (with univariate entropies on the diagonal), and `j_vertex$freq`, a data frame summarizing the frequency distribution of unique joint entropy values.
+
+The matrix `j_vertex$mat` shown in @tbl-joint-vert summarizes the pairwise joint entropy values. Entries equal to $0$ indicate independence between variables, while larger values indicate stronger dependence. For example, practice is independent of both status and gender. 
+
+::: {#tbl-joint-vert}
+```{r}
+#| echo: false
+knitr::kable(
+  round(j_vertex$mat, 3),
+)
+```
+Upper triangular matrix of joint entropy values for vertex variables, with univariate entropies on the diagonal.
+:::
+
+The strongest associations can be identified by combining the matrix with the frequency table `j_vertex$freq`, which summarizes the distribution of joint entropy values. This is shown in @tbl-jointfrq-vert where we see that the largest joint entropy value is $0.58$, occurring between the variables `years` and `status`.
+
+::: {#tbl-jointfrq-vert}
+```{r}
+#| echo: false
+knitr::kable(
+  head(j_vertex$freq, 10)
+)
+```
+Frequency distribution of unique joint entropy values for vertex variables. Only the first 10 rows are shown.
+:::
+  
+These relationships can be conveniently visualized using the function `assoc_graph()`, which returns a `ggraph` object where nodes represent variables and edges represent the strength of association (with thicker edges indicating stronger dependence). To focus on the most relevant structure, we set a threshold of $0.25$, so that only the strongest associations are displayed:
+
+```{r}
+#| label: vert-assoc
+#| fig-height: 8
+#| fig-width: 10
+assoc_graph(vertex_var, 0.25)
+```
