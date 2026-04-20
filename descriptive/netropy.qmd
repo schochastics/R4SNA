@@ -412,6 +412,26 @@ First 10 rows of the triad-level dataset.
 
 
 ### Univariate and Bivariate Entropies
+The univariate entropy of a discrete variable $X$ with $r$ outcomes is defined as
+$$
+H(X) = \sum_x p(x) \log_2 \frac{1}{p(x)}.
+$$
+It measures the uncertainty of $X$. A variable with zero entropy has no uncertainty (it is constant) and can be omitted from further analysis. The maximum entropy is $\log_2 r$, which corresponds to a uniform distribution over all outcomes.
+
+The bivariate entropy of two discrete variables $X$ and $Y$ is given by
+$$
+H(X,Y) = \sum_x \sum_y p(x,y) \log_2 \frac{1}{p(x,y)}.
+$$
+This quantity can be used to assess redundancy, functional relationships, and stochastic independence. It satisfies the bounds
+$$
+H(X) \leq H(X,Y) \leq H(X) + H(Y).
+$$
+
+- The lower bound is attained if and only if there is a functional relationship $Y = f(X)$.
+- The upper bound is attained if and only if $X$ and $Y$ are stochastically independent, $X \bot Y$.
+
+In particular, if $H(X,Y) = H(X)$ or $H(X,Y) = H(Y)$, one of the variables is redundant and does not provide additional information.
+
 The function `entropy_bivar()` computes the bivariate entropies for all pairs of variables in a data frame. The results are returned as an upper triangular matrix, where each cell contains the joint entropy of the corresponding row and column variables. The diagonal entries represent the univariate entropies of each variable.
 
 #### Vertex Variables {.unnumbered}
@@ -516,10 +536,33 @@ triad_var <- triad_var[-c(10, 12:13)]
 ```
 
 ### Joint Entropies and Association Graphs
+Joint entropy measures the total uncertainty associated with a pair of variables $(X,Y)$ and provides a basis for assessing their dependence. The difference between the sum of the marginal entropies and the joint entropy is given by
 
-The function `joint_entropy()` computes the joint entropies for all pairs of variables in a data frame. The output is returned as a list containing: (i) an upper triangular matrix of joint entropy values, with univariate entropies on the diagonal, and (ii) a data frame summarizing the frequency distribution of unique joint entropy values.
+$$
+J(X,Y) = H(X) + H(Y) - H(X,Y),
+$$
 
-An optional argument controls the precision of the entropy values (number of decimal places), which is used when constructing the frequency distribution; the default is 3 decimals.
+which is a non-negative measure of association between $X$ and $Y$. It is equal to $0$ if and only if $X$ and $Y$ are stochastically independent, $X \bot Y$, that is, when $p(x,y) = p(x,+)p(+,y)$.
+
+For three variables, the trivariate entropy is bounded by
+
+$$
+H(X,Y) \leq H(X,Y,Z) \leq H(X,Z) + H(Y,Z) - H(Z).
+$$
+
+The deviation from the upper bound is given by
+
+$$
+EJ(X,Y \mid Z) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z),
+$$
+
+which is again non-negative and equals $0$ if and only if $X \bot Y \mid Z$. This quantity can therefore be used to assess conditional independence.
+
+Joint entropy values $J(X,Y)$ for all pairs of variables can be used to explore the dependence structure through association graphs. In such graphs, nodes represent variables and edges connect pairs of variables whose joint entropy exceeds a chosen threshold. By gradually lowering the threshold, additional edges appear and the graph becomes more connected. 
+
+Connected components that form cliques indicate groups of mutually dependent variables, while separate components correspond to independent subsets. Conditional independence can be investigated by examining how the graph structure changes when conditioning variables are removed. A threshold that yields a graph with several small (conditionally) independent components may serve as a useful representation of the underlying multivariate structure.
+
+The function `joint_entropy()` computes joint entropy values for all pairs of variables in a data frame. The output is returned as a list containing: (i) an upper triangular matrix of joint entropy values, with univariate entropies on the diagonal, and (ii) a data frame summarizing the frequency distribution of unique joint entropy values. An optional argument controls the precision (number of decimal places) used in constructing this frequency distribution; the default is 3.
 
 #### Vertex Variables {.unnumbered}
 
@@ -592,3 +635,156 @@ assoc_graph(triad_var, 0.25)
 The triad variables exhibit similar dependence patterns as the dyad variables, but with generally stronger associations. In particular, joint entropy values are higher for all pairs of `cowork`, `friend`, and `advice`, indicating stronger interactions among these variables. This further supports the conditional independence observed earlier, suggesting that the relationship between `cowork` and `friend` is increasingly explained by `advice` at the triadic level.
 
 ### Trivariate Entropies and Prediction Power
+Trivariate entropy extends the concepts of univariate and bivariate entropy to three variables. For variables $X$, $Y$, and $Z$, it is defined as
+$$
+H(X,Y,Z) = \sum_x \sum_y \sum_z p(x,y,z) \log_2 \frac{1}{p(x,y,z)},
+$$
+and satisfies the bounds
+$$
+H(X,Y) \leq H(X,Y,Z) \leq H(X,Z) + H(Y,Z) - H(Z).
+$$
+
+These bounds provide a basis for assessing dependence structures among triples of variables. In particular, the deviation from the lower bound is given by the expected conditional entropy
+$$
+EH(Z \mid X,Y) = H(X,Y,Z) - H(X,Y),
+$$
+which measures the remaining uncertainty in $Z$ given $(X,Y)$. This quantity is non-negative and equals $0$ if and only if $(X,Y)$ uniquely determine $Z$, indicating a functional relationship.
+
+This concept parallels the bivariate case, where
+$$
+EH(Y \mid X) = H(X,Y) - H(X)
+$$
+measures the remaining uncertainty in $Y$ given $X$, and equals $0$ when $X$ fully determines $Y$.
+
+More generally, $EH(Z \mid X,Y)$ can be interpreted as a measure of prediction uncertainty when $(X,Y)$ are used to predict $Z$. It reflects, on a logarithmic scale, the average number of possible outcomes of $Z$ given $(X,Y)$. Smaller values indicate stronger predictive power: if $EH < 0.5$, $Z$ can be predicted unambiguously; if $0.5 \leq EH < 1.5$, there are approximately two possible outcomes on average; and so on. In general, prediction power decreases as $EH$ increases.
+
+The function `prediction_power()` computes this quantity for all pairs of variables in a given data frame used to predict a specified target variable $Z$. The function takes as input the data frame and the variable to be predicted, and returns an upper triangular matrix of expected conditional entropies $EH(Z \mid X,Y)$ for all pairs $(X,Y)$. The diagonal entries correspond to $EH(Z \mid X)$, that is, prediction based on a single variable. Entries corresponding to the target variable itself are set to `NA`.
+
+For easier interpretation, prediction results can be visualized using prediction plots, which display a color-coded matrix with rows representing $X$ and columns representing $Y$. Darker colors indicate lower prediction uncertainty and thus higher predictive power for $Z$.
+In the following, we compute and visualize prediction power for vertex, dyad, and triad variables.
+
+#### Vertex Variables {.unnumbered}
+Trivariate entropies for all combinations of vertex variables can be computed using the function `entropy_trivar()`:
+
+```{r}
+#| label: trivent_vert
+h3_vertex <- entropy_trivar(vertex_var)
+```
+
+We next assess prediction power for the different degree-based variables derived from the three relation types: co-work, advice, and friendship. Specifically, we evaluate how well pairs of variables predict each of these target variables.
+
+The corresponding prediction power matrices are obtained as follows:
+```{r}
+#| label: pred-power-vertex
+pred_vertex_cwk    <- prediction_power("deg_cwk", vertex_var)
+pred_vertex_advin  <- prediction_power("indeg_adv", vertex_var)
+pred_vertex_advout <- prediction_power("outdeg_adv", vertex_var)
+pred_vertex_advmut <- prediction_power("deg_mutadv", vertex_var)
+pred_vertex_frnin  <- prediction_power("indeg_frn", vertex_var)
+pred_vertex_frnout <- prediction_power("outdeg_frn", vertex_var)
+pred_vertex_frnmut <- prediction_power("deg_mutfrn", vertex_var)
+pred_vertex_frnlik <- prediction_power("deg_likfrn", vertex_var)
+```
+As an illustration, consider predicting the variable `indeg_adv`, which represents the in-degree in the advice network (i.e., how often a lawyer is asked for advice). The prediction power was computed an assigned to `pred_vertex_advin` and shown in @tbl-expred.
+
+
+::: {#tbl-expred}
+```{r}
+#| echo: false
+knitr::kable(
+  round(pred_vertex_advin, 2),
+)
+```
+Prediction power matrix for `indeg_adv`. Entries represent expected conditional entropies $EH(Z \mid X,Y)$, where lower values indicate higher predictive power. Diagonal entries correspond to single predictors, while off-diagonal entries represent prediction based on pairs of variables; `NA` values indicate the target variable itself.
+:::
+
+
+
+These prediction strengths can be visualized using a prediction plot in a heat map style. The plot displays a color-coded matrix with rows corresponding to $X$ and columns to $Y$, where darker colors indicate higher predictive power (i.e., lower prediction uncertainty for `indeg_adv`). This is shown in @fig-expred.
+
+
+::: {#fig-expred}
+```{r}
+#| label: pred_heatmap
+#| echo: false
+#| fig-height: 7
+#| fig-width: 8
+
+
+# convert matrix to long format (base R)
+mat <- as.matrix(pred_vertex_advin)
+
+df <- as.data.frame(as.table(mat))
+names(df) <- c("X", "Y", "EH")
+
+# remove NA entries (target variable row/column)
+df <- df[!is.na(df$EH), ]
+
+ggplot(df, aes(x = Y, y = X, fill = EH)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = round(EH, 2)), size = 3) +
+  scale_fill_gradient(
+    low = "steelblue", 
+    high = "white",
+    name = "EH(Z|X,Y)"
+  ) +
+  labs(
+    x = "Predictor Y",
+    y = "Predictor X",
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
+Prediction power heatmap for $Z$=`indeg_adv`. Each cell shows the expected conditional entropy $EH(Z \mid X,Y)$, where darker colors indicate stronger predictive power. The strongest predictors involve the variable `years`, particularly in combination with network-based variables such as `deg_mutadv` and `deg_cwk`. While `status` also contributes to prediction, it is not part of the strongest predictor pairs.
+:::
+
+The prediction power heatmap shows that the strongest overall predictor of `indeg_adv` is the network-based variable `deg_likfrn`, which yields the lowest expected conditional entropy among single predictors. This indicates that likely friendship ties are highly informative for explaining advice in-degree.
+
+Among other single predictors, `years` also performs well, followed by `status`, while variables such as `office` and `practice` provide weaker predictive power.
+
+Considering pairs of predictors, the strongest combinations typically involve `years` together with network-based variables such as `deg_mutadv` and `deg_cwk`, yielding the lowest prediction uncertainty overall.
+
+These results suggest that both network position, particularly likely friendship ties, and experience (`years`) play a central role in explaining variation in advice in-degree.
+
+
+```{r}
+#| fig-height: 22
+#| fig-width: 14
+make_pred_plot <- function(mat, title) {
+  df <- as.data.frame(as.table(as.matrix(mat)))
+  names(df) <- c("X", "Y", "EH")
+  
+  df <- df[!is.na(df$EH), ]
+  
+  ggplot(df, aes(x = Y, y = X, fill = EH)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = round(EH, 2)), size = 2.5) +
+    scale_fill_gradient(low = "steelblue", high = "white") +
+    labs(title = title, x = NULL, y = NULL) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
+      axis.text.y = element_text(size = 7),
+      plot.title = element_text(size = 10)
+    )
+}
+  
+p1 <- make_pred_plot(pred_vertex_cwk,    "deg_cwk")
+p2 <- make_pred_plot(pred_vertex_advin,  "indeg_adv")
+p3 <- make_pred_plot(pred_vertex_advout, "outdeg_adv")
+p4 <- make_pred_plot(pred_vertex_advmut, "deg_mutadv")
+p5 <- make_pred_plot(pred_vertex_frnin,  "indeg_frn")
+p6 <- make_pred_plot(pred_vertex_frnout, "outdeg_frn")
+p7 <- make_pred_plot(pred_vertex_frnmut, "deg_mutfrn")
+p8 <- make_pred_plot(pred_vertex_frnlik, "deg_likfrn")
+
+
+(p1 | p2) /
+(p3 | p4) /
+(p5 | p6) /
+(p7 | p8) 
+```
+
