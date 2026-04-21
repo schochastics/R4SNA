@@ -128,12 +128,12 @@ frq_age$cum.rel.freq <- cumsum(frq_age$rel.freq)
 The empirical CDFs make it possible to inspect how the observations accumulate across the support of each variable. This is shown in  @fig-cdfs.
 We use these plots to choose cutpoints that divide the data into three approximately equally sized groups. For years, the selected cutpoints are $3$ and $13$, while for age, the selected cutpoints are $35$ and $45$.
 
-::: {#fig-cdfs}
 ```{r}
-#| label: plot-years-cdf-gg
+#| label: fig-cdfs
 #| echo: false
 #| fig-height: 5
 #| fig-width: 10
+#| fig-cap: "Empirical cumulative distribution functions (CDFs) for `years at firm` and `age`. The dashed horizontal lines indicate the target quantiles (approximately one-third and two-thirds), while the dotted vertical lines show the selected cutpoints used to define three approximately equally sized categories for each variable."
 library(patchwork)
 pyears <- ggplot(frq_years, aes(x = years, y = cum.rel.freq)) +
   geom_step(linewidth = 1) +
@@ -161,8 +161,6 @@ page <- ggplot(frq_age, aes(x = age, y = cum.rel.freq)) +
 
 pyears + page
 ```
-Empirical cumulative distribution functions (CDFs) for `years at firm` and `age`. The dashed horizontal lines indicate the target quantiles (approximately one-third and two-thirds), while the dotted vertical lines show the selected cutpoints used to define three approximately equally sized categories for each variable.
-:::
 
 
 Using these cutpoints, we create a new dataframe `att_var` that contains the variables used in the analysis. All variables except years and age are already categorical with finite range spaces and are therefore retained in their original form, apart from simple recoding to start at $0$ where needed. The variables years and age are recoded into three ordinal categories.
@@ -187,13 +185,12 @@ att_var <- data.frame(
 Finally, we examine the resulting categorized distributions for years and age to confirm that the selected cutpoints produce reasonably balanced groups. This helps ensure that the discretized variables are suitable for subsequent entropy-based analysis. This is shown in @fig-cats.
 
 
-::: {#fig-cats}
-
 ```{r}
-#| label: categorized-data-base
+#| label: fig-cats
 #| echo: false
 #| fig-height: 5
 #| fig-width: 10
+#| fig-cap: "Frequency distributions of the discretized variables `age` and `years`, showing approximately balanced categories after CDF-based grouping."
 years_cat <- as.data.frame(table(att_var$years))
 names(years_cat) <- c("category", "freq")
 years_cat$variable <- "years"
@@ -213,8 +210,6 @@ ggplot(att_long, aes(x = factor(category), y = freq)) +
   ) +
   theme_minimal()
 ```
-Frequency distributions of the discretized variables `age` and `years`, showing approximately balanced categories after CDF-based grouping.
-:::
 
 This preprocessing step yields a set of discrete variables with manageable range sizes, making them appropriate for estimating joint and conditional entropies in the subsequent network analysis.
 
@@ -707,13 +702,12 @@ Prediction power matrix for `indeg_adv`. Entries represent expected conditional 
 These prediction strengths can be visualized using a prediction plot in a heat map style. The plot displays a color-coded matrix with rows corresponding to $X$ and columns to $Y$, where darker colors indicate higher predictive power (i.e., lower prediction uncertainty for `indeg_adv`). This is shown in @fig-expred.
 
 
-::: {#fig-expred}
 ```{r}
-#| label: pred_heatmap
+#| label: fig-expred
 #| echo: false
 #| fig-height: 7
 #| fig-width: 8
-
+#| fig-cap: "Prediction power heatmap for $Z$=`indeg_adv`. Each cell shows the expected conditional entropy $EH(Z \\mid X,Y)$, where darker colors indicate stronger predictive power. The strongest predictors involve the variable `years`, particularly in combination with network-based variables such as `deg_mutadv` and `deg_cwk`. While `status` also contributes to prediction, it is not part of the strongest predictor pairs."
 
 # convert matrix to long format (base R)
 mat <- as.matrix(pred_vertex_advin)
@@ -741,9 +735,6 @@ ggplot(df, aes(x = Y, y = X, fill = EH)) +
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 ```
-
-Prediction power heatmap for $Z$=`indeg_adv`. Each cell shows the expected conditional entropy $EH(Z \mid X,Y)$, where darker colors indicate stronger predictive power. The strongest predictors involve the variable `years`, particularly in combination with network-based variables such as `deg_mutadv` and `deg_cwk`. While `status` also contributes to prediction, it is not part of the strongest predictor pairs.
-:::
 
 The prediction power heatmap shows that the strongest overall predictor of `indeg_adv` is the network-based variable `deg_likfrn`, which yields the lowest expected conditional entropy among single predictors. This indicates that likely friendship ties are highly informative for explaining advice in-degree.
 
@@ -775,13 +766,13 @@ make_pred_plot <- function(mat, title) {
 }
 ```
 
-::: {#fig-predplot-vertex}
 ```{r}
+#| label: fig-predplot-vertex
 #| echo: false
 #| fig-height: 18
 #| fig-width: 10
+#| fig-cap: "Prediction power heatmaps for vertex variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
 
-  
 p1 <- make_pred_plot(pred_vertex_cwk,    "deg_cwk")
 p2 <- make_pred_plot(pred_vertex_advin,  "indeg_adv")
 p3 <- make_pred_plot(pred_vertex_advout, "outdeg_adv")
@@ -795,12 +786,8 @@ p8 <- make_pred_plot(pred_vertex_frnlik, "deg_likfrn")
 (p1 | p2) /
 (p3 | p4) /
 (p5 | p6) /
-(p7 | p8) 
+(p7 | p8)
 ```
-
-Prediction power heatmaps for verttex variables; darker cells indicate stronger predictive power (lower $EH(Z \mid X,Y)$).
-
-:::
 
 
 From @fig-predplot-vertex, we note the following. The vertex variables, network-based measures such as `deg_likfrn`, `deg_mutadv`, and other degree-related variables are consistently strong predictors, both individually and in combination. In particular, `deg_likfrn` often emerges as the best single predictor, indicating that embeddedness in likely friendship ties plays a central role in explaining variation in network position. 
@@ -831,12 +818,12 @@ pred_dyad_friend    <- prediction_power("friend", dyad_var)
 To visualize these matrices, we again use the helper function that converts each prediction matrix into a heatmap. Darker cells indicate lower expected conditional entropy and thus stronger predictive power. This is shown in @fig-predplot-dyad.
 
 
-::: {#fig-predplot-dyad}
 ```{r}
-#| label: predplot-dyad
+#| label: fig-predplot-dyad
 #| echo: false
 #| fig-height: 18
 #| fig-width: 10
+#| fig-cap: "Prediction power heatmaps for dyad variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
 p1  <- make_pred_plot(pred_dyad_status,    "status")
 p2  <- make_pred_plot(pred_dyad_gender,    "gender")
 p3  <- make_pred_plot(pred_dyad_office,    "office")
@@ -855,11 +842,8 @@ p10 <- make_pred_plot(pred_dyad_friend,    "friend")
 (p3 | p4) /
 (p5 | p6) /
 (p7 | p8) /
-(p9 | p10) 
+(p9 | p10)
 ```
-
-Prediction power heatmaps for dyad variables; darker cells indicate stronger predictive power (lower $EH(Z \mid X,Y)$). 
-:::
 
 @fig-predplot-vertex  allow us to compare how well different combinations of dyadic attributes and relations predict a given target relation. In particular, they highlight which combinations of structural ties (such as advice or co-working) and attribute-based similarities are most informative for explaining the presence of other ties.
 
@@ -878,12 +862,12 @@ The triad-level results suggest that attribute-based variables such as `status`,
 
 Overall, the results suggest that while triad-level representations introduce greater uncertainty, they also capture richer dependency structures, with combinations of structural variables playing a key role in prediction.
 
-::: {#fig-predplot-triad}
 ```{r}
-#| label: predpow-triad
+#| label: fig-predplot-triad
 #| echo: false
 #| fig-height: 18
 #| fig-width: 10
+#| fig-cap: "Prediction power heatmaps for triad variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
 pred_triad_status    <- prediction_power("status", triad_var)
 pred_triad_gender    <- prediction_power("gender", triad_var)
 pred_triad_office    <- prediction_power("office", triad_var)
@@ -906,8 +890,6 @@ p7 <- make_pred_plot(pred_triad_lawschool, "lawschool")
 (p5 | p6) /
 (p7 | plot_spacer())
 ```
-Prediction power heatmaps for triad variables; darker cells indicate stronger predictive power (lower $EH(Z \mid X,Y)$).
-::: 
 
 ### Divergence Tests of Goodness of Fit
 Building on the dependence structures identified through association graphs, we can assess how well these structures fit the observed data using divergence-based goodness-of-fit tests.
@@ -993,13 +975,12 @@ $$
 
 This is highlighted in  @fig-divtest.
 
-::: {#fig-divtest}
-
 ```{r}
 #| echo: false
-#| label: assoc-graph-highlight
+#| label: fig-divtest
 #| fig-width: 10
 #| fig-height: 8
+#| fig-cap: "Association graph for dyad variables (threshold $J > 0.1$). The variables `friend`, `cowork`, and `advice` (highlighted in red) form a tightly connected group, suggesting a strong dependence structure and motivating the conditional independence model $\\text{friend} \\perp \\text{cowork} \\mid \\text{advice}$."
 library(ggraph)
 p <- assoc_graph(dyad_var, 0.10)
 
@@ -1022,8 +1003,6 @@ p +
     color = "black"
   )
 ```
-Association graph for dyad variables (threshold $J > 0.1$). The variables `friend`, `cowork`, and `advice` (highlighted in red) form a tightly connected group, suggesting a strong dependence structure and motivating the conditional independence model $\text{friend} \perp \text{cowork} \mid \text{advice}$.
-::: 
 
 Intuitively, this means that any association between friendship and co-working may be explained through the advice relation. In other words, once the advice relation is taken into account, there may be little additional dependence between `friend` and `cowork`.
 

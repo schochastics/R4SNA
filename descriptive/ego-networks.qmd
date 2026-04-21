@@ -345,32 +345,32 @@ After running `as_igraph()`, we obtain a list of ego networks in igraph format, 
 
 We now visualize a subset of the data by plotting the first 9 ego networks in the list using `ggraph`. This is shown in @fig-egos.
 
-::: {#fig-egos}
 ```{r}
-#| label: plot-egos
+#| label: fig-egos
 #| message: false
 #| fig-height: 9
 #| fig-width: 9
+#| fig-cap: "The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego's personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks."
 
 plots <- lapply(g[1:9], function(g) {
-  
+
   # rebuild a clean graph using only structure + names
   el <- as_edgelist(g, names = TRUE)
   vn <- V(g)$name
-  
+
   if (length(el) == 0 || nrow(el) == 0) {
     g_clean <- make_empty_graph(n = length(vn), directed = FALSE)
     V(g_clean)$name <- vn
   } else {
     g_clean <- graph_from_edgelist(el, directed = FALSE)
-    
+
     # add back isolated vertices, if any
     missing_v <- setdiff(vn, V(g_clean)$name)
     if (length(missing_v) > 0) {
       g_clean <- add_vertices(g_clean, nv = length(missing_v), name = missing_v)
     }
   }
-  
+
   ggraph(g_clean, layout = "kk") +
     geom_edge_link(alpha = 0.4) +
     geom_node_point(size = 6, color = "steelblue") +
@@ -380,8 +380,6 @@ plots <- lapply(g[1:9], function(g) {
 
 wrap_plots(plots, ncol = 3)
 ```
-The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego's personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks.
-:::
 
 ## Descriptive Statistics for Ego Networks
 One of the most commonly used structural measures in ego network analysis is **density**. Density captures the proportion of all possible alter–alter ties that are actually present in an ego network. In other words, it tells us how interconnected an ego's alters are with one another.  For example, if an ego has 5 alters, there are
