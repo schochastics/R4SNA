@@ -17,6 +17,7 @@ library(networkdata)
 As before, we use the Game of Thrones dataset using some preprocessing steps.
 
 ```{r}
+#| label: data
 data("got")
 
 gotS1 <- got[[1]]
@@ -58,7 +59,7 @@ V(g)$grp <- as.character(rep(1:9, each = 40))
 #| label:  fig-network-grps-sol
 #| fig-cap: "Network with group structure highlighted using `geom_mark_hull()`."
 ggraph(g, layout = "backbone", keep = 0.4) +
-  geom_edge_link0(edge_color = "grey66", edge_width = 0.2) +
+  geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
   geom_mark_hull(
     aes(x, y, group = grp, fill = grp),
@@ -79,7 +80,7 @@ It is also possible to add labels to the clusters as shown in @fig-network-grps-
 #| label: fig-network-grps-label-sol
 #| fig-cap: "Network with labelled group hulls."
 ggraph(g, layout = "backbone", keep = 0.4) +
-  geom_edge_link0(edge_color = "grey66", edge_width = 0.2) +
+  geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
   geom_mark_hull(
     aes(x, y, group = grp, fill = grp, label = grp),
@@ -216,7 +217,7 @@ g <- sample_gnp(50, 0.7)
 V(g)$name <- sapply(1:50, function(x) paste0(sample(LETTERS, 4), collapse = ""))
 E(g)$weight <- runif(ecount(g))
 
-ggraph(g) +
+ggraph(g, "stress") +
   geom_edge_link0(
     aes(edge_color = weight, edge_linewidth = weight),
     show.legend = FALSE
@@ -229,7 +230,7 @@ ggraph(g) +
   coord_fixed()
 ```
 
-Since `ggraph` stores the node layout in a data frame accessible to all layers, we can use geoms from other packages that operate on standard `x` and `y` aesthetics. The `shadowtext` package provides `geom_shadowtext()`, which draws a coloured halo behind each label, making it stand out against both edges and nodes, shown in @fig-shadowtext-labels.
+As noted in the basics chapter, the node layout is accessible to every layer, so we can reach for geoms from other packages that operate on standard `x` and `y` aesthetics. The `shadowtext` package provides `geom_shadowtext()`, which draws a coloured halo behind each label, making it stand out against both edges and nodes, shown in @fig-shadowtext-labels.
 
 ```{r}
 #| label: fig-shadowtext-labels

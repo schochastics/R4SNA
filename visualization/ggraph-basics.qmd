@@ -1,6 +1,6 @@
 # Basics of ggraph
 
-The `ggraph` package is an extension of `ggplot2` designed specifically for visualizing network data. THe package extends the
+The `ggraph` package is an extension of `ggplot2` designed specifically for visualizing network data. The package extends the
 grammar of graphics to handle network data, treating nodes and edges as separate geometric layers 
 that can be styled independently. `ggraph` provides a framework for building network visualizations layer by 
 layer. First, a layout is calculated that assigns coordinates to nodes, then edge and node geoms are drawn that define how connections are drawn, and nodes appear. This compositional approach makes it straightforward to create 
@@ -19,21 +19,22 @@ library(networkdata)
 
 ## Data Preparation
 
-As a running example in this chapter, we use the network of character interactions in the first season of Game of Thrones (GoT). This dataset is included in the `networkdata` package.
+As a running example in this chapter, we use the network of character interactions in the first season of Game of Thrones (GoT). This dataset is included in the `networkdata` package. We also define a custom color palette, compute a clustering for node colors and compute degree as node size.
 
 ```{r}
+#| label: data
 data("got")
+
 gotS1 <- got[[1]]
-```
 
-To make use of many different styling options, we need to prepare the data a little bit. We define a custom color palette, compute a clustering for node colors and compute degree as node size.
-
-```{r}
-#| label: prep_got
-## define a custom color palette
 got_palette <- c(
-    "#1A5878", "#C44237", "#AD8941", "#E99093",
-    "#50594B", "#8968CD", "#9ACD32"
+  "#1A5878",
+  "#C44237",
+  "#AD8941",
+  "#E99093",
+  "#50594B",
+  "#8968CD",
+  "#9ACD32"
 )
 
 ## compute a clustering for node colors
@@ -46,7 +47,7 @@ V(gotS1)$size <- degree(gotS1)
 ## Grammar of graphics
 
 To master `ggraph` you need to understand the basics of, or at least develop a feeling for, the **grammar of graphics**. 
-The grammar is implemented in R through `ggplot2` and provides a systematic framework for constructing visualizations by combining independent components. Rather than thinking of plots as pre-defined chart types, the grammar decomposes graphics into fundamental elements: data, aesthetic mappings, geometric objects, scales, and coordinate systems. This approach allows to build complex visualizations layer by layer, making it easier to customize and extend plots. For networks, `ggraph` extends this grammar to handle the unique structure of graph data, treating nodes and edges as separate geometric layers that can be styled and composed independently.
+The grammar is implemented in R through `ggplot2` and provides a systematic framework for constructing visualizations by combining independent components. Rather than thinking of plots as pre-defined chart types, the grammar decomposes graphics into fundamental elements: data, aesthetic mappings, geometric objects, scales, and coordinate systems. This approach allows one to build complex visualizations layer by layer, making it easier to customize and extend plots. For networks, `ggraph` extends this grammar to handle the unique structure of graph data, treating nodes and edges as separate geometric layers that can be styled and composed independently.
 
 @fig-got-plot shows a standard network plot created with `ggraph`. We will go through the code step-by-step in the following sections to understand how to use each component effectively.
 
@@ -77,7 +78,7 @@ ggraph(gotS1, layout = "stress")
 The first layer includes the calculation of a layout. Unlike traditional data visualization where variables naturally map to x and y coordinates, networks usually lack inherent spatial positions. This makes choosing a layout algorithm the most fundamental decision in network visualization. Layout algorithms assign coordinates to 
 nodes based on the network's structure, aiming to reveal patterns and relationships that support your analytical goals. 
 
-The package `graphlayouts` provides a wide range of layout algorithms that can be used with `ggraph`. The "stress" layout for example is always a safe choice since it is deterministic and produces *nice* layouts for most standard networks. Beyond this fairly general layout, there are many more specialized algorithms which may be better suited for specific types of networks or analytical goals. These algorithms will be discussed later. The `igraph` package also provides a variety of standard layout algorithms, that can be used with `ggraph`. 
+The package `graphlayouts` provides a wide range of layout algorithms that can be used with `ggraph`. The "stress" layout for example is always a safe choice since it is deterministic and produces *nice* layouts for most standard networks. Beyond this fairly general layout, there are many more specialized algorithms which may be better suited for specific types of networks or analytical goals. These algorithms will be discussed later. The `igraph` package also provides a variety of standard layout algorithms that can be used with `ggraph`.
 
 ```r
 c(
@@ -159,7 +160,7 @@ You can also precompute the layout with the `create_layout()` function. This mak
 of the layout takes very long and you want to play around with other visual aspects. 
 
 ```r
-gotS1_layout <- create_layout(gotS1 = "stress")
+gotS1_layout <- create_layout(gotS1, "stress")
 
 ggraph(gotS1_layout) +
   ...
@@ -168,18 +169,19 @@ ggraph(gotS1_layout) +
 ## Edges
 
 ```r
-geom_edge_link0(aes(width = weight), edge_colour = "grey66")
+geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66")
 ```
 
 The second layer specifies how edges are drawn. To do so, we use one of the many edge geoms available in `ggraph`.
 ```r
 c(
-  "geom_edge_arc", "geom_edge_arc0", "geom_edge_arc2", "geom_edge_density",
+  "geom_edge_arc", "geom_edge_arc0", "geom_edge_arc2",
+  "geom_edge_bundle_force", "geom_edge_bundle_path", "geom_edge_density",
   "geom_edge_diagonal", "geom_edge_diagonal0", "geom_edge_diagonal2",
   "geom_edge_elbow", "geom_edge_elbow0", "geom_edge_elbow2", "geom_edge_fan",
   "geom_edge_fan0", "geom_edge_fan2", "geom_edge_hive", "geom_edge_hive0",
   "geom_edge_hive2", "geom_edge_link", "geom_edge_link0", "geom_edge_link2",
-  "geom_edge_loop", "geom_edge_loop0"
+  "geom_edge_loop", "geom_edge_loop0", "geom_edge_parallel"
 )
 ```
 You can do a lot of fancy things with these geoms but for a standard network plot, you should almost always stick with `geom_edge_link0` since it simply draws a straight line between the endpoints. Some tools draw curved edges by default. While this may add some artistic value, it also reduces readability. It is best to always go with straight lines. If a network has multiple edges between two nodes, one can switch to `geom_edge_parallel()` (see @fig-parallel).
@@ -317,17 +319,19 @@ The following aesthetics can be used within `geom_node_point()` either within `a
 - size (size of node)
 - stroke (size of node border)
 
-For `geom_node_text()`, there are a lot more options available, but the most important once are:
+For `geom_node_text()`, there are a lot more options available, but the most important ones are:
 
 - label (attribute to be displayed as node label)
 - colour (text colour)
 - family (font to be used)
 - size (font size)
 
-Note that we also used a filter within `aes()` of `geom_node_text()`. The filter 
-parameter allows to specify a rule for when to apply the aesthetic mappings.
+Note that we also used a filter within `aes()` of `geom_node_text()`. The filter
+parameter allows one to specify a rule for when to apply the aesthetic mappings.
 The most frequent use case is for node labels (but can also be used for edges or nodes).
 In the example, the node label is only displayed if the size attribute is larger than 26.
+
+Because `ggraph` stores the node layout in a data frame accessible to every layer, geoms from other packages that operate on standard `x`/`y` aesthetics (e.g. `geom_mark_hull()` from `ggforce`, `geom_shadowtext()` from `shadowtext`) can be layered on top of a network plot. We will make use of this in later chapters.
 
 ## Scales
 
@@ -463,7 +467,7 @@ theme_graph() +
   theme(legend.position = "none")
 ```
 
-themes control the overall look of the plot. There are a lot of options within the `theme()`
+Themes control the overall look of the plot. There are a lot of options within the `theme()`
 function of `ggplot2`. However, there is really no need to use any of those. `theme_graph()` is used
 to erase all of the default ggplot theme (e.g. axis, background, grids, etc.) since they are irrelevant for networks. 
 The only option worthwhile in `theme()` is `legend.position`, which we set to `"none"`, i.e. do not show the legend.
@@ -489,7 +493,7 @@ This covers all the necessary steps to produce a standard network plot with `ggr
 
 ## Use case: Political Blogs
 
-In this section, we to recreate the figure shown below.
+In this section, we recreate the figure shown below.
 
 ![Original visualization of the political blogs network by @adamic2005political.](img/polblogs_orig.png){#fig-polblogs-orig}
 The network shows the linking between political blogs during the 2004 election in the US. Red nodes are conservative leaning blogs and blue ones liberal.
@@ -571,10 +575,10 @@ ggraph(lay) +
 
 Now we move on to the edges. This is a bit more complicated since we have to 
 create an edge variable first which indicates if an edge is within or between political orientations.
-This new variable is mapped to the edge color (@fig-polblogs6).
+This new variable is mapped to the edge color (@fig-polblogs4).
 
 ```{r}
-#| label: fig-polblogs6
+#| label: fig-polblogs4
 #| fig-cap: "Political blogs network with edge colour mapped to within/between political orientation."
 #| fig-width: 10
 #| fig-height: 8
@@ -599,12 +603,12 @@ ggraph(lay) +
 ```
 
 Almost finished but it seems there are a lot of yellow edges which run over blue edges. It looks as
-if these should run below according to the original viz. To achieve this, there are different options, but we here use a filter trick.
+if these should run below according to the original viz. To achieve this, there are different options, but we use a filter trick here.
 We add two `geom_edge_link0()` layers: First, for the mixed edges and then for the remaining edges.
-In that way, the mixed edges are plotted first and thus below the intra group edges as seen in @fig-polblogs8.
+In that way, the mixed edges are plotted first and thus below the intra group edges as seen in @fig-polblogs5.
 
 ```{r}
-#| label: fig-polblogs8
+#| label: fig-polblogs5
 #| fig-cap: "Political blogs network with mixed edges drawn below same-orientation edges."
 #| fig-width: 10
 #| fig-height: 8
@@ -629,9 +633,9 @@ ggraph(lay) +
     scale_size(range = c(0.5, 7))
 ```
 
-Finally, we add the `theme_graph()` in @fig-polblogs9 to  finalize the plot.
+Finally, we add the `theme_graph()` in @fig-polblogs6 to  finalize the plot.
 ```{r}
-#| label: fig-polblogs9
+#| label: fig-polblogs6
 #| fig-cap: "Final political blogs network visualization with `theme_graph()`."
 #| fig-width: 10
 #| fig-height: 8
