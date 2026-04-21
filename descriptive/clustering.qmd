@@ -143,7 +143,7 @@ Unlike cliques, which have a precise mathematical definition, the notion of a "c
 
 n1 <- 5
 n2 <- 20
-set.seed(1234)
+set.seed(1108)
 g <- sample_islands(n1, n2, 0.9, 5)
 g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
@@ -162,7 +162,7 @@ In contrast, the network in @fig-random-graph does not really seem to have any w
 n1 <- 5
 n2 <- 20
 
-set.seed(1234)
+set.seed(1108)
 g <- sample_islands(n1, n2, 0.25, 15)
 g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
@@ -190,7 +190,7 @@ $$
 
 where $m$ is the total number of edges, $A_{ij}$ is the adjacency matrix entry (1 if nodes $i$ and $j$ are connected, 0 otherwise), $k_i$ is the degree of node $i$, and $\delta(c_i, c_j)$ equals 1 if nodes $i$ and $j$ are assigned to the same community and 0 otherwise. The term $\frac{k_i k_j}{2m}$ is the expected number of edges between $i$ and $j$ under a null model that preserves degree. Modularity values typically range from around $-0.5$ to $1$, where values close to zero indicate no more within-group edges than expected by chance, and higher values indicate stronger community structure.
 
-The workflow of a cluster analysis is always the same, independent from the chosen method. We illustrate the workflow using the infamous karate club network. This network was collected by Wayne Zachary in the 1970s and it captures friendships among 34 members of a university karate club. During the study, a conflict between the club's instructor and the administrator led to the club splitting into two factions, making it a classic benchmark for community detection.
+The workflow of a cluster analysis is always the same, independent from the chosen method. We illustrate the workflow using the infamous karate club network, already encountered in @sec-centrality. This network was collected by Wayne Zachary in the 1970s and it captures friendships among 34 members of a university karate club. During the study, a conflict between the club's instructor and the administrator led to the club splitting into two factions, making it a classic benchmark for community detection.
 ```{r}
 #| label: karate
 data("karate")
@@ -389,7 +389,7 @@ We illustrate blockmodeling on a random network with 3 dense blocks of size 20.
 n1 <- 3
 n2 <- 20
 
-set.seed(1234)
+set.seed(1108)
 g <- sample_islands(n1, n2, 0.75, 5)
 g <- simplify(g)
 V(g)$grp <- rep(LETTERS[1:n1], each = n2)
@@ -456,7 +456,7 @@ The difference between the two concepts becomes clear when looking at the adjace
 #| label: fig-compare-clu-cp
 #| echo: false
 #| fig-cap: "Comparison of community structure and core-periphery structure by patterns in the adjacency matrix. Left: community structure with dense blocks along the diagonal. Right: core-periphery structure with a dense block in the top-left corner and sparse connections elsewhere."
-set.seed(42)
+set.seed(1108)
 g_clu <- sample_islands(3, 8, 0.8, 2)
 V(g_clu)$clu <- rep(1:3, each = 8)
 g_clu <- permute(g_clu, order(V(g_clu)$clu))
@@ -474,7 +474,7 @@ p1 <- ggraph(g_clu, "matrix") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
   labs(title = "Community structure")
 
-set.seed(42)
+set.seed(1108)
 g_cp <- netUtils::split_graph(n = 24, p = 0.3, core = 0.3)
 V(g_cp)$type <- c("periphery", "core")[V(g_cp)$core + 1]
 E(g_cp)$type <- apply(
