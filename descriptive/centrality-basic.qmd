@@ -29,7 +29,7 @@ At its core, a centrality index assigns a numeric value to each node in a networ
 - **Betweenness** measures *brokerage*: How often does a node sit on the shortest path between others? A node with high betweenness controls or mediates the flow between other parts of the network.
 - **Eigenvector centrality** measures *prestige*: Is a node connected to other well-connected nodes? A node may have few ties, but if those ties are to important nodes, it is central by association.
 
-These four intuitions are not interchangeable. A broker (high betweenness) need not be popular (high degree), and a prestigious node (high eigenvector) need not be efficient at reaching everyone (high closeness). This is precisely why multiple indices exist and why the choice of index should be guided by the research question at hand. Dozens of further indices have been proposed, most of which refine or combine these four ideas. We include one such example below — *subgraph centrality*, which captures local embeddedness via closed walks of all lengths — to give a flavor of what lies beyond the four main families.
+These four intuitions are not interchangeable. A broker (high betweenness) need not be popular (high degree), and a prestigious node (high eigenvector) need not be efficient at reaching everyone (high closeness). This is precisely why multiple indices exist and why the choice of index should be guided by the research question at hand. Dozens of further indices have been proposed, most of which refine or combine these four ideas. We include one such example below, namely *subgraph centrality*, which captures local embeddedness via closed walks of all lengths, to give a flavor of what lies beyond the four main families.
 
 ::: {.callout-note}
 For a more formal treatment of what constitutes a centrality index and the structural properties that underlie different indices, see @sec-advanced-centrality-concepts.
@@ -199,7 +199,7 @@ pairs(cent_df, pch = 19, col = "steelblue",
       labels = c("Degree", "Closeness", "Betweenness", "Eigenvector"))
 ```
 
-The correlation matrix and scatter plots reveal which indices capture similar information and where they diverge. High correlations (e.g., between degree and eigenvector centrality) suggest that the structural features they measure overlap in this network, while low correlations indicate genuinely different dimensions of centrality.
+The correlation matrix and the pairwise scatter plots in @fig-centrality-pairs reveal which indices capture similar information and where they diverge. High correlations (e.g., between degree and eigenvector centrality) suggest that the structural features they measure overlap in this network, while low correlations indicate genuinely different dimensions of centrality.
 
 ## Directed Networks
 
@@ -252,7 +252,7 @@ Most `igraph` centrality functions accept a `normalized` argument. For betweenne
 
 While centrality is a node-level property, *centralization* is a network-level summary that captures how unequal the distribution of centrality is across all nodes. Freeman's centralization compares the observed network to the theoretical maximum inequality, which occurs in a *star graph* (one node connected to all others, no other edges).
 
-A centralization score of 1 means the network is maximally centralized (like a star), while a score near 0 means centrality is evenly distributed (like a ring or complete graph).
+A centralization score of 1 means the network is maximally centralized (like a star), while a score near 0 means centrality is evenly distributed (like a ring or complete graph). @fig-centralization-contrast shows these two extremes side by side.
 
 ```{r}
 #| label: fig-centralization-contrast
@@ -293,7 +293,7 @@ c(
 )
 ```
 
-These scores tell us not just *who* is central, but *how centralized* the network is as a whole. A highly centralized network depends heavily on a few key nodes, making it potentially vulnerable if those nodes are removed. For the karate club, eigenvector centralization is the highest of the four values, reflecting that prestige concentrates around the two dominant figures — the instructor and the administrator whose conflict later split the club. Betweenness and degree are moderately centralized, while closeness is the most evenly distributed: in a small, densely connected network, every member is within a few steps of everyone else, so no one dominates on reachability.
+These scores tell us not just *who* is central, but *how centralized* the network is as a whole. A highly centralized network depends heavily on a few key nodes, making it potentially vulnerable if those nodes are removed. For the karate club, eigenvector centralization is the highest of the four values, reflecting that prestige concentrates around the instructor and the administrator whose conflict later split the club. Betweenness and degree are moderately centralized, while closeness is the most evenly distributed: in a small, densely connected network, every member is within a few steps of everyone else, so no one dominates on reachability.
 
 ## Other Centrality Packages
 
@@ -319,7 +319,7 @@ The sheer number of available centrality indices can be overwhelming. More indic
 
 ## Choosing a Centrality Index
 
-With so many indices available, how should one choose? @borgatti2006graph argue that the choice should be guided by the type of network flow one implicitly has in mind — does influence travel along shortest paths, along any walk, by parallel duplication, or only by direct transfer? More pragmatically, the key is to let the research question guide the choice rather than the other way around:
+With so many indices available, how should one choose? @borgatti2006graph argue that the choice should be guided by the type of network flow one implicitly has in mind: Does influence travel along shortest paths, along any walk, by parallel duplication, or only by direct transfer? More pragmatically, the key is to let the research question guide the choice rather than the other way around:
 
 - If you are interested in **activity** or **popularity**, degree (or strength for weighted networks) is the natural choice.
 - If you care about **efficiency of communication** or **independence**, closeness captures how quickly a node can reach others.
@@ -409,7 +409,7 @@ We have now seen that different centrality indices can pick different "most cent
 
 ### Neighborhood Inclusion
 
-The structural property at the heart of `netrankr` is *neighborhood inclusion*. If every neighbor of a node $u$ is also a neighbor of another node $v$ (plus possibly $v$ itself), then $u$ sits in a structurally weaker position than $v$: whatever $u$ can reach, $v$ can reach too, and more. Every commonly used centrality index respects this — if $u$ is neighborhood-dominated by $v$, no index will rank $u$ above $v$.
+The structural property at the heart of `netrankr` is *neighborhood inclusion*, illustrated in @fig-neighborhood-inclusion. If every neighbor of a node $u$ is also a neighbor of another node $v$ (plus possibly $v$ itself), then $u$ sits in a structurally weaker position than $v$: whatever $u$ can reach, $v$ can reach too, and more. Every commonly used centrality index respects this: if $u$ is neighborhood-dominated by $v$, no index will rank $u$ above $v$.
 
 ![Neighborhood inclusion: the neighbors of the left node are contained in the closed neighborhood of the right node.](img/neighborhood_inclusion.png){#fig-neighborhood-inclusion width=60%}
 
@@ -425,7 +425,7 @@ Only about 16% of pairs are comparable in `dbces11`. The other 84% are structura
 
 ### Rank Intervals
 
-For a partially ordered set of nodes, every centrality index is one particular *linear extension* — a total ordering that respects the partial order. `rank_intervals()` reports, for each node, the smallest and largest rank it can take across all such extensions. Wide intervals mean the structure leaves the node's position open; narrow intervals mean the structure pins it down.
+For a partially ordered set of nodes, every centrality index is one particular *linear extension*, a total ordering that respects the partial order. `rank_intervals()` reports, for each node, the smallest and largest rank it can take across all such extensions. Wide intervals mean the structure leaves the node's position open; narrow intervals mean the structure pins it down.
 
 ```{r}
 #| label: rank-intervals-dbces
@@ -447,10 +447,10 @@ cent_scores <- data.frame(
 plot(rk_int, cent_scores = cent_scores)
 ```
 
-The four indices land at different rank positions within each node's interval, which is the partial-ordering view of the disagreement we saw earlier in @fig-dbces11-centrality.
+In @fig-rank-intervals-dbces the four indices land at different rank positions within each node's interval, which is the partial-ordering view of the disagreement we saw earlier in @fig-dbces11-centrality.
 
 ::: {.callout-note}
-Occasionally a betweenness point falls outside a node's interval. Betweenness is the one common index that does not strictly preserve neighborhood inclusion — two nodes can satisfy $N(u) \subseteq N[v]$ yet receive equal betweenness scores. All other standard indices are strictly order-preserving.
+Occasionally a betweenness point falls outside a node's interval. Betweenness is the one common index that does not strictly preserve neighborhood inclusion. Two nodes can satisfy $N(u) \subseteq N[v]$ yet receive equal betweenness scores. All other standard indices are strictly order-preserving.
 :::
 
 ### Exact Rank Probabilities
@@ -469,7 +469,7 @@ The probability of being the most central node (top rank) is the last column of 
 round(res$rank.prob[, ncol(res$rank.prob)], 2)
 ```
 
-Nodes E and K share the highest probability (0.16) of occupying the top rank across all valid rankings, closely followed by D and H. The expected rank — the weighted average of a node's rank over all extensions — gives a single summary:
+Nodes E and K share the highest probability (0.16) of occupying the top rank across all valid rankings, closely followed by D and H. The expected rank, the weighted average of a node's rank over all extensions, gives a single summary:
 
 ```{r}
 #| label: expected-rank
