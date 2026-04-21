@@ -222,7 +222,9 @@ ggraph(g, "stress") +
 
 ## Transitivity
 
-**Transitivity**, also called the **clustering coefficient**, measures the tendency of a node's neighbors to be connected to each other. The *global* transitivity is the ratio of the number of closed triples (triangles, counted three times) to the number of connected triples. The *local* transitivity of a node is the fraction of pairs of its neighbors that are themselves connected.
+**Transitivity** in networks captures the idea that if node *A* is connected to *B*, and *B* is connected to *C*, then *A* is also likely to be connected to *C*, often summarized as “a friend of a friend is also a friend.” This concept is closely related to the **clustering coefficient**, which measures the tendency of a node's neighbors to be connected to each other. A high clustering coefficient indicates that many such triadic closures occur, meaning that neighbors of a node are also connected to each other. Thus, transitivity provides an intuitive interpretation of clustering: it reflects the tendency of networks to form cohesive, locally dense structures where indirect relationships become direct ties. Later, we will return to this idea below using the **triad census**, which provides a more detailed account of how different three-node configurations capture patterns such as transitivity.
+
+The *global* transitivity is the ratio of the number of closed triples (triangles, counted three times) to the number of connected triples. The *local* transitivity of a node is the fraction of pairs of its neighbors that are themselves connected.
 
 ```{r}
 #| label: transitivity
@@ -232,9 +234,52 @@ head(transitivity(flo_marriage, type = "local", isolates = "zero"))
 
 In social networks we generally expect transitivity to be sizeable: if two families are both allied with the Medici, there is a reasonable chance that they are allied with each other as well ("the friend of my friend is also my friend"). The Florentine marriage network has a global transitivity of about $0.19$, confirming this tendency, albeit at a modest level.
 
+
+## Assortativity
+
+**Assortativity** measures the tendency of nodes in a network to connect to other nodes that are similar to them according to some attribute. It provides insight into whether a network is structured around similarity (**homophily**) or difference (**heterophily**), which has important implications for processes such as information flow, contagion, and group formation.
+
+### Assortativity based on numerical attribute
+One common form is **degree assortativity**, which evaluates whether nodes with similar degrees tend to be connected. This can be computed as:
+
+```{r}
+#| label: assortativity-num
+assortativity(flo_marriage, degree(flo_marriage))
+```
+
+A negative value indicates disassortative mixing, meaning that highly connected nodes tend to connect to nodes with fewer connections, while a positive value indicates that nodes tend to connect to others with similar degree.
+
+
+### Assortativity based on nominal attribute
+
+Assortativity can also be computed based on categorical (nominal) attributes. For example, in the Florentine marriage network, one might examine whether families tend to form ties with others sharing the same attribute.  Here, we use the attribute wealth which we  dichotomize based on the median into two groups:
+
+- Low = below or equal to the median (lower wealth)
+- High = above the median (higher wealth)
+
+```{r}
+#| label: assortativity-cat
+# get wealth attribute
+wealth <- V(flo_marriage)$wealth
+# compute median
+med_wealth <- median(wealth, na.rm = TRUE)
+# create categorical variable
+wealth_cat <- ifelse(wealth <= med_wealth, "low", "high")
+# compute assortativity
+assortativity_nominal(flo_marriage, as.factor(wealth_cat))
+```
+A value of -0.3299233 indicates moderate disassortative mixing or heterophily. in other words, t families are more likely to form marriage ties with others from a different wealth category (i.e., high-wealth families marrying into lower-wealth families and vice versa), rather than with families of similar wealth.
+
+
 ## Directed Networks: Reciprocity
 
-The descriptors above apply to undirected networks. For directed networks, additional measures capture the asymmetry of ties. The simplest is **reciprocity**, the proportion of directed edges for which the reverse edge is also present. To illustrate it we use `rhesus`, a network of grooming relations among a group of rhesus monkeys.
+The descriptors above apply to undirected networks. For directed networks, additional measures capture the asymmetry of ties. The simplest is **reciprocity**, defined as the proportion of directed edges for which the reverse edge is also present.  
+
+Reciprocity is a central concept in social exchange theory, where it reflects mutual exchange relationships between actors. Social interactions are often shaped by considerations of costs and benefits, and reciprocated ties indicate balanced or mutually beneficial relationships.
+
+To illustrate this, we use `rhesus`, a network of grooming relations among a group of rhesus monkeys.
+
+```{r}
 
 ```{r}
 #| label: reciprocity-example
@@ -248,7 +293,7 @@ About `r round(reciprocity(rhesus)*100)`% of edges are reciprocated in the netwo
 #| label: fig-rhesus-reciprocity
 #| echo: false
 #| fig-cap: "Grooming relations among a group of rhesus monkeys. Reciprocated edges are drawn in black, asymmetric edges in grey. Node color encodes the gender of the monkey."
-E(rhesus)$mutual <- is.mutual(rhesus)
+E(rhesus)$mutual <- which_mutual(rhesus)
 ggraph(rhesus, "stress") +
     geom_edge_parallel(aes(filter = !mutual), edge_color = "grey66", edge_width = 0.5,
         arrow = arrow(angle = 15, length = unit(0.15, "inches"),
@@ -264,6 +309,12 @@ ggraph(rhesus, "stress") +
     theme(legend.position = "bottom")
 ```
 
+
+Reciprocity varies across types of networks. In friendship networks, ties are often reciprocated because they reflect trust, mutual recognition, and emotional support. In contrast, in hierarchical networks (such as organizational or leadership structures), reciprocity is less common because relationships are inherently asymmetric.
+
+Overall, reciprocity provides insight into the balance, trust, and structure of relationships in directed networks, helping distinguish between mutual exchanges and asymmetric dependencies.
+
+
 ## Dyad and Triad Census
 
 The **dyad census** categorizes all possible pairs of nodes in a directed network by their mutual-connection status. A dyad is *mutual* if both nodes have a directed edge to the other, *asymmetric* if only one of the two edges is present, and *null* if neither is. The census gives an overview of the prevalence of reciprocity and one-sided relations in the network.
@@ -272,8 +323,10 @@ The **dyad census** categorizes all possible pairs of nodes in a directed networ
 #| label: dyad-census
 dyad_census(rhesus)
 ```
+Note that for undirected networks, there are only two types of dyads: either a tie is present or it is absent.
 
-More informative than the dyad census is the **triad census**, which counts the occurrence of each of the $16$ possible configurations of edges among three nodes in a directed network. These configurations are shown in @fig-triad-types. Triads are labelled `xyzL` where `x` is the number of reciprocated ties, `y` is the number of asymmetric ties and `z` is the number of null ties; the optional letter `L` (`U`, `C`, `D`, or `T`) distinguishes triads that share the same `xyz` counts.
+More informative than the dyad cencus is the **triad census**, which counts the occurrence of each of the $16$ possible configurations of edges among three nodes in a directed network (see @fig-triad-types). Triads are labelled using the **MAN notation**, often written as `xyzL`, where `x` is the number of reciprocated (mutual) ties, `y` is the number of asymmetric ties, and `z` is the number of null ties; the optional letter `L` (`U`, `C`, `D`, or `T`) distinguishes triads that share the same `xyz` counts but differ in structure.
+
 
 ```{r}
 #| label: fig-triad-types
@@ -287,7 +340,11 @@ knitr::include_graphics("img/triad_census.jpg")
 triad_census(rhesus)
 ```
 
-## Use case: Triad Census
+Note that for undirected networks, the triad census is simpler, as there are only four possible triad types based on the number of edges present (0, 1, 2, or 3).
+
+Different triad types are useful because they reveal local structural patterns that are not visible at the dyad level. For example, certain triads capture **reciprocity**, **hierarchy**, or **transitivity** (e.g., “a friend of a friend is also a friend”), which are key building blocks of larger network organization. By comparing the frequency of specific triad configurations to what would be expected at random, researchers can identify underlying social processes such as clustering, balance, or dominance structures within the network. We return to this in the inferential part of this book.
+
+### Use case: Triad Census
 
 One of the many applications of the triad census is to compare a set of networks. In this example, we are tackling the question of "how transitive is football?" and assess structural differences among a set of football leagues.
 
@@ -395,7 +452,7 @@ data.frame(
     labs(x = "fraction of 030T", y = "Second singular vector, multiplied by singular value")
 ```
 
-## Dyad/Triad Census with Attributes
+### Dyad/Triad Census with Attributes
 
 The R package `netUtils` implements a version of the dyad and triad census that can account for node attributes.
 
