@@ -9,6 +9,7 @@ This chapter walks through the foundation of tidygraph before any network descri
 #| message: false
 library(tidygraph)
 library(networkdata)
+library(dplyr)
 ```
 
 ```{r}
@@ -16,7 +17,6 @@ library(networkdata)
 #| include: false
 library(ggraph)
 library(graphlayouts)
-library(dplyr)
 ```
 
 ## Graph Structures
@@ -41,6 +41,13 @@ The class `tbl_graph` inherits from `igraph`, so anything written against `igrap
 
 If you need to build a network from scratch, `tbl_graph()` takes the two data frames directly and is essentially the tidy counterpart of `graph_from_data_frame()`. For the common random graph generators, the `create_*()` family produces deterministic graphs (lattices, stars, rings) and `play_*()` produces stochastic ones (Erdős–Rényi, preferential attachment, island models).
 
+```{r}
+#| label: example-random-graphs
+create_ring(5)
+play_gnp(10, 0.3)
+play_barabasi_albert(10,2)
+```
+
 ## Standard Verbs
 
 The tidy idiom revolves around a small set of verbs like `mutate()`, `select()`, `filter()`, `summarise()` and joins that transform a data frame. The awkwardness for networks is that a `tbl_graph` wraps two tables, so a verb has to know which one to operate on. `tidygraph` solves this with an explicit pointer: whichever table is **active** is the one the verb sees. The pointer is set with `activate()`. The default is `"nodes"`, which is why the example above printed the node table on top.
@@ -54,7 +61,7 @@ Switching the active table lets you attach new edge attributes the same way you 
 
 ```{r}
 #| label: tag-medici-edges
-flo_tidy <- flo_tidy |>
+flo_medi <- flo_tidy |>
     activate("edges") |>
     mutate(to_medici = (.N()$name[from] == "Medici" | .N()$name[to] == "Medici"))
 ```
@@ -64,7 +71,7 @@ The new attribute is immediately available for visualisation, as shown in @fig-c
 ```{r}
 #| label: fig-connect-medici
 #| fig-cap: "Florentine marriage network with edges coloured by whether they touch the Medici family."
-ggraph(flo_tidy, "stress") +
+ggraph(flo_medi, "stress") +
     geom_edge_link0(aes(edge_color = to_medici)) +
     geom_node_point(shape = 21, size = 10, fill = "grey66") +
     geom_node_text(aes(label = name)) +
@@ -76,7 +83,7 @@ ggraph(flo_tidy, "stress") +
 ```{r}
 #| label: fig-filter-medici
 #| fig-cap: "Result of filtering the edge table to ties incident to the Medici. Nodes untouched by any surviving edge remain in the graph as isolates."
-flo_tidy |>
+flo_medi |>
     activate("edges") |>
     filter(to_medici) |>
     ggraph("stress", bbox = 10) +
@@ -105,7 +112,6 @@ Before merging, we tag each graph's edges with the relation they come from, so t
 #| fig-cap: "Marriage and business ties among the Florentine families merged with `graph_join()`. Edges are coloured by the relation they originated from."
 marriage_rel <- flo_tidy |>
     activate("edges") |>
-    select(-to_medici) |>
     mutate(relation = "marriage")
 
 business_rel <- flo_business_tidy |>
@@ -130,7 +136,7 @@ bind_graphs(
     flo_tidy |> activate("nodes") |> mutate(source = "marriage"),
     flo_business_tidy |> activate("nodes") |> mutate(source = "business")
 ) |>
-    ggraph("stress") +
+    ggraph("kk") +
     geom_edge_link0() +
     geom_node_point(aes(fill = source), shape = 21, size = 8) +
     geom_node_text(aes(label = name), size = 3) +
@@ -156,7 +162,7 @@ flo_tidy |>
 
 Nodes without a match simply get `NA` for the new column, exactly as with an ordinary tibble join.
 
-## New Verbs
+## Special Graph Verbs
 
 Beyond `activate()`, tidygraph introduces a small set of verbs that have no direct analogue in `dplyr` because they only make sense on graphs. The most important is `morph()`. A morph temporarily reshapes a graph into a different representation, for example the connected components, the shortest path between two nodes, the line graph, or the minimum spanning tree, without committing to that change. Verbs chained after `morph()` run on the morphed representation, and `unmorph()` returns to the original graph, propagating any attributes that were added inside the morph back onto the original nodes or edges.
 
