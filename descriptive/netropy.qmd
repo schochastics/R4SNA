@@ -27,9 +27,7 @@ Network data consist of variables defined on different domains, most commonly no
 
 Let $V = {1, \dots, n}$ denote a set of nodes. Suppose $X_i$, $i = 1, \dots, m’$, are vertex variables with $r_i$ outcomes, and $Y_j$, $j = 1, \dots, m’’$, are edge variables with $r’_j$ outcomes. The corresponding joint outcome sizes are $r’ = \prod r_i$ and $r’’ = \prod r’_j$. Because these variables are observed on different domains, they cannot be directly combined in entropy calculations.
 
-One possibility is to transform vertex variables to the edge domain. For each pair $(u,v)$, define $X_i^* = (X_u, X_v)$. This yields a dataset with $\binom{n}{2}$ observations, allowing the transformed vertex variables to be analyzed jointly with edge variables.
-
-#### Table: Edge-Based Representation {.unnumbered}
+One possibility is to transform vertex variables to the edge domain. For each pair $(u,v)$, define $X_i^* = (X_u, X_v)$. This yields a dataset with $\binom{n}{2}$ observations, allowing the transformed vertex variables to be analyzed jointly with edge variables (see @tbl-edge-representation).
 
 | observation | $X_1^*$ | $X_2^*$ | $\cdots$ | $X_{m'}^*$ | $Y_1$ | $Y_2$ | $\cdots$ | $Y_{m''}$ |
 |------------|--------|--------|----------|------------|------|------|----------|------------|
@@ -38,11 +36,11 @@ One possibility is to transform vertex variables to the edge domain. For each pa
 | $\vdots$   |        |        |          |            |      |      |          |            |
 | $\binom{n}{2}$ |    |        |          |            |      |      |          |            |
 
+: Edge-Based Representation {#tbl-edge-representation}
 
-An alternative is to transform edge variables to the vertex domain. For each node $v$, define $Y_j^* = \sum_u Y_{uv}$. This produces vertex-level summaries such as degrees or centrality-type measures and results in a dataset with $n$ observations.
 
+An alternative is to transform edge variables to the vertex domain. For each node $v$, define $Y_j^* = \sum_u Y_{uv}$. This produces vertex-level summaries such as degrees or centrality-type measures and results in a dataset with $n$ observations (see @tbl-vertex-representation).
 
-#### Table: Vertex-Based Representation  {.unnumbered}
 
 | observation | $X_1$ | $X_2$ | $\cdots$ | $X_{m'}$ | $Y_1^*$ | $Y_2^*$ | $\cdots$ | $Y_{m''}^*$ |
 |------------|------|------|----------|----------|--------|--------|----------|------------|
@@ -50,6 +48,8 @@ An alternative is to transform edge variables to the vertex domain. For each nod
 | 2          |      |      |          |          |        |        |          |            |
 | $\vdots$   |      |      |          |          |        |        |          |            |
 | $n$        |      |      |          |          |        |        |          |            |
+
+: Vertex-Based Representation {#tbl-vertex-representation}
 
 
 A useful extension is to construct edge attributes directly from vertex attributes. For example, if $(W_i, T_i, P_i)$ are binary vertex variables for node $i$, then edge-level variables can be defined by $W_{ij} = W_i + W_j$, $T_{ij} = T_i + T_j$, and $P_{ij} = P_i + P_j$ [@frank2016multivariate]. These new variables take values in ${0,1,2}$ and can be analyzed jointly with other dyadic variables.

@@ -1,5 +1,5 @@
 # Ego Networks  {#sec-ego}
-Ego networks refer to the personal network surrounding a single focal individual, known as the *ego*. An ego network includes the ego, the people directly connected to them, so called *alters*, and the relationships among those alters. Rather than examining an entire community or organization, ego network analysis focuses on the immediate social environment of one person, allowing researchers to understand how information, resources, influence, or support flow through that individual’s connections. By analyzing the size of the network, the strength of ties, the diversity of contacts, and the level of interconnectedness among alters, scholars can assess factors such as social capital, access to opportunities, and resilience. Ego networks are especially useful in studying phenomena like job searching, knowledge sharing, health behaviors, and online social interaction, where an individual’s direct relationships play a critical role in shaping outcomes.
+Ego networks refer to the personal network surrounding a single focal individual, known as the *ego*. An ego network includes the ego, the people directly connected to them, so called *alters*, and the relationships among those alters. Rather than examining an entire community or organization, ego network analysis focuses on the immediate social environment of one person, allowing researchers to understand how information, resources, influence, or support flow through that individual's connections. By analyzing the size of the network, the strength of ties, the diversity of contacts, and the level of interconnectedness among alters, scholars can assess factors such as social capital, access to opportunities, and resilience. Ego networks are especially useful in studying phenomena like job searching, knowledge sharing, health behaviors, and online social interaction, where an individual's direct relationships play a critical role in shaping outcomes.
 
 
 In this chapter, we will begin by introducing the fundamentals of ego network data and learning how to use the `egor` package to manipulate, construct, and visualize ego networks. We will then examine substantive research questions related to homophily; the tendency for similar individuals to associate with one another more frequently than with dissimilar others, across various demographic dimensions. Finally, we will explore an applied example in which properties of ego networks are used to predict important outcomes of interest.
@@ -19,20 +19,18 @@ library(MASS)
 ```
 
 ::: {.callout-note}
-## Note
-
 The `egor` package works with ego network data in *tidy* format, meaning it follows tidy data principles. In tidy data, each row represents one observation and each column represents one variable. Instead of storing everything in a single large matrix, ego network data are separated into three linked tables: one containing information about egos, one containing information about alters, and one containing the ties among alters. These tables are connected through ID variables that indicate which alters belong to which ego and which alters are tied to one another. This structure makes the data easier to understand, manipulate, and analyze using tools from the tidyverse, while still preserving the relational nature of network data.
 :::
 
 ## Ego Network Data Structure
 
-Ego network data are typically generated through survey-based approaches that capture information about individuals and their immediate social surroundings. In one common design, respondents (*egos*) are asked to name the people with whom they have specific types of relationships and to describe the connections among those named individuals (*alters*), thereby providing both node-level and tie-level information from a single informant. A more elaborate strategy uses a two-stage snowball approach: after the initial respondent identifies their contacts, those contacts are subsequently surveyed about their relationships with one another, allowing for more detailed mapping of ties within the ego’s local network. Although data collected in these ways do not reveal how these personal networks are embedded within the broader population structure, they enable researchers to estimate the distribution and characteristics of ego network forms across even very large populations.
+Ego network data are typically generated through survey-based approaches that capture information about individuals and their immediate social surroundings. In one common design, respondents (*egos*) are asked to name the people with whom they have specific types of relationships and to describe the connections among those named individuals (*alters*), thereby providing both node-level and tie-level information from a single informant. A more elaborate strategy uses a two-stage snowball approach: after the initial respondent identifies their contacts, those contacts are subsequently surveyed about their relationships with one another, allowing for more detailed mapping of ties within the ego's local network. Although data collected in these ways do not reveal how these personal networks are embedded within the broader population structure, they enable researchers to estimate the distribution and characteristics of ego network forms across even very large populations.
 
 An important methodological implication of this design is that survey-based ego network data typically produce independent observations: each ego network is centered on a different respondent and represents a separate local structure. As a result, ego networks can often be treated as independent units of analysis, which allows researchers to apply standard statistical models (such as regression models) to explain variation in network characteristics (e.g., density, composition, or diversity) across egos.
 
 Methodologically, such data consist of multiple distinct networks, each centered on a different ego and typically composed of different actors. This means that each ego network should be stored and analyzed as a separate actor-by-actor matrix rather than combined into a single stacked dataset, since the matrices do not represent multiple relations among the same set of individuals.
 
-A second common source of ego network data involves deriving them from complete network datasets that already contain information about all actors and ties within a bounded population. In this case, researchers can extract the local network surrounding a focal actor directly from the larger structure. Simple extraction procedures allow analysts to isolate an ego and their direct ties, though these methods may omit information about relationships among the alters themselves. More comprehensive approaches rely on identifying a defined neighborhood—such as through a previously constructed attribute or partition that marks members of a particular ego’s local environment—and then generating a subgraph that preserves both ego–alter and alter–alter ties. Unlike survey-generated ego networks, these extracted ego networks remain embedded within a known global structure, enabling comparisons between local and whole-network properties.
+A second common source of ego network data involves deriving them from complete network datasets that already contain information about all actors and ties within a bounded population. In this case, researchers can extract the local network surrounding a focal actor directly from the larger structure. Simple extraction procedures allow analysts to isolate an ego and their direct ties, though these methods may omit information about relationships among the alters themselves. More comprehensive approaches rely on identifying a defined neighborhood—such as through a previously constructed attribute or partition that marks members of a particular ego's local environment—and then generating a subgraph that preserves both ego–alter and alter–alter ties. Unlike survey-generated ego networks, these extracted ego networks remain embedded within a known global structure, enabling comparisons between local and whole-network properties.
 
 
 ### Constructing an Ego Network with `egor`
@@ -41,7 +39,7 @@ An `egor` object stores the multiple data levels required for ego-centered netwo
 
 
 
-In this chapter, we draw on ego network data from the **UC Berkeley Social Networks Study (UCNets)** [@fischer2020uc], a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the *first wave* and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in the  @sec-apx-ucnets. This code already processes the raw survey files and combines them into an `egor` object, the data structure used by the `egor` package for ego-centered network analysis. An `egor` object contains three linked levels of data: ego-level attributes (characteristics of the respondents), alter-level attributes (characteristics of the individuals named in each respondent’s personal network), and alter–alter ties (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the [UCNets project website](https://ucnets.berkeley.edu/).
+In this chapter, we draw on ego network data from the **UC Berkeley Social Networks Study (UCNets)** [@fischer2020uc], a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the *first wave* and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in the  @sec-apx-ucnets. This code already processes the raw survey files and combines them into an `egor` object, the data structure used by the `egor` package for ego-centered network analysis. An `egor` object contains three linked levels of data: ego-level attributes (characteristics of the respondents), alter-level attributes (characteristics of the individuals named in each respondent's personal network), and alter–alter ties (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the [UCNets project website](https://ucnets.berkeley.edu/).
 
 
 ```{r}
@@ -315,7 +313,7 @@ Each of the three tables is linked through identifier variables that ensure the 
 
 In the alter-level table, each network member receives an identifier `.altID`, which uniquely identifies alters within a given ego network. Additional variables describe characteristics of the alter, including gender, whether the alter is a family member (`family`), whether the alter shares the same race as the ego (`same_race`), and whether the alter is approximately the same age as the ego (`same_age`).
 
-The alter–alter tie table records the relationships among alters within each ego network. These ties are based on survey questions asking respondents how well pairs of alters know each other (e.g., “How well does name 1 know name 2?”), with response options such as *very well*, *know a little*, or *do not know/something else*. For the purposes of constructing the network, responses indicating that alters know each other “very well” or “a little” were coded as a tie. The pairwise variables were reshaped into long format, and the identifiers `.srcID` and `.tgtID` indicate which two alters are connected. Because only positive ties were retained, the resulting `weight` variable is constant and equal to 1 for all alter–alter ties in the final dataset.
+The alter–alter tie table records the relationships among alters within each ego network. These ties are based on survey questions asking respondents how well pairs of alters know each other (e.g., "How well does name 1 know name 2?"), with response options such as *very well*, *know a little*, or *do not know/something else*. For the purposes of constructing the network, responses indicating that alters know each other "very well" or "a little" were coded as a tie. The pairwise variables were reshaped into long format, and the identifiers `.srcID` and `.tgtID` indicate which two alters are connected. Because only positive ties were retained, the resulting `weight` variable is constant and equal to 1 for all alter–alter ties in the final dataset.
 
 
 Before proceeding with the analysis, we remove respondents for whom the variable `numgiven` is missing in the ego-level data. This variable records how many alters each respondent named and is required for several of the descriptive measures used later in the chapter.  Because `numgiven` records how many alters a respondent named, a missing value at the ego level implies that no alter information is recorded for that respondent. Consequently, it is sufficient to remove missing values only from the ego table, since the alter and alter–alter tie tables contain entries only for egos who actually reported network members.
@@ -336,7 +334,6 @@ g[1:3]
 ```
 
 ::: {.callout-note}
-## Note
 If we instead wanted to work within the `statnet` framework, we could use `as_network()` to convert the data into objects of class `network`.
 :::
 
@@ -379,18 +376,18 @@ plots <- lapply(g[1:9], function(g) {
 
 wrap_plots(plots, ncol = 3)
 ```
-The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego’s personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks.
+The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego's personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks.
 :::
 
 ## Descriptive Statistics for Ego Networks
-One of the most commonly used structural measures in ego network analysis is **density**. Density captures the proportion of all possible alter–alter ties that are actually present in an ego network. In other words, it tells us how interconnected an ego’s alters are with one another.  For example, if an ego has 5 alters, there are
+One of the most commonly used structural measures in ego network analysis is **density**. Density captures the proportion of all possible alter–alter ties that are actually present in an ego network. In other words, it tells us how interconnected an ego's alters are with one another.  For example, if an ego has 5 alters, there are
 $$
 \frac{5 \times (5 - 1)}{2} = 10
 $$
 possible undirected ties among those alters. If all 10 ties are present, density equals 1 (a fully connected clique). If only 8 of the 10 possible ties are present, density equals 0.8.
 
 
-Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to **structural hole theory** [@burt1992structural],  dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. The key advantages of social capital derive not primarily from the attributes of one’s alters, but from the *structure* of the ego network itself. Individuals benefit when they bridge gaps, so-called structural holes, between otherwise disconnected groups. In low-density networks, ego may occupy a brokerage position linking clusters that are not directly connected to each other, thereby gaining access to diverse, non-redundant information and potential strategic advantages (such as faster promotion within organizations).  Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.
+Density is often of substantive interest because it reflects the level of cohesion within a personal network. Highly dense ego networks (values close to 1) indicate tightly knit groups in which most alters are connected to one another. Such cohesive structures can facilitate trust, norm enforcement, and social support, as information circulates quickly and reputational mechanisms are strong. However, according to **structural hole theory** [@burt1992structural],  dense networks tend to generate redundant information because alters are connected to many of the same people and share overlapping perspectives. The key advantages of social capital derive not primarily from the attributes of one's alters, but from the *structure* of the ego network itself. Individuals benefit when they bridge gaps, so-called structural holes, between otherwise disconnected groups. In low-density networks, ego may occupy a brokerage position linking clusters that are not directly connected to each other, thereby gaining access to diverse, non-redundant information and potential strategic advantages (such as faster promotion within organizations).  Density therefore captures an important theoretical trade-off between cohesion and brokerage in ego network structure.
 
 We can calculate density for each ego network using the `ego_density()` function applied to our `egor` object. Note that ego networks with 0 or 1 alters will have density equal to `NaN`, because density is undefined when no alter–alter ties are possible. There are 10 such values and they are removed from the plot below.
 
@@ -416,13 +413,13 @@ ggplot(dens, aes(x = density)) +
 
 ### Network Composition Based on Alter Attributes
 
-A useful way to describe ego networks is to examine the **composition of alters** within each network. Rather than focusing on the structure of ties among alters, compositional measures summarize *who is present in the ego’s personal network*. These measures are obtained by aggregating alter attributes within each ego network.
+A useful way to describe ego networks is to examine the **composition of alters** within each network. Rather than focusing on the structure of ties among alters, compositional measures summarize *who is present in the ego's personal network*. These measures are obtained by aggregating alter attributes within each ego network.
 
 The `comp_ply()` function from the `egor` package provides a convenient way to compute such summaries. It applies a function to an alter attribute within each ego network and returns one value per ego. In our dataset, the alter-level data include several characteristics, such as `gender`, whether the alter is a `family` member, and whether the alter shares the same race as the ego (`same_race`). Using these variables, we can construct several interpretable measures of network composition.
 
 #### Proportion of Family Members {.unnumbered}
 
-A simple but informative compositional measure is the **proportion of family members** within an ego network. This captures the extent to which a respondent’s personal network is centered around kin relationships rather than non-kin ties such as friends, coworkers, or acquaintances. Networks with a high proportion of family members may indicate stronger reliance on kin-based support systems, whereas networks with fewer family members may reflect more diverse social connections outside the household or extended family.
+A simple but informative compositional measure is the **proportion of family members** within an ego network. This captures the extent to which a respondent's personal network is centered around kin relationships rather than non-kin ties such as friends, coworkers, or acquaintances. Networks with a high proportion of family members may indicate stronger reliance on kin-based support systems, whereas networks with fewer family members may reflect more diverse social connections outside the household or extended family.
 
 In our alter-level data, the variable `family` indicates whether an alter is a relative (including spouse/partner, parent, child, sibling, or another relative). Using `comp_ply()`, we can compute the proportion of alters who are family members for each ego network.
 
@@ -434,7 +431,7 @@ head(prop_family)
 
 #### Gender Composition of the Network {.unnumbered}
 
-Another compositional measure describes the gender composition of ego networks. This measure captures the share of alters who are female within each respondent’s personal network. Examining gender composition can reveal patterns of gender-based social organization and potential gender homophily, where individuals tend to form ties with others of the same gender.
+Another compositional measure describes the gender composition of ego networks. This measure captures the share of alters who are female within each respondent's personal network. Examining gender composition can reveal patterns of gender-based social organization and potential gender homophily, where individuals tend to form ties with others of the same gender.
 
 In our alter-level data, gender is coded as `0 = male` and `1 = female`. By taking the mean of this binary variable across alters within each ego network, we obtain the proportion of female alters in each network. Values close to 0 indicate networks composed mostly of men, values close to 1 indicate networks composed mostly of women, and values around 0.5 suggest a more gender-balanced network.
 
@@ -447,7 +444,7 @@ head(prop_female)
 #### Racial Homophily {.unnumbered}
 A third compositional measure captures racial homophily within ego networks. Homophily refers to the tendency for individuals to form social ties with others who share similar characteristics. Here we examine whether alters share the same race as the ego.
 
-The alter-level variable same_race indicates whether the respondent reported that the alter is of the same race as themselves (`1 = same race`, `0 = different race`). By averaging this binary variable across alters within each ego network, we obtain the proportion of alters who share the ego’s race. Higher values indicate more racially homogeneous networks, while lower values suggest greater racial diversity.
+The alter-level variable same_race indicates whether the respondent reported that the alter is of the same race as themselves (`1 = same race`, `0 = different race`). By averaging this binary variable across alters within each ego network, we obtain the proportion of alters who share the ego's race. Higher values indicate more racially homogeneous networks, while lower values suggest greater racial diversity.
 
 ```{r}
 #| label: propo-same-race
@@ -533,22 +530,21 @@ ggplot(comp_long, aes(x = value)) +
   theme_minimal()
 ```
 
-The distributions reveal several interesting patterns in the composition of ego networks. The proportion of family members varies widely across respondents, indicating substantial heterogeneity in the extent to which personal networks are centered around kin. The gender composition measure is broadly distributed around intermediate values, suggesting that many respondents’ networks contain a mixture of male and female alters rather than being strongly gender-segregated. The gender diversity measure is concentrated toward higher values, indicating that many ego networks contain a relatively balanced mix of male and female alters. Finally, the distribution of racial homophily is highly skewed toward 1, suggesting that most respondents name alters who share their racial background.
+The distributions reveal several interesting patterns in the composition of ego networks. The proportion of family members varies widely across respondents, indicating substantial heterogeneity in the extent to which personal networks are centered around kin. The gender composition measure is broadly distributed around intermediate values, suggesting that many respondents' networks contain a mixture of male and female alters rather than being strongly gender-segregated. The gender diversity measure is concentrated toward higher values, indicating that many ego networks contain a relatively balanced mix of male and female alters. Finally, the distribution of racial homophily is highly skewed toward 1, suggesting that most respondents name alters who share their racial background.
 
 These patterns are consistent with well-known findings on homophily in social networks, that is, the tendency for individuals to form ties with others who are similar to themselves [@mcpherson2001birds]. In particular, the concentration of prop_same_race near one indicates strong racial homophily in personal networks. At the same time, the distributions of prop_female and gender_entropy suggest that many networks remain gender-mixed rather than fully gender-segregated. Together, these measures show that ego networks are shaped by both similarity and diversity in the social contexts from which alters are drawn.
 
 
 ## Predicting Individual Outcomes Using Ego Network Measures
 
-In the previous sections we examined the structure and composition of ego networks, focusing on characteristics such as family ties, gender composition, and racial homophily. These measures describe how individuals’ personal networks are organized. However, ego network properties can also be used as explanatory variables in statistical models.
+In the previous sections we examined the structure and composition of ego networks, focusing on characteristics such as family ties, gender composition, and racial homophily. These measures describe how individuals' personal networks are organized. However, ego network properties can also be used as explanatory variables in statistical models.
 
 As discussed in the introduction, ego network data are typically collected through surveys in which each respondent reports information about their personal contacts. Because each ego corresponds to a distinct survey respondent, the resulting observations can reasonably be treated as independent. This differs from whole-network data, where observations are inherently interdependent. The survey-based structure of ego network data therefore allows us to apply familiar statistical tools such as regression models to examine how network characteristics relate to individual outcomes.
 
 
-###  Predicting Self-Reported Health 
-In addition to describing the structure and composition of ego networks, we can also use ego network measures as **predictors of individual outcomes**. As noted earlier, survey-based ego network data typically yield one observation per respondent. This means that ego networks can often be treated as **independent observations**, which allows us to apply familiar statistical tools such as regression models. This is an important difference from whole-network data, where observations are inherently interdependent and require specialized network models.
+### Predicting Self-Reported Health
 
-Here we illustrate this approach by examining whether features of respondents’ ego networks are associated with their **self-reported health**. Substantively, this is a plausible question: individuals embedded in larger, more diverse, or more supportive personal networks may report better health. At the same time, kin-centered or highly homogeneous networks may provide different forms of support and constraint, so the direction of association is not obvious a priori.
+Here we illustrate this approach by examining whether features of respondents' ego networks are associated with their **self-reported health**. Substantively, this is a plausible question: individuals embedded in larger, more diverse, or more supportive personal networks may report better health. At the same time, kin-centered or highly homogeneous networks may provide different forms of support and constraint, so the direction of association is not obvious a priori.
 
 #### Outcome Variable
 
@@ -556,7 +552,7 @@ Here we illustrate this approach by examining whether features of respondents’
 
 So we are basically checking whether individuals embedded in larger, more diverse, or more supportive personal networks may report better health.
 
-Our outcome is the ego-level variable `health`, which records respondents’ self-rated health. In the data preparation step, this variable was retained as an ordered factor with the categories:
+Our outcome is the ego-level variable `health`, which records respondents' self-rated health. In the data preparation step, this variable was retained as an ordered factor with the categories:
 
 - `excellent`
 - `very_good`
@@ -568,7 +564,7 @@ Because these categories are ordered but not measured on an interval scale, an o
 
 #### Predictors
 
-We incldue four ego-network measures as predictors:
+We include four ego-network measures as predictors:
 
 - **`ego_size`**: the number of alters in the ego network
 - **`prop_family`**: the proportion of alters who are family members
@@ -657,7 +653,6 @@ summary(health_model)
 
 
 ::: {.callout-note}
-## Note
 Because the education variable was originally stored as an ordered factor, R expanded it into polynomial contrasts when estimating the model. These contrasts can sometimes introduce linear dependencies in the design matrix, especially in the presence of missing data. To simplify interpretation and avoid this issue, we treat education as a categorical factor in the regression model.
 :::
 
@@ -672,7 +667,7 @@ Among the control variables, `education` shows a statistically significant assoc
 Overall, the results illustrate how ego network measures can be incorporated into standard regression frameworks. In this example, network size emerges as the most important network characteristic associated with health, whereas compositional aspects of the network appear less strongly related to the outcome once demographic characteristics are taken into account.
 
 ::: {.callout-note}
-In an ordinal logistic regression, the values listed under *“Intercepts”* are *threshold parameters*, not traditional regression intercepts. They define the boundaries between adjacent categories of the ordered outcome (e.g., `poor|fair`, `fair|good`). The model assumes an underlying continuous health propensity, and these thresholds determine where respondents transition between the observed health categories. Because they simply partition this latent scale, the thresholds are typically *not interpreted substantively*; the main quantities of interest are the coefficients of the predictors, which indicate how variables such as ego network size shift respondents along the latent health scale.
+In an ordinal logistic regression, the values listed under *"Intercepts"* are *threshold parameters*, not traditional regression intercepts. They define the boundaries between adjacent categories of the ordered outcome (e.g., `poor|fair`, `fair|good`). The model assumes an underlying continuous health propensity, and these thresholds determine where respondents transition between the observed health categories. Because they simply partition this latent scale, the thresholds are typically *not interpreted substantively*; the main quantities of interest are the coefficients of the predictors, which indicate how variables such as ego network size shift respondents along the latent health scale.
 :::
 
 
@@ -738,18 +733,18 @@ ggplot(pred_long, aes(x = ego_size, y = probability, color = health_category)) +
   theme_minimal()
 ```
 
-The figure displays the predicted probabilities of reporting each health category as ego network size increases, while holding the other predictors constant at typical values. Overall, the results show a clear pattern: as the number of alters in a respondent’s personal network increases, the probability of reporting better health categories increases, while the probability of reporting poorer health categories declines.
+The figure displays the predicted probabilities of reporting each health category as ego network size increases, while holding the other predictors constant at typical values. Overall, the results show a clear pattern: as the number of alters in a respondent's personal network increases, the probability of reporting better health categories increases, while the probability of reporting poorer health categories declines.
 
 In particular, the predicted probability of reporting excellent health rises steadily with ego network size, and the probability of reporting very good health also increases. At the same time, the probabilities of reporting fair or poor health decrease as networks become larger. This pattern indicates that larger ego networks are associated with a greater likelihood of reporting better health outcomes.
 
-The probability of reporting good health declines slightly as network size increases. This occurs because good is a middle category on the health scale. In ordinal models, probability does not move directly from one category to a single adjacent category. Instead, probability mass is redistributed across all categories when a predictor changes. The probability of reporting good health declines slightly as network size increases. This occurs because “good” is a middle category on the health scale. As network size increases, the predicted probabilities of lower categories such as fair and poor decline, while the probabilities of higher categories such as very good and excellent increase. The reduction in the middle category therefore reflects a redistribution of probability toward the higher end of the health scale..
+The probability of reporting good health declines slightly as network size increases. This occurs because good is a middle category on the health scale. In ordinal models, probability does not move directly from one category to a single adjacent category. Instead, probability mass is redistributed across all categories when a predictor changes. The probability of reporting good health declines slightly as network size increases. This occurs because "good" is a middle category on the health scale. As network size increases, the predicted probabilities of lower categories such as fair and poor decline, while the probabilities of higher categories such as very good and excellent increase. The reduction in the middle category therefore reflects a redistribution of probability toward the higher end of the health scale..
 
 Taken together, the pattern of increasing probabilities for higher health categories and decreasing probabilities for lower categories suggests that larger ego networks are associated with better self-reported health. This interpretation is consistent with the regression results presented earlier, which indicated a positive association between ego network size and the latent health scale. Substantively, this finding aligns with the idea that individuals embedded in larger personal networks may benefit from greater social support, access to information, and other resources that can contribute to improved health and well-being.
 
 
 ### Predicting Smoking Behavior
 
-In the previous example, we examined how ego network characteristics are associated with respondents’ self-reported health. We now illustrate a second application by examining whether features of respondents’ ego networks are associated with a **binary health behavior outcome: cigarette smoking**.
+In the previous example, we examined how ego network characteristics are associated with respondents' self-reported health. We now illustrate a second application by examining whether features of respondents' ego networks are associated with a **binary health behavior outcome: cigarette smoking**.
 
 Smoking behavior is a natural outcome to consider in a network context. Social networks often shape health behaviors through mechanisms such as social norms, peer influence, and access to support. Individuals embedded in larger or more diverse networks may experience different pressures or resources that affect their likelihood of smoking. For example, networks with strong family presence may discourage smoking, while more diverse networks may expose individuals to different behavioral norms.
 
@@ -804,9 +799,9 @@ summary(smoke_model)
 
 #### Interpretation of Model Output
 
-The logistic regression results examine whether characteristics of respondents’ ego networks are associated with the likelihood of smoking. In logistic regression, coefficients represent the effect of predictors on the log-odds of the outcome. A positive coefficient indicates that higher values of the predictor increase the likelihood of smoking, while a negative coefficient indicates a decrease in the likelihood of smoking. Statistical significance can be assessed using the ratio of the coefficient to its standard error (the $z$-statistic). As a rule of thumb, absolute values larger than approximately 1.96 correspond to statistical significance at the 5% level.
+The logistic regression results examine whether characteristics of respondents' ego networks are associated with the likelihood of smoking. In logistic regression, coefficients represent the effect of predictors on the log-odds of the outcome. A positive coefficient indicates that higher values of the predictor increase the likelihood of smoking, while a negative coefficient indicates a decrease in the likelihood of smoking. Statistical significance can be assessed using the ratio of the coefficient to its standard error (the $z$-statistic). As a rule of thumb, absolute values larger than approximately 1.96 correspond to statistical significance at the 5% level.
 
-Among the network predictors, ego network size (`ego_size`) shows a negative association with smoking. The coefficient is −0.061, corresponding to an odds ratio of approximately 0.94. This suggests that each additional alter in a respondent’s ego network is associated with roughly a 6% decrease in the odds of smoking, although the effect is only marginally significant. Substantively, this pattern is consistent with the idea that individuals embedded in larger personal networks may experience stronger social norms or social support that discourage smoking.
+Among the network predictors, ego network size (`ego_size`) shows a negative association with smoking. The coefficient is −0.061, corresponding to an odds ratio of approximately 0.94. This suggests that each additional alter in a respondent's ego network is associated with roughly a 6% decrease in the odds of smoking, although the effect is only marginally significant. Substantively, this pattern is consistent with the idea that individuals embedded in larger personal networks may experience stronger social norms or social support that discourage smoking.
 
 The proportion of family members in the network (`prop_family`) also has a negative coefficient, indicating that more kin-centered networks may be associated with lower odds of smoking. However, the effect is not statistically significant in this model. Similarly, gender diversity in the network (`gender_entropy`) does not show a clear association with smoking behavior, suggesting that variation in the gender composition of alters is not strongly related to smoking in this sample.
 
@@ -817,7 +812,6 @@ Finally, the results indicate that education is associated with smoking behavior
 Overall, the results demonstrate how ego network measures can be incorporated into standard logistic regression models to study behavioral outcomes. In this example, there is some evidence that individuals with larger personal networks are less likely to smoke, while compositional aspects of the network appear less strongly related to smoking behavior once demographic characteristics are taken into account.
 
 :::{.callout-note}
-## Note
 For ease of interpretation, it is often useful to transform the coefficients into odds ratios, which indicate the multiplicative change in the odds of smoking associated with a one-unit increase in the predictor.
 
 
@@ -881,7 +875,7 @@ Of course, whether networks influence smoking behavior also depends on the behav
 
 In addition to examining health outcomes and smoking behavior, we can also use ego network characteristics to study patterns of alcohol consumption. Drinking behavior is a natural outcome to consider in a network context because social interactions often occur in settings where alcohol is present. Individuals embedded in larger or more socially active networks may encounter more opportunities to drink, while networks centered around family members may involve different social norms around alcohol use.
 
-Here we examine whether characteristics of respondents’ ego networks are associated with **how frequently they drink alcohol**.
+Here we examine whether characteristics of respondents' ego networks are associated with **how frequently they drink alcohol**.
 
 #### Outcome Variable
 
@@ -958,11 +952,11 @@ summary(drink_model)
 
 ### Interpretation of Model Output
 
-The Poisson regression results examine whether characteristics of respondents’ ego networks are associated with the number of days per week they report drinking alcohol. In a Poisson regression model, coefficients represent the effect of predictors on the log of the expected count of the outcome. A positive coefficient indicates that higher values of the predictor are associated with more drinking days per week, while a negative coefficient indicates fewer drinking days.
+The Poisson regression results examine whether characteristics of respondents' ego networks are associated with the number of days per week they report drinking alcohol. In a Poisson regression model, coefficients represent the effect of predictors on the log of the expected count of the outcome. A positive coefficient indicates that higher values of the predictor are associated with more drinking days per week, while a negative coefficient indicates fewer drinking days.
 
 Statistical significance can be evaluated using the ratio of the coefficient to its standard error (the $z$-statistic). As in the previous models, absolute values larger than approximately 1.96 correspond to statistical significance at the 5% level under the normal approximation.
 
-Among the network predictors, ego network size (`ego_size`) shows a positive and statistically significant association with drinking frequency. The coefficient is approximately 0.013 ($z$ = 2.68, $p$ < 0.01). Because Poisson regression models the log of the expected count, it is useful to exponentiate the coefficient to interpret the effect multiplicatively. The value exp(0.013) ≈ 1.014 suggests that each additional alter in a respondent’s ego network is associated with roughly a 1.4 percent increase in the expected number of drinking days per week. Substantively, this pattern is consistent with the idea that individuals embedded in larger personal networks may have more opportunities for social activities where alcohol consumption occurs.
+Among the network predictors, ego network size (`ego_size`) shows a positive and statistically significant association with drinking frequency. The coefficient is approximately 0.013 ($z$ = 2.68, $p$ < 0.01). Because Poisson regression models the log of the expected count, it is useful to exponentiate the coefficient to interpret the effect multiplicatively. The value exp(0.013) ≈ 1.014 suggests that each additional alter in a respondent's ego network is associated with roughly a 1.4 percent increase in the expected number of drinking days per week. Substantively, this pattern is consistent with the idea that individuals embedded in larger personal networks may have more opportunities for social activities where alcohol consumption occurs.
 
 The proportion of family members in the network (`prop_family`) shows a negative and statistically significant association with drinking frequency ($z$ = −2.72, $p$ < 0.01). This suggests that respondents whose networks contain a larger share of family members tend to report fewer drinking days per week. One possible interpretation is that kin-centered networks may involve different social norms or contexts that discourage frequent alcohol consumption compared to networks composed primarily of friends or acquaintances.
 
