@@ -246,18 +246,18 @@ The idea behind all of the models is always the same:
 
 The only difference in all models is the construction of the random two-mode networks which follow different rules:
 
-- **Fixed Degree Sequence Model** `fdsm()`: Create random two-mode networks with the same row and column sums as `A`.
-- **Fixed Column Model** `fixedcol()`: Create random two-mode networks with the same column sums as `A`.
-- **Fixed Row Model** `fixedrow()`: Create random two-mode networks with the same row sums as `A`.
-- **Fixed Fill Model** `fixedfill()`: Create random two-mode networks with the same number of ones as `A`.
-- **Stochastic Degree Sequence Model** `sdsm()`: Create random two-mode networks with *approximately* the same row and column sums as `A`.
+- **Fixed Degree Sequence Model** `fdsm`: Create random two-mode networks with the same row and column sums as `A`.
+- **Fixed Column Model** `fixedcol`: Create random two-mode networks with the same column sums as `A`.
+- **Fixed Row Model** `fixedrow`: Create random two-mode networks with the same row sums as `A`.
+- **Fixed Fill Model** `fixedfill`: Create random two-mode networks with the same number of ones as `A`.
+- **Stochastic Degree Sequence Model** `sdsm`: Create random two-mode networks with *approximately* the same row and column sums as `A`.
 
 Before we move to an actual use case, you may ask: Which model is the correct one for me? That is actually quite a tricky question.
 There is some guidance available [@neal2021comparing], but in general you can follow these rough questions:
 
-1. Use the model that fits your empirical setting or a known link formation process. If that link formation process dictates that row sums are fixed but column sums not, then choose `fixedrow()`. 
-2. Use `fdsm()` if your network is small enough. Sampling from the FDSM is quite expensive.
-3. Use the `sdsm()` for large networks.
+1. Use the model that fits your empirical setting or a known link formation process. If that link formation process dictates that row sums are fixed but column sums not, then choose `fixedrow`. 
+2. Use `fdsm` if your network is small enough. Sampling from the FDSM is quite expensive.
+3. Use the `sdsm` for large networks.
 
 Given that there is never a "ground-truth" binary projection, any choice of model is at least not inherently wrong as long as it is motivated substantively and not merely because it fits the narrative best.
 
@@ -274,7 +274,7 @@ Because the resulting network is fairly large, we will rely on the SDSM (Stochas
 
 ```{r}
 #| label: fit-sdsm
-senators <- sdsm(cosponsor, alpha = 0.05, signed = FALSE)
+senators <- backbone_from_projection(cosponsor, model = "sdsm", alpha = 0.05, signed = FALSE)
 senators
 ```
 
