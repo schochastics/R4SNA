@@ -604,7 +604,7 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count_signed_triangles</span>(g_bal)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+++ ++- +-- --- 
-141   0  11   0 </code></pre>
+137   0   4   0 </code></pre>
 </div>
 </div>
 <p>Increasing the <code>islands.n</code> parameter to more than two creates networks that are not balanced in the strict two-group sense but are “clusterable” as defined by <span class="citation" data-cites="davis1967clustering">Davis (<a href="#ref-davis1967clustering" role="doc-biblioref">1967</a>)</span> – they can be partitioned into more than two groups with the same within-positive, between-negative pattern.</p>
@@ -621,7 +621,7 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g_bal, <span class="at">method =</span> <span class="st">"frustration"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8554217</code></pre>
+<pre><code>[1] 1</code></pre>
 </div>
 </div>
 <p>The <em>triangles</em> method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.</p>
@@ -649,11 +649,11 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 <p>The function <code>signed_blockmodel()</code> partitions a network into <code>k</code> predefined blocks, optimising for positive ties within blocks and negative ties between blocks. The objective function to be optimized is <span class="math inline">\(P(C) = \alpha N + (1-\alpha)P\)</span>, where <span class="math inline">\(N\)</span> is the total number of negative ties within blocks and <span class="math inline">\(P\)</span> is the total number of positive ties between blocks. The parameter <code>alpha</code> controls the trade-off between these two values. The closer <code>alpha</code> is to 1, the more the algorithm prioritises negative ties within blocks. The closer to 0, the more it prioritises positive ties between blocks. Setting <code>alpha = 0.5</code> gives equal weight to both types of errors.</p>
 <p>For the <code>tribes</code> network, we try to find a partition into three blocks, which is the known structure of the Gahuku-Gama alliance system.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">44</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>clu <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel</span>(tribes, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">annealing =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>clu<span class="sc">$</span>membership</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 1 1 2 2 3 2 2 2 3 3 2 2 3 3 1 1</code></pre>
+<pre><code> [1] 2 2 1 1 3 1 1 1 3 3 1 1 3 3 2 2</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>clu<span class="sc">$</span>criterion</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -712,7 +712,7 @@ Figure&nbsp;6.6: A synthetic network with a non-standard block structure.
 </div>
 <p>Here, groups two and three have positive ties between them, while both have negative ties with group one. The block structure matrix specified below reflects this.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">424</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>blockmat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>,</span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
@@ -883,12 +883,12 @@ Gama   Gama         -3 0.987 0.715</code></pre>
 <pre><code>       method  cold_war post_cold_war
 1   triangles 0.9450199     0.9264774
 2        walk 0.6916381     0.2566049
-3 frustration 0.8711864     0.8933108</code></pre>
+3 frustration 0.8983051     0.8933108</code></pre>
 </div>
 </div>
 <p>Applying blockmodeling reveals the alliance structure. During the Cold War, we would expect to find blocs corresponding to the Western and Eastern alliances:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>clu_cold <span class="ot">&lt;-</span> <span class="fu">signed_blockmodel</span>(cow_cold, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">annealing =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
@@ -907,17 +907,17 @@ Gama   Gama         -3 0.987 0.715</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`1`
  [1] "ALG" "ARG" "AUS" "BAR" "BEL" "BOL" "BRA" "CAN" "CAF" "CHA" "CHL" "COL"
-[13] "CON" "COS" "CZE" "DEN" "DOM" "ECU" "EGY" "ELS" "FRA" "GAB" "GFR" "GHA"
-[25] "GRC" "GUA" "HAI" "HON" "ICE" "IND" "IRN" "IRQ" "ITA" "CDI" "JPN" "JOR"
-[37] "KUW" "LAO" "LEB" "LYB" "LUX" "MAG" "MYS" "MAS" "MEX" "MOR" "MYR" "NDL"
-[49] "NZD" "NIC" "NOR" "PAK" "PAN" "PAR" "PER" "PHL" "PRG" "RVN" "SAU" "SOM"
-[61] "SAF" "KOR" "ESP" "SUD" "SYR" "TWN" "THA" "TRI" "TUN" "TUR" "UGA" "GBR"
-[73] "USA" "URU" "VZA" "YAR" "YUG"
+[13] "CON" "COS" "CYP" "CZE" "DEN" "DOM" "ECU" "EGY" "ELS" "ETH" "FRA" "GAB"
+[25] "GFR" "GHA" "GRC" "GUA" "HAI" "HON" "ICE" "IND" "IRN" "IRQ" "ITA" "CDI"
+[37] "JPN" "JOR" "KEN" "KUW" "LAO" "LEB" "LYB" "LUX" "MYS" "MLI" "MAS" "MEX"
+[49] "MON" "MOR" "NDL" "NZD" "NIC" "NOR" "PAK" "PAN" "PAR" "PER" "PHL" "PRG"
+[61] "RVN" "SAU" "SAF" "KOR" "ESP" "SUD" "SYR" "TWN" "THA" "TRI" "TUN" "TUR"
+[73] "GBR" "USA" "URU" "VZA" "YAR" "YUG" "ZIM"
 
 $`2`
- [1] "AFG" "ALB" "BUL" "BUI" "CMB" "CHN" "CUB" "CYP" "DRC" "ETH" "FIN" "GDR"
-[13] "GUI" "GUY" "HUN" "INS" "ISR" "KEN" "MLI" "MON" "NEP" "NKR" "POL" "ROM"
-[25] "RUS" "RWA" "TGO" "VTN" "ZAM" "ZIM"</code></pre>
+ [1] "AFG" "ALB" "BUL" "BUI" "CMB" "CHN" "CUB" "DRC" "FIN" "GDR" "GUI" "GUY"
+[13] "HUN" "INS" "ISR" "MAG" "MYR" "NEP" "NKR" "POL" "ROM" "RUS" "RWA" "SOM"
+[25] "TGO" "UGA" "VTN" "ZAM"</code></pre>
 </div>
 </div>
 

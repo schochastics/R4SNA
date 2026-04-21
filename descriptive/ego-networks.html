@@ -161,13 +161,13 @@ window.Quarto = {
 
 <meta property="og:title" content="7&nbsp; Ego Networks – R for Social Network Analysis">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://schochastics.io/R4SNA/descriptive/ego-networks_files/figure-html/plot-egos-1.png">
+<meta property="og:image" content="https://schochastics.io/R4SNA/descriptive/ego-networks_files/figure-html/fig-egos-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
 <meta property="og:image:height" content="1728">
 <meta property="og:image:width" content="1728">
 <meta name="twitter:title" content="7&nbsp; Ego Networks – R for Social Network Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://schochastics.io/R4SNA/descriptive/ego-networks_files/figure-html/plot-egos-1.png">
+<meta name="twitter:image" content="https://schochastics.io/R4SNA/descriptive/ego-networks_files/figure-html/fig-egos-1.png">
 <meta name="twitter:image-height" content="1728">
 <meta name="twitter:image-width" content="1728">
 <meta name="twitter:card" content="summary_large_image">
@@ -504,7 +504,9 @@ window.Quarto = {
 </header>
 
 
-<p>Ego networks refer to the personal network surrounding a single focal individual, known as the <em>ego</em>. An ego network includes the ego, the people directly connected to them, so called <em>alters</em>, and the relationships among those alters. Rather than examining an entire community or organization, ego network analysis focuses on the immediate social environment of one person, allowing researchers to understand how information, resources, influence, or support flow through that individual’s connections. By analyzing the size of the network, the strength of ties, the diversity of contacts, and the level of interconnectedness among alters, scholars can assess factors such as social capital, access to opportunities, and resilience. Ego networks are especially useful in studying phenomena like job searching, knowledge sharing, health behaviors, and online social interaction, where an individual’s direct relationships play a critical role in shaping outcomes.</p>
+<p>Ego networks refer to the personal network surrounding a single focal individual, known as the <em>ego</em>. An ego network includes the ego, the people directly connected to them, so called <em>alters</em>, and the relationships among those alters.</p>
+<p>Rather than examining an entire community or organization, ego network analysis focuses on the immediate social environment of one person, allowing researchers to understand how information, resources, influence, or support flow through that individual’s connections.</p>
+<p>By analyzing the size of the network, the strength of ties, the diversity of contacts, and the level of interconnectedness among alters, scholars can assess factors such as social capital, access to opportunities, and resilience. Ego networks are especially useful in studying phenomena like job searching, knowledge sharing, health behaviors, and online social interaction, where an individual’s direct relationships play a critical role in shaping outcomes.</p>
 <p>In this chapter, we will begin by introducing the fundamentals of ego network data and learning how to use the <code>egor</code> package to manipulate, construct, and visualize ego networks. We will then examine substantive research questions related to homophily; the tendency for similar individuals to associate with one another more frequently than with dissimilar others, across various demographic dimensions. Finally, we will explore an applied example in which properties of ego networks are used to predict important outcomes of interest.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">7.1</span> Packages Needed for this Chapter</h2>
@@ -603,24 +605,24 @@ Note
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
-IGRAPH 3b07304 DNW- 6 2 -- 
+IGRAPH e0006f7 DNW- 6 2 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from 3b07304 (vertex names):
++ edges from e0006f7 (vertex names):
 [1] 2-&gt;5 2-&gt;5
 
 [[2]]
-IGRAPH 9857728 DNW- 15 8 -- 
+IGRAPH 27df463 DNW- 15 8 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from 9857728 (vertex names):
++ edges from 27df463 (vertex names):
 [1] 2-&gt;3 3-&gt;5 2-&gt;3 2-&gt;5 1-&gt;4 2-&gt;5 3-&gt;5 1-&gt;4
 
 [[3]]
-IGRAPH 4410714 DNW- 5 6 -- 
+IGRAPH f101ed9 DNW- 5 6 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from 4410714 (vertex names):
++ edges from f101ed9 (vertex names):
 [1] 1-&gt;2 1-&gt;3 1-&gt;2 2-&gt;3 1-&gt;3 2-&gt;3</code></pre>
 </div>
 </div>
@@ -639,29 +641,26 @@ Note
 </div>
 <p>After running <code>as_igraph()</code>, we obtain a list of ego networks in igraph format, where each element of the list corresponds to one ego’s personal network. The attributes stored at the alter level are automatically transferred as vertex attributes, and the alter–alter tie information (including edge weights) is preserved as edge attributes. By default, the ego node itself is not included in these igraph representations. This is common practice because ego is, by definition, connected to all alters, and therefore contributes little additional structural variation in many visualizations or structural measures. In later sections, we will examine statistics that explicitly incorporate both ego and alter information.</p>
 <p>We now visualize a subset of the data by plotting the first 9 ego networks in the list using <code>ggraph</code>. This is shown in <a href="#fig-egos" class="quarto-xref">Figure&nbsp;<span>7.1</span></a>.</p>
-<div id="fig-egos" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-egos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(g[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>], <span class="cf">function</span>(g) {</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># rebuild a clean graph using only structure + names</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  el <span class="ot">&lt;-</span> <span class="fu">as_edgelist</span>(g, <span class="at">names =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  vn <span class="ot">&lt;-</span> <span class="fu">V</span>(g)<span class="sc">$</span>name</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(el) <span class="sc">==</span> <span class="dv">0</span> <span class="sc">||</span> <span class="fu">nrow</span>(el) <span class="sc">==</span> <span class="dv">0</span>) {</span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    g_clean <span class="ot">&lt;-</span> <span class="fu">make_empty_graph</span>(<span class="at">n =</span> <span class="fu">length</span>(vn), <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">V</span>(g_clean)<span class="sc">$</span>name <span class="ot">&lt;-</span> vn</span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    g_clean <span class="ot">&lt;-</span> <span class="fu">graph_from_edgelist</span>(el, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add back isolated vertices, if any</span></span>
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    missing_v <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(vn, <span class="fu">V</span>(g_clean)<span class="sc">$</span>name)</span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(missing_v) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>      g_clean <span class="ot">&lt;-</span> <span class="fu">add_vertices</span>(g_clean, <span class="at">nv =</span> <span class="fu">length</span>(missing_v), <span class="at">name =</span> missing_v)</span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    }</span>
 <span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(g_clean, <span class="at">layout =</span> <span class="st">"kk"</span>) <span class="sc">+</span></span>
 <span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
 <span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
@@ -671,18 +670,17 @@ Note
 <span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="ego-networks_files/figure-html/plot-egos-1.png" class="img-fluid figure-img" width="864"></p>
-</figure>
-</div>
-</div>
-</div>
+<div id="fig-egos" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-egos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ego-networks_files/figure-html/fig-egos-1.png" class="img-fluid figure-img" width="864">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-egos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;7.1: The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego’s personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks.
 </figcaption>
 </figure>
+</div>
+</div>
 </div>
 </section>
 <section id="descriptive-statistics-for-ego-networks" class="level2" data-number="7.4">

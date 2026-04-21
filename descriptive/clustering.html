@@ -627,7 +627,7 @@ Figure&nbsp;4.5: A network without obvious cluster structure.
 Q = \frac{1}{2m} \sum_{ij} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(c_i, c_j)
 \]</span></p>
 <p>where <span class="math inline">\(m\)</span> is the total number of edges, <span class="math inline">\(A_{ij}\)</span> is the adjacency matrix entry (1 if nodes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are connected, 0 otherwise), <span class="math inline">\(k_i\)</span> is the degree of node <span class="math inline">\(i\)</span>, and <span class="math inline">\(\delta(c_i, c_j)\)</span> equals 1 if nodes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are assigned to the same community and 0 otherwise. The term <span class="math inline">\(\frac{k_i k_j}{2m}\)</span> is the expected number of edges between <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> under a null model that preserves degree. Modularity values typically range from around <span class="math inline">\(-0.5\)</span> to <span class="math inline">\(1\)</span>, where values close to zero indicate no more within-group edges than expected by chance, and higher values indicate stronger community structure.</p>
-<p>The workflow of a cluster analysis is always the same, independent from the chosen method. We illustrate the workflow using the infamous karate club network. This network was collected by Wayne Zachary in the 1970s and it captures friendships among 34 members of a university karate club. During the study, a conflict between the club’s instructor and the administrator led to the club splitting into two factions, making it a classic benchmark for community detection.</p>
+<p>The workflow of a cluster analysis is always the same, independent from the chosen method. We illustrate the workflow using the infamous karate club network, already encountered in <a href="centrality-basic.html" class="quarto-xref"><span>Chapter 3</span></a>. This network was collected by Wayne Zachary in the 1970s and it captures friendships among 34 members of a university karate club. During the study, a conflict between the club’s instructor and the administrator led to the club splitting into two factions, making it a classic benchmark for community detection.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"karate"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -655,23 +655,23 @@ Figure&nbsp;4.6: Zachary’s karate club network.
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>mem <span class="ot">&lt;-</span> <span class="fu">membership</span>(clu)</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>mem</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 1 2 2 2 1 1 1 2 3 2 1 1 2 2 3 3 1 2 3 2 3 2 3 3 4 4 3 3 4 3 3 4 3 3</code></pre>
+<pre><code> [1] 1 1 1 1 2 2 2 1 3 1 2 1 1 1 3 3 2 1 3 1 3 1 3 4 4 4 3 4 4 3 3 4 3 3</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">## clusters as list</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>com <span class="ot">&lt;-</span> <span class="fu">communities</span>(clu)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>com</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`1`
-[1]  1  5  6  7 11 12 17
+ [1]  1  2  3  4  8 10 12 13 14 18 20 22
 
 $`2`
- [1]  2  3  4  8 10 13 14 18 20 22
+[1]  5  6  7 11 17
 
 $`3`
- [1]  9 15 16 19 21 23 24 27 28 30 31 33 34
+ [1]  9 15 16 19 21 23 27 30 31 33 34
 
 $`4`
-[1] 25 26 29 32</code></pre>
+[1] 24 25 26 28 29 32</code></pre>
 </div>
 </div>
 <p>Finding the partition that maximises modularity is a computationally hard problem (NP-hard, to be precise). No algorithm can guarantee finding the global optimum in reasonable time, so all practical methods rely on heuristics, such as the fast greedy approach <span class="citation" data-cites="clauset2004community">(<a href="#ref-clauset2004community" role="doc-biblioref">Clauset et al. 2004</a>)</span>. Different heuristics explore the space of possible partitions in different ways, which means they can arrive at different solutions on the same network. To see how much results vary, we run several algorithms and compare their modularity scores.</p>
@@ -691,7 +691,7 @@ $`4`
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>scores</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  infomap     eigen   louvain spinglass      walk 
-0.4020381 0.3934089 0.4151052 0.4197896 0.3532216 </code></pre>
+0.4020381 0.3934089 0.4197896 0.4188034 0.3532216 </code></pre>
 </div>
 </div>
 <p>For the karate network, <code>cluster_spinglass()</code> produces the highest modularity score. In practice, the choice of algorithm depends on more than just modularity. <code>cluster_louvain()</code> scales well to large networks. There does exist an algorithm which is guaranteed to find the optimal partition, implemented in <code>cluster_optimal()</code>, but it is only suitable for very small networks (up to around 100 nodes). Hence, for the karate network, we can actually compute the optimal partition and compare it to the results of the heuristics.</p>
@@ -739,8 +739,8 @@ Figure&nbsp;4.8: A ring of 50 cliques of size 5, used to illustrate the resoluti
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">membership</span>(clu_louvain))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
- 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 
-15 10 10 10 10 15 10 10 10 10 10 15 10 10 10 10 10 10 10 10 15 10 10 </code></pre>
+ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 
+10 10 10 10 10 10 15 10 10 10 10 10 10 10 10 15 10 10 10 10 10 10 10 10 </code></pre>
 </div>
 </div>
 <p>However, the Louvain method merges multiple cliques together to form a rather unintuitive clustering. This is a consequence of the resolution limit. The algorithm fails to resolve the smaller clusters because merging them into bigger clusters actually increases the modularity.</p>
@@ -845,45 +845,45 @@ Figure&nbsp;4.10: A random network with three dense blocks of 20 nodes each.
 <pre><code>
 
 Starting optimization of the partiton 1 of 5 partitions.
-Starting partition: 3 2 2 2 3 3 2 1 2 1 2 3 3 1 3 2 3 3 2 2 1 1 3 3 3 2 3 2 3 2 3 1 2 1 3 1 1 1 1 1 1 1 3 1 3 1 2 1 3 2 1 1 1 3 3 2 2 2 2 2 
-Final error: 342 
-Final partition:    3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
+Starting partition: 3 2 3 2 1 1 1 1 3 3 3 3 2 2 1 1 2 1 2 2 2 2 2 1 2 3 1 2 1 3 1 3 2 2 3 2 2 3 2 1 1 1 1 3 1 3 3 3 3 1 2 3 3 1 2 2 3 1 1 3 
+Final error: 364 
+Final partition:    3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
 
 
 Starting optimization of the partiton 2 of 5 partitions.
-Starting partition: 1 1 2 1 3 1 1 1 1 2 3 2 1 1 3 1 3 2 1 3 2 2 3 1 3 3 2 2 2 3 1 1 2 3 1 3 1 3 2 2 3 1 2 1 3 1 3 3 2 2 3 2 3 2 2 2 1 3 2 3 
-Final error: 342 
+Starting partition: 2 3 1 2 1 3 1 1 3 3 1 3 3 3 2 1 3 2 1 1 2 1 3 1 2 1 3 2 3 2 3 3 2 2 3 1 3 2 3 1 2 2 3 1 1 3 3 2 1 1 2 2 1 2 2 2 1 1 2 3 
+Final error: 364 
 Final partition:    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
 
 
 Starting optimization of the partiton 3 of 5 partitions.
-Starting partition: 3 1 2 3 2 3 1 1 1 2 2 1 3 2 3 3 2 1 2 3 3 3 3 1 2 3 1 1 2 2 2 1 3 1 2 3 1 2 2 3 2 2 1 1 1 1 1 1 3 3 3 2 2 1 1 2 3 3 3 2 
-Final error: 342 
-Final partition:    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 
+Starting partition: 3 1 2 3 2 3 3 3 3 2 1 3 2 3 3 3 1 2 2 3 1 3 3 1 3 2 1 1 1 1 3 1 1 1 3 2 2 2 3 2 3 1 3 3 1 1 2 2 2 2 2 2 1 2 1 1 2 1 2 1 
+Final error: 364 
+Final partition:    3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
 
 
 Starting optimization of the partiton 4 of 5 partitions.
-Starting partition: 1 3 3 1 3 3 3 2 1 2 1 3 2 3 3 1 2 3 1 1 2 3 2 2 1 2 1 1 2 1 3 2 2 1 2 2 3 3 2 3 1 3 3 2 3 1 3 1 1 2 1 1 3 2 1 3 2 2 1 2 
-Final error: 342 
-Final partition:    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
+Starting partition: 1 2 1 1 2 1 2 1 3 1 3 2 3 3 2 3 1 3 1 2 3 1 3 2 1 3 1 1 1 1 2 2 3 2 3 1 1 1 1 3 3 2 2 2 1 3 2 2 2 2 1 2 3 3 3 3 2 3 2 3 
+Final error: 364 
+Final partition:    3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
 
 
 Starting optimization of the partiton 5 of 5 partitions.
-Starting partition: 3 2 2 2 2 3 3 1 2 2 1 3 1 3 3 1 2 2 1 3 2 1 2 1 1 2 3 2 1 3 1 2 1 3 3 3 3 3 2 2 1 1 1 3 1 2 2 1 3 2 3 2 1 3 3 2 1 3 1 1 
-Final error: 342 
-Final partition:    2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 
+Starting partition: 2 3 2 3 2 1 3 3 2 3 1 1 3 1 1 1 3 2 3 1 2 3 1 3 1 1 3 3 3 1 1 2 2 2 3 1 2 2 2 2 2 3 2 2 3 3 2 1 2 3 3 1 3 1 1 1 2 1 2 1 
+Final error: 364 
+Final partition:    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
 
 
 Optimization of all partitions completed
-All 5 solutions have err 342 </code></pre>
+All 5 solutions have err 364 </code></pre>
 </div>
 </div>
 <p>The result can be accessed with <code>clu()</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clu</span>(res)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-[39] 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</code></pre>
+<pre><code> [1] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+[39] 2 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</code></pre>
 </div>
 </div>
 <div class="cell">
