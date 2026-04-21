@@ -69,7 +69,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../tidy/tidygraph-summary.html" rel="next">
+<link href="../appendix/ucnets-egor.html" rel="next">
 <link href="../tidy/tidygraph-basics.html" rel="prev">
 <link href="../cover.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -113,13 +113,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <meta property="og:title" content="22&nbsp; Descriptive Network Analysis – R for Social Network Analysis">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://schochastics.io/R4SNA/tidy/tidygraph-descriptive_files/figure-html/centrality-example-1.png">
+<meta property="og:image" content="https://schochastics.io/R4SNA/tidy/tidygraph-descriptive_files/figure-html/fig-centrality-example-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
 <meta property="og:image:height" content="960">
 <meta property="og:image:width" content="1344">
 <meta name="twitter:title" content="22&nbsp; Descriptive Network Analysis – R for Social Network Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://schochastics.io/R4SNA/tidy/tidygraph-descriptive_files/figure-html/centrality-example-1.png">
+<meta name="twitter:image" content="https://schochastics.io/R4SNA/tidy/tidygraph-descriptive_files/figure-html/fig-centrality-example-1.png">
 <meta name="twitter:image-height" content="960">
 <meta name="twitter:image-width" content="1344">
 <meta name="twitter:card" content="summary_large_image">
@@ -354,12 +354,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Descriptive Network Analysis</span></span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tidy/tidygraph-summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
-  </div>
-</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -389,9 +383,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#centrality" id="toc-centrality" class="nav-link active" data-scroll-target="#centrality"><span class="header-section-number">22.1</span> Centrality</a></li>
-  <li><a href="#clustering" id="toc-clustering" class="nav-link" data-scroll-target="#clustering"><span class="header-section-number">22.2</span> Clustering</a></li>
-  <li><a href="#other-node-or-edge-level-functions" id="toc-other-node-or-edge-level-functions" class="nav-link" data-scroll-target="#other-node-or-edge-level-functions"><span class="header-section-number">22.3</span> Other node or edge level functions</a></li>
+  <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">22.1</span> Packages Needed for this Chapter</a></li>
+  <li><a href="#centrality" id="toc-centrality" class="nav-link" data-scroll-target="#centrality"><span class="header-section-number">22.2</span> Centrality</a></li>
+  <li><a href="#clustering" id="toc-clustering" class="nav-link" data-scroll-target="#clustering"><span class="header-section-number">22.3</span> Clustering</a></li>
+  <li><a href="#other-node-or-edge-level-functions" id="toc-other-node-or-edge-level-functions" class="nav-link" data-scroll-target="#other-node-or-edge-level-functions"><span class="header-section-number">22.4</span> Other node or edge level functions</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/tidy/tidygraph-descriptive.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -417,94 +412,132 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="centrality" class="level2" data-number="22.1">
-<h2 data-number="22.1" class="anchored" data-anchor-id="centrality"><span class="header-section-number">22.1</span> Centrality</h2>
-<p>The package includes all centrality indices implemented in <code>igraph</code> and additionally all that are made available in the <code>netrankr</code> package. All indices can be found in the function group <code>centrality_*()</code>.</p>
+<p>This chapter revisits the descriptors introduced in the Descriptive part — centrality, community structure, and the assortment of node- and edge-level measures — through tidygraph. The point is not to teach the descriptors again but to show how the same computations translate into pipeable <code>mutate()</code> calls on an activated node or edge table. Cross-references to the original treatment in <a href="../descriptive/centrality-basic.html">Centrality</a> and <a href="../descriptive/clustering.html">Cohesive Subgroups</a> are given where they help.</p>
+<section id="packages-needed-for-this-chapter" class="level2" data-number="22.1">
+<h2 data-number="22.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">22.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">%&gt;%</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"nodes"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">degree =</span> <span class="fu">centrality_degree</span>(),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">betweenness =</span> <span class="fu">centrality_betweenness</span>()</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>, <span class="at">bbox =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="at">edge_color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="fu">aes</span>(<span class="at">size =</span> degree, <span class="at">fill =</span> betweenness)) <span class="sc">+</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#104E8B"</span>, <span class="at">high =</span> <span class="st">"#CD2626"</span>) <span class="sc">+</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_size</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">10</span>)) <span class="sc">+</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidygraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="ot">&lt;-</span> <span class="fu">as_tbl_graph</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="centrality" class="level2" data-number="22.2">
+<h2 data-number="22.2" class="anchored" data-anchor-id="centrality"><span class="header-section-number">22.2</span> Centrality</h2>
+<p>Centrality indices live in the <code>centrality_*()</code> function family. The family covers everything implemented in <code>igraph</code> — degree, closeness, betweenness, eigenvector, PageRank, Katz, hub and authority scores — together with the richer catalogue exposed by the <code>netrankr</code> package. Every function in the family shares the same calling convention: no graph argument, no vertex argument, just the name. Each one reads the currently active graph implicitly and returns a vector the length of the active table, which is what makes them slot straight into <code>mutate()</code> alongside any other derived column. <a href="#fig-centrality-example" class="quarto-xref">Figure&nbsp;<span>22.1</span></a> combines degree and betweenness in a single pipeline and maps them to node size and fill.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"nodes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">degree      =</span> <span class="fu">centrality_degree</span>(),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">betweenness =</span> <span class="fu">centrality_betweenness</span>()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>, <span class="at">bbox =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="at">edge_color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="fu">aes</span>(<span class="at">size =</span> degree, <span class="at">fill =</span> betweenness)) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#104E8B"</span>, <span class="at">high =</span> <span class="st">"#CD2626"</span>) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_size</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tidygraph-descriptive_files/figure-html/centrality-example-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-centrality-example" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-centrality-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="tidygraph-descriptive_files/figure-html/fig-centrality-example-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-centrality-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.1: Florentine marriage network with node size scaled to degree centrality and fill scaled to betweenness centrality.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>A practical tip: because every function starts with the same prefix, typing <code>centrality_</code> in RStudio and pressing Tab is the fastest way to browse what is available without consulting the help pages first.</p>
+</section>
+<section id="clustering" class="level2" data-number="22.3">
+<h2 data-number="22.3" class="anchored" data-anchor-id="clustering"><span class="header-section-number">22.3</span> Clustering</h2>
+<p>Community detection algorithms are exposed through the parallel <code>group_*()</code> family: <code>group_louvain</code>, <code>group_infomap</code>, <code>group_edge_betweenness</code>, <code>group_walktrap</code>, <code>group_leading_eigen</code>, <code>group_fast_greedy</code>, <code>group_label_prop</code>, <code>group_spinglass</code>, <code>group_components</code>, <code>group_biconnected_component</code>, and a few more. Each returns an integer membership vector the length of the node table, which means the idiomatic usage is <code>mutate(community = as.factor(group_*()))</code> — coerce to factor so the result becomes a natural input to a <code>fill</code> or <code>colour</code> aesthetic.</p>
+<p>We illustrate the pattern on a random graph with planted community structure, generated with <code>play_islands()</code> (the tidygraph equivalent of <code>igraph::sample_islands()</code>). The Louvain partition recovered on that graph is shown in <a href="#fig-clustering-louvain" class="quarto-xref">Figure&nbsp;<span>22.2</span></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">play_islands</span>(<span class="dv">4</span>, <span class="dv">12</span>, <span class="fl">0.8</span>, <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_louvain</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>() <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> community), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-clustering-louvain" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clustering-louvain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="tidygraph-descriptive_files/figure-html/fig-clustering-louvain-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clustering-louvain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.2: Louvain community detection applied to a graph with planted community structure generated by <code>play_islands()</code>. Node fill encodes the recovered community membership.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>A frequent follow-up is to colour edges by community — one colour when an edge stays inside a cluster, another when it bridges two clusters. The way to do this is to propagate the node-level community attribute into the edge table using <code>.N()[from]</code> and <code>.N()[to]</code>, which look up the community of each edge’s endpoints. If they match, the edge is intra-community; otherwise, we mark it as a bridge. <a href="#fig-clustering-bridges" class="quarto-xref">Figure&nbsp;<span>22.3</span></a> shows the resulting picture.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">play_islands</span>(<span class="dv">4</span>, <span class="dv">12</span>, <span class="fl">0.8</span>, <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_louvain</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">.N</span>()<span class="sc">$</span>community[from] <span class="sc">==</span> <span class="fu">.N</span>()<span class="sc">$</span>community[to],</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">.N</span>()<span class="sc">$</span>community[from],</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="dv">5</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    ))) <span class="sc">%&gt;%</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_colour =</span> community), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> community), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set3"</span>) <span class="sc">+</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Set3"</span>) <span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>(<span class="at">background =</span> <span class="st">"grey88"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-clustering-bridges" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clustering-bridges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="tidygraph-descriptive_files/figure-html/fig-clustering-bridges-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clustering-bridges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.3: Same graph as in <a href="#fig-clustering-louvain" class="quarto-xref">Figure&nbsp;<span>22.2</span></a>, with edges additionally coloured to distinguish intra-community ties from bridges between communities.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="clustering" class="level2" data-number="22.2">
-<h2 data-number="22.2" class="anchored" data-anchor-id="clustering"><span class="header-section-number">22.2</span> Clustering</h2>
-<p>Similar to centrality, all clustering algorithms from <code>igraph</code> are available via <code>group_*()</code></p>
+<section id="other-node-or-edge-level-functions" class="level2" data-number="22.4">
+<h2 data-number="22.4" class="anchored" data-anchor-id="other-node-or-edge-level-functions"><span class="header-section-number">22.4</span> Other node or edge level functions</h2>
+<p>Beyond centrality and grouping, tidygraph harmonises a long list of node- and edge-level measures behind two mirror-image function families: <code>node_*()</code> returns a vector of length <code>vcount()</code>, and <code>edge_*()</code> returns a vector of length <code>ecount()</code>. Which family you reach for is determined by which table you have activated. The families cover distance (<code>node_distance_to</code>, <code>node_distance_from</code>, <code>node_eccentricity</code>), local structure (<code>node_triangles</code>, <code>node_coreness</code>, <code>node_local_transitivity</code>), and tests on edges (<code>edge_is_loop</code>, <code>edge_is_multiple</code>, <code>edge_is_mutual</code>, <code>edge_is_incident</code>), among many others. As with the centrality and group families, typing <code>node_</code> or <code>edge_</code> at the prompt and pressing Tab gives the full list.</p>
+<p>The example below combines one of each: on nodes, the geodesic distance to the Medici family; on edges, a flag indicating whether the edge is incident to the Medici. Activating each table in turn keeps both computations in a single pipeline, and the result is shown in <a href="#fig-distance-medici" class="quarto-xref">Figure&nbsp;<span>22.4</span></a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create random graph with group structure (igraph equivalent is sample_islands())</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">play_islands</span>(<span class="dv">4</span>, <span class="dv">12</span>, <span class="fl">0.8</span>, <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_louvain</span>())) <span class="sc">%&gt;%</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>() <span class="sc">+</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> community), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"nodes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">dist2Medici =</span> <span class="fu">node_distance_to</span>(<span class="at">nodes =</span> <span class="dv">9</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">edge2Medici =</span> <span class="fu">edge_is_incident</span>(<span class="dv">9</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_color =</span> edge2Medici)) <span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> dist2Medici), <span class="at">size =</span> <span class="dv">9</span>, <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tidygraph-descriptive_files/figure-html/clustering-example-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-distance-medici" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-distance-medici-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="tidygraph-descriptive_files/figure-html/fig-distance-medici-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-distance-medici-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.4: Florentine marriage network with node fill encoding the geodesic distance to the Medici family and edge colour flagging ties incident to the Medici.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Coupling this with what we learned above, we can color the edges according to the cluster they belong to.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">play_islands</span>(<span class="dv">4</span>, <span class="dv">12</span>, <span class="fl">0.8</span>, <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_louvain</span>())) <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(<span class="fu">.N</span>()<span class="sc">$</span>community[from] <span class="sc">==</span> <span class="fu">.N</span>()<span class="sc">$</span>community[to], <span class="fu">.N</span>()<span class="sc">$</span>community[from], <span class="dv">5</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_colour =</span> community), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> community), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set3"</span>) <span class="sc">+</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Set3"</span>) <span class="sc">+</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>(<span class="at">background =</span> <span class="st">"grey88"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tidygraph-descriptive_files/figure-html/clustering-example2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="other-node-or-edge-level-functions" class="level2" data-number="22.3">
-<h2 data-number="22.3" class="anchored" data-anchor-id="other-node-or-edge-level-functions"><span class="header-section-number">22.3</span> Other node or edge level functions</h2>
-<p><code>tidygraphs</code> harmonizes many other available functions in igraph to make them easier accessible. The best way to check what is available is to look at the function groups <code>node_*()</code> and <code>edge_*()</code>. Some simple examples are shown below.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the node id of the Medici is 9</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"nodes"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">dist2Medici =</span> <span class="fu">node_distance_to</span>(<span class="at">nodes =</span> <span class="dv">9</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">edge2Medici =</span> <span class="fu">edge_is_incident</span>(<span class="dv">9</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_color =</span> edge2Medici)) <span class="sc">+</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> dist2Medici), <span class="at">size =</span> <span class="dv">9</span>, <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tidygraph-descriptive_files/figure-html/distance2medici-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<p>The node id <code>9</code> refers to the Medici, which happens to be the ninth row of the node table. Passing the index directly is the quickest way when you already know the position; for a name-based lookup you can equally write <code>nodes = which(.N()$name == "Medici")</code>.</p>
 
 
 </section>
@@ -917,8 +950,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../tidy/tidygraph-summary.html" class="pagination-link" aria-label="Summary">
-        <span class="nav-page-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Summary</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../appendix/ucnets-egor.html" class="pagination-link" aria-label="Constructing the UCNets Ego Network Dataset">
+        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Constructing the UCNets Ego Network Dataset</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

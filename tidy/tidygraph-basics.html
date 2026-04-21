@@ -113,13 +113,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <meta property="og:title" content="21&nbsp; Basics of tidygraph – R for Social Network Analysis">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://schochastics.io/R4SNA/tidy/tidygraph-basics_files/figure-html/connect-medici-plot-1.png">
+<meta property="og:image" content="https://schochastics.io/R4SNA/tidy/tidygraph-basics_files/figure-html/fig-connect-medici-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
 <meta property="og:image:height" content="960">
 <meta property="og:image:width" content="1344">
 <meta name="twitter:title" content="21&nbsp; Basics of tidygraph – R for Social Network Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://schochastics.io/R4SNA/tidy/tidygraph-basics_files/figure-html/connect-medici-plot-1.png">
+<meta name="twitter:image" content="https://schochastics.io/R4SNA/tidy/tidygraph-basics_files/figure-html/fig-connect-medici-1.png">
 <meta name="twitter:image-height" content="960">
 <meta name="twitter:image-width" content="1344">
 <meta name="twitter:card" content="summary_large_image">
@@ -354,12 +354,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Descriptive Network Analysis</span></span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tidy/tidygraph-summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
-  </div>
-</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -389,10 +383,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#graph-structures" id="toc-graph-structures" class="nav-link active" data-scroll-target="#graph-structures"><span class="header-section-number">21.1</span> Graph structures</a></li>
-  <li><a href="#standard-verbs" id="toc-standard-verbs" class="nav-link" data-scroll-target="#standard-verbs"><span class="header-section-number">21.2</span> Standard verbs</a></li>
-  <li><a href="#joins" id="toc-joins" class="nav-link" data-scroll-target="#joins"><span class="header-section-number">21.3</span> Joins</a></li>
-  <li><a href="#new-verbs" id="toc-new-verbs" class="nav-link" data-scroll-target="#new-verbs"><span class="header-section-number">21.4</span> New Verbs</a></li>
+  <li><a href="#packages-needed-for-this-chapter" id="toc-packages-needed-for-this-chapter" class="nav-link active" data-scroll-target="#packages-needed-for-this-chapter"><span class="header-section-number">21.1</span> Packages Needed for this Chapter</a></li>
+  <li><a href="#graph-structures" id="toc-graph-structures" class="nav-link" data-scroll-target="#graph-structures"><span class="header-section-number">21.2</span> Graph Structures</a></li>
+  <li><a href="#standard-verbs" id="toc-standard-verbs" class="nav-link" data-scroll-target="#standard-verbs"><span class="header-section-number">21.3</span> Standard Verbs</a></li>
+  <li><a href="#joins" id="toc-joins" class="nav-link" data-scroll-target="#joins"><span class="header-section-number">21.4</span> Joins</a></li>
+  <li><a href="#new-verbs" id="toc-new-verbs" class="nav-link" data-scroll-target="#new-verbs"><span class="header-section-number">21.5</span> New Verbs</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/tidy/tidygraph-basics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -418,13 +413,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="graph-structures" class="level2" data-number="21.1">
-<h2 data-number="21.1" class="anchored" data-anchor-id="graph-structures"><span class="header-section-number">21.1</span> Graph structures</h2>
-<p>We’ll use the famous Florentine Family marriage dataset as a running example. The dataset is in <code>igraph</code> format but can be converted to a <code>tbl_graph</code> object with <code>as_tbl_graph()</code>.</p>
+<p>This chapter walks through the foundation of tidygraph before any network descriptors come into play: how a graph is stored as a pair of tables in a <code>tbl_graph</code>, how <code>activate()</code> decides which of the two tables a verb sees, how the standard <code>dplyr</code> verbs and joins carry over, and what the tidygraph-specific <code>morph()</code> family adds on top. The Florentine marriage network from the Descriptive part is reused throughout so that each idiom can be compared against the <code>igraph</code> equivalent you have already seen.</p>
+<section id="packages-needed-for-this-chapter" class="level2" data-number="21.1">
+<h2 data-number="21.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">21.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="ot">&lt;-</span> <span class="fu">as_tbl_graph</span>(flo_marriage)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>flo_tidy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidygraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="graph-structures" class="level2" data-number="21.2">
+<h2 data-number="21.2" class="anchored" data-anchor-id="graph-structures"><span class="header-section-number">21.2</span> Graph Structures</h2>
+<p>We will use the Florentine Families marriage network as a running example. The dataset ships as an <code>igraph</code> object and converts to a <code>tbl_graph</code> with <code>as_tbl_graph()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="ot">&lt;-</span> <span class="fu">as_tbl_graph</span>(flo_marriage)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>flo_tidy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tbl_graph: 16 nodes and 20 edges
 #
@@ -459,22 +462,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 # ℹ 17 more rows</code></pre>
 </div>
 </div>
-<p>This new graph class just subclasses <code>igraph</code> and simply represents the network in a tidy fashion, printing two data frames, one for nodes and one for edges.</p>
+<p>Printing a <code>tbl_graph</code> surfaces the two tables it wraps: a node data frame and an edge data frame. The header tells you which of the two is currently active.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(flo_tidy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(flo_tidy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "tbl_graph" "igraph"   </code></pre>
 </div>
 </div>
-<p>Any function in R that expects an <code>igraph</code> object as input will also accept a <code>tbl_graph</code>.</p>
-<p>The function <code>tbl_graph()</code> can be used to create a network from scratch with two data frames. It is basically equivalent to <code>graph_from_data_frame()</code>.</p>
-<p>To create random graphs with the usual generators, check out the <code>create_*()</code> and <code>play_*()</code> families of functions.</p>
+<p>The class <code>tbl_graph</code> inherits from <code>igraph</code>, so anything written against <code>igraph</code> accepts a <code>tbl_graph</code> unchanged. No conversion is needed to go back to an <code>igraph</code> workflow.</p>
+<p>If you need to build a network from scratch, <code>tbl_graph()</code> takes the two data frames directly and is essentially the tidy counterpart of <code>graph_from_data_frame()</code>. For the common random graph generators, the <code>create_*()</code> family produces deterministic graphs (lattices, stars, rings) and <code>play_*()</code> produces stochastic ones (Erdős–Rényi, preferential attachment, island models).</p>
 </section>
-<section id="standard-verbs" class="level2" data-number="21.2">
-<h2 data-number="21.2" class="anchored" data-anchor-id="standard-verbs"><span class="header-section-number">21.2</span> Standard verbs</h2>
-<p>The tidy framework, specifically thinking about <code>dplyr</code>, is about providing verbs which help to solve common data manipulation tasks, such as <code>mutate()</code>, <code>select()</code>, <code>filter()</code>, and <code>summarise()</code>. The challange for the <code>tbl_graph</code> objects is that these verbs somehow need to work with two different data frames. The way <code>tidygraph</code> solves this is via a pointer to the data frame which is supposed to be manipulated. This pointer can be changed with the verb <code>activate()</code>. By default the nodes are activated, which can also be seen with the print function (see line 5 in the output of flo_tidy). To activate the edge data frame, simply use <code>activate("edges")</code>.</p>
+<section id="standard-verbs" class="level2" data-number="21.3">
+<h2 data-number="21.3" class="anchored" data-anchor-id="standard-verbs"><span class="header-section-number">21.3</span> Standard Verbs</h2>
+<p>The tidy idiom revolves around a small set of verbs like <code>mutate()</code>, <code>select()</code>, <code>filter()</code>, <code>summarise()</code> and joins that transform a data frame. The awkwardness for networks is that a <code>tbl_graph</code> wraps two tables, so a verb has to know which one to operate on. <code>tidygraph</code> solves this with an explicit pointer: whichever table is <strong>active</strong> is the one the verb sees. The pointer is set with <code>activate()</code>. The default is <code>"nodes"</code>, which is why the example above printed the node table on top.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">%&gt;%</span> <span class="fu">activate</span>(<span class="st">"edges"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">|&gt;</span> <span class="fu">activate</span>(<span class="st">"edges"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tbl_graph: 16 nodes and 20 edges
 #
@@ -513,52 +515,239 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 # ℹ 13 more rows</code></pre>
 </div>
 </div>
-<p>Any data manipulation would now be done on the edge data frame.</p>
-<p>Having “activated” a data frame, many of the known dplyr verbs can be used to manipulate the data frame. The activation process might indicate that edges and nodes can only be manipulated separately, which is certainly not desirable. It is, however, possible to gain access to the edge data frame when nodes are activated via the <code>.E()</code>. Similarly, nodes can be accessed via <code>.N()</code> when edges are activated. In the below example, we activate the edges and create a new edge attribute which indicates if a family is connected to the Medici or not.</p>
+<p>Switching the active table lets you attach new edge attributes the same way you would add a new column to any tibble. A useful trick when you need information from the other table is <code>.N()</code> and <code>.E()</code>: <code>.N()</code> returns the node table while edges are active, and <code>.E()</code> returns the edge table while nodes are active. The example below uses <code>.N()</code> to tag each edge according to whether one of its endpoints is the Medici family.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="ot">&lt;-</span> flo_tidy <span class="sc">%&gt;%</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">to_medici=</span>(<span class="fu">.N</span>()<span class="sc">$</span>name[from]<span class="sc">==</span><span class="st">"Medici"</span> <span class="sc">|</span> <span class="fu">.N</span>()<span class="sc">$</span>name[to]<span class="sc">==</span><span class="st">"Medici"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="ot">&lt;-</span> flo_tidy <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">to_medici =</span> (<span class="fu">.N</span>()<span class="sc">$</span>name[from] <span class="sc">==</span> <span class="st">"Medici"</span> <span class="sc">|</span> <span class="fu">.N</span>()<span class="sc">$</span>name[to] <span class="sc">==</span> <span class="st">"Medici"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>This particular use case is helpful for visualizations.</p>
+<p>The new attribute is immediately available for visualisation, as shown in <a href="#fig-connect-medici" class="quarto-xref">Figure&nbsp;<span>21.1</span></a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(flo_tidy, <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_color =</span> to_medici)) <span class="sc">+</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(flo_tidy, <span class="st">"stress"</span>) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_color =</span> to_medici)) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tidygraph-basics_files/figure-html/connect-medici-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-connect-medici" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-connect-medici-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="tidygraph-basics_files/figure-html/fig-connect-medici-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-connect-medici-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.1: Florentine marriage network with edges coloured by whether they touch the Medici family.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The <code>dplyr</code> verb <code>filter()</code> can be used to obtain a subgraph that satisfies given conditions on the nodes. Note that in the case that you filter on nodes, also edges will be effected. If a node does not satisfy the condition, then all edges connected to that node disappear. This is not the case for edges though.</p>
+<p><code>filter()</code> behaves the way the table-based intuition suggests, with one asymmetry worth remembering. Filtering on nodes also drops every edge that was incident to a removed node; filtering on edges leaves the node set intact. In <a href="#fig-filter-medici" class="quarto-xref">Figure&nbsp;<span>21.2</span></a>, only the edges touching the Medici survive, while the now-isolated families remain in the plot.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(to_medici) <span class="sc">%&gt;%</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>, <span class="at">bbox =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="at">edge_color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(to_medici) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>, <span class="at">bbox =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="at">edge_color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tidygraph-basics_files/figure-html/filter-example-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-filter-medici" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-filter-medici-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="tidygraph-basics_files/figure-html/fig-filter-medici-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-filter-medici-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.2: Result of filtering the edge table to ties incident to the Medici. Nodes untouched by any surviving edge remain in the graph as isolates.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="joins" class="level2" data-number="21.3">
-<h2 data-number="21.3" class="anchored" data-anchor-id="joins"><span class="header-section-number">21.3</span> Joins</h2>
+<section id="joins" class="level2" data-number="21.4">
+<h2 data-number="21.4" class="anchored" data-anchor-id="joins"><span class="header-section-number">21.4</span> Joins</h2>
+<p>Networks are sometimes more naturally described as several smaller networks on overlapping actors. The classic Florentine study, for instance, actually records two relations among the same families: marriage ties and business ties. tidygraph offers a handful of verbs for combining such graphs and for pulling in external attribute tables.</p>
+<p><code>graph_join()</code> merges two <code>tbl_graph</code> objects on a shared node key (by default the <code>name</code> column). Nodes that appear in both graphs are identified; edges from both graphs are kept. The <code>networkdata</code> package ships <code>flo_business</code>, the second Padgett relation over the same 16 families, which we load now and turn into a <code>tbl_graph</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_business"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>flo_business_tidy <span class="ot">&lt;-</span> <span class="fu">as_tbl_graph</span>(flo_business)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Before merging, we tag each graph’s edges with the relation they come from, so the combined plot in <a href="#fig-graph-join" class="quarto-xref">Figure&nbsp;<span>21.3</span></a> can colour edges by their source network.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>marriage_rel <span class="ot">&lt;-</span> flo_tidy <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>to_medici) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">relation =</span> <span class="st">"marriage"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>business_rel <span class="ot">&lt;-</span> flo_business_tidy <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"edges"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">relation =</span> <span class="st">"business"</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>marriage_rel <span class="sc">|&gt;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">graph_join</span>(business_rel, <span class="at">by =</span> <span class="st">"name"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>) <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_parallel0</span>(<span class="fu">aes</span>(<span class="at">edge_color =</span> relation)) <span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name)) <span class="sc">+</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-graph-join" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-graph-join-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="tidygraph-basics_files/figure-html/fig-graph-join-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-graph-join-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.3: Marriage and business ties among the Florentine families merged with <code>graph_join()</code>. Edges are coloured by the relation they originated from.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>When the goal is instead to keep two networks side by side, for example to lay them out together without merging their node sets, <code>bind_graphs()</code> returns the disjoint union. Stress layout then places each component independently, as <a href="#fig-bind-graphs" class="quarto-xref">Figure&nbsp;<span>21.4</span></a> shows.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_graphs</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    flo_tidy <span class="sc">|&gt;</span> <span class="fu">activate</span>(<span class="st">"nodes"</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">source =</span> <span class="st">"marriage"</span>),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    flo_business_tidy <span class="sc">|&gt;</span> <span class="fu">activate</span>(<span class="st">"nodes"</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">source =</span> <span class="st">"business"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="st">"stress"</span>) <span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>() <span class="sc">+</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> source), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-bind-graphs" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bind-graphs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="tidygraph-basics_files/figure-html/fig-bind-graphs-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bind-graphs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.4: Disjoint union of the Florentine marriage and business networks produced by <code>bind_graphs()</code>. Each family appears twice and the two components are laid out independently.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Two more verbs, <code>bind_nodes()</code> and <code>bind_edges()</code>, append rows to the active table and are the tidygraph analogues of <code>dplyr::bind_rows()</code>. They are useful when new nodes or edges arrive as a plain data frame.</p>
+<p>Finally, because each table inside a <code>tbl_graph</code> is a tibble, any standard <code>dplyr</code> join works once that table is activated. This is the path of least resistance for attaching an external attribute table keyed on the node name:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>family_estate <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">name   =</span> <span class="fu">c</span>(<span class="st">"Medici"</span>, <span class="st">"Strozzi"</span>, <span class="st">"Peruzzi"</span>, <span class="st">"Guadagni"</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">estate =</span> <span class="fu">c</span>(<span class="dv">15</span>, <span class="dv">14</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">|&gt;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"nodes"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(family_estate, <span class="at">by =</span> <span class="st">"name"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tbl_graph: 16 nodes and 20 edges
+#
+# An undirected simple graph with 2 components
+#
+# Node Data: 16 × 5 (active)
+   name         wealth `#priors` `#ties` estate
+   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+ 1 Acciaiuoli       10        53       2     NA
+ 2 Albizzi          36        65       3     NA
+ 3 Barbadori        55         0      14     NA
+ 4 Bischeri         44        12       9     NA
+ 5 Castellani       20        22      18     NA
+ 6 Ginori           32         0       9     NA
+ 7 Guadagni          8        21      14      2
+ 8 Lamberteschi     42         0      14     NA
+ 9 Medici          103        53      54     15
+10 Pazzi            48         0       7     NA
+11 Peruzzi          49        42      32      2
+12 Pucci             3         0       1     NA
+13 Ridolfi          27        38       4     NA
+14 Salviati         10        35       5     NA
+15 Strozzi         146        74      29     14
+16 Tornabuoni       48         0       7     NA
+#
+# Edge Data: 20 × 3
+   from    to to_medici
+  &lt;int&gt; &lt;int&gt; &lt;lgl&gt;    
+1     1     9 TRUE     
+2     2     6 FALSE    
+3     2     7 FALSE    
+# ℹ 17 more rows</code></pre>
+</div>
+</div>
+<p>Nodes without a match simply get <code>NA</code> for the new column, exactly as with an ordinary tibble join.</p>
 </section>
-<section id="new-verbs" class="level2" data-number="21.4">
-<h2 data-number="21.4" class="anchored" data-anchor-id="new-verbs"><span class="header-section-number">21.4</span> New Verbs</h2>
+<section id="new-verbs" class="level2" data-number="21.5">
+<h2 data-number="21.5" class="anchored" data-anchor-id="new-verbs"><span class="header-section-number">21.5</span> New Verbs</h2>
+<p>Beyond <code>activate()</code>, tidygraph introduces a small set of verbs that have no direct analogue in <code>dplyr</code> because they only make sense on graphs. The most important is <code>morph()</code>. A morph temporarily reshapes a graph into a different representation, for example the connected components, the shortest path between two nodes, the line graph, or the minimum spanning tree, without committing to that change. Verbs chained after <code>morph()</code> run on the morphed representation, and <code>unmorph()</code> returns to the original graph, propagating any attributes that were added inside the morph back onto the original nodes or edges.</p>
+<p>As a first example, we attach the size of each connected component to every node. Inside the <code>to_components</code> morph the graph is effectively split into one sub-graph per component, so <code>graph_order()</code> evaluates separately for each.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">activate</span>(<span class="st">"nodes"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">morph</span>(to_components) <span class="sc">|&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">component_size =</span> <span class="fu">graph_order</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unmorph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tbl_graph: 16 nodes and 20 edges
+#
+# An undirected simple graph with 2 components
+#
+# Node Data: 16 × 5 (active)
+   name         wealth `#priors` `#ties` component_size
+   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+ 1 Acciaiuoli       10        53       2             15
+ 2 Albizzi          36        65       3             15
+ 3 Barbadori        55         0      14             15
+ 4 Bischeri         44        12       9             15
+ 5 Castellani       20        22      18             15
+ 6 Ginori           32         0       9             15
+ 7 Guadagni          8        21      14             15
+ 8 Lamberteschi     42         0      14             15
+ 9 Medici          103        53      54             15
+10 Pazzi            48         0       7             15
+11 Peruzzi          49        42      32             15
+12 Pucci             3         0       1              1
+13 Ridolfi          27        38       4             15
+14 Salviati         10        35       5             15
+15 Strozzi         146        74      29             15
+16 Tornabuoni       48         0       7             15
+#
+# Edge Data: 20 × 3
+   from    to to_medici
+  &lt;int&gt; &lt;int&gt; &lt;lgl&gt;    
+1     1     9 TRUE     
+2     2     6 FALSE    
+3     2     7 FALSE    
+# ℹ 17 more rows</code></pre>
+</div>
+</div>
+<p>The Pucci family, the lone isolate, now carries <code>component_size = 1</code>; every other node carries the size of the giant component.</p>
+<p>If you do want to commit to the morphed graph rather than return to the original, use <code>convert()</code> instead of the <code>morph()</code> / <code>unmorph()</code> pair. The next example extracts the shortest path between the Medici and the Pazzi and keeps only that path as the new graph.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>medici_id <span class="ot">&lt;-</span> <span class="fu">which</span>(igraph<span class="sc">::</span><span class="fu">V</span>(flo_tidy)<span class="sc">$</span>name <span class="sc">==</span> <span class="st">"Medici"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>pazzi_id  <span class="ot">&lt;-</span> <span class="fu">which</span>(igraph<span class="sc">::</span><span class="fu">V</span>(flo_tidy)<span class="sc">$</span>name <span class="sc">==</span> <span class="st">"Pazzi"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>flo_tidy <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">convert</span>(to_shortest_path, medici_id, pazzi_id)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tbl_graph: 3 nodes and 2 edges
+#
+# An unrooted tree
+#
+# Edge Data: 2 × 4 (active)
+   from    to to_medici .tidygraph_edge_index
+  &lt;int&gt; &lt;int&gt; &lt;lgl&gt;                     &lt;int&gt;
+1     1     3 TRUE                         15
+2     2     3 FALSE                        17
+#
+# Node Data: 3 × 5
+  name     wealth `#priors` `#ties` .tidygraph_node_index
+  &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;                 &lt;int&gt;
+1 Medici      103        53      54                     9
+2 Pazzi        48         0       7                    10
+3 Salviati     10        35       5                    14</code></pre>
+</div>
+</div>
+<p>A related verb, <code>crystallise()</code>, is worth knowing for morphs that naturally return multiple graphs, for instance <code>to_components</code> again, or <code>to_local_neighborhood</code> called on several nodes at once. It materialises the morph as a tibble with one row per sub-graph, which is convenient when you want to iterate.</p>
+<p>The catalogue of morphers is large: <code>to_undirected</code>, <code>to_directed</code>, <code>to_simple</code>, <code>to_subgraph</code>, <code>to_contracted</code>, <code>to_complement</code>, <code>to_minimum_spanning_tree</code>, <code>to_dominator_tree</code>, <code>to_linegraph</code>, <code>to_subcomponent</code>, and more. Rather than enumerate them all, the recommendation is to browse <code>?morphers</code> once so you know what is available and reach for it when the shape of your problem calls for a transformed graph.</p>
 
 
 </section>
