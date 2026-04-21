@@ -22,14 +22,14 @@ library(patchwork)
 
 ## What Is Centrality?
 
-At its core, a centrality index assigns a numeric value to each node in a network. Higher values indicate greater centrality, but what "central" means depends on the index. Different indices capture fundamentally different notions of importance, each tied to a different structural property of the network. The four most widely used families of centrality can be mapped to distinct social intuitions:
+At its core, a centrality index assigns a numeric value to each node in a network. Higher values indicate greater centrality, but what "central" means depends on the index. Different indices capture fundamentally different notions of importance, each tied to a different structural property of the network. The four most widely used families of centrality, formalized in the conceptual clarification of @freeman1979centrality, can be mapped to distinct social intuitions:
 
 - **Degree** measures *activity*: How many direct connections does a node have? A node with many ties is active, popular, or well-connected.
 - **Closeness** measures *efficiency*: How quickly can a node reach all others? A node that is close to everyone can spread information or access resources with minimal steps.
 - **Betweenness** measures *brokerage*: How often does a node sit on the shortest path between others? A node with high betweenness controls or mediates the flow between other parts of the network.
 - **Eigenvector centrality** measures *prestige*: Is a node connected to other well-connected nodes? A node may have few ties, but if those ties are to important nodes, it is central by association.
 
-These four intuitions are not interchangeable. A broker (high betweenness) need not be popular (high degree), and a prestigious node (high eigenvector) need not be efficient at reaching everyone (high closeness). This is precisely why multiple indices exist and why the choice of index should be guided by the research question at hand.
+These four intuitions are not interchangeable. A broker (high betweenness) need not be popular (high degree), and a prestigious node (high eigenvector) need not be efficient at reaching everyone (high closeness). This is precisely why multiple indices exist and why the choice of index should be guided by the research question at hand. Dozens of further indices have been proposed, most of which refine or combine these four ideas. We include one such example below — *subgraph centrality*, which captures local embeddedness via closed walks of all lengths — to give a flavor of what lies beyond the four main families.
 
 ::: {.callout-note}
 For a more formal treatment of what constitutes a centrality index and the structural properties that underlie different indices, see @sec-advanced-centrality-concepts.
@@ -58,24 +58,34 @@ ggraph(dbces11, "stress") +
 
 ### Degree
 
-The most straightforward centrality index is *degree*, which counts the number of neighbors a node has. A node with high degree is directly connected to many others, making it active or popular in a social sense.
+The most straightforward centrality index is *degree*, which counts the number of neighbors a node has. A node with high degree is directly connected to many others, making it active or popular in a social sense. Formally, letting $A = (a_{vu})$ denote the adjacency matrix,
+
+$$
+C_D(v) = \sum_{u \neq v} a_{vu}.
+$$
 
 ```{r}
 #| label: degree-dbces11
 degree(dbces11)
 ```
 
-For weighted networks, *strength* (also called weighted degree) sums the edge weights instead of simply counting ties. This is useful when ties carry different intensities, such as frequency of communication or volume of trade.
+For weighted networks, *strength* (also called weighted degree) sums the edge weights instead of simply counting ties. This is useful when ties carry different intensities, such as frequency of communication or volume of trade. As an illustration we use the `miserables` network, which records co-occurrences of characters in Victor Hugo's *Les Misérables*, with edge weights counting how often two characters appear in the same chapter.
 
 ```{r}
 #| label: strength-example
-#| eval: false
-strength(g, weights = E(g)$weight)
+data("miserables")
+head(sort(strength(miserables, weights = E(miserables)$weight), decreasing = TRUE))
 ```
 
 ### Closeness
 
-*Closeness centrality* is based on the shortest path distances between nodes. The idea is that a central node can reach all other nodes quickly. Formally, it is defined as the inverse of the sum of distances from a node to all others, so that nodes with shorter total distances receive higher scores.
+*Closeness centrality* is based on the shortest path distances between nodes. The idea is that a central node can reach all other nodes quickly. Letting $d(v, u)$ denote the length of the shortest path from $v$ to $u$,
+
+$$
+C_C(v) = \frac{1}{\sum_{u \neq v} d(v, u)},
+$$
+
+so that nodes with shorter total distances receive higher scores.
 
 ```{r}
 #| label: closeness-dbces11
@@ -83,12 +93,16 @@ closeness(dbces11)
 ```
 
 ::: {.callout-tip}
-Closeness centrality is only well-defined for connected networks. In disconnected networks, distances between components are infinite. `igraph` handles this by only considering reachable nodes, but results should be interpreted with caution. Alternatives like *harmonic closeness* (the sum of inverse distances) handle disconnected networks more gracefully.
+Closeness centrality is only well-defined for connected networks, since distances between disconnected components are infinite. `igraph::closeness()` computes the score over the reachable nodes only and returns `NaN` for isolates, so the result can still be interpreted but ranks across components are not strictly comparable. A cleaner alternative is `igraph::harmonic_centrality()`, which defines centrality as the sum of inverse distances (treating unreachable pairs as zero contribution) and handles disconnected networks without special casing.
 :::
 
 ### Betweenness
 
-*Betweenness centrality* counts how often a node lies on the shortest path between pairs of other nodes. A node with high betweenness acts as a bridge or broker: removing it would increase distances or disconnect parts of the network. The raw count is typically normalized by the total number of shortest paths.
+*Betweenness centrality* counts how often a node lies on the shortest path between pairs of other nodes. A node with high betweenness acts as a bridge or broker: removing it would increase distances or disconnect parts of the network. Letting $\sigma_{st}$ denote the number of shortest paths from $s$ to $t$ and $\sigma_{st}(v)$ the number of those passing through $v$,
+
+$$
+C_B(v) = \sum_{s \neq v \neq t} \frac{\sigma_{st}(v)}{\sigma_{st}}.
+$$
 
 ```{r}
 #| label: betweenness-dbces11
@@ -97,16 +111,26 @@ betweenness(dbces11)
 
 ### Eigenvector Centrality
 
-*Eigenvector centrality* extends the idea of degree by weighting each connection by the centrality of the neighbor. A node is central if it is connected to other central nodes. This recursive definition is resolved by computing the leading eigenvector of the adjacency matrix.
+*Eigenvector centrality* [@bonacich1987power] extends the idea of degree by weighting each connection by the centrality of the neighbor. A node is central if it is connected to other central nodes, which leads to the recursive definition
+
+$$
+C_E(v) = \frac{1}{\lambda} \sum_{u \in N(v)} C_E(u),
+$$
+
+where $\lambda$ is the leading eigenvalue of the adjacency matrix. The vector of scores is the corresponding leading eigenvector.
 
 ```{r}
 #| label: eigen-dbces11
 eigen_centrality(dbces11)$vector
 ```
 
+::: {.callout-tip}
+On disconnected networks, the leading eigenvector of the adjacency matrix concentrates on a single connected component (the one with the largest leading eigenvalue), and nodes in other components receive scores close to zero. The resulting ranking is therefore only meaningful within a single component; for cross-component comparisons, restrict the analysis to the largest component first.
+:::
+
 ### Subgraph Centrality
 
-*Subgraph centrality* quantifies the participation of each node in all subgraphs of the network, weighted by the inverse factorial of their size. It captures how embedded a node is in the local structure of the network, counting closed walks of all lengths.
+*Subgraph centrality* [@estrada2005subgraph] quantifies the participation of each node in all subgraphs of the network, weighted by the inverse factorial of their size. It captures how embedded a node is in the local structure of the network, counting closed walks of all lengths.
 
 ```{r}
 #| label: sub-dbces11
@@ -143,32 +167,11 @@ ggraph(dbces11, "stress") +
 
 While this is a toy example, it illustrates an important point: centrality indices can produce substantially different rankings. In empirical settings, this means the choice of index is consequential and should be driven by the research question rather than convenience.
 
-### Directed Networks: PageRank, Hubs, and Authorities
-
-Several centrality indices are specifically designed for directed networks. *PageRank* is perhaps the most well-known, originally developed to rank web pages. It assigns importance based on the number and quality of incoming links. *Hub and authority scores* distinguish between two roles: a good *hub* points to many good *authorities*, and a good *authority* is pointed to by many good *hubs*.
-
-```{r}
-#| label: directed-example
-set.seed(42)
-g_dir <- sample_pa(20, directed = TRUE)
-```
-
-```{r}
-#| label: pagerank-example
-page_rank(g_dir)$vector
-```
-
-```{r}
-#| label: hubs-authorities
-hub_score(g_dir)$vector
-authority_score(g_dir)$vector
-```
-
-In directed social networks, PageRank can identify individuals who receive attention or endorsement from well-connected others, while hub and authority scores can distinguish between those who actively seek out connections (hubs) and those who attract them (authorities).
+The dbces11 comparison above tells us *which* node each index picks as most central, but not how the indices track each other across the full ranking. To see that, we move from the toy example to a realistic network and examine the pairwise correlations of the scores.
 
 ### Correlation Between Indices
 
-Because different centrality indices measure different structural properties, it is useful to examine how they relate to each other on a given network. On some networks, all indices will largely agree; on others, they will diverge considerably. We can examine this using a larger network.
+On some networks, all indices will largely agree; on others, they will diverge considerably. We examine this using Zachary's karate club network, a classic social network of 34 members of a university karate club observed over three years in the 1970s.
 
 ```{r}
 #| label: load-karate
@@ -197,6 +200,37 @@ pairs(cent_df, pch = 19, col = "steelblue",
 ```
 
 The correlation matrix and scatter plots reveal which indices capture similar information and where they diverge. High correlations (e.g., between degree and eigenvector centrality) suggest that the structural features they measure overlap in this network, while low correlations indicate genuinely different dimensions of centrality.
+
+## Directed Networks
+
+The indices introduced so far treat every tie symmetrically. In many social networks, however, the direction of a tie carries meaning: who asks whom for advice, who endorses whom, who follows whom. A handful of centrality indices are designed specifically for directed networks and distinguish between a node's incoming and outgoing ties.
+
+To illustrate them, we use the `ht_advice` network, a classic study of advice-seeking relations in a small high-tech company. A directed edge from `i` to `j` indicates that employee `i` sought advice from `j`.
+
+```{r}
+#| label: load-ht-advice
+data("ht_advice")
+```
+
+### PageRank
+
+*PageRank* [@brin1998anatomy] is perhaps the best-known index for directed networks, originally developed to rank web pages. It assigns each node a score that grows with the number and the PageRank of its incoming neighbors. In a social setting, a high PageRank identifies individuals who receive attention or endorsement from other well-regarded individuals.
+
+```{r}
+#| label: pagerank-ht
+round(page_rank(ht_advice)$vector, 3)
+```
+
+### Hubs and Authorities
+
+The *HITS* algorithm [@kleinberg1999authoritative] assigns each node two scores that reinforce each other: a good *hub* points to many good *authorities*, and a good *authority* is pointed to by many good *hubs*. In the advice network, authorities are employees who are frequently consulted, while hubs are employees who consult many others.
+
+```{r}
+#| label: hits-ht
+hits <- hits_scores(ht_advice)
+round(hits$hub, 3)
+round(hits$authority, 3)
+```
 
 ## Normalization
 
@@ -259,11 +293,23 @@ c(
 )
 ```
 
-These scores tell us not just *who* is central, but *how centralized* the network is as a whole. A highly centralized network depends heavily on a few key nodes, making it potentially vulnerable if those nodes are removed.
+These scores tell us not just *who* is central, but *how centralized* the network is as a whole. A highly centralized network depends heavily on a few key nodes, making it potentially vulnerable if those nodes are removed. For the karate club, eigenvector centralization is the highest of the four values, reflecting that prestige concentrates around the two dominant figures — the instructor and the administrator whose conflict later split the club. Betweenness and degree are moderately centralized, while closeness is the most evenly distributed: in a small, densely connected network, every member is within a few steps of everyone else, so no one dominates on reachability.
 
 ## Other Centrality Packages
 
-Beyond `igraph`, several R packages offer additional centrality indices. The `sna` package implements indices such as *flow betweenness* (based on maximum flow rather than shortest paths), *information centrality* (based on information-theoretic measures), and *stress centrality* (counting all shortest paths through a node, without normalization).
+Beyond `igraph`, several R packages offer additional centrality indices. The `sna` package implements indices such as *flow betweenness* (based on maximum flow rather than shortest paths), *information centrality* (based on information-theoretic measures), and *stress centrality* (counting all shortest paths through a node, without normalization). `sna` functions operate on adjacency matrices rather than `igraph` objects, so we first convert the graph.
+
+```{r}
+#| label: sna-example
+#| message: false
+A <- as_adjacency_matrix(dbces11, sparse = FALSE)
+sna::flowbet(A, gmode = "graph")
+round(sna::infocent(A, gmode = "graph"), 3)
+```
+
+::: {.callout-note}
+We call `sna` functions via `sna::` rather than attaching the package, because `sna` defines functions with the same names as `igraph` (`degree()`, `betweenness()`, `closeness()`) and attaching it would mask the `igraph` versions we have been using.
+:::
 
 The `centiserve` package provides the largest collection, with over 30 additional indices. Packages like `CINNA`, `influenceR`, and `keyplayer` offer smaller, more specialized selections.
 
@@ -273,7 +319,7 @@ The sheer number of available centrality indices can be overwhelming. More indic
 
 ## Choosing a Centrality Index
 
-With so many indices available, how should one choose? The key is to let the research question guide the choice rather than the other way around:
+With so many indices available, how should one choose? @borgatti2006graph argue that the choice should be guided by the type of network flow one implicitly has in mind — does influence travel along shortest paths, along any walk, by parallel duplication, or only by direct transfer? More pragmatically, the key is to let the research question guide the choice rather than the other way around:
 
 - If you are interested in **activity** or **popularity**, degree (or strength for weighted networks) is the natural choice.
 - If you care about **efficiency of communication** or **independence**, closeness captures how quickly a node can reach others.
@@ -286,11 +332,21 @@ When multiple indices seem equally defensible and you are uncertain which to cho
 
 ## Use Case: Florentine Families
 
-A classic application of centrality analysis is the *Florentine Families* dataset, which records marriage ties among prominent Renaissance families in Florence. This network is included in the `networkdata` package.
+A classic application of centrality analysis is the *Florentine Families* dataset, popularized in network analysis by @padgett1993robust, which records marriage ties among prominent Renaissance families in Florence. This network is included in the `networkdata` package.
 
 ```{r}
 #| label: load-flo
 data("flo_marriage")
+```
+
+The dataset contains one isolated family (the Pucci), who form no marriage ties to the other families. Because closeness is not well-defined for disconnected networks (see the earlier callout), we restrict the analysis to the connected subgraph of the remaining 15 families.
+
+```{r}
+#| label: flo-connected
+flo_marriage <- subgraph(
+  flo_marriage,
+  components(flo_marriage)$membership == which.max(components(flo_marriage)$csize)
+)
 ```
 
 ```{r}
@@ -339,15 +395,17 @@ We can also examine centralization to characterize the network as a whole:
 #| label: centralization-flo
 c(
   degree = centr_degree(flo_marriage)$centralization,
-  betweenness = centr_betw(flo_marriage)$centralization
+  betweenness = centr_betw(flo_marriage)$centralization,
+  closeness = centr_clo(flo_marriage)$centralization,
+  eigen = centr_eigen(flo_marriage)$centralization
 )
 ```
 
-The moderately high betweenness centralization confirms that brokerage in this network was concentrated in a few families, with the Medici at the center.
+Eigenvector centralization is the largest, reflecting that prestige in this network is concentrated in a tightly connected core around the Medici. Betweenness centralization is also high and confirms that brokerage was in the hands of a few families. Degree and closeness are more evenly spread, which fits the intuition that several families were reasonably active and well-positioned even if none were as dominant as the Medici on a structural measure.
 
 ## Beyond a Single Index {#sec-advanced-centrality-concepts}
 
-We have now seen that different centrality indices can pick different "most central" nodes on the same network, and that their correlations depend on the network itself. A natural question follows: is there any structural property that *all* common indices respect, and if so, can we use it to reason about rankings without committing to a single index? The `netrankr` package is built around exactly this idea.
+We have now seen that different centrality indices can pick different "most central" nodes on the same network, and that their correlations depend on the network itself. A natural question follows: is there any structural property that *all* common indices respect, and if so, can we use it to reason about rankings without committing to a single index? The `netrankr` package is built around exactly this idea, which is developed formally in @schoch2016positional.
 
 ### Neighborhood Inclusion
 
@@ -375,7 +433,7 @@ rk_int <- rank_intervals(P)
 rk_int
 ```
 
-We can overlay the ranks that specific indices assign to each node on top of these intervals:
+We can overlay the ranks that specific indices assign to each node on top of these intervals. The three continuous-valued indices are rounded to four decimals so that floating-point near-ties collapse into a single rank rather than plotting as two barely-distinguishable points.
 
 ```{r}
 #| label: fig-rank-intervals-dbces
