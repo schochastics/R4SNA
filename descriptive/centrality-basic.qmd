@@ -345,4 +345,79 @@ c(
 
 The moderately high betweenness centralization confirms that brokerage in this network was concentrated in a few families, with the Medici at the center.
 
-In the next chapter, we explore more advanced questions about centrality: what structural properties underlie different indices, and how to analyse centrality when the choice of index is uncertain.
+## Beyond a Single Index {#sec-advanced-centrality-concepts}
+
+We have now seen that different centrality indices can pick different "most central" nodes on the same network, and that their correlations depend on the network itself. A natural question follows: is there any structural property that *all* common indices respect, and if so, can we use it to reason about rankings without committing to a single index? The `netrankr` package is built around exactly this idea.
+
+### Neighborhood Inclusion
+
+The structural property at the heart of `netrankr` is *neighborhood inclusion*. If every neighbor of a node $u$ is also a neighbor of another node $v$ (plus possibly $v$ itself), then $u$ sits in a structurally weaker position than $v$: whatever $u$ can reach, $v$ can reach too, and more. Every commonly used centrality index respects this — if $u$ is neighborhood-dominated by $v$, no index will rank $u$ above $v$.
+
+![Neighborhood inclusion: the neighbors of the left node are contained in the closed neighborhood of the right node.](img/neighborhood_inclusion.png){#fig-neighborhood-inclusion width=60%}
+
+The function `neighborhood_inclusion()` returns a matrix `P` where `P[u, v] = 1` whenever $u$ is dominated by $v$. The helper `comparable_pairs()` reports what fraction of node pairs the partial order actually orders.
+
+```{r}
+#| label: neighborhood-inclusion-dbces
+P <- neighborhood_inclusion(dbces11)
+comparable_pairs(P)
+```
+
+Only about 16% of pairs are comparable in `dbces11`. The other 84% are structurally ambiguous, and that ambiguity is exactly the room in which different indices can disagree. In a network where every pair is comparable, all indices would produce the same ranking.
+
+### Rank Intervals
+
+For a partially ordered set of nodes, every centrality index is one particular *linear extension* — a total ordering that respects the partial order. `rank_intervals()` reports, for each node, the smallest and largest rank it can take across all such extensions. Wide intervals mean the structure leaves the node's position open; narrow intervals mean the structure pins it down.
+
+```{r}
+#| label: rank-intervals-dbces
+rk_int <- rank_intervals(P)
+rk_int
+```
+
+We can overlay the ranks that specific indices assign to each node on top of these intervals:
+
+```{r}
+#| label: fig-rank-intervals-dbces
+#| fig-cap: "Rank intervals for dbces11 with the ranks produced by four centrality indices overlaid. Points scattered widely within an interval indicate indices disagree about that node's position."
+cent_scores <- data.frame(
+  degree = degree(dbces11),
+  betweenness = round(betweenness(dbces11), 4),
+  closeness = round(closeness(dbces11), 4),
+  eigenvector = round(eigen_centrality(dbces11)$vector, 4)
+)
+plot(rk_int, cent_scores = cent_scores)
+```
+
+The four indices land at different rank positions within each node's interval, which is the partial-ordering view of the disagreement we saw earlier in @fig-dbces11-centrality.
+
+::: {.callout-note}
+Occasionally a betweenness point falls outside a node's interval. Betweenness is the one common index that does not strictly preserve neighborhood inclusion — two nodes can satisfy $N(u) \subseteq N[v]$ yet receive equal betweenness scores. All other standard indices are strictly order-preserving.
+:::
+
+### Exact Rank Probabilities
+
+Rather than picking one index, we can enumerate *every* linear extension of the partial order and ask, for each node, how often it lands at each rank. For small graphs, `exact_rank_prob()` does this exhaustively.
+
+```{r}
+#| label: exact-rank-prob-dbces
+res <- exact_rank_prob(P)
+```
+
+The probability of being the most central node (top rank) is the last column of `res$rank.prob`:
+
+```{r}
+#| label: rank-prob-top
+round(res$rank.prob[, ncol(res$rank.prob)], 2)
+```
+
+Nodes E and K share the highest probability (0.16) of occupying the top rank across all valid rankings, closely followed by D and H. The expected rank — the weighted average of a node's rank over all extensions — gives a single summary:
+
+```{r}
+#| label: expected-rank
+round(res$expected.rank, 2)
+```
+
+This is a more nuanced picture than any single index provides. Earlier we saw that degree, betweenness, closeness, eigenvector, and subgraph centrality each crowned a different node. The probabilistic view says some of those nodes (like E) are plausibly central across many valid rankings, while the picks of individual indices reflect one extension among many.
+
+These tools are most useful when the choice of index is contested or arbitrary, and when the graph is small enough for the exhaustive enumeration to run. On larger networks, `exact_rank_prob()` becomes infeasible, but `neighborhood_inclusion()` and `rank_intervals()` remain cheap and still reveal which rankings the structure forces and which it leaves open.
