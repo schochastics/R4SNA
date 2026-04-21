@@ -1,12 +1,17 @@
 # Entropy Analysis  {#sec-netropy}
-A central goal in the analysis of network data is to understand the dependence structure among variables describing entities and their interactions. Traditional statistical methods typically focus on pairwise relationships and often rely on linear assumptions. However, network data frequently exhibit complex, nonlinear, and higher-order dependencies that are not adequately captured by such approaches.
+A central goal in the analysis of network data is to understand the dependence structure among variables describing entities and their interactions. Unlike classical data settings, network data often involve complex, nonlinear, and higher-order dependencies that extend beyond simple pairwise relationships.
 
-Multivariate entropy analysis provides a flexible and general framework for addressing these challenges. By quantifying uncertainty and information in multivariate distributions, entropy-based methods allow for the detection and characterization of dependence structures without imposing restrictive parametric assumptions. In particular, they are well suited for identifying interactions among multiple variables simultaneously, including those defined on different components of a network.
+Multivariate entropy analysis provides a flexible, model-free framework for studying such dependencies. By quantifying uncertainty and information in multivariate distributions, entropy-based methods allow us to detect and characterize relationships among multiple variables simultaneously, without relying on restrictive parametric assumptions.
 
-To apply entropy-based methods effectively, variables must be represented on finite discrete range spaces and aligned with a common domain of observation. This often requires preprocessing steps such as discretization of continuous variables and careful consideration of how observations are defined, for example as nodes, dyads, or temporal snapshots. These steps are crucial for reliable estimation of entropy measures and meaningful interpretation of dependence patterns.
+To apply these methods, variables must be represented on finite discrete range spaces and aligned to a common domain of observation. In network settings, this typically involves preprocessing steps such as discretization and the careful definition of observational units (e.g., nodes, dyads, or higher-order structures). These steps are essential for obtaining reliable entropy estimates and meaningful interpretations.
 
-In this chapter, we focus on the application of multivariate entropy analysis to network data, with particular attention to how data representation, discretization, and domain structure influence the identification of dependencies.
+In this chapter, we apply multivariate entropy analysis to network data, focusing on how data representation and domain alignment shape the identification of dependencies. The analysis proceeds through a sequence of complementary steps: 
 
+- entropy measures are used to quantify dependence
+- association graphs provide intuitive representations of these relationships
+- divergence-based methods allow us to assess the adequacy of simplified structural models.
+
+Together, these tools form a coherent framework that supports both exploratory analysis and model-based interpretation, enabling a deeper understanding of complex dependence structures in network data.
 
 ## Packages Needed for this Chapter
 ```{r}
@@ -474,7 +479,6 @@ red_vertex2 <- redundancy(df_att, dec = 2)
 red_vertex2
 # find columns that are redundant with any other variable
 colnames(red_vertex2)[rowSums(red_vertex2) >= 1]
-
 ```
 
 Here, the variable `senior` is flagged as redundant with respect to all other variables, as indicated by the row of ones. This occurs because `senior` consists entirely of unique values, meaning it does not share any repeated structure with other variables and therefore does not contribute meaningful information for entropy-based analysis. In contrast, all other variables show zeros, indicating no redundancy among them.
@@ -743,16 +747,14 @@ Prediction power heatmap for $Z$=`indeg_adv`. Each cell shows the expected condi
 
 The prediction power heatmap shows that the strongest overall predictor of `indeg_adv` is the network-based variable `deg_likfrn`, which yields the lowest expected conditional entropy among single predictors. This indicates that likely friendship ties are highly informative for explaining advice in-degree.
 
-Among other single predictors, `years` also performs well, followed by `status`, while variables such as `office` and `practice` provide weaker predictive power.
+Among other single predictors, `years` also performs well, followed by `status`, while variables such as `office` and `practice` provide weaker predictive power. Considering pairs of predictors, the strongest combinations typically involve `years` together with network-based variables such as `deg_mutadv` and `deg_cwk`, yielding the lowest prediction uncertainty overall. These results suggest that both network position, particularly likely friendship ties, and experience (`years`) play a central role in explaining variation in advice in-degree.
 
-Considering pairs of predictors, the strongest combinations typically involve `years` together with network-based variables such as `deg_mutadv` and `deg_cwk`, yielding the lowest prediction uncertainty overall.
 
-These results suggest that both network position, particularly likely friendship ties, and experience (`years`) play a central role in explaining variation in advice in-degree.
+Using a helper function `make_pred_plot()` shown below, we can create similar plots for all vertex variables to compare the results. This is shown in @fig-predplot-vertex.
 
 
 ```{r}
-#| fig-height: 22
-#| fig-width: 14
+#| label: helper-func
 make_pred_plot <- function(mat, title) {
   df <- as.data.frame(as.table(as.matrix(mat)))
   names(df) <- c("X", "Y", "EH")
@@ -771,6 +773,14 @@ make_pred_plot <- function(mat, title) {
       plot.title = element_text(size = 10)
     )
 }
+```
+
+::: {#fig-predplot-vertex}
+```{r}
+#| echo: false
+#| fig-height: 18
+#| fig-width: 10
+
   
 p1 <- make_pred_plot(pred_vertex_cwk,    "deg_cwk")
 p2 <- make_pred_plot(pred_vertex_advin,  "indeg_adv")
@@ -787,4 +797,274 @@ p8 <- make_pred_plot(pred_vertex_frnlik, "deg_likfrn")
 (p5 | p6) /
 (p7 | p8) 
 ```
+
+Prediction power heatmaps for verttex variables; darker cells indicate stronger predictive power (lower $EH(Z \mid X,Y)$).
+
+:::
+
+
+From @fig-predplot-vertex, we note the following. The vertex variables, network-based measures such as `deg_likfrn`, `deg_mutadv`, and other degree-related variables are consistently strong predictors, both individually and in combination. In particular, `deg_likfrn` often emerges as the best single predictor, indicating that embeddedness in likely friendship ties plays a central role in explaining variation in network position. 
+
+Attribute-based variables such as `years` and `age` also contribute to prediction, especially when combined with network measures, while variables such as `office` and `practice` tend to have weaker predictive power. Overall, the results highlight that structural position in the network is more informative than individual attributes for predicting vertex-level outcomes.
+
+
+#### Dyad Variables {.unnumbered}
+
+We next assess prediction power for all dyad variables derived from the law firm network, including co-working, advice, and friendship relations, as well as dyadic versions of the attribute variables. For each dyad variable, we compute the expected conditional entropies $EH(Z \mid X,Y)$ using all other dyad variables as predictors, and visualize the results using prediction heatmaps.
+
+For each target variable in `dyad_var`, we compute the prediction power matrix based on all other dyad variables, and then visualize the results using heatmaps of expected conditional entropies $EH(Z \mid X,Y)$.
+
+
+```{r}
+#| label: predpow-dyad
+pred_dyad_status    <- prediction_power("status", dyad_var)
+pred_dyad_gender    <- prediction_power("gender", dyad_var)
+pred_dyad_office    <- prediction_power("office", dyad_var)
+pred_dyad_years     <- prediction_power("years", dyad_var)
+pred_dyad_age       <- prediction_power("age", dyad_var)
+pred_dyad_practice  <- prediction_power("practice", dyad_var)
+pred_dyad_lawschool <- prediction_power("lawschool", dyad_var)
+pred_dyad_cowork    <- prediction_power("cowork", dyad_var)
+pred_dyad_advice    <- prediction_power("advice", dyad_var)
+pred_dyad_friend    <- prediction_power("friend", dyad_var)
+```
+To visualize these matrices, we again use the helper function that converts each prediction matrix into a heatmap. Darker cells indicate lower expected conditional entropy and thus stronger predictive power. This is shown in @fig-predplot-dyad.
+
+
+::: {#fig-predplot-dyad}
+```{r}
+#| label: predplot-dyad
+#| echo: false
+#| fig-height: 18
+#| fig-width: 10
+p1  <- make_pred_plot(pred_dyad_status,    "status")
+p2  <- make_pred_plot(pred_dyad_gender,    "gender")
+p3  <- make_pred_plot(pred_dyad_office,    "office")
+p4  <- make_pred_plot(pred_dyad_years,     "years")
+p5  <- make_pred_plot(pred_dyad_age,       "age")
+p6  <- make_pred_plot(pred_dyad_practice,  "practice")
+p7  <- make_pred_plot(pred_dyad_lawschool, "lawschool")
+p8  <- make_pred_plot(pred_dyad_cowork,    "cowork")
+p9  <- make_pred_plot(pred_dyad_advice,    "advice")
+p10 <- make_pred_plot(pred_dyad_friend,    "friend")
+
+
+
+
+(p1 | p2) /
+(p3 | p4) /
+(p5 | p6) /
+(p7 | p8) /
+(p9 | p10) 
+```
+
+Prediction power heatmaps for dyad variables; darker cells indicate stronger predictive power (lower $EH(Z \mid X,Y)$). 
+:::
+
+@fig-predplot-vertex  allow us to compare how well different combinations of dyadic attributes and relations predict a given target relation. In particular, they highlight which combinations of structural ties (such as advice or co-working) and attribute-based similarities are most informative for explaining the presence of other ties.
+
+Overall, the plots show that relational variables such as `advice`, `cowork`, and `friend` are strong predictors of each other, particularly when combined. Attribute-based variables such as `years` and `age` contribute to prediction, but are generally less informative on their own, highlighting the importance of network structure in explaining dyadic interactions.
+
+#### Triad Variables {.unnumbered}
+We do a similar visualization for all triad variables as shown in @fig-predplot-triad and note the following.
+
+Across the triad variables, predictive performance varies substantially by target variable, and the heatmaps do not show a simple pattern of structural variables always dominating. Instead, the strongest predictors depend on which triad attribute is being predicted.
+
+For the triadic attribute variables, `status`, `years`, and `age` are predicted relatively well, with especially low expected conditional entropy for `status` and `years`. In particular, `status` is most informative for predicting both `years` and `age`, while combinations involving `office` and `years` are especially useful for predicting `status`. By contrast, `office`, `practice`, and `lawschool` are much harder to predict, with generally higher expected conditional entropy values across the corresponding heatmaps.
+
+Some of the clearest gains from using pairs of predictors appear for `office`, where combinations involving structural variables markedly reduce prediction uncertainty. In particular, the pair (`cowork`, `advice`) provides a very strong prediction of triadic `office`, much stronger than any single predictor alone. For `gender`, prediction is moderate overall, with `status` serving as the best single predictor.
+
+The triad-level results suggest that attribute-based variables such as `status`, `years`, and `age` are often the most informative single predictors, while structural variables such as `cowork` and `advice` become especially important when used jointly. Thus, the triadic representation captures richer interactions, but the strongest predictive relationships arise from specific combinations of attribute and structural information rather than from structural variables alone.
+
+Overall, the results suggest that while triad-level representations introduce greater uncertainty, they also capture richer dependency structures, with combinations of structural variables playing a key role in prediction.
+
+::: {#fig-predplot-triad}
+```{r}
+#| label: predpow-triad
+#| echo: false
+#| fig-height: 18
+#| fig-width: 10
+pred_triad_status    <- prediction_power("status", triad_var)
+pred_triad_gender    <- prediction_power("gender", triad_var)
+pred_triad_office    <- prediction_power("office", triad_var)
+pred_triad_years     <- prediction_power("years", triad_var)
+pred_triad_age       <- prediction_power("age", triad_var)
+pred_triad_practice  <- prediction_power("practice", triad_var)
+pred_triad_lawschool <- prediction_power("lawschool", triad_var)
+
+p1 <- make_pred_plot(pred_triad_status,    "status")
+p2 <- make_pred_plot(pred_triad_gender,    "gender")
+p3 <- make_pred_plot(pred_triad_office,    "office")
+p4 <- make_pred_plot(pred_triad_years,     "years")
+p5 <- make_pred_plot(pred_triad_age,       "age")
+p6 <- make_pred_plot(pred_triad_practice,  "practice")
+p7 <- make_pred_plot(pred_triad_lawschool, "lawschool")
+
+
+(p1 | p2) /
+(p3 | p4) /
+(p5 | p6) /
+(p7 | plot_spacer())
+```
+Prediction power heatmaps for triad variables; darker cells indicate stronger predictive power (lower $EH(Z \mid X,Y)$).
+::: 
+
+### Divergence Tests of Goodness of Fit
+Building on the dependence structures identified through association graphs, we can assess how well these structures fit the observed data using divergence-based goodness-of-fit tests.
+
+The key idea is to compare two distributions:
+
+- the **empirical distribution** $p(x)$, based on observed frequencies, and  
+- a **model distribution** $q(x)$, representing a hypothesized structure (for example, independence or conditional independence).
+
+A natural measure of discrepancy between these distributions is the **information divergence**
+$$
+D(p,q) = \sum_x p(x)\log \frac{p(x)}{q(x)},
+$$
+which can be interpreted as the expected log-likelihood ratio between the two models. This leads to the test statistic
+$$
+2n D(p,q),
+$$
+which, for large samples, is approximately $\chi^2$-distributed with degrees of freedom determined by the difference in model complexity. 
+
+
+#### Testing Independence Structures
+
+##### Pairwise Independence  {.unnumbered}
+
+To test whether two variables $X$ and $Y$ are independent, we compare:
+
+- the empirical joint distribution $p(x,y)$, and  
+- the model $q(x,y) = p(x)p(y)$.
+
+In this case, the divergence simplifies to
+$$
+D(p,q) = H(X) + H(Y) - H(X,Y) = J(X,Y),
+$$
+and the test statistic becomes
+$$
+2n J(X,Y).
+$$
+Thus, joint entropy directly measures deviation from independence: small values indicate independence, while large values indicate dependence. 
+
+##### Conditional Independence  {.unnumbered}
+
+More generally, we may test whether two variables are independent given a third variable:
+
+$$
+X \perp Y \mid Z.
+$$
+
+Here, the model distribution is
+$$
+q(x,y,z) = \frac{p(x,z)p(y,z)}{p(z)},
+$$
+and the divergence becomes
+$$
+D(p,q) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z) = EJ(X,Y \mid Z),
+$$
+which is the expected conditional entropy.
+
+The corresponding test statistic is
+$$
+2n\, EJ(X,Y \mid Z).
+$$
+
+
+##### Nested Model Specifications  {.unnumbered}
+Divergence-based tests also allow us to compare nested models, that is, models where one is a constrained version of another. For example, we may start with a model that assumes a set of conditional independence relations and then impose additional constraints to obtain a simpler model.
+
+Formally, let $q_1$ and $q_2$ be two models such that $q_2$ is nested within $q_1$ (i.e., $q_2$ imposes more independence assumptions). The difference in divergence
+
+$$
+2n\bigl[D(p,q_2) - D(p,q_1)\bigr]
+$$
+can then be used to test whether the additional constraints are supported by the data.
+
+This framework is particularly useful in multivariate settings, where models may involve multiple independence and conditional independence relations. For instance, in a system of variables $(X, Y, Z, U, V)$, we may compare models that differ in how variables are grouped or conditionally separated. 
+
+
+#### Example: Dyad Variables 
+We illustrate a simple example of this test using the `netropy` package. The association graph for the dyad variables above suggests several simple structural models that may be of substantive interest. In the corporate law firm example, one such model is that `friend` and `cowork` are conditionally independent given `advice`, that is,
+
+$$
+\text{friend} \perp \text{cowork} \mid \text{advice}.
+$$
+
+This is highlighted in  @fig-divtest.
+
+::: {#fig-divtest}
+
+```{r}
+#| echo: false
+#| label: assoc-graph-highlight
+#| fig-width: 10
+#| fig-height: 8
+library(ggraph)
+p <- assoc_graph(dyad_var, 0.10)
+
+p +
+  geom_node_point(
+    data = p$data,
+    aes(x = x, y = y, fill = name %in% c("friend", "cowork", "advice")),
+    shape = 21,
+    color = "black",
+    stroke = 1,
+    size = 20
+  ) +
+  scale_fill_manual(
+    values = c("FALSE" = "white", "TRUE" = "tan1"),
+    guide = "none"
+  ) +
+  geom_node_text(
+    data = p$data,
+    aes(x = x, y = y, label = name),
+    color = "black"
+  )
+```
+Association graph for dyad variables (threshold $J > 0.1$). The variables `friend`, `cowork`, and `advice` (highlighted in red) form a tightly connected group, suggesting a strong dependence structure and motivating the conditional independence model $\text{friend} \perp \text{cowork} \mid \text{advice}$.
+::: 
+
+Intuitively, this means that any association between friendship and co-working may be explained through the advice relation. In other words, once the advice relation is taken into account, there may be little additional dependence between `friend` and `cowork`.
+
+To assess whether the proposed conditional independence model is plausible, we use a divergence-based goodness-of-fit test. The function `div_gof()` compares the empirical distribution of the dyad variables with the distribution implied by the hypothesized model.
+
+By default, no conditioning variable is specified, meaning that the function tests pairwise independence rather than conditional independence. To evaluate a conditional independence model, the conditioning variable must be explicitly included in the test specification.
+
+```{r}
+#| label: dyad-gof-test
+div_gof(
+  dat = dyad_var,
+  var1 = "friend",
+  var2 = "cowork",
+  var_cond = "advice"
+)
+```
+
+The output reports the divergence measure and the associated degrees of freedom, together with a message of whether the null is rejected or not. Since the specified model of conditional independence is not rejected, this supports the interpretation that the dependence between friendship and co-working is largely explained by advice.
+
+The same approach can be used to test other candidate models suggested by the association graph. For example, the slide also highlights the conditional independence relation
+$$
+\text{gender} \perp \text{status} \mid \text{years},
+$$
+
+as well as a broader separation between the relational variables (`friend`, `cowork`, `advice`) and the attribute variables (`age`, `status`, `years`). For instance, the second model can be tested as follows:
+```{r}
+#| label: dyad-gof-test2
+div_gof(
+  dat = dyad_var,
+  var1 = "gender",
+  var2 = "status",
+  var_cond = "years"
+)
+```
+These tests provide a useful bridge between exploratory entropy analysis and more explicit structural modeling. Association graphs suggest candidate dependence structures, and divergence-based goodness-of-fit tests allow us to evaluate whether such simplified models are consistent with the observed dyad data.
+
+Overall, the entropy-based methods presented in this cahapter not only reveal patterns in network data, but also provide a principled way to test whether these patterns are statistically meaningful.
+
+
+
+
+
+
 
