@@ -1,50 +1,9 @@
 # Introduction
 
-The main focus of this part is to introduce the tidy approach for network analysis.
+A network is naturally described by two tables: one for the nodes and their attributes, one for the edges and their attributes. `igraph` already hints at this view through `graph_from_data_frame()`, which expects exactly that pair of data frames as input. The `tidygraph` package takes the idea further and makes it the primary interface. Its core class, `tbl_graph`, sub-classes `igraph`, so every function introduced in earlier parts of the book continues to work — what changes is how you reach for nodes and edges when you want to add, filter, or summarise information.
 
-## Required libraries
+What you gain by working with networks in this form is the full vocabulary of the tidyverse. Verbs like `mutate()`, `filter()`, `select()`, and the various joins operate on whichever of the two tables is currently **active**, and the package harmonises the indices and algorithms from `igraph` and `netrankr` behind a small number of discoverable function families: `centrality_*()` for centrality scores, `group_*()` for community detection, `node_*()` for any node-level measure, `edge_*()` for any edge-level measure. In practice that means you can type `centrality_` in the console, press Tab, and browse the catalogue — no need to remember whether the `igraph` name was `betweenness()` or `closeness()` or something else entirely.
 
-To run all the code in this part, you need to install and load two packages.
-```r
-install.packages("tidygraph")
-devtools::install_github("schochastics/networkdata")
-```
+This part reuses the Florentine marriage network from the Descriptive part, so every tidygraph idiom can be compared directly against the `igraph` code you have already seen. [Basics of tidygraph](tidygraph-basics.qmd) introduces the `tbl_graph` class, the `activate()` mechanism that switches between the node and edge tables, the standard `dplyr` verbs, joins between networks, and the `morph()` family of verbs that are specific to tidygraph. [Descriptive Network Analysis](tidygraph-descriptive.qmd) then revisits centrality, clustering, and other node- and edge-level measures in the tidy idiom.
 
-`tidygraph` implements the tidy approach for network analysis. `networkdata` contains a diverse set of
-network dataset. 
-```{r}
-#| label: libraries
-library(tidygraph)
-library(networkdata)
-```
-
-```{r}
-#| label: silent-libraries
-#| include: false
-library(ggraph)
-library(graphlayouts)
-```
-
-Make sure you have at least the version given below. Some of the examples may not be backward compatible.
-
-```{r}
-#| label: pkg-version-check
-packageVersion("tidygraph")
-packageVersion("networkdata")
-```
-
-## What is tidy network data?
-
-On first glance, there is not much tidiness in networks or the ways it is usually encoded, like a 
-graph, adjacency matrix, edgelist, etc. How should this fit into a single data frame? If you are an avid
-`igraph` user, then you may suspect the answer. It doesn't fit, but it fits in two with `graph_from_data_frame()` which takes two data frames, one for nodes and one for edges, as input. In other words, we can represent 
-a network as two separate data frames. One for the nodes and node attributes, and one for the edges and edge attributes. Working with these two data frames together is the premise for the `tidygraph` package.
-If you are interested in more technical details on how this is implemented under the hood, see the [introductory blog post](https://www.data-imaginist.com/2017/introducing-tidygraph/) for the package.
-
-## Why tidy network data?
-
-This is a good question. If you aren't a fan of the tidyverse, then you should probably move along and
-stick with established packages such as `igraph` or `sna` which offer the exact same functionalities (`tidygraph` actually imports most of `igraph`). If you appreciate the tidyverse, then there is no need 
-for convincing you that this is a good idea. If you are indifferent, then I hope I can make a case 
-for the tidy framework below. To start off with, the package does a great job to harmonize many network analytic tasks. For instance, you do not need to know all the different centrality indices that are implemented. You simply type `centrality_` and press tab in the RStudio console and get all functions that allow the calculation of a 
-centrality index. Other node level functions are accessible via `node_*()` and edge level measures via `edge_*()`.
+A word on scope: the tidy framework currently covers descriptive network analysis well, but the inferential side of the ecosystem — ERGMs, SAOMs, relational event models — still expects the "untidy" packages introduced in the inferential part of the book. If you are curious about how `tbl_graph` is implemented under the hood, the original [introductory blog post](https://www.data-imaginist.com/2017/introducing-tidygraph/) remains the clearest reference.
