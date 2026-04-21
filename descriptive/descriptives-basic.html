@@ -100,7 +100,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-30f7eecba5f8069135bf6061ca14b3f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -482,22 +482,19 @@ window.Quarto = {
 <section id="packages-needed-for-this-chapter" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">2.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'igraph' was built under R version 4.5.2</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(networkdata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="an-example-network" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="an-example-network"><span class="header-section-number">2.2</span> An Example Network</h2>
 <p>To illustrate the descriptors in this chapter we use the marriage network of Florentine families compiled by <span class="citation" data-cites="padgett1993robust">Padgett and Ansell (<a href="#ref-padgett1993robust" role="doc-biblioref">1993</a>)</span>, available as <code>flo_marriage</code> in the <code>networkdata</code> package. Nodes are the 16 leading families of 15th-century Florence, and an undirected edge connects two families if they were joined by at least one marriage. The network is a classic example in social network analysis: small enough to be inspected at a glance, yet rich enough to exhibit the full range of basic structural features, including an isolated node (the Pucci family) that will be useful when we discuss connected components.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>flo_marriage</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"flo_marriage"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>flo_marriage</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>IGRAPH bc7fb16 UN-- 16 20 -- 
-+ attr: name (v/c), wealth (v/n), #priors (v/n), #ties (v/n)
++ attr: name (v/c), wealth (v/n), priors (v/n), ties (v/n)
 + edges from bc7fb16 (vertex names):
  [1] Acciaiuoli--Medici       Albizzi   --Ginori       Albizzi   --Guadagni    
  [4] Albizzi   --Medici       Barbadori --Castellani   Barbadori --Medici      
@@ -528,21 +525,21 @@ Figure&nbsp;2.1: Marriage ties among 16 leading Florentine families (Padgett). T
 <h2 data-number="2.3" class="anchored" data-anchor-id="network-size"><span class="header-section-number">2.3</span> Network Size</h2>
 <p>The two most basic descriptors of a network are its <strong>order</strong>, the number of nodes, and its <strong>size</strong>, the number of edges. In <code>igraph</code> they are obtained with <code>vcount()</code> and <code>ecount()</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vcount</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vcount</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 16</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ecount</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ecount</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 20</code></pre>
 </div>
 </div>
 <p><code>summary()</code> prints the same information together with the graph type (undirected/directed, named/unnamed, weighted/unweighted) and the list of vertex and edge attributes.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>IGRAPH bc7fb16 UN-- 16 20 -- 
-+ attr: name (v/c), wealth (v/n), #priors (v/n), #ties (v/n)</code></pre>
++ attr: name (v/c), wealth (v/n), priors (v/n), ties (v/n)</code></pre>
 </div>
 </div>
 </section>
@@ -550,7 +547,7 @@ Figure&nbsp;2.1: Marriage ties among 16 leading Florentine families (Padgett). T
 <h2 data-number="2.4" class="anchored" data-anchor-id="adjacency-matrix-and-neighbors"><span class="header-section-number">2.4</span> Adjacency Matrix and Neighbors</h2>
 <p>Every simple network can be represented as a square <strong>adjacency matrix</strong> <span class="math inline">\(A\)</span>, where <span class="math inline">\(a_{uv} = 1\)</span> if nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> are connected by an edge and <span class="math inline">\(0\)</span> otherwise. For an undirected network, this matrix is symmetric.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_adjacency_matrix</span>(flo_marriage, <span class="at">sparse =</span> <span class="cn">FALSE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_adjacency_matrix</span>(flo_marriage, <span class="at">sparse =</span> <span class="cn">FALSE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           Acciaiuoli Albizzi Barbadori Bischeri Castellani Ginori
 Acciaiuoli          0       0         0        0          0      0
@@ -563,7 +560,7 @@ Ginori              0       1         0        0          0      0</code></pre>
 </div>
 <p>The <strong>neighbors</strong> of a node are the nodes directly connected to it, i.e.&nbsp;the non-zero entries in its row of the adjacency matrix.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">neighbors</span>(flo_marriage, <span class="st">"Medici"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">neighbors</span>(flo_marriage, <span class="st">"Medici"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+ 6/16 vertices, named, from bc7fb16:
 [1] Acciaiuoli Albizzi    Barbadori  Ridolfi    Salviati   Tornabuoni</code></pre>
@@ -574,7 +571,7 @@ Ginori              0       1         0        0          0      0</code></pre>
 <h2 data-number="2.5" class="anchored" data-anchor-id="degree-and-degree-distribution"><span class="header-section-number">2.5</span> Degree and Degree Distribution</h2>
 <p>The <strong>degree</strong> of a node is the number of its neighbors. It is the most elementary measure of a node’s involvement in a network and will reappear in <a href="centrality-basic.html" class="quarto-xref"><span>Chapter 3</span></a> as the simplest centrality index.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">degree</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">degree</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Acciaiuoli      Albizzi    Barbadori     Bischeri   Castellani       Ginori 
            1            3            2            3            3            1 
@@ -586,14 +583,14 @@ Ginori              0       1         0        0          0      0</code></pre>
 </div>
 <p>A useful summary is the <strong>average degree</strong> <span class="math inline">\(\bar{d} = \tfrac{1}{n} \sum_{v} d(v) = \tfrac{2m}{n}\)</span>, where <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span> denote the number of nodes and edges.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">degree</span>(flo_marriage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">degree</span>(flo_marriage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2.5</code></pre>
 </div>
 </div>
 <p>Zooming out from individual nodes, the <strong>degree distribution</strong> tabulates how many nodes have each possible degree. It is a simple fingerprint of the network’s structure: many empirical networks have highly skewed degree distributions, with most nodes of low degree and a few hubs of very high degree.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">degree</span>(flo_marriage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">degree</span>(flo_marriage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 0 1 2 3 4 6 
@@ -620,11 +617,11 @@ Figure&nbsp;2.2: Degree distribution of the Florentine marriage network. Most fa
 <h2 data-number="2.6" class="anchored" data-anchor-id="density"><span class="header-section-number">2.6</span> Density</h2>
 <p>The <strong>density</strong> of a network is the fraction of possible edges that are actually present. For an undirected network on <span class="math inline">\(n\)</span> nodes, the maximum number of edges is <span class="math inline">\(\binom{n}{2}\)</span>, so the density is <span class="math inline">\(2m / (n(n-1))\)</span>. It lies between <span class="math inline">\(0\)</span> (empty graph) and <span class="math inline">\(1\)</span> (complete graph).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">empty =</span> <span class="fu">edge_density</span>(<span class="fu">make_empty_graph</span>(<span class="dv">10</span>)),</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">florentine =</span> <span class="fu">edge_density</span>(flo_marriage),</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">full =</span> <span class="fu">edge_density</span>(<span class="fu">make_full_graph</span>(<span class="dv">10</span>))</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">empty =</span> <span class="fu">edge_density</span>(<span class="fu">make_empty_graph</span>(<span class="dv">10</span>)),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">florentine =</span> <span class="fu">edge_density</span>(flo_marriage),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">full =</span> <span class="fu">edge_density</span>(<span class="fu">make_full_graph</span>(<span class="dv">10</span>))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     empty florentine       full 
  0.0000000  0.1666667  1.0000000 </code></pre>
@@ -636,7 +633,7 @@ Figure&nbsp;2.2: Degree distribution of the Florentine marriage network. Most fa
 <h2 data-number="2.7" class="anchored" data-anchor-id="shortest-paths-and-distances"><span class="header-section-number">2.7</span> Shortest Paths and Distances</h2>
 <p>A <strong>path</strong> is a sequence of edges connecting two nodes without revisiting any node. A <strong>shortest path</strong> is a path with the minimum number of edges, and its length is the <strong>distance</strong> between the two nodes. There may be several shortest paths of the same length between a given pair of nodes.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shortest_paths</span>(flo_marriage, <span class="at">from =</span> <span class="st">"Ginori"</span>, <span class="at">to =</span> <span class="st">"Strozzi"</span>, <span class="at">output =</span> <span class="st">"vpath"</span>)<span class="sc">$</span>vpath</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shortest_paths</span>(flo_marriage, <span class="at">from =</span> <span class="st">"Ginori"</span>, <span class="at">to =</span> <span class="st">"Strozzi"</span>, <span class="at">output =</span> <span class="st">"vpath"</span>)<span class="sc">$</span>vpath</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 + 5/16 vertices, named, from bc7fb16:
@@ -660,7 +657,7 @@ Figure&nbsp;2.3: A shortest path of length 4 between the Ginori and the Strozzi 
 </div>
 <p>Computing <code>distances()</code> without specifying source and target returns the full pairwise distance matrix.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">distances</span>(flo_marriage)[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">distances</span>(flo_marriage)[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           Acciaiuoli Albizzi Barbadori Bischeri Castellani Ginori
 Acciaiuoli          0       2         2        4          3      3
@@ -676,11 +673,11 @@ Ginori              3       1         3        3          4      0</code></pre>
 <h2 data-number="2.8" class="anchored" data-anchor-id="connected-components"><span class="header-section-number">2.8</span> Connected Components</h2>
 <p>A network is <strong>connected</strong> if every pair of nodes is joined by at least one path. If it is not, it splits into <strong>connected components</strong>: maximal subsets of nodes within which every pair is connected. Isolated nodes, i.e.&nbsp;nodes with degree zero, form components of size one.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is_connected</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is_connected</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">components</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">components</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$membership
   Acciaiuoli      Albizzi    Barbadori     Bischeri   Castellani       Ginori 
@@ -699,7 +696,7 @@ $no
 </div>
 <p>The Florentine marriage network has two components: one containing the 15 families that are joined by marriage ties, and the singleton component consisting of the Pucci. Because no path connects Pucci to any other family, the corresponding entries in the distance matrix are not numbers but <code>Inf</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">distances</span>(flo_marriage, <span class="at">v =</span> <span class="st">"Pucci"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">distances</span>(flo_marriage, <span class="at">v =</span> <span class="st">"Pucci"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      Acciaiuoli Albizzi Barbadori Bischeri Castellani Ginori Guadagni
 Pucci        Inf     Inf       Inf      Inf        Inf    Inf      Inf
@@ -714,11 +711,11 @@ Pucci        Inf</code></pre>
 <h2 data-number="2.9" class="anchored" data-anchor-id="diameter-and-mean-distance"><span class="header-section-number">2.9</span> Diameter and Mean Distance</h2>
 <p>The <strong>diameter</strong> of a connected network is the length of the longest shortest path, and the <strong>mean distance</strong> is the average shortest-path length over all reachable pairs of nodes. Both quantify how “spread out” a network is: small values indicate that every node is a few steps from every other, a property often associated with <em>small-world</em> networks. By default <code>igraph</code> ignores unreachable pairs when computing both statistics.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diameter</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diameter</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean_distance</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean_distance</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2.485714</code></pre>
 </div>
@@ -744,11 +741,11 @@ Figure&nbsp;2.4: A diameter path of length 5 between the Bischeri and the Pazzi 
 <p><strong>Transitivity</strong> in networks captures the idea that if node <em>A</em> is connected to <em>B</em>, and <em>B</em> is connected to <em>C</em>, then <em>A</em> is also likely to be connected to <em>C</em>, often summarized as “a friend of a friend is also a friend.” This concept is closely related to the <strong>clustering coefficient</strong>, which measures the tendency of a node’s neighbors to be connected to each other. A high clustering coefficient indicates that many such triadic closures occur, meaning that neighbors of a node are also connected to each other. Thus, transitivity provides an intuitive interpretation of clustering: it reflects the tendency of networks to form cohesive, locally dense structures where indirect relationships become direct ties. Later, we will return to this idea below using the <strong>triad census</strong>, which provides a more detailed account of how different three-node configurations capture patterns such as transitivity.</p>
 <p>The <em>global</em> transitivity is the ratio of the number of closed triples (triangles, counted three times) to the number of connected triples. The <em>local</em> transitivity of a node is the fraction of pairs of its neighbors that are themselves connected.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transitivity</span>(flo_marriage, <span class="at">type =</span> <span class="st">"global"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transitivity</span>(flo_marriage, <span class="at">type =</span> <span class="st">"global"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.1914894</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">transitivity</span>(flo_marriage, <span class="at">type =</span> <span class="st">"local"</span>, <span class="at">isolates =</span> <span class="st">"zero"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">transitivity</span>(flo_marriage, <span class="at">type =</span> <span class="st">"local"</span>, <span class="at">isolates =</span> <span class="st">"zero"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Acciaiuoli    Albizzi  Barbadori   Bischeri Castellani     Ginori 
  0.0000000  0.0000000  0.0000000  0.3333333  0.3333333  0.0000000 </code></pre>
@@ -763,7 +760,7 @@ Figure&nbsp;2.4: A diameter path of length 5 between the Bischeri and the Pazzi 
 <h3 data-number="2.11.1" class="anchored" data-anchor-id="assortativity-based-on-numerical-attribute"><span class="header-section-number">2.11.1</span> Assortativity based on numerical attribute</h3>
 <p>One common form is <strong>degree assortativity</strong>, which evaluates whether nodes with similar degrees tend to be connected. This can be computed as:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assortativity</span>(flo_marriage, <span class="fu">degree</span>(flo_marriage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assortativity</span>(flo_marriage, <span class="fu">degree</span>(flo_marriage))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.3748379</code></pre>
 </div>
@@ -778,14 +775,14 @@ Figure&nbsp;2.4: A diameter path of length 5 between the Bischeri and the Pazzi 
 <li>High = above the median (higher wealth)</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get wealth attribute</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>wealth <span class="ot">&lt;-</span> <span class="fu">V</span>(flo_marriage)<span class="sc">$</span>wealth</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compute median</span></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>med_wealth <span class="ot">&lt;-</span> <span class="fu">median</span>(wealth, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="co"># create categorical variable</span></span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>wealth_cat <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(wealth <span class="sc">&lt;=</span> med_wealth, <span class="st">"low"</span>, <span class="st">"high"</span>)</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co"># compute assortativity</span></span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="fu">assortativity_nominal</span>(flo_marriage, <span class="fu">as.factor</span>(wealth_cat))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get wealth attribute</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>wealth <span class="ot">&lt;-</span> <span class="fu">V</span>(flo_marriage)<span class="sc">$</span>wealth</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compute median</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>med_wealth <span class="ot">&lt;-</span> <span class="fu">median</span>(wealth, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co"># create categorical variable</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>wealth_cat <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(wealth <span class="sc">&lt;=</span> med_wealth, <span class="st">"low"</span>, <span class="st">"high"</span>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="co"># compute assortativity</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="fu">assortativity_nominal</span>(flo_marriage, <span class="fu">as.factor</span>(wealth_cat))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.3299233</code></pre>
 </div>
@@ -799,8 +796,8 @@ Figure&nbsp;2.4: A diameter path of length 5 between the Bischeri and the Pazzi 
 <p>Reciprocity is a central concept in social exchange theory, where it reflects mutual exchange relationships between actors. Social interactions are often shaped by considerations of costs and benefits, and reciprocated ties indicate balanced or mutually beneficial relationships.</p>
 <p>To illustrate this, we use <code>rhesus</code>, a network of grooming relations among a group of rhesus monkeys.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"rhesus"</span>)</span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">reciprocity</span>(rhesus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"rhesus"</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">reciprocity</span>(rhesus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.7567568</code></pre>
 </div>
@@ -827,7 +824,7 @@ Figure&nbsp;2.5: Grooming relations among a group of rhesus monkeys. Reciprocate
 <h2 data-number="2.13" class="anchored" data-anchor-id="dyad-and-triad-census"><span class="header-section-number">2.13</span> Dyad and Triad Census</h2>
 <p>The <strong>dyad census</strong> categorizes all possible pairs of nodes in a directed network by their mutual-connection status. A dyad is <em>mutual</em> if both nodes have a directed edge to the other, <em>asymmetric</em> if only one of the two edges is present, and <em>null</em> if neither is. The census gives an overview of the prevalence of reciprocity and one-sided relations in the network.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census</span>(rhesus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census</span>(rhesus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$mut
 [1] 42
@@ -856,7 +853,7 @@ Figure&nbsp;2.6: The 16 possible triads in a directed network, labelled using th
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census</span>(rhesus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census</span>(rhesus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1]  49  72 115  16  12  11  50  50   2   0  54  13  12   7  58  39</code></pre>
 </div>
@@ -867,28 +864,28 @@ Figure&nbsp;2.6: The 16 possible triads in a directed network, labelled using th
 <h3 data-number="2.13.1" class="anchored" data-anchor-id="use-case-triad-census"><span class="header-section-number">2.13.1</span> Use case: Triad Census</h3>
 <p>One of the many applications of the triad census is to compare a set of networks. In this example, we are tackling the question of “how transitive is football?” and assess structural differences among a set of football leagues.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"football_triad"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"football_triad"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>football_triad</code> is a list which contains networks of 112 football leagues as igraph objects. A directed link between team A and B indicates that A won a match against B. Note that there can also be an edge from B to A, since most leagues play a double round robin. For the sake of simplicity, all draws were deleted so that there could also be null ties between two teams if both games ended in a draw.</p>
 <p>Below, we calculate the triad census for all networks at once using <code>lapply()</code>. The function returns the triad census for each network as a list, which we turn into a matrix in the second step. Afterwards, we manually add the row and column names of the matrix.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">lapply</span>(football_triad, triad_census)</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">unlist</span>(footy_census), <span class="at">ncol =</span> <span class="dv">16</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">sapply</span>(football_triad, <span class="cf">function</span>(x) x<span class="sc">$</span>name)</span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"003"</span>, <span class="st">"012"</span>, <span class="st">"102"</span>, <span class="st">"021D"</span>, <span class="st">"021U"</span>, <span class="st">"021C"</span>, <span class="st">"111D"</span>, <span class="st">"111U"</span>,</span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"030T"</span>, <span class="st">"030C"</span>, <span class="st">"201"</span>, <span class="st">"120D"</span>, <span class="st">"120U"</span>, <span class="st">"120C"</span>, <span class="st">"210"</span>, <span class="st">"300"</span></span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize to make proportions comparable across leagues</span></span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>footy_census_norm <span class="ot">&lt;-</span> footy_census <span class="sc">/</span> <span class="fu">rowSums</span>(footy_census)</span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a><span class="co"># check the Top 5 leagues</span></span>
-<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">rownames</span>(footy_census) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"england"</span>, <span class="st">"spain"</span>, <span class="st">"germany"</span>,</span>
-<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"italy"</span>, <span class="st">"france"</span></span>
-<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>footy_census[idx, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">lapply</span>(football_triad, triad_census)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">unlist</span>(footy_census), <span class="at">ncol =</span> <span class="dv">16</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">sapply</span>(football_triad, <span class="cf">function</span>(x) x<span class="sc">$</span>name)</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"003"</span>, <span class="st">"012"</span>, <span class="st">"102"</span>, <span class="st">"021D"</span>, <span class="st">"021U"</span>, <span class="st">"021C"</span>, <span class="st">"111D"</span>, <span class="st">"111U"</span>,</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"030T"</span>, <span class="st">"030C"</span>, <span class="st">"201"</span>, <span class="st">"120D"</span>, <span class="st">"120U"</span>, <span class="st">"120C"</span>, <span class="st">"210"</span>, <span class="st">"300"</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize to make proportions comparable across leagues</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>footy_census_norm <span class="ot">&lt;-</span> footy_census <span class="sc">/</span> <span class="fu">rowSums</span>(footy_census)</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="co"># check the Top 5 leagues</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">rownames</span>(footy_census) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"england"</span>, <span class="st">"spain"</span>, <span class="st">"germany"</span>,</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"italy"</span>, <span class="st">"france"</span></span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>footy_census[idx, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        003 012 102 021D 021U 021C 111D 111U 030T 030C 201 120D 120U 120C 210
 england   2  10   0   58   31   40   34   44  338   29  19  118  129  143 131
@@ -907,7 +904,7 @@ spain    20</code></pre>
 <p>Notice how the transitive triad (<code>030T</code>) has the largest count in the top leagues, hinting toward the childhood wisdom: “If A wins against B and B wins against C, then A must win against C”.</p>
 <p>In empirical studies, we are not necessarily only interested in transitive triads, but rather in how the triad census profiles compare across networks. We follow <a href="https://doi.org/10.1111%2Fj.1467-9531.2007.00179.x">Katherine Faust’s</a> suggestion and perform a singular value decomposition (SVD) on the normalized triad census matrix.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>footy_svd <span class="ot">&lt;-</span> <span class="fu">svd</span>(footy_census_norm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>footy_svd <span class="ot">&lt;-</span> <span class="fu">svd</span>(footy_census_norm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>SVDs reduce the dimensionality of the data while retaining most of the information. The triad census is 16-dimensional, which is impossible to visualize directly. With an SVD, we can project it to two dimensions and compare the leagues visually in <a href="#fig-footy-svd" class="quarto-xref">Figure&nbsp;<span>2.7</span></a>.</p>
 <div class="cell">
@@ -964,24 +961,24 @@ Figure&nbsp;2.9: Second singular vector (scaled by its singular value) plotted a
 <h3 data-number="2.13.2" class="anchored" data-anchor-id="dyadtriad-census-with-attributes"><span class="header-section-number">2.13.2</span> Dyad/Triad Census with Attributes</h3>
 <p>The R package <code>netUtils</code> implements a version of the dyad and triad census that can account for node attributes.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netUtils)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netUtils)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The node attribute should be coded as integers from <code>1</code> to <code>max(attr)</code>. The output of <code>dyad_census_attr()</code> is a <code>data.frame</code> in which each row corresponds to a pair of attribute values, together with the count of asymmetric, symmetric, and null dyads of that combination.</p>
 <p>The output of <code>triad_census_attr()</code> is a named vector whose names have the form <code>Txxx-abc</code>, where <code>xxx</code> is the standard triad census code and <code>abc</code> are the attributes of the three nodes involved.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">112</span>)</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="dv">20</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="co"># add a vertex attribute</span></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">10</span>)</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">112</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="dv">20</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="co"># add a vertex attribute</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">10</span>)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  from_attr to_attr asym_ab asym_ba sym null
 1         1       1       0       0   4   41
 2         1       2      20      28  14   38
 3         2       2       0       0   8   37</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> T003-111  T003-112  T003-122  T003-222  T012-111  T012-121  T012-112  T012-122 
         8        33        28         7        32        40        31        19 
