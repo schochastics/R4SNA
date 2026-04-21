@@ -501,8 +501,8 @@ Figure&nbsp;11.2: GoT network with a circular layout.
 </div>
 </div>
 </div>
-<p>Concentric circles, on the other hand, help to emphasize the position of certain nodes in the network. The <code>graphlayouts</code> package offers two function to create concentric layouts, <code>layout_with_focus()</code> and <code>layout_with_centrality()</code>.</p>
-<p>The first one allows to focus the network on a specific node and arrange all other nodes in concentric circles (depending on the geodesic distance). In <a href="#fig-concentric-ned" class="quarto-xref">Figure&nbsp;<span>11.3</span></a>, we focus the layout around the character <em>Ned Stark</em>.</p>
+<p>Concentric circles, on the other hand, help to emphasize the position of certain nodes in the network. The <code>graphlayouts</code> package offers two functions to create concentric layouts, <code>layout_with_focus()</code> and <code>layout_with_centrality()</code>.</p>
+<p>The first one allows one to focus the network on a specific node and arrange all other nodes in concentric circles (depending on the geodesic distance). In <a href="#fig-concentric-ned" class="quarto-xref">Figure&nbsp;<span>11.3</span></a>, we focus the layout around the character <em>Ned Stark</em>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(gotS1, <span class="at">layout =</span> <span class="st">"focus"</span>, <span class="at">focus =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_colour =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
@@ -535,7 +535,7 @@ Figure&nbsp;11.3: GoT network with concentric layout focused on Ned Stark.
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(gotS1, <span class="at">layout =</span> <span class="st">"focus"</span>, <span class="at">focus =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_circle</span>(<span class="at">col =</span> <span class="st">"#00BFFF"</span>, <span class="at">use =</span> <span class="st">"focus"</span>, <span class="at">max.circle =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">width =</span> weight), <span class="at">edge_colour =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_colour =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> clu, <span class="at">size =</span> size), <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">filter =</span> (name <span class="sc">==</span> <span class="st">"Ned"</span>), <span class="at">size =</span> size, <span class="at">label =</span> name),</span>
@@ -659,7 +659,7 @@ Figure&nbsp;11.7: Island network rendered with the backbone layout.
 </div>
 </div>
 <p>Of course the network used in the example is specifically tailored to illustrate the power of the algorithm. Using the backbone layout in real world networks may not always result in such a clear division of groups. It should thus not be seen as a universal remedy for drawing hairball networks. One should keep in mind: It can <em>only</em> emphasize a hidden group structure <em>if it exists</em>.</p>
-<p><a href="#fig-facebook-backbone" class="quarto-xref">Figure&nbsp;<span>11.8</span></a> shows an empirical example where the algorithm was able to uncover a hidden group structure. The network shows facebook friendships of a university in the US. Node colour corresponds to dormitory of students. Left is the ordinary stress layout and right the backbone layout.</p>
+<p><a href="#fig-facebook-backbone" class="quarto-xref">Figure&nbsp;<span>11.8</span></a> shows an empirical example where the algorithm was able to uncover a hidden group structure. The network shows facebook friendships of a university in the US. Node colour corresponds to dormitory of students.</p>
 <div id="fig-facebook-backbone" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-facebook-backbone-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -673,7 +673,7 @@ Figure&nbsp;11.8: Facebook friendship network colored by dormitory. Stress layou
 </section>
 <section id="longitudinal-networks" class="level2" data-number="11.6">
 <h2 data-number="11.6" class="anchored" data-anchor-id="longitudinal-networks"><span class="header-section-number">11.6</span> Longitudinal Networks</h2>
-<p>Longitudinal network data usually comes in the form of panel data, gathered at different points in time. We thus have a series of snapshots that need to be visualized in a way that individual nodes are easy to trace without the layout becoming to awkward.</p>
+<p>Longitudinal network data usually comes in the form of panel data, gathered at different points in time. We thus have a series of snapshots that need to be visualized in a way that individual nodes are easy to trace without the layout becoming too awkward.</p>
 <p>For this part of the tutorial, you will need one additional packages.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -682,7 +682,7 @@ Figure&nbsp;11.8: Facebook friendship network colored by dormitory. Stress layou
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"s50"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The dataset consists of three networks with 50 student together with their smoking behavior as a node attribute. The function <code>layout_as_dynamic()</code> from <code>graphlayouts</code> can be used to visualize the three networks. The implemented algorithm calculates a reference layout which is a layout of the union of all networks and individual layouts based on stress minimization and combines those in a linear combination which is controlled by the <code>alpha</code> parameter. For <code>alpha = 1</code>, only the reference layout is used and all graphs have the same layout. For <code>alpha=0</code>, the stress layout of each individual graph is used. Values in-between interpolate between the two layouts. The algorithm is not directly usable with <code>ggraph</code>, so we need to calculate the layout separately and then use the resulting coordinates in <code>ggraph</code> with the “manual” layout.</p>
+<p>The dataset consists of three networks with 50 students together with their smoking behavior as a node attribute. The function <code>layout_as_dynamic()</code> from <code>graphlayouts</code> can be used to visualize the three networks. The implemented algorithm calculates a reference layout which is a layout of the union of all networks and individual layouts based on stress minimization and combines those in a linear combination which is controlled by the <code>alpha</code> parameter. For <code>alpha = 1</code>, only the reference layout is used and all graphs have the same layout. For <code>alpha=0</code>, the stress layout of each individual graph is used. Values in-between interpolate between the two layouts. The algorithm is not directly usable with <code>ggraph</code>, so we need to calculate the layout separately and then use the resulting coordinates in <code>ggraph</code> with the “manual” layout.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>xy <span class="ot">&lt;-</span> <span class="fu">layout_as_dynamic</span>(s50, <span class="at">alpha =</span> <span class="fl">0.2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -728,7 +728,7 @@ Figure&nbsp;11.9: Longitudinal network of 50 students across three waves.
 </section>
 <section id="multilevel-networks" class="level2" data-number="11.7">
 <h2 data-number="11.7" class="anchored" data-anchor-id="multilevel-networks"><span class="header-section-number">11.7</span> Multilevel networks</h2>
-<p>In this section, we look at <code>layout_as_multilevel()</code>, a layout algorithm in the <code>graphlayouts</code> package which can be use to visualize multilevel networks.</p>
+<p>In this section, we look at <code>layout_as_multilevel()</code>, a layout algorithm in the <code>graphlayouts</code> package which can be used to visualize multilevel networks.</p>
 <p>A multilevel network consists of two (or more) levels with different node sets and intra-level ties. For instance, one level could be scientists and their collaborative ties, the second level are labs and ties among them, and inter-level edges are the affiliations of scientists and labs.</p>
 <p>The <code>graphlayouts</code> package contains an artificial multilevel network which will be used to illustrate the algorithm.</p>
 <div class="cell">
