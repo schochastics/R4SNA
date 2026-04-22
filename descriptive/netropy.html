@@ -100,7 +100,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-30f7eecba5f8069135bf6061ca14b3f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -517,12 +517,12 @@ window.Quarto = {
 <section id="network-data-representation-and-transformation" class="level2" data-number="8.2">
 <h2 data-number="8.2" class="anchored" data-anchor-id="network-data-representation-and-transformation"><span class="header-section-number">8.2</span> Network Data Representation and Transformation</h2>
 <p>Network data consist of variables defined on different domains, most commonly nodes (vertices) and dyads (edges). While vertex variables are observed on <span class="math inline">\(n\)</span> nodes, edge variables are observed on <span class="math inline">\(\binom{n}{2}\)</span> dyads. Since entropy analysis requires all variables to be defined on a common domain, these differences must be resolved through appropriate transformations.</p>
-<p>Let <span class="math inline">\(V = {1, \dots, n}\)</span> denote a set of nodes. Suppose <span class="math inline">\(X_i\)</span>, <span class="math inline">\(i = 1, \dots, m’\)</span>, are vertex variables with <span class="math inline">\(r_i\)</span> outcomes, and <span class="math inline">\(Y_j\)</span>, <span class="math inline">\(j = 1, \dots, m’’\)</span>, are edge variables with <span class="math inline">\(r’_j\)</span> outcomes. The corresponding joint outcome sizes are <span class="math inline">\(r’ = \prod r_i\)</span> and <span class="math inline">\(r’’ = \prod r’_j\)</span>. Because these variables are observed on different domains, they cannot be directly combined in entropy calculations.</p>
-<p>One possibility is to transform vertex variables to the edge domain. For each pair <span class="math inline">\((u,v)\)</span>, define <span class="math inline">\(X_i^* = (X_u, X_v)\)</span>. This yields a dataset with <span class="math inline">\(\binom{n}{2}\)</span> observations, allowing the transformed vertex variables to be analyzed jointly with edge variables (see <a href="#tbl-edge-representation" class="quarto-xref">Table&nbsp;<span>8.1</span></a>).</p>
+<p>Let <span class="math inline">\(V = {1, \dots, n}\)</span> denote a set of nodes. Suppose <span class="math inline">\(X_i\)</span>, <span class="math inline">\(i = 1, \dots, m’\)</span>, are vertex variables with <span class="math inline">\(r_i\)</span> outcomes, and <span class="math inline">\(Y_j\)</span>, <span class="math inline">\(j = 1, \dots, m’’\)</span>, are edge (or dyad) variables with <span class="math inline">\(r’_j\)</span> outcomes. The corresponding joint outcome sizes are <span class="math inline">\(r’ = \prod r_i\)</span> and <span class="math inline">\(r’’ = \prod r’_j\)</span>. Because these variables are observed on different domains, they cannot be directly combined in entropy calculations.</p>
+<p>One possibility is to transform vertex variables to the edge domain. For each pair <span class="math inline">\((u,v)\)</span>, define <span class="math inline">\(X_i^* = (X_u, X_v)\)</span>. This yields a dataset with <span class="math inline">\(\binom{n}{2}\)</span> observations, allowing the transformed vertex variables to be analyzed jointly with edge (or dyad) variables (see <a href="#tbl-edge-representation" class="quarto-xref">Table&nbsp;<span>8.1</span></a>).</p>
 <div id="tbl-edge-representation" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-edge-representation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;8.1: Edge-Based Representation
+Table&nbsp;8.1: Edge-Based Representation. Observed edge variables are given by <span class="math inline">\(Y_i\)</span>, transformed edge variables are given by <span class="math inline">\(X_i^*\)</span>.
 </figcaption>
 <div aria-describedby="tbl-edge-representation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -604,7 +604,7 @@ Table&nbsp;8.1: Edge-Based Representation
 <div id="tbl-vertex-representation" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-vertex-representation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;8.2: Vertex-Based Representation
+Table&nbsp;8.2: Vertex-Based Representation. Observed vertex variables are given by <span class="math inline">\(X_i\)</span>, transformed vertex variables are given by <span class="math inline">\(Y_i^*\)</span>
 </figcaption>
 <div aria-describedby="tbl-vertex-representation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1055,7 +1055,7 @@ Table&nbsp;8.3: First 10 rows of the vertex-level dataset.
 </section>
 <section id="dyad-variables" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="dyad-variables">Dyad Variables</h4>
-<p>Dyad variables are constructed as pairs of incident vertex variables, resulting in <span class="math inline">\(\binom{71}{2} = 2485\)</span> observations (i.e., the number of rows in the dyadic data frames created below).</p>
+<p>Dyad variables (or edge variables) are constructed as pairs of incident vertex variables, resulting in <span class="math inline">\(\binom{71}{2} = 2485\)</span> observations (i.e., the number of rows in the dyadic data frames created below).</p>
 <p>The observed node attributes in the data frame <code>att_var</code> are therefore transformed into dyadic attributes by pairing the values of two connected vertices. For example, the binary variable <code>status</code> yields four possible dyadic outcomes: <span class="math inline">\((0,0)\)</span>, <span class="math inline">\((0,1)\)</span>, <span class="math inline">\((1,0)\)</span>, and <span class="math inline">\((1,1)\)</span>. Similarly, the categorical variable <code>office</code> with three levels results in nine possible dyadic outcomes: <span class="math inline">\((0,0)\)</span>, <span class="math inline">\((0,1)\)</span>, <span class="math inline">\((0,2)\)</span>, <span class="math inline">\((1,0)\)</span>, <span class="math inline">\((1,1)\)</span>, <span class="math inline">\((1,2)\)</span>, <span class="math inline">\((2,0)\)</span>, <span class="math inline">\((2,1)\)</span>, and <span class="math inline">\((2,2)\)</span>.</p>
 <p>These transformations can be carried out using the function <code>get_dyad_var()</code>, where the argument <code>type = "att"</code> specifies that the input consists of vertex attributes. This procedure is applied to all vertex variables in the dataset:</p>
 <div class="cell">
