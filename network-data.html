@@ -497,9 +497,6 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="packages-needed-for-this-chapter">Packages Needed for this Chapter</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'igraph' was built under R version 4.5.2</code></pre>
-</div>
 </div>
 </section>
 <section id="why-study-networks" class="level2">
@@ -548,7 +545,8 @@ window.Quarto = {
 <p>There are several possible ways to express network data. All come with a set of advantages and disadvantages.</p>
 <section id="adjacency-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="adjacency-matrix">Adjacency Matrix</h3>
-<p>An adjacency matrix is a square matrix where the elements indicate whether pairs of vertices in the graph are adjacent or not—meaning, whether they are directly connected by an edge. If the graph has <span class="math inline">\(n\)</span> vertices, the matrix <span class="math inline">\(A\)</span> will be an <span class="math inline">\(n \times n\)</span> matrix where the entry <span class="math inline">\(A_{ij}\)</span> is <span class="math inline">\(1\)</span> if there is an edge from vertex <span class="math inline">\(i\)</span> to vertex <span class="math inline">\(j\)</span>, and <span class="math inline">\(0\)</span> if there is no edge. In the case of weighted graphs the weight of the edge is used. This matrix is symmetric for undirected graphs, indicating that an edge is bidirectional.</p>
+<p>An adjacency matrix is a square matrix where the elements indicate whether pairs of vertices in the graph are adjacent or not, meaning whether they are directly connected by an edge. If the graph has <span class="math inline">\(n\)</span> vertices, the matrix <span class="math inline">\(A\)</span> will be an <span class="math inline">\(n \times n\)</span> matrix where the entry <span class="math inline">\(A_{ij}\)</span> is <span class="math inline">\(1\)</span> if there is an edge from vertex <span class="math inline">\(i\)</span> to vertex <span class="math inline">\(j\)</span>, and <span class="math inline">\(0\)</span> if there is no edge. In the case of weighted graphs, the weight of the edge is used instead of binary values.</p>
+<p>For undirected graphs, the adjacency matrix is symmetric, meaning that <span class="math inline">\(A_{ij} = A_{ji}\)</span> for all pairs of vertices. This reflects the fact that ties have no direction: if vertex <span class="math inline">\(i\)</span> is connected to vertex <span class="math inline">\(j\)</span>, then vertex <span class="math inline">\(j\)</span> is also connected to vertex <span class="math inline">\(i\)</span>. In contrast, for directed graphs the matrix is generally not symmetric, because a tie from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span> does not necessarily imply a tie from <span class="math inline">\(j\)</span> to <span class="math inline">\(i\)</span> (e.g., in advice-seeking or following relationships).</p>
 <section id="pros" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="pros">Pros</h4>
 <ul>
@@ -567,7 +565,8 @@ window.Quarto = {
 </section>
 <section id="edge-list" class="level3">
 <h3 class="anchored" data-anchor-id="edge-list">Edge List</h3>
-<p>An edge list is a matrix where each row indicates an edge. In an undirected graph, an edge is represented by a pair <span class="math inline">\((i,j)\)</span>, indicating a connection between vertices <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. For directed graphs, the order of the vertices in each pair denotes the direction of the edge, from the first vertex to the second. In weighted graphs, a third column can be added to each pair to represent the weight of the edge.</p>
+<p>An edge list is a matrix (or data frame) where each row represents an edge between two vertices. In an undirected graph, an edge is given by a pair <span class="math inline">\((i,j)\)</span>, indicating a connection between vertices <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. Because the relation has no direction, the pairs <span class="math inline">\((i,j)\)</span> and <span class="math inline">\((j,i)\)</span> represent the same edge. For directed graphs, the order of the vertices in each pair matters: an entry <span class="math inline">\((i,j)\)</span> indicates a tie from vertex <span class="math inline">\(i\)</span> to vertex <span class="math inline">\(j\)</span>.</p>
+<p>In weighted graphs, an additional column can be included to represent the strength, frequency, or intensity of the tie. More generally, edge lists can be extended with further columns to store edge attributes, such as timestamps, types of interaction, or categories of relationships.</p>
 <section id="pros-1" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="pros-1">Pros</h4>
 <ul>
@@ -586,7 +585,8 @@ window.Quarto = {
 </section>
 <section id="adjacency-list" class="level3">
 <h3 class="anchored" data-anchor-id="adjacency-list">Adjacency List</h3>
-<p>An adjacency list is a collection of lists, with each list corresponding to the set of adjacent vertices of a given vertex. This means that for every vertex <span class="math inline">\(i\)</span> in the graph, there is an associated list that contains all the vertices <span class="math inline">\(j\)</span> to which <span class="math inline">\(i\)</span> is directly connected.</p>
+<p>An adjacency list is a collection of lists, where each list corresponds to a vertex and contains the set of vertices adjacent to it. In other words, for every vertex <span class="math inline">\(i\)</span> in the graph, there is an associated list that includes all vertices <span class="math inline">\(j\)</span> to which <span class="math inline">\(i\)</span> is directly connected.</p>
+<p>For undirected graphs, if vertex <span class="math inline">\(i\)</span> is connected to vertex <span class="math inline">\(j\)</span>, then <span class="math inline">\(j\)</span> will appear in the list of <span class="math inline">\(i\)</span> and <span class="math inline">\(i\)</span> will also appear in the list of <span class="math inline">\(j\)</span>. In directed graphs, however, adjacency lists typically distinguish between outgoing and incoming ties, so the list for vertex <span class="math inline">\(i\)</span> usually contains only those vertices that <span class="math inline">\(i\)</span> points to.</p>
 <section id="pros-2" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="pros-2">Pros</h4>
 <ul>
@@ -611,21 +611,21 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="foreign-formats">Foreign Formats</h3>
 <p><code>igraph</code> can deal with many different foreign network formats with the function <code>read_graph</code>. (The <code>rgexf</code> package can be used to import Gephi files.)</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_graph</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  file,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="fu">c</span>(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"edgelist"</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"pajek"</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ncol"</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lgl"</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"graphml"</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dimacs"</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"graphdb"</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gml"</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dl"</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  ...</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_graph</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  file,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="fu">c</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"edgelist"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"pajek"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ncol"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lgl"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"graphml"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dimacs"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"graphdb"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gml"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dl"</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>If your network data is in one of the above formats you will find it easy to import your network.</p>
 </section>
@@ -641,30 +641,30 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="networks-in-igraph">Networks in <code>igraph</code></h2>
 <p>Below, we represent friendship relations between Bob, Ann, and Steve as a matrix and an edgelist.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># adjacency matrix</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">3</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(A) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(A) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>A</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># adjacency matrix</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">3</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(A) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(A) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>A</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      Bob Ann Steve
 Bob     0   1     1
 Ann     1   0     1
 Steve   1   1     0</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># edgelist</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>el <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Bob"</span>, <span class="st">"Steve"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>),</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">2</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>el</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># edgelist</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>el <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">"Bob"</span>, <span class="st">"Ann"</span>, <span class="st">"Bob"</span>, <span class="st">"Steve"</span>, <span class="st">"Ann"</span>, <span class="st">"Steve"</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">2</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>el</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1]  [,2]   
 [1,] "Bob" "Ann"  
@@ -674,15 +674,15 @@ Steve   1   1     0</code></pre>
 </div>
 <p>Once we have defined an edgelist or an adjacency matrix, we can turn them into <code>igraph</code> objects as follows.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(A, <span class="at">mode =</span> <span class="st">"undirected"</span>, <span class="at">diag =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">graph_from_edgelist</span>(el, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># g1 and g2 are the same graph so only printing g1</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(A, <span class="at">mode =</span> <span class="st">"undirected"</span>, <span class="at">diag =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">graph_from_edgelist</span>(el, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># g1 and g2 are the same graph so only printing g1</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>g1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH a599611 UN-- 3 3 -- 
+<pre><code>IGRAPH 39dee64 UN-- 3 3 -- 
 + attr: name (v/c)
-+ edges from a599611 (vertex names):
++ edges from 39dee64 (vertex names):
 [1] Bob--Ann   Bob--Steve Ann--Steve</code></pre>
 </div>
 </div>
