@@ -78,13 +78,13 @@ ul.task-list li input[type="checkbox"] {
 
 <meta property="og:title" content="Introduction – R for Social Network Analysis">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://schochastics.io/R4SNA/intro_files/figure-html/crannet-1.png">
+<meta property="og:image" content="https://schochastics.io/R4SNA/intro_files/figure-html/fig-crannet-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
 <meta property="og:image:height" content="960">
 <meta property="og:image:width" content="1344">
 <meta name="twitter:title" content="Introduction – R for Social Network Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://schochastics.io/R4SNA/intro_files/figure-html/crannet-1.png">
+<meta name="twitter:image" content="https://schochastics.io/R4SNA/intro_files/figure-html/fig-crannet-1.png">
 <meta name="twitter:image-height" content="960">
 <meta name="twitter:image-width" content="1344">
 <meta name="twitter:card" content="summary_large_image">
@@ -355,7 +355,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#r" id="toc-r" class="nav-link" data-scroll-target="#r">R</a></li>
   <li><a href="#ide" id="toc-ide" class="nav-link" data-scroll-target="#ide">IDE</a></li>
-  <li><a href="#the-base-packages" id="toc-the-base-packages" class="nav-link" data-scroll-target="#the-base-packages">The “base” Packages</a></li>
+  <li><a href="#the-core-packages" id="toc-the-core-packages" class="nav-link" data-scroll-target="#the-core-packages">The core packages</a></li>
   <li><a href="#other-packages" id="toc-other-packages" class="nav-link" data-scroll-target="#other-packages">Other packages</a></li>
   </ul></li>
   </ul>
@@ -383,53 +383,73 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>R has become one of the richest environments for social network analysis. Dozens of packages on CRAN implement everything from basic centrality scores to stochastic actor-oriented models, and most of them interoperate through a small set of shared data structures. This book is an opinionated tour of that ecosystem: what to reach for, when, and why.</p>
 <section id="what-you-will-learn" class="level2">
 <h2 class="anchored" data-anchor-id="what-you-will-learn">What you will learn</h2>
+<p>You will learn how to represent network data in R, compute the standard descriptive quantities (density, distance, centrality, community structure), produce publication-quality visualizations with <code>ggraph</code>, and fit inferential models such as ERGMs, SAOMs, and relational event models to test hypotheses about how networks form and evolve. The emphasis throughout is on <em>doing</em>: each method is introduced alongside the code needed to run it and the output to expect.</p>
 </section>
 <section id="how-this-book-is-organized" class="level2">
 <h2 class="anchored" data-anchor-id="how-this-book-is-organized">How this book is organized</h2>
+<p>After this introduction, <a href="./network-data.html">Network Data and Analysis</a> motivates the network perspective and covers the foundations: nodes, edges, attributes, the common matrix and edge-list representations, and how to import or construct a network in <code>igraph</code>. It is the one chapter the rest of the book assumes you have read.</p>
+<p>From there the book splits into four parts:</p>
+<ul>
+<li><strong>Descriptive Network Analysis</strong> covers whole-network and node-level summaries (basic statistics, centrality, cohesive subgroups), together with specialized toolkits for two-mode, signed, and ego networks, and an information-theoretic view through entropy analysis.</li>
+<li><strong>Network Visualization</strong> mainly focuses on <code>ggraph</code>, with chapters on layouts, aesthetic mappings, visual enhancements, and interactive output via <code>g6R</code>.</li>
+<li><strong>Inferential Network Analysis</strong> moves beyond description to statistical modeling: non-parametric tests, random graph models, ERGMs, stochastic actor-oriented models, and relational event models.</li>
+<li><strong>Tidy Network Analysis</strong> revisits descriptive analysis through the lens of <code>tidygraph</code>, which layers tidyverse semantics on top of <code>igraph</code>.</li>
+</ul>
+<p>The parts are largely self-contained, so you can read the book linearly or skip to whichever topic is closest to the problem in front of you.</p>
 </section>
 <section id="what-you-wont-learn" class="level2">
 <h2 class="anchored" data-anchor-id="what-you-wont-learn">What you won’t learn</h2>
+<p>This is a book about <em>doing</em> network analysis in R, not a textbook on network theory or graph algorithms. We introduce just enough theory to use each method responsibly and point to canonical references for deeper treatments. We also do not cover network analysis in Python, Gephi, or other GUI-driven tools, and we do not teach base R or the tidyverse from scratch. If you need a primer on either, <a href="https://r4ds.hadley.nz/">R for Data Science (2e)</a> is a good companion.</p>
 </section>
 <section id="prerequisites" class="level2">
 <h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
-<p><em>(This section is taken and slightly adapted from R for Data Science 2e)</em></p>
-<p>We’ve made a few assumptions about what you already know to get the most out of this book. You should be generally numerically literate, and it’s helpful if you have some basic programming experience already. If you’ve never programmed before, you might find <a href="https://rstudio-education.github.io/hopr/">Hands on Programming</a> with R by Garrett to be a valuable adjunct to this book.</p>
-<p>You need four things to run the code in this book: R, an IDE, a collection of “base” R packages, and a handful of other packages. Packages are the fundamental units of reproducible R code. They include reusable functions, documentation that describes how to use them, and sample data.</p>
+<p>We assume you are generally numerically literate and have some basic programming experience. If you have never programmed before, <a href="https://rstudio-education.github.io/hopr/">Hands-On Programming with R</a> is a useful adjunct to this book.</p>
+<p>You need four things to run the code in this book: R, an IDE, a handful of core network packages, and a supporting cast of packages used in individual chapters.</p>
 <section id="r" class="level3">
 <h3 class="anchored" data-anchor-id="r">R</h3>
-<p>To download R, go to CRAN, the comprehensive R archive network, <a href="https://cloud.r-project.org" class="uri">https://cloud.r-project.org</a>. A new major version of R comes out once a year, and there are 2-3 minor releases each year. It’s a good idea to update regularly. Upgrading can be a bit of a hassle, especially for major versions that require you to re-install all your packages, but putting it off only makes it worse. We recommend R 4.3.0 or later for this book.</p>
+<p>Install R from CRAN at <a href="https://cloud.r-project.org" class="uri">https://cloud.r-project.org</a>. A new major version comes out once a year, with two or three minor releases in between. We recommend R 4.5.3 for this book.</p>
 </section>
 <section id="ide" class="level3">
 <h3 class="anchored" data-anchor-id="ide">IDE</h3>
-<p>We make no assumption about your integrated development environment. RStudio is a popular choice for R programming, which you can download from <a href="https://posit.co/download/rstudio-desktop/" class="uri">https://posit.co/download/rstudio-desktop/</a>. RStudio is updated a couple of times a year, and it will automatically let you know when a new version is out, so there’s no need to check back. It’s a good idea to upgrade regularly to take advantage of the latest and greatest features. For this book, make sure you have at least RStudio 2022.02.0.</p>
-<p>But nothing will stop you to use other environments, such as vscode, emacs, or vi if you are already used to them.</p>
+<p>We make no assumption about your development environment. RStudio (<a href="https://posit.co/download/rstudio-desktop/" class="uri">https://posit.co/download/rstudio-desktop/</a>) is a popular choice and integrates well with the RStudio addins we occasionally reference, but VS Code, Positron, Emacs, or Vim will all work.</p>
 </section>
-<section id="the-base-packages" class="level3">
-<h3 class="anchored" data-anchor-id="the-base-packages">The “base” Packages</h3>
-<p>When it comes to performing data science tasks with R, there are many excellent packages (or even package ecosystems) to choose from. There is for instance the <code>tidyverse</code>, <code>data.table</code>, or <code>rpolars</code>. All have there advantages and disadvantages but ultimately, they allow to do similar tasks with varying syntax.</p>
-<p>In the R world for networks, there are far less choices and for the most basic network analytic tasks, there are essentially two packages: <code>igraph</code> and <code>sna</code>.</p>
-<p>We will discuss these packages here and motivate why we would recommend <code>igraph</code> as the goto package for standard network analytic tasks. But that does not render <code>sna</code> and its companion <code>network</code> void. On the contrary, there are some essential modelling tasks which can only be done within the realm of <code>network</code>.</p>
-<p>Both <code>igraph</code> and <code>network</code> also provide data structures which facilitate to store and process network data. There also once existed the package <code>graph</code> but that is not available on CRAN anymore, only via Bioconductor.</p>
-<p>The figure below shows how many packages on CRAN rely on those three packages (i.e.&nbsp;they are mentioned in <code>Depends</code>, <code>Imports</code>, or <code>Suggests</code>).</p>
+<section id="the-core-packages" class="level3">
+<h3 class="anchored" data-anchor-id="the-core-packages">The core packages</h3>
+<p>Two package families dominate network analysis in R: <code>igraph</code> and the <code>statnet</code> family, which centers on the <code>network</code> data structure and includes <code>sna</code>, <code>ergm</code>, and other modeling packages. Both provide their own graph class and a broadly overlapping set of analytic methods. For descriptive analysis they are largely interchangeable, but each owns a different corner of inferential modeling. <code>igraph</code> is generally faster, since its algorithms are implemented in C, and it has attracted more downstream packages. <a href="#fig-crannet" class="quarto-xref">Figure&nbsp;<span>1</span></a> shows how many CRAN packages depend on, import, or suggest <code>igraph</code>, <code>network</code>, and <code>graph</code>, a package only available via Bioconductor.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="intro_files/figure-html/crannet-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-crannet" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-crannet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="intro_files/figure-html/fig-crannet-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-crannet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Network of CRAN packages that depend on, import, or suggest <code>igraph</code>, <code>network</code>, and <code>graph</code>. The figure was produced with the <code>cranet</code> package.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The figure was produced with the help of the <code>cranet</code> package. <code>igraph</code> seems to be clearly favored by the R community. So if you install a package for, say, signed network analysis, chances are high that it depends on the graph structures provided by <code>igraph</code>. Besides the data structures, the package offers a large variety of network analytic methods which are all implemented in C. The methods are well optimized and also work nicely for large graphs.</p>
-<p>The <code>network</code> package historically shares some commonalities with <code>igraphs</code> data structures. The package itself, though is really only providing the data structure and no analytic methods. The <code>sna</code> package (<a href="https://cran.r-project.org/package=sna">link</a>) implements network analytic tools using the data structures of <code>network</code>. Overall, the syntax and provided methods are very much comparable between <code>igraph</code> and <code>sna</code> and they are almost interchangeable in this regard. The advantage of igraph is its speed. I have run several benchmark tasks and <code>igraph</code> usually comes out on top. That being said, there is no real case to be made against <code>network</code>/<code>sna</code>. If you are into statistical modelling of networks, then that should actually be the preferred choice since the <code>ergm</code> package is build on top of <code>network</code>. In this case you probably also want to look at the meta package <code>statnet</code> (<a href="http://statnet.org/">link</a>) which includes <code>network</code>, <code>sna</code>, and <code>ergm</code> (among other packages).</p>
-<p>Note that the package <code>intergraph</code> (<a href="https://cran.r-project.org/package=intergraph">link</a>) can be used to quickly switch representations between <code>igraph</code> and <code>network</code>.</p>
-<p>The <code>igraph</code> package will play a major role in the Part on <strong>Descripitve Network Analysis</strong>, while <code>network</code> will be more prominent for <strong>Inferential Network Analysis</strong>.</p>
+<p>Because of this imbalance, <code>igraph</code> is the default in the <strong>Descriptive Network Analysis</strong> and <strong>Network Visualization</strong> parts. The <strong>Inferential Network Analysis</strong> part leans on <code>network</code> and <code>statnet</code>, since <code>ergm</code> and its companions are built on top of <code>network</code>. The <code>intergraph</code> package converts between the two representations, and we use it whenever we need to move between ecosystems.</p>
 </section>
 <section id="other-packages" class="level3">
 <h3 class="anchored" data-anchor-id="other-packages">Other packages</h3>
-<p>[LIST USED PACKAGES WITH DESCRIPTION]</p>
+<p>Beyond the two core families, the book uses a number of specialized packages. The most important are:</p>
+<ul>
+<li><code>ggraph</code> and <code>graphlayouts</code>: grammar-of-graphics network visualization and additional layout algorithms.</li>
+<li><code>tidygraph</code>: a tidyverse-style interface to <code>igraph</code>.</li>
+<li><code>netrankr</code>: a unified framework for centrality indices.</li>
+<li><code>signnet</code>: methods for signed networks.</li>
+<li><code>backbone</code>: backbone extraction from weighted and two-mode networks.</li>
+<li><code>RSiena</code>: stochastic actor-oriented models for longitudinal networks.</li>
+<li><code>relevent</code>: relational event models.</li>
+<li><code>egor</code>: ego-centered network data.</li>
+<li><code>networkdata</code>: a large collection of network datasets used throughout the book.</li>
+</ul>
+<p>Each chapter lists the libraries it loads at the top, so you can install packages as you go rather than upfront.</p>
 
 
 </section>
