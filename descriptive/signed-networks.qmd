@@ -59,7 +59,7 @@ as_adj_signed(tribes)
 
 ## Structural Balance
 
-Structural balance theory originates in the social psychology of Fritz Heider [-@heider1946attitudes] and was formalised for graphs by @cartwright1956structural. The core idea is intuitive: consider three people. If Alice and Bob are friends, and Bob and Carol are friends, we expect Alice and Carol to also be friends: "the friend of my friend is my friend." Similarly, if Alice and Bob are enemies and Bob and Carol are enemies, we expect Alice and Carol to be friends: "the enemy of my enemy is my friend." These configurations are *balanced*. A triangle where all three pairs are enemies, or where two pairs are friends but one pair are enemies, feels unstable and is considered *unbalanced*. 
+Structural balance theory originates in the social psychology of Fritz Heider [-@heider1946attitudes] and was formalised for graphs by @cartwright1956structural. The core idea is intuitive: consider three people. If Alice and Bob are friends, and Bob and Carol are friends, we expect Alice and Carol to also be friends: "the friend of my friend is my friend." Similarly, if Alice and Bob are enemies and Bob and Carol are enemies, we expect Alice and Carol to be friends: "the enemy of my enemy is my friend." These configurations are **balanced**. A triangle where all three pairs are enemies, or where two pairs are friends but one pair are enemies, feels unstable and is considered **unbalanced**.
 
 More formally, a triangle is balanced if it has an even number of negative ties (zero or two), and unbalanced if it has an odd number (one or three). All four possible configurations are shown in @fig-balance-triples.
 
@@ -113,7 +113,7 @@ p1 + p2 + p3 + p4 + plot_layout(ncol = 2, axis = "collect_x")
 
 ```
 
-A network is *balanced* if it can be partitioned into two groups such that all ties within groups are positive and all ties between groups are negative.
+A network is **balanced** if it can be partitioned into two groups such that all ties within groups are positive and all ties between groups are negative.
 
 We can generate such a simple balanced network with `sample_islands_signed()`, which creates groups with positive intra-group ties and negative inter-group ties. It follows the logic of the function `sample_islands()` from `igraph`, with the added twist of making inter group edges negative. Setting `islands.n = 2` creates a perfectly balanced network with two groups.
 
@@ -155,11 +155,11 @@ balance_score(g_bal, method = "walk")
 balance_score(g_bal, method = "frustration")
 ```
 
-The *triangles* method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.
+The **triangles** method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.
 
-The *walk* method uses eigenvalues of the signed and unsigned adjacency matrices to capture balance at all scales, not just triangles. It is based on the work of @estrada2019rethinking.
+The **walk** method uses eigenvalues of the signed and unsigned adjacency matrices to capture balance at all scales, not just triangles. It is based on the work of @estrada2019rethinking.
 
-The *frustration* method finds a partition of the network into two groups and counts how many edges violate the balance pattern (negative ties within groups and positive ties between groups). The fewer violations, the more balanced the network [@aref2018measuring]. Since finding the optimal partition is computationally hard, the function uses simulated annealing and returns an upper bound. For exact results, `frustration_exact()` solves the problem via integer programming for small networks.
+The **frustration** method finds a partition of the network into two groups and counts how many edges violate the balance pattern (negative ties within groups and positive ties between groups). The fewer violations, the more balanced the network [@aref2018measuring]. Since finding the optimal partition is computationally hard, the function uses simulated annealing and returns an upper bound. For exact results, `frustration_exact()` solves the problem via integer programming for small networks.
 For the `tribes` network, which is not perfectly balanced, the three methods give the following results.
 
 ```{r}

@@ -24,12 +24,12 @@ library(patchwork)
 
 At its core, a centrality index assigns a numeric value to each node in a network. Higher values indicate greater centrality, but what "central" means depends on the index. Different indices capture fundamentally different notions of importance, each tied to a different structural property of the network. The four most widely used families of centrality, formalized in the conceptual clarification of @freeman1979centrality, can be mapped to distinct social intuitions:
 
-- **Degree** measures *activity*: How many direct connections does a node have? A node with many ties is active, popular, or well-connected.
-- **Closeness** measures *efficiency*: How quickly can a node reach all others? A node that is close to everyone can spread information or access resources with minimal steps.
-- **Betweenness** measures *brokerage*: How often does a node sit on the shortest path between others? A node with high betweenness controls or mediates the flow between other parts of the network.
-- **Eigenvector centrality** measures *prestige*: Is a node connected to other well-connected nodes? A node may have few ties, but if those ties are to important nodes, it is central by association.
+- **Degree** measures **activity**: How many direct connections does a node have? A node with many ties is active, popular, or well-connected.
+- **Closeness** measures **efficiency**: How quickly can a node reach all others? A node that is close to everyone can spread information or access resources with minimal steps.
+- **Betweenness** measures **brokerage**: How often does a node sit on the shortest path between others? A node with high betweenness controls or mediates the flow between other parts of the network.
+- **Eigenvector centrality** measures **prestige**: Is a node connected to other well-connected nodes? A node may have few ties, but if those ties are to important nodes, it is central by association.
 
-These four intuitions are not interchangeable. A broker (high betweenness) need not be popular (high degree), and a prestigious node (high eigenvector) need not be efficient at reaching everyone (high closeness). This is precisely why multiple indices exist and why the choice of index should be guided by the research question at hand. Dozens of further indices have been proposed, most of which refine or combine these four ideas. We include one such example below, namely *subgraph centrality*, which captures local embeddedness via closed walks of all lengths, to give a flavor of what lies beyond the four main families.
+These four intuitions are not interchangeable. A broker (high betweenness) need not be popular (high degree), and a prestigious node (high eigenvector) need not be efficient at reaching everyone (high closeness). This is precisely why multiple indices exist and why the choice of index should be guided by the research question at hand. Dozens of further indices have been proposed, most of which refine or combine these four ideas. We include one such example below, namely **subgraph centrality**, which captures local embeddedness via closed walks of all lengths, to give a flavor of what lies beyond the four main families.
 
 ::: {.callout-note}
 For a more formal treatment of what constitutes a centrality index and the structural properties that underlie different indices, see @sec-advanced-centrality-concepts.
@@ -58,7 +58,7 @@ ggraph(dbces11, "stress") +
 
 ### Degree
 
-The most straightforward centrality index is *degree*, which counts the number of neighbors a node has. A node with high degree is directly connected to many others, making it active or popular in a social sense. Formally, letting $A = (a_{vu})$ denote the adjacency matrix,
+The most straightforward centrality index is **degree**, which counts the number of neighbors a node has. A node with high degree is directly connected to many others, making it active or popular in a social sense. Formally, letting $A = (a_{vu})$ denote the adjacency matrix,
 
 $$
 C_D(v) = \sum_{u \neq v} a_{vu}.
@@ -69,7 +69,7 @@ $$
 degree(dbces11)
 ```
 
-For weighted networks, *strength* (also called weighted degree) sums the edge weights instead of simply counting ties. This is useful when ties carry different intensities, such as frequency of communication or volume of trade. As an illustration we use the `miserables` network, which records co-occurrences of characters in Victor Hugo's *Les Misérables*, with edge weights counting how often two characters appear in the same chapter.
+For weighted networks, **strength** (also called weighted degree) sums the edge weights instead of simply counting ties. This is useful when ties carry different intensities, such as frequency of communication or volume of trade. As an illustration we use the `miserables` network, which records co-occurrences of characters in Victor Hugo's *Les Misérables*, with edge weights counting how often two characters appear in the same chapter.
 
 ```{r}
 #| label: strength-example
@@ -79,7 +79,7 @@ head(sort(strength(miserables, weights = E(miserables)$weight), decreasing = TRU
 
 ### Closeness
 
-*Closeness centrality* is based on the shortest path distances between nodes. The idea is that a central node can reach all other nodes quickly. Letting $d(v, u)$ denote the length of the shortest path from $v$ to $u$,
+**Closeness centrality** is based on the shortest path distances between nodes. The idea is that a central node can reach all other nodes quickly. Letting $d(v, u)$ denote the length of the shortest path from $v$ to $u$,
 
 $$
 C_C(v) = \frac{1}{\sum_{u \neq v} d(v, u)},
@@ -98,7 +98,7 @@ Closeness centrality is only well-defined for connected networks, since distance
 
 ### Betweenness
 
-*Betweenness centrality* counts how often a node lies on the shortest path between pairs of other nodes. A node with high betweenness acts as a bridge or broker: removing it would increase distances or disconnect parts of the network. Letting $\sigma_{st}$ denote the number of shortest paths from $s$ to $t$ and $\sigma_{st}(v)$ the number of those passing through $v$,
+**Betweenness centrality** counts how often a node lies on the shortest path between pairs of other nodes. A node with high betweenness acts as a bridge or broker: removing it would increase distances or disconnect parts of the network. Letting $\sigma_{st}$ denote the number of shortest paths from $s$ to $t$ and $\sigma_{st}(v)$ the number of those passing through $v$,
 
 $$
 C_B(v) = \sum_{s \neq v \neq t} \frac{\sigma_{st}(v)}{\sigma_{st}}.
@@ -111,7 +111,7 @@ betweenness(dbces11)
 
 ### Eigenvector Centrality
 
-*Eigenvector centrality* [@bonacich1987power] extends the idea of degree by weighting each connection by the centrality of the neighbor. A node is central if it is connected to other central nodes, which leads to the recursive definition
+**Eigenvector centrality** [@bonacich1987power] extends the idea of degree by weighting each connection by the centrality of the neighbor. A node is central if it is connected to other central nodes, which leads to the recursive definition
 
 $$
 C_E(v) = \frac{1}{\lambda} \sum_{u \in N(v)} C_E(u),
@@ -130,7 +130,7 @@ On disconnected networks, the leading eigenvector of the adjacency matrix concen
 
 ### Subgraph Centrality
 
-*Subgraph centrality* [@estrada2005subgraph] quantifies the participation of each node in all subgraphs of the network, weighted by the inverse factorial of their size. It captures how embedded a node is in the local structure of the network, counting closed walks of all lengths.
+**Subgraph centrality** [@estrada2005subgraph] quantifies the participation of each node in all subgraphs of the network, weighted by the inverse factorial of their size. It captures how embedded a node is in the local structure of the network, counting closed walks of all lengths.
 
 ```{r}
 #| label: sub-dbces11
@@ -214,7 +214,7 @@ data("ht_advice")
 
 ### PageRank
 
-*PageRank* [@brin1998anatomy] is perhaps the best-known index for directed networks, originally developed to rank web pages. It assigns each node a score that grows with the number and the PageRank of its incoming neighbors. In a social setting, a high PageRank identifies individuals who receive attention or endorsement from other well-regarded individuals.
+**PageRank** [@brin1998anatomy] is perhaps the best-known index for directed networks, originally developed to rank web pages. It assigns each node a score that grows with the number and the PageRank of its incoming neighbors. In a social setting, a high PageRank identifies individuals who receive attention or endorsement from other well-regarded individuals.
 
 ```{r}
 #| label: pagerank-ht
@@ -223,7 +223,7 @@ round(page_rank(ht_advice)$vector, 3)
 
 ### Hubs and Authorities
 
-The *HITS* algorithm [@kleinberg1999authoritative] assigns each node two scores that reinforce each other: a good *hub* points to many good *authorities*, and a good *authority* is pointed to by many good *hubs*. In the advice network, authorities are employees who are frequently consulted, while hubs are employees who consult many others.
+The **HITS** algorithm [@kleinberg1999authoritative] assigns each node two scores that reinforce each other: a good **hub** points to many good **authorities**, and a good **authority** is pointed to by many good **hubs**. In the advice network, authorities are employees who are frequently consulted, while hubs are employees who consult many others.
 
 ```{r}
 #| label: hits-ht
@@ -234,7 +234,7 @@ round(hits$authority, 3)
 
 ## Normalization
 
-Many centrality indices can be *normalized* to produce values that are comparable across networks of different sizes. For instance, raw degree depends on the number of nodes in the network, making it difficult to compare across networks. Normalized degree divides by the maximum possible degree ($n - 1$), yielding a proportion.
+Many centrality indices can be **normalized** to produce values that are comparable across networks of different sizes. For instance, raw degree depends on the number of nodes in the network, making it difficult to compare across networks. Normalized degree divides by the maximum possible degree ($n - 1$), yielding a proportion.
 
 ```{r}
 #| label: normalization
@@ -250,7 +250,7 @@ Most `igraph` centrality functions accept a `normalized` argument. For betweenne
 
 ## Centralization
 
-While centrality is a node-level property, *centralization* is a network-level summary that captures how unequal the distribution of centrality is across all nodes. Freeman's centralization compares the observed network to the theoretical maximum inequality, which occurs in a *star graph* (one node connected to all others, no other edges).
+While centrality is a node-level property, **centralization** is a network-level summary that captures how unequal the distribution of centrality is across all nodes. Freeman's centralization compares the observed network to the theoretical maximum inequality, which occurs in a **star graph** (one node connected to all others, no other edges).
 
 A centralization score of 1 means the network is maximally centralized (like a star), while a score near 0 means centrality is evenly distributed (like a ring or complete graph). @fig-centralization-contrast shows these two extremes side by side.
 
@@ -297,7 +297,7 @@ These scores tell us not just *who* is central, but *how centralized* the networ
 
 ## Other Centrality Packages
 
-Beyond `igraph`, several R packages offer additional centrality indices. The `sna` package implements indices such as *flow betweenness* (based on maximum flow rather than shortest paths), *information centrality* (based on information-theoretic measures), and *stress centrality* (counting all shortest paths through a node, without normalization). `sna` functions operate on adjacency matrices rather than `igraph` objects, so we first convert the graph.
+Beyond `igraph`, several R packages offer additional centrality indices. The `sna` package implements indices such as **flow betweenness** (based on maximum flow rather than shortest paths), **information centrality** (based on information-theoretic measures), and **stress centrality** (counting all shortest paths through a node, without normalization). `sna` functions operate on adjacency matrices rather than `igraph` objects, so we first convert the graph.
 
 ```{r}
 #| label: sna-example
@@ -409,7 +409,7 @@ We have now seen that different centrality indices can pick different "most cent
 
 ### Neighborhood Inclusion
 
-The structural property at the heart of `netrankr` is *neighborhood inclusion*, illustrated in @fig-neighborhood-inclusion. If every neighbor of a node $u$ is also a neighbor of another node $v$ (plus possibly $v$ itself), then $u$ sits in a structurally weaker position than $v$: whatever $u$ can reach, $v$ can reach too, and more. Every commonly used centrality index respects this: if $u$ is neighborhood-dominated by $v$, no index will rank $u$ above $v$.
+The structural property at the heart of `netrankr` is **neighborhood inclusion**, illustrated in @fig-neighborhood-inclusion. If every neighbor of a node $u$ is also a neighbor of another node $v$ (plus possibly $v$ itself), then $u$ sits in a structurally weaker position than $v$: whatever $u$ can reach, $v$ can reach too, and more. Every commonly used centrality index respects this: if $u$ is neighborhood-dominated by $v$, no index will rank $u$ above $v$.
 
 ![Neighborhood inclusion: the neighbors of the left node are contained in the closed neighborhood of the right node.](img/neighborhood_inclusion.png){#fig-neighborhood-inclusion width=60%}
 
@@ -425,7 +425,7 @@ Only about 16% of pairs are comparable in `dbces11`. The other 84% are structura
 
 ### Rank Intervals
 
-For a partially ordered set of nodes, every centrality index is one particular *linear extension*, a total ordering that respects the partial order. `rank_intervals()` reports, for each node, the smallest and largest rank it can take across all such extensions. Wide intervals mean the structure leaves the node's position open; narrow intervals mean the structure pins it down.
+For a partially ordered set of nodes, every centrality index is one particular **linear extension**, a total ordering that respects the partial order. `rank_intervals()` reports, for each node, the smallest and largest rank it can take across all such extensions. Wide intervals mean the structure leaves the node's position open; narrow intervals mean the structure pins it down.
 
 ```{r}
 #| label: rank-intervals-dbces
