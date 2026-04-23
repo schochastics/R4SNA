@@ -165,7 +165,7 @@ Node size is scaled from degree, fill comes from the wealth tier, and the family
 
 ### A first interactive network
 
-With `nodes` and `edges` in hand, the shortest viable `g6R` pipeline is a single `g6()` call piped into a layout. @fig-g6r-first shows the result: the force simulation animates as the graph loads, but no user interactions are wired up yet — panning, zooming, dragging, and the like are added through behaviours, which are covered in their own section further down.
+With `nodes` and `edges` in hand, the shortest viable `g6R` pipeline is a single `g6()` call piped into a layout. @fig-g6r-first shows the result: the force simulation animates as the graph loads, but no user interactions are wired up yet. These are added through behaviours, which are covered in their own section further down.
 
 ```{r}
 #| label: fig-g6r-first
@@ -210,7 +210,7 @@ The package implements several other layout algorithms, including `concentric_la
 
 ## Styling Nodes and Edges
 
-There are two complementary ways to control the appearance of nodes and edges. Per-element styles, set in the `style` slot of each node or edge, give every element its own colour, size, and label — this is what we did in the data preparation above. Global defaults, set with `g6_options()`, apply to all elements and can be overridden by per-element styles.
+There are two complementary ways to control the appearance of nodes and edges. Per-element styles, set in the `style` slot of each node or edge, give every element its own colour, size, and label as we did in the data preparation above. Global defaults, set with `g6_options()`, apply to all elements and can be overridden by per-element styles.
 
 ### Per-element styling
 
@@ -244,7 +244,7 @@ g6(nodes_bold, edges) |>
 
 ### Global defaults with g6_options()
 
-For styling that applies uniformly to every element, `g6_options()` is cleaner than touching each node. It takes nested option builders — `node_options()`, `edge_options()`, and the corresponding `*_style_options()` helpers — that mirror G6's global style configuration. In @fig-g6r-options-style we shrink the label font, move labels below the node, and thin out the edge strokes globally.
+For styling that applies uniformly to every element, `g6_options()` is cleaner than touching each node. It takes nested option builders like `node_options()`, `edge_options()`, and the corresponding `*_style_options()` helpers, that mirror G6's global style configuration. In @fig-g6r-options-style we shrink the label font, move labels below the node, and thin out the edge strokes globally.
 
 ```{r}
 #| label: fig-g6r-options-style
@@ -326,11 +326,11 @@ g6(nodes, edges) |>
 
 ## Plugins
 
-Plugins add features on top of the base visualization. They are activated through `g6_plugins()` and can be combined freely. The two plugins that make `g6R` stand out as a graph-visualization tool — hulls and bubble sets — come first.
+Plugins add features on top of the base visualization. They are activated through `g6_plugins()` and can be combined freely. The two plugins that make `g6R` stand out as a graph-visualization tool, hulls and bubble sets, come first.
 
 ### Visual grouping: hulls
 
-In @fig-network-grps-sol of the previous chapter, we used `geom_mark_hull()` from `ggforce` to highlight clusters in a static plot. The `hull()` plugin in `g6R` is the interactive analogue: it draws a convex polygon around a named set of nodes and redraws as the nodes move. The `members` argument is a character vector of node ids, which is where the explicit list-based construction pays off — we simply split the family names by wealth tier.
+In @fig-network-grps-sol of the previous chapter, we used `geom_mark_hull()` from `ggforce` to highlight clusters in a static plot. The `hull()` plugin in `g6R` is the interactive analogue: it draws a convex polygon around a named set of nodes and redraws as the nodes move. The `members` argument is a character vector of node ids, which is where the explicit list-based construction pays off. We can simply split the family names by wealth tier.
 
 @fig-g6r-hull uses the `"drag-element"` behaviour (which updates node positions directly) rather than `drag_element_force()`, and sets `animation = FALSE`. Under this combination the hull reliably redraws as you drag; under the force-based drag it currently does not.
 
@@ -394,7 +394,7 @@ g6(nodes, edges) |>
 
 ### Tooltips
 
-Tooltips display information when the user hovers over a node. The default tooltip only shows the node's id, so to surface the attributes we stored in the `data` slot earlier we pass a `getContent` callback to `tooltips()`. The callback is a small JavaScript function — wrapped with `htmlwidgets::JS()` — that receives the hovered items and returns the HTML to render. Hovering over a family in @fig-g6r-tooltip now shows its name, wealth tier, and degree.
+Tooltips display information when the user hovers over a node. The default tooltip only shows the node's id, so to surface the attributes we stored in the `data` slot earlier we pass a `getContent` callback to `tooltips()`. The callback is a small JavaScript function, wrapped with `htmlwidgets::JS()`  that receives the hovered items and returns the HTML to render. Hovering over a family in @fig-g6r-tooltip now shows its name, wealth tier, and degree.
 
 ```{r}
 #| label: fig-g6r-tooltip
