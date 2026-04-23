@@ -1,5 +1,9 @@
 # Interactive Visualization
 
+::: {.content-visible when-format="pdf"}
+*This chapter demonstrates interactive network visualizations. The figures below are static placeholders; the fully interactive versions are available in the online HTML edition at <https://schochastics.io/R4SNA>.*
+:::
+
 The previous chapters focused on creating static network plots with `ggraph`. Static visualizations are essential for publications and reports, but interactive visualizations open up a different mode of exploration: users can pan across the canvas, zoom into dense regions, hover over nodes for details, and drag elements to untangle complex structures. This chapter surveys the landscape of interactive network visualization in R and then provides a thorough introduction to `g6R`, a modern and feature-rich package for building interactive network graphics.
 
 ## Packages Needed for this Chapter
@@ -61,16 +65,19 @@ The `visNetwork` package wraps the vis.js library and offers a broad toolkit for
 
 ```{r}
 #| label: fig-visnetwork
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network rendered with `visNetwork`."
+if (is_html) {
+  V(flo)$label <- V(flo)$name
+  V(flo)$group <- V(flo)$wealth_tier
+  V(flo)$value <- V(flo)$degree
 
-V(flo)$label <- V(flo)$name
-V(flo)$group <- V(flo)$wealth_tier
-V(flo)$value <- V(flo)$degree
-
-vis_data <- toVisNetworkData(flo)
-visNetwork(vis_data$nodes, vis_data$edges, width = "100%", height = "400px") |>
-  visOptions(highlightNearest = TRUE)
+  vis_data <- toVisNetworkData(flo)
+  visNetwork(vis_data$nodes, vis_data$edges, width = "100%", height = "400px") |>
+    visOptions(highlightNearest = TRUE)
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 Out of the box, `visNetwork` provides draggable nodes, zoom, and hover highlighting (see @fig-visnetwork). It is well suited for quick interactive previews that do not require much customization.
@@ -81,21 +88,25 @@ The `networkD3` package wraps D3.js and produces force-directed layouts (see @fi
 
 ```{r}
 #| label: fig-networkd3
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network rendered with `networkD3`."
-d3_data <- igraph_to_networkD3(flo, group = V(flo)$wealth_tier)
+if (is_html) {
+  d3_data <- igraph_to_networkD3(flo, group = V(flo)$wealth_tier)
 
-forceNetwork(
-  Links = d3_data$links,
-  Nodes = d3_data$nodes,
-  Source = "source",
-  Target = "target",
-  NodeID = "name",
-  Group = "group",
-  opacity = 0.9,
-  zoom = TRUE,
-  fontSize = 12
-)
+  forceNetwork(
+    Links = d3_data$links,
+    Nodes = d3_data$nodes,
+    Source = "source",
+    Target = "target",
+    NodeID = "name",
+    Group = "group",
+    opacity = 0.9,
+    zoom = TRUE,
+    fontSize = 12
+  )
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### threejs
@@ -104,11 +115,15 @@ The `threejs` package renders networks in 3D using WebGL (see @fig-threejs). The
 
 ```{r}
 #| label: fig-threejs
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network in 3D with `threejs`."
-graphjs(flo,
-  vertex.size = 0.3 + 0.2 * V(flo)$degree
-)
+if (is_html) {
+  graphjs(flo,
+    vertex.size = 0.3 + 0.2 * V(flo)$degree
+  )
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 Each of these packages has its place. `visNetwork` is mature and full-featured, `networkD3` leverages the power of D3.js, and `threejs` offers 3D rendering. For the remainder of this chapter we focus on `g6R`, which provides the most comprehensive framework for interactive graph visualization in R, with a rich plugin system and high-performance rendering.
@@ -169,10 +184,14 @@ With `nodes` and `edges` in hand, the shortest viable `g6R` pipeline is a single
 
 ```{r}
 #| label: fig-g6r-first
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with `g6R` using just a layout and no behaviours."
-g6(nodes, edges) |>
-  g6_layout(d3_force_layout())
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout(d3_force_layout())
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### The g6R workflow
@@ -199,11 +218,15 @@ Another force-directed option is `force_atlas2_layout()`, a variant of the Force
 
 ```{r}
 #| label: fig-g6r-d3atlas
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with the `force_atlas2` layout."
-g6(nodes, edges) |>
-  g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
-  g6_options(autoFit = "view", autoResize = TRUE)
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
+    g6_options(autoFit = "view", autoResize = TRUE)
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 The package implements several other layout algorithms, including `concentric_layout()` for ring-based arrangements and `dendrogram_layout()` for tree graphs.
@@ -218,28 +241,32 @@ Because the `nodes` and `edges` lists we built already carry a `style` slot for 
 
 ```{r}
 #| label: fig-g6r-per-element
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with thicker node borders applied per element."
-nodes_bold <- do.call(g6_nodes, unname(Map(
-  function(name, tier, deg) {
-    g6_node(
-      id = name,
-      data = list(wealth_tier = tier, degree = deg),
-      style = list(
-        labelText = name,
-        fill = palette3[[tier]],
-        size = 14 + 2 * deg,
-        stroke = "#222222",
-        lineWidth = 2.5
+if (is_html) {
+  nodes_bold <- do.call(g6_nodes, unname(Map(
+    function(name, tier, deg) {
+      g6_node(
+        id = name,
+        data = list(wealth_tier = tier, degree = deg),
+        style = list(
+          labelText = name,
+          fill = palette3[[tier]],
+          size = 14 + 2 * deg,
+          stroke = "#222222",
+          lineWidth = 2.5
+        )
       )
-    )
-  },
-  V(flo)$name, V(flo)$wealth_tier, V(flo)$degree
-)))
+    },
+    V(flo)$name, V(flo)$wealth_tier, V(flo)$degree
+  )))
 
-g6(nodes_bold, edges) |>
-  g6_layout(d3_force_layout()) |>
-  g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
+  g6(nodes_bold, edges) |>
+    g6_layout(d3_force_layout()) |>
+    g6_behaviors(drag_canvas(), zoom_canvas(), drag_element_force())
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### Global defaults with g6_options()
@@ -248,24 +275,28 @@ For styling that applies uniformly to every element, `g6_options()` is cleaner t
 
 ```{r}
 #| label: fig-g6r-options-style
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with global label and edge defaults applied through `g6_options()`."
-g6(nodes, edges) |>
-  g6_layout() |>
-  g6_options(
-    node = node_options(
-      style = node_style_options(
-        labelFontSize = 11,
-        labelPlacement = "bottom"
-      )
-    ),
-    edge = edge_options(
-      style = edge_style_options(
-        stroke = "#bbbbbb",
-        lineWidth = 0.8
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout() |>
+    g6_options(
+      node = node_options(
+        style = node_style_options(
+          labelFontSize = 11,
+          labelPlacement = "bottom"
+        )
+      ),
+      edge = edge_options(
+        style = edge_style_options(
+          stroke = "#bbbbbb",
+          lineWidth = 0.8
+        )
       )
     )
-  )
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ## Behaviors
@@ -278,11 +309,15 @@ The most basic behaviors allow users to navigate the canvas. `drag_canvas()` ena
 
 ```{r}
 #| label: fig-g6r-nav
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with basic navigation behaviors."
-g6(nodes, edges) |>
-  g6_layout(d3_force_layout()) |>
-  g6_behaviors(drag_canvas(), zoom_canvas())
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout(d3_force_layout()) |>
+    g6_behaviors(drag_canvas(), zoom_canvas())
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### Element interaction
@@ -291,17 +326,21 @@ Beyond canvas navigation, users can interact with individual elements. `drag_ele
 
 ```{r}
 #| label: fig-g6r-interact
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with drag, hover, and click-select behaviors."
-g6(nodes, edges) |>
-  g6_layout(d3_force_layout()) |>
-  g6_behaviors(
-    drag_canvas(),
-    zoom_canvas(),
-    drag_element_force(fixed = TRUE),
-    hover_activate(),
-    click_select(multiple = TRUE)
-  )
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout(d3_force_layout()) |>
+    g6_behaviors(
+      drag_canvas(),
+      zoom_canvas(),
+      drag_element_force(fixed = TRUE),
+      hover_activate(),
+      click_select(multiple = TRUE)
+    )
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 In @fig-g6r-interact, try hovering over a node to see its neighbourhood highlighted, or shift-click to select multiple families.
@@ -312,16 +351,20 @@ For selecting groups of nodes, `g6R` provides two area-selection tools. `brush_s
 
 ```{r}
 #| label: fig-g6r-lasso
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with lasso and brush selection."
-g6(nodes, edges) |>
-  g6_layout(d3_force_layout()) |>
-  g6_behaviors(
-    drag_canvas(),
-    zoom_canvas(),
-    lasso_select(),
-    brush_select()
-  )
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout(d3_force_layout()) |>
+    g6_behaviors(
+      drag_canvas(),
+      zoom_canvas(),
+      lasso_select(),
+      brush_select()
+    )
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ## Plugins
@@ -336,30 +379,34 @@ In @fig-network-grps-sol of the previous chapter, we used `geom_mark_hull()` fro
 
 ```{r}
 #| label: fig-g6r-hull
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with hulls around wealth tiers."
-tier_members <- split(V(flo)$name, V(flo)$wealth_tier)
+if (is_html) {
+  tier_members <- split(V(flo)$name, V(flo)$wealth_tier)
 
-g6(nodes, edges) |>
-  g6_layout() |>
-  g6_behaviors("drag-element") |>
-  g6_options(
-    animation = FALSE
-  ) |> 
-  g6_plugins(
-    hull(
-      key = "hull-low", members = tier_members$low,
-      fill = palette3[["low"]], stroke = palette3[["low"]]
-    ),
-    hull(
-      key = "hull-mid", members = tier_members$mid,
-      fill = palette3[["mid"]], stroke = palette3[["mid"]]
-    ),
-    hull(
-      key = "hull-high", members = tier_members$high,
-      fill = palette3[["high"]], stroke = palette3[["high"]]
+  g6(nodes, edges) |>
+    g6_layout() |>
+    g6_behaviors("drag-element") |>
+    g6_options(
+      animation = FALSE
+    ) |>
+    g6_plugins(
+      hull(
+        key = "hull-low", members = tier_members$low,
+        fill = palette3[["low"]], stroke = palette3[["low"]]
+      ),
+      hull(
+        key = "hull-mid", members = tier_members$mid,
+        fill = palette3[["mid"]], stroke = palette3[["mid"]]
+      ),
+      hull(
+        key = "hull-high", members = tier_members$high,
+        fill = palette3[["high"]], stroke = palette3[["high"]]
+      )
     )
-  )
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### Visual grouping: bubble sets
@@ -368,28 +415,32 @@ The `bubble_sets()` plugin offers an alternative visual style. Instead of sharp 
 
 ```{r}
 #| label: fig-g6r-bubble
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with bubble sets around wealth tiers."
-g6(nodes, edges) |>
-  g6_layout() |>
-  g6_behaviors("drag-element") |>
-  g6_options(
-    animation = FALSE
-  ) |> 
-  g6_plugins(
-    bubble_sets(
-      key = "bs-low", members = tier_members$low,
-      fill = palette3[["low"]], stroke = palette3[["low"]]
-    ),
-    bubble_sets(
-      key = "bs-mid", members = tier_members$mid,
-      fill = palette3[["mid"]], stroke = palette3[["mid"]]
-    ),
-    bubble_sets(
-      key = "bs-high", members = tier_members$high,
-      fill = palette3[["high"]], stroke = palette3[["high"]]
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout() |>
+    g6_behaviors("drag-element") |>
+    g6_options(
+      animation = FALSE
+    ) |>
+    g6_plugins(
+      bubble_sets(
+        key = "bs-low", members = tier_members$low,
+        fill = palette3[["low"]], stroke = palette3[["low"]]
+      ),
+      bubble_sets(
+        key = "bs-mid", members = tier_members$mid,
+        fill = palette3[["mid"]], stroke = palette3[["mid"]]
+      ),
+      bubble_sets(
+        key = "bs-high", members = tier_members$high,
+        fill = palette3[["high"]], stroke = palette3[["high"]]
+      )
     )
-  )
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### Tooltips
@@ -398,18 +449,22 @@ Tooltips display information when the user hovers over a node. The default toolt
 
 ```{r}
 #| label: fig-g6r-tooltip
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with hover tooltips."
-tooltip_content <- htmlwidgets::JS(
-  "(event, items) => items.map(d =>
-     `<b>${d.id}</b><br>wealth tier: ${d.data.wealth_tier}<br>degree: ${d.data.degree}`
-   ).join('')"
-)
+if (is_html) {
+  tooltip_content <- htmlwidgets::JS(
+    "(event, items) => items.map(d =>
+       `<b>${d.id}</b><br>wealth tier: ${d.data.wealth_tier}<br>degree: ${d.data.degree}`
+     ).join('')"
+  )
 
-g6(nodes, edges) |>
-  g6_layout() |>
-  g6_behaviors(drag_canvas(), zoom_canvas(), hover_activate()) |>
-  g6_plugins(tooltips(getContent = tooltip_content))
+  g6(nodes, edges) |>
+    g6_layout() |>
+    g6_behaviors(drag_canvas(), zoom_canvas(), hover_activate()) |>
+    g6_plugins(tooltips(getContent = tooltip_content))
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### Legend
@@ -418,11 +473,15 @@ The `legend` plugin reads a field name from node data and draws a legend for it 
 
 ```{r}
 #| label: fig-g6r-legend
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with a wealth-tier legend."
-g6(nodes, edges) |>
-  g6_layout() |>
-  g6_plugins(legend(nodeField = "wealth_tier"))
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout() |>
+    g6_plugins(legend(nodeField = "wealth_tier"))
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### Fisheye lens
@@ -431,11 +490,15 @@ The fisheye plugin applies a focus-plus-context distortion: the area under the c
 
 ```{r}
 #| label: fig-g6r-fisheye
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with fisheye distortion."
-g6(nodes, edges) |>
-  g6_layout() |>
-  g6_plugins(fish_eye())
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout() |>
+    g6_plugins(fish_eye())
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
 
 ### Minimap
@@ -444,9 +507,13 @@ A minimap provides a thumbnail overview of the entire graph, with a shaded recta
 
 ```{r}
 #| label: fig-g6r-minimap
-#| eval: !expr is_html
+#| echo: !expr is_html
 #| fig-cap: "Florentine marriage network with a minimap for navigation."
-g6(nodes, edges) |>
-  g6_layout() |>
-  g6_plugins(minimap())
+if (is_html) {
+  g6(nodes, edges) |>
+    g6_layout() |>
+    g6_plugins(minimap())
+} else {
+  knitr::include_graphics("img/placeholder-interactive.png")
+}
 ```
