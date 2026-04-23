@@ -100,7 +100,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-30f7eecba5f8069135bf6061ca14b3f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -557,7 +557,7 @@ Gama     -1    -1     1    0</code></pre>
 </section>
 <section id="structural-balance" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="structural-balance"><span class="header-section-number">6.3</span> Structural Balance</h2>
-<p>Structural balance theory originates in the social psychology of Fritz Heider <span class="citation" data-cites="heider1946attitudes">(<a href="#ref-heider1946attitudes" role="doc-biblioref">1946</a>)</span> and was formalised for graphs by <span class="citation" data-cites="cartwright1956structural">Cartwright and Harary (<a href="#ref-cartwright1956structural" role="doc-biblioref">1956</a>)</span>. The core idea is intuitive: consider three people. If Alice and Bob are friends, and Bob and Carol are friends, we expect Alice and Carol to also be friends: “the friend of my friend is my friend.” Similarly, if Alice and Bob are enemies and Bob and Carol are enemies, we expect Alice and Carol to be friends: “the enemy of my enemy is my friend.” These configurations are <em>balanced</em>. A triangle where all three pairs are enemies, or where two pairs are friends but one pair are enemies, feels unstable and is considered <em>unbalanced</em>.</p>
+<p>Structural balance theory originates in the social psychology of Fritz Heider <span class="citation" data-cites="heider1946attitudes">(<a href="#ref-heider1946attitudes" role="doc-biblioref">1946</a>)</span> and was formalised for graphs by <span class="citation" data-cites="cartwright1956structural">Cartwright and Harary (<a href="#ref-cartwright1956structural" role="doc-biblioref">1956</a>)</span>. The core idea is intuitive: consider three people. If Alice and Bob are friends, and Bob and Carol are friends, we expect Alice and Carol to also be friends: “the friend of my friend is my friend.” Similarly, if Alice and Bob are enemies and Bob and Carol are enemies, we expect Alice and Carol to be friends: “the enemy of my enemy is my friend.” These configurations are <strong>balanced</strong>. A triangle where all three pairs are enemies, or where two pairs are friends but one pair are enemies, feels unstable and is considered <strong>unbalanced</strong>.</p>
 <p>More formally, a triangle is balanced if it has an even number of negative ties (zero or two), and unbalanced if it has an odd number (one or three). All four possible configurations are shown in <a href="#fig-balance-triples" class="quarto-xref">Figure&nbsp;<span>6.3</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -573,7 +573,7 @@ Figure&nbsp;6.3: The four possible signed triangles and their balancedness.
 </div>
 </div>
 </div>
-<p>A network is <em>balanced</em> if it can be partitioned into two groups such that all ties within groups are positive and all ties between groups are negative.</p>
+<p>A network is <strong>balanced</strong> if it can be partitioned into two groups such that all ties within groups are positive and all ties between groups are negative.</p>
 <p>We can generate such a simple balanced network with <code>sample_islands_signed()</code>, which creates groups with positive intra-group ties and negative inter-group ties. It follows the logic of the function <code>sample_islands()</code> from <code>igraph</code>, with the added twist of making inter group edges negative. Setting <code>islands.n = 2</code> creates a perfectly balanced network with two groups.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>g_bal <span class="ot">&lt;-</span> <span class="fu">sample_islands_signed</span>(</span>
@@ -604,7 +604,7 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count_signed_triangles</span>(g_bal)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+++ ++- +-- --- 
-154   0   4   0 </code></pre>
+150   0   6   0 </code></pre>
 </div>
 </div>
 <p>Increasing the <code>islands.n</code> parameter to more than two creates networks that are not balanced in the strict two-group sense but are “clusterable” as defined by <span class="citation" data-cites="davis1967clustering">Davis (<a href="#ref-davis1967clustering" role="doc-biblioref">1967</a>)</span> – they can be partitioned into more than two groups with the same within-positive, between-negative pattern.</p>
@@ -624,9 +624,9 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 <pre><code>[1] 1</code></pre>
 </div>
 </div>
-<p>The <em>triangles</em> method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.</p>
-<p>The <em>walk</em> method uses eigenvalues of the signed and unsigned adjacency matrices to capture balance at all scales, not just triangles. It is based on the work of <span class="citation" data-cites="estrada2019rethinking">Estrada (<a href="#ref-estrada2019rethinking" role="doc-biblioref">2019</a>)</span>.</p>
-<p>The <em>frustration</em> method finds a partition of the network into two groups and counts how many edges violate the balance pattern (negative ties within groups and positive ties between groups). The fewer violations, the more balanced the network <span class="citation" data-cites="aref2018measuring">(<a href="#ref-aref2018measuring" role="doc-biblioref">Aref and Wilson 2018</a>)</span>. Since finding the optimal partition is computationally hard, the function uses simulated annealing and returns an upper bound. For exact results, <code>frustration_exact()</code> solves the problem via integer programming for small networks. For the <code>tribes</code> network, which is not perfectly balanced, the three methods give the following results.</p>
+<p>The <strong>triangles</strong> method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.</p>
+<p>The <strong>walk</strong> method uses eigenvalues of the signed and unsigned adjacency matrices to capture balance at all scales, not just triangles. It is based on the work of <span class="citation" data-cites="estrada2019rethinking">Estrada (<a href="#ref-estrada2019rethinking" role="doc-biblioref">2019</a>)</span>.</p>
+<p>The <strong>frustration</strong> method finds a partition of the network into two groups and counts how many edges violate the balance pattern (negative ties within groups and positive ties between groups). The fewer violations, the more balanced the network <span class="citation" data-cites="aref2018measuring">(<a href="#ref-aref2018measuring" role="doc-biblioref">Aref and Wilson 2018</a>)</span>. Since finding the optimal partition is computationally hard, the function uses simulated annealing and returns an upper bound. For exact results, <code>frustration_exact()</code> solves the problem via integer programming for small networks. For the <code>tribes</code> network, which is not perfectly balanced, the three methods give the following results.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(tribes, <span class="at">method =</span> <span class="st">"triangles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">

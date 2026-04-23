@@ -100,7 +100,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-30f7eecba5f8069135bf6061ca14b3f2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -504,7 +504,7 @@ window.Quarto = {
 </header>
 
 
-<p>Ego networks refer to the personal network surrounding a single focal individual, known as the <em>ego</em>. An ego network includes the ego, the people directly connected to them, so called <em>alters</em>, and the relationships among those alters.</p>
+<p>Ego networks refer to the personal network surrounding a single focal individual, known as the <strong>ego</strong>. An ego network includes the ego, the people directly connected to them, so called <strong>alters</strong>, and the relationships among those alters.</p>
 <p>Rather than examining an entire community or organization, ego network analysis focuses on the immediate social environment of one person, allowing researchers to understand how information, resources, influence, or support flow through that individual’s connections.</p>
 <p>By analyzing the size of the network, the strength of ties, the diversity of contacts, and the level of interconnectedness among alters, scholars can assess factors such as social capital, access to opportunities, and resilience. Ego networks are especially useful in studying phenomena like job searching, knowledge sharing, health behaviors, and online social interaction, where an individual’s direct relationships play a critical role in shaping outcomes.</p>
 <p>In this chapter, we will begin by introducing the fundamentals of ego network data and learning how to use the <code>egor</code> package to manipulate, construct, and visualize ego networks. We will then examine substantive research questions related to homophily; the tendency for similar individuals to associate with one another more frequently than with dissimilar others, across various demographic dimensions. Finally, we will explore an applied example in which properties of ego networks are used to predict important outcomes of interest.</p>
@@ -536,7 +536,7 @@ Note
 </section>
 <section id="ego-network-data-structure" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="ego-network-data-structure"><span class="header-section-number">7.2</span> Ego Network Data Structure</h2>
-<p>Ego network data are typically generated through survey-based approaches that capture information about individuals and their immediate social surroundings. In one common design, respondents (<em>egos</em>) are asked to name the people with whom they have specific types of relationships and to describe the connections among those named individuals (<em>alters</em>), thereby providing both node-level and tie-level information from a single informant. A more elaborate strategy uses a two-stage snowball approach: after the initial respondent identifies their contacts, those contacts are subsequently surveyed about their relationships with one another, allowing for more detailed mapping of ties within the ego’s local network. Although data collected in these ways do not reveal how these personal networks are embedded within the broader population structure, they enable researchers to estimate the distribution and characteristics of ego network forms across even very large populations.</p>
+<p>Ego network data are typically generated through survey-based approaches that capture information about individuals and their immediate social surroundings. In one common design, respondents (<strong>egos</strong>) are asked to name the people with whom they have specific types of relationships and to describe the connections among those named individuals (<strong>alters</strong>), thereby providing both node-level and tie-level information from a single informant. A more elaborate strategy uses a two-stage snowball approach: after the initial respondent identifies their contacts, those contacts are subsequently surveyed about their relationships with one another, allowing for more detailed mapping of ties within the ego’s local network. Although data collected in these ways do not reveal how these personal networks are embedded within the broader population structure, they enable researchers to estimate the distribution and characteristics of ego network forms across even very large populations.</p>
 <p>An important methodological implication of this design is that survey-based ego network data typically produce independent observations: each ego network is centered on a different respondent and represents a separate local structure. As a result, ego networks can often be treated as independent units of analysis, which allows researchers to apply standard statistical models (such as regression models) to explain variation in network characteristics (e.g., density, composition, or diversity) across egos.</p>
 <p>Methodologically, such data consist of multiple distinct networks, each centered on a different ego and typically composed of different actors. This means that each ego network should be stored and analyzed as a separate actor-by-actor matrix rather than combined into a single stacked dataset, since the matrices do not represent multiple relations among the same set of individuals.</p>
 <p>A second common source of ego network data involves deriving them from complete network datasets that already contain information about all actors and ties within a bounded population. In this case, researchers can extract the local network surrounding a focal actor directly from the larger structure. Simple extraction procedures allow analysts to isolate an ego and their direct ties, though these methods may omit information about relationships among the alters themselves. More comprehensive approaches rely on identifying a defined neighborhood—such as through a previously constructed attribute or partition that marks members of a particular ego’s local environment—and then generating a subgraph that preserves both ego–alter and alter–alter ties. Unlike survey-generated ego networks, these extracted ego networks remain embedded within a known global structure, enabling comparisons between local and whole-network properties.</p>
@@ -605,24 +605,24 @@ Note
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
-IGRAPH b06d8e2 DNW- 6 2 -- 
+IGRAPH b508638 DNW- 6 2 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from b06d8e2 (vertex names):
++ edges from b508638 (vertex names):
 [1] 2-&gt;5 2-&gt;5
 
 [[2]]
-IGRAPH 1a5969c DNW- 15 8 -- 
+IGRAPH df1009c DNW- 15 8 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from 1a5969c (vertex names):
++ edges from df1009c (vertex names):
 [1] 2-&gt;3 3-&gt;5 2-&gt;3 2-&gt;5 1-&gt;4 2-&gt;5 3-&gt;5 1-&gt;4
 
 [[3]]
-IGRAPH ab33db1 DNW- 5 6 -- 
+IGRAPH 16f3028 DNW- 5 6 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from ab33db1 (vertex names):
++ edges from 16f3028 (vertex names):
 [1] 1-&gt;2 1-&gt;3 1-&gt;2 2-&gt;3 1-&gt;3 2-&gt;3</code></pre>
 </div>
 </div>
