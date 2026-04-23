@@ -107,8 +107,7 @@ The `threejs` package renders networks in 3D using WebGL. The result is visually
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network in 3D with `threejs`."
 graphjs(flo,
-  vertex.size = 0.3 + 0.1 * V(flo)$degree,
-  vertex.color = palette3[V(flo)$wealth_tier]
+  vertex.size = 0.3 + 0.2 * V(flo)$degree
 )
 ```
 
@@ -132,7 +131,7 @@ We use `Map()` to zip the igraph attributes into per-node and per-edge lists, an
 
 ```{r}
 #| label: build-g6-data
-nodes <- do.call(g6_nodes, Map(
+nodes <- do.call(g6_nodes, unname(Map(
   function(name, tier, deg) {
     g6_node(
       id = name,
@@ -147,10 +146,10 @@ nodes <- do.call(g6_nodes, Map(
     )
   },
   V(flo)$name, V(flo)$wealth_tier, V(flo)$degree
-))
+)))
 
 edges_df <- igraph::as_data_frame(flo, what = "edges")
-edges <- do.call(g6_edges, Map(
+edges <- do.call(g6_edges, unname(Map(
   function(src, tgt) {
     g6_edge(
       source = src,
@@ -159,7 +158,7 @@ edges <- do.call(g6_edges, Map(
     )
   },
   edges_df$from, edges_df$to
-))
+)))
 ```
 
 Node size is scaled from degree, fill comes from the wealth tier, and the family name is used both as id and as label. Edges get a uniform light-grey stroke.
@@ -248,7 +247,7 @@ Because the `nodes` and `edges` lists we built already carry a `style` slot for 
 #| label: fig-g6r-per-element
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with thicker node borders applied per element."
-nodes_bold <- do.call(g6_nodes, Map(
+nodes_bold <- do.call(g6_nodes, unname(Map(
   function(name, tier, deg) {
     g6_node(
       id = name,
@@ -263,7 +262,7 @@ nodes_bold <- do.call(g6_nodes, Map(
     )
   },
   V(flo)$name, V(flo)$wealth_tier, V(flo)$degree
-))
+)))
 
 g6(nodes_bold, edges) |>
   g6_layout(d3_force_layout()) |>
