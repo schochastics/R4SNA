@@ -699,8 +699,7 @@ Prediction power matrix for `indeg_adv`. Entries represent expected conditional 
 
 
 
-These prediction strengths can be visualized using a prediction plot in a heat map style. The plot displays a color-coded matrix with rows corresponding to $X$ and columns to $Y$, where darker colors indicate higher predictive power (i.e., lower prediction uncertainty for `indeg_adv`). This is shown in @fig-expred.
-
+These prediction strengths can be visualized using a heatmap representation. The plot displays a color-coded matrix with rows corresponding to $X$ and columns to $Y$, where darker colors indicate higher predictive power (i.e., lower prediction uncertainty for `indeg_adv`). This is shown in @fig-expred.
 
 ```{r}
 #| label: fig-expred
@@ -709,62 +708,15 @@ These prediction strengths can be visualized using a prediction plot in a heat m
 #| fig-width: 8
 #| fig-cap: "Prediction power heatmap for $Z$=`indeg_adv`. Each cell shows the expected conditional entropy $EH(Z \\mid X,Y)$, where darker colors indicate stronger predictive power. The strongest predictors involve the variable `years`, particularly in combination with network-based variables such as `deg_mutadv` and `deg_cwk`. While `status` also contributes to prediction, it is not part of the strongest predictor pairs."
 
-# convert matrix to long format (base R)
-mat <- as.matrix(pred_vertex_advin)
-
-df <- as.data.frame(as.table(mat))
-names(df) <- c("X", "Y", "EH")
-
-# remove NA entries (target variable row/column)
-df <- df[!is.na(df$EH), ]
-
-ggplot(df, aes(x = Y, y = X, fill = EH)) +
-  geom_tile(color = "white") +
-  geom_text(aes(label = round(EH, 2)), size = 3) +
-  scale_fill_gradient(
-    low = "steelblue", 
-    high = "white",
-    name = "EH(Z|X,Y)"
-  ) +
-  labs(
-    x = "Predictor Y",
-    y = "Predictor X",
-  ) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
+make_pred_plot(pred_vertex_advin, "indeg_adv")
 ```
 
 The prediction power heatmap shows that the strongest overall predictor of `indeg_adv` is the network-based variable `deg_likfrn`, which yields the lowest expected conditional entropy among single predictors. This indicates that likely friendship ties are highly informative for explaining advice in-degree.
 
 Among other single predictors, `years` also performs well, followed by `status`, while variables such as `office` and `practice` provide weaker predictive power. Considering pairs of predictors, the strongest combinations typically involve `years` together with network-based variables such as `deg_mutadv` and `deg_cwk`, yielding the lowest prediction uncertainty overall. These results suggest that both network position, particularly likely friendship ties, and experience (`years`) play a central role in explaining variation in advice in-degree.
 
-
-Using a helper function `make_pred_plot()` shown below, we can create similar plots for all vertex variables to compare the results. This is shown in @fig-predplot-vertex.
-
-
-```{r}
-#| label: helper-func
-make_pred_plot <- function(mat, title) {
-  df <- as.data.frame(as.table(as.matrix(mat)))
-  names(df) <- c("X", "Y", "EH")
-  
-  df <- df[!is.na(df$EH), ]
-  
-  ggplot(df, aes(x = Y, y = X, fill = EH)) +
-    geom_tile(color = "white") +
-    geom_text(aes(label = round(EH, 2)), size = 2.5) +
-    scale_fill_gradient(low = "steelblue", high = "white") +
-    labs(title = title, x = NULL, y = NULL) +
-    theme_minimal() +
-    theme(
-      axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
-      axis.text.y = element_text(size = 7),
-      plot.title = element_text(size = 10)
-    )
-}
-```
+Using `make_pred_plot()`, we can create similar plots for all vertex variables to compare the results.
+We illustrate this for all vertex variables in @fig-predplot-vertex.
 
 ```{r}
 #| label: fig-predplot-vertex
@@ -782,13 +734,11 @@ p6 <- make_pred_plot(pred_vertex_frnout, "outdeg_frn")
 p7 <- make_pred_plot(pred_vertex_frnmut, "deg_mutfrn")
 p8 <- make_pred_plot(pred_vertex_frnlik, "deg_likfrn")
 
-
 (p1 | p2) /
 (p3 | p4) /
 (p5 | p6) /
 (p7 | p8)
 ```
-
 
 From @fig-predplot-vertex, we note the following. The vertex variables, network-based measures such as `deg_likfrn`, `deg_mutadv`, and other degree-related variables are consistently strong predictors, both individually and in combination. In particular, `deg_likfrn` often emerges as the best single predictor, indicating that embeddedness in likely friendship ties plays a central role in explaining variation in network position. 
 
@@ -815,8 +765,7 @@ pred_dyad_cowork    <- prediction_power("cowork", dyad_var)
 pred_dyad_advice    <- prediction_power("advice", dyad_var)
 pred_dyad_friend    <- prediction_power("friend", dyad_var)
 ```
-To visualize these matrices, we again use the helper function that converts each prediction matrix into a heatmap. Darker cells indicate lower expected conditional entropy and thus stronger predictive power. This is shown in @fig-predplot-dyad.
-
+To visualize these matrices, we again use the function `make_pred_plot()`, shown in @fig-predplot-dyad.
 
 ```{r}
 #| label: fig-predplot-dyad
@@ -824,6 +773,7 @@ To visualize these matrices, we again use the helper function that converts each
 #| fig-height: 18
 #| fig-width: 10
 #| fig-cap: "Prediction power heatmaps for dyad variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
+
 p1  <- make_pred_plot(pred_dyad_status,    "status")
 p2  <- make_pred_plot(pred_dyad_gender,    "gender")
 p3  <- make_pred_plot(pred_dyad_office,    "office")
@@ -834,9 +784,6 @@ p7  <- make_pred_plot(pred_dyad_lawschool, "lawschool")
 p8  <- make_pred_plot(pred_dyad_cowork,    "cowork")
 p9  <- make_pred_plot(pred_dyad_advice,    "advice")
 p10 <- make_pred_plot(pred_dyad_friend,    "friend")
-
-
-
 
 (p1 | p2) /
 (p3 | p4) /
@@ -861,13 +808,14 @@ Some of the clearest gains from using pairs of predictors appear for `office`, w
 The triad-level results suggest that attribute-based variables such as `status`, `years`, and `age` are often the most informative single predictors, while structural variables such as `cowork` and `advice` become especially important when used jointly. Thus, the triadic representation captures richer interactions, but the strongest predictive relationships arise from specific combinations of attribute and structural information rather than from structural variables alone.
 
 Overall, the results suggest that while triad-level representations introduce greater uncertainty, they also capture richer dependency structures, with combinations of structural variables playing a key role in prediction.
-
 ```{r}
 #| label: fig-predplot-triad
 #| echo: false
 #| fig-height: 18
 #| fig-width: 10
 #| fig-cap: "Prediction power heatmaps for triad variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
+
+# compute prediction power matrices
 pred_triad_status    <- prediction_power("status", triad_var)
 pred_triad_gender    <- prediction_power("gender", triad_var)
 pred_triad_office    <- prediction_power("office", triad_var)
@@ -876,6 +824,7 @@ pred_triad_age       <- prediction_power("age", triad_var)
 pred_triad_practice  <- prediction_power("practice", triad_var)
 pred_triad_lawschool <- prediction_power("lawschool", triad_var)
 
+# visualize using built-in function
 p1 <- make_pred_plot(pred_triad_status,    "status")
 p2 <- make_pred_plot(pred_triad_gender,    "gender")
 p3 <- make_pred_plot(pred_triad_office,    "office")
@@ -884,12 +833,34 @@ p5 <- make_pred_plot(pred_triad_age,       "age")
 p6 <- make_pred_plot(pred_triad_practice,  "practice")
 p7 <- make_pred_plot(pred_triad_lawschool, "lawschool")
 
-
 (p1 | p2) /
 (p3 | p4) /
 (p5 | p6) /
-(p7 | plot_spacer())
+(p7 | patchwork::plot_spacer())
 ```
+
+
+::: {callout-note}
+Tetravariate entropies extend the same idea to quadruples of variables. For four variables $X$, $Y$, $Z$, and $U$, the tetravariate entropy is denoted by
+
+$$
+H(X,Y,Z,U).
+$$
+
+The function `entropy_tetravar()` computes tetravariate entropy quantities for all quadruples of variables in a dataframe. In addition to $H(X,Y,Z,U)$, it returns expected conditional entropies and expected conditional joint entropies, such as
+
+$$
+EH(U \mid X,Y,Z) = H(X,Y,Z,U) - H(X,Y,Z),
+$$
+
+and
+
+$$
+EJ(X,Y \mid Z,U) = H(X,Z,U) + H(Y,Z,U) - H(Z,U) - H(X,Y,Z,U).
+$$
+
+These quantities are useful for studying prediction uncertainty and conditional dependence among four variables.
+:::
 
 ### Divergence Tests of Goodness of Fit
 Building on the dependence structures identified through association graphs, we can assess how well these structures fit the observed data using divergence-based goodness-of-fit tests.
@@ -967,21 +938,22 @@ This framework is particularly useful in multivariate settings, where models may
 
 
 #### Example: Dyad Variables 
-We illustrate a simple example of this test using the `netropy` package. The association graph for the dyad variables above suggests several simple structural models that may be of substantive interest. In the corporate law firm example, one such model is that `friend` and `cowork` are conditionally independent given `advice`, that is,
+We illustrate the use of divergence-based goodness-of-fit tests for dyad variables. The association graph constructed above suggests candidate dependence structures that can be formally evaluated. In the corporate law firm example, the variables `friend`, `cowork`, and `advice` form a closely connected group, motivating the conditional independence model
 
 $$
 \text{friend} \perp \text{cowork} \mid \text{advice}.
 $$
 
-This is highlighted in  @fig-divtest.
+This structure is highlighted in @fig-divtest.
 
 ```{r}
 #| echo: false
 #| label: fig-divtest
 #| fig-width: 10
 #| fig-height: 8
-#| fig-cap: "Association graph for dyad variables (threshold $J > 0.1$). The variables `friend`, `cowork`, and `advice` (highlighted in red) form a tightly connected group, suggesting a strong dependence structure and motivating the conditional independence model $\\text{friend} \\perp \\text{cowork} \\mid \\text{advice}$."
+#| fig-cap: "Association graph for dyad variables (threshold $J > 0.1$). The variables `friend`, `cowork`, and `advice` are highlighted, motivating the conditional independence model $\\text{friend} \\perp \\text{cowork} \\mid \\text{advice}$."
 library(ggraph)
+
 p <- assoc_graph(dyad_var, 0.10)
 
 p +
@@ -990,7 +962,6 @@ p +
     aes(x = x, y = y, fill = name %in% c("friend", "cowork", "advice")),
     shape = 21,
     color = "black",
-    stroke = 1,
     size = 20
   ) +
   scale_fill_manual(
@@ -1004,14 +975,13 @@ p +
   )
 ```
 
-Intuitively, this means that any association between friendship and co-working may be explained through the advice relation. In other words, once the advice relation is taken into account, there may be little additional dependence between `friend` and `cowork`.
+Intuitively, this model says that any association between friendship and co-working may be explained by the advice relation. In other words, once `advice` is taken into account, there should be little additional dependence between `friend` and `cowork`.
 
-To assess whether the proposed conditional independence model is plausible, we use a divergence-based goodness-of-fit test. The function `div_gof()` compares the empirical distribution of the dyad variables with the distribution implied by the hypothesized model.
+To test this hypothesis, we use  `div_gof()` and explicitly specify the conditioning variable:
 
-By default, no conditioning variable is specified, meaning that the function tests pairwise independence rather than conditional independence. To evaluate a conditional independence model, the conditioning variable must be explicitly included in the test specification.
 
 ```{r}
-#| label: dyad-gof-test
+#| label: dyad-gof-cond-friend-cowork
 div_gof(
   dat = dyad_var,
   var1 = "friend",
@@ -1020,30 +990,60 @@ div_gof(
 )
 ```
 
-The output reports the divergence measure and the associated degrees of freedom, together with a message of whether the null is rejected or not. Since the specified model of conditional independence is not rejected, this supports the interpretation that the dependence between friendship and co-working is largely explained by advice.
-
-The same approach can be used to test other candidate models suggested by the association graph. For example, the slide also highlights the conditional independence relation
+The same type of conditional independence test can be applied to attribute-based variables. For example, the association structure also suggests the model
 $$
-\text{gender} \perp \text{status} \mid \text{years},
+\text{gender} \perp \text{practice} \mid \text{status}.
 $$
 
-as well as a broader separation between the relational variables (`friend`, `cowork`, `advice`) and the attribute variables (`age`, `status`, `years`). For instance, the second model can be tested as follows:
 ```{r}
-#| label: dyad-gof-test2
+#| label: dyad-gof-cond-gender-status
 div_gof(
   dat = dyad_var,
   var1 = "gender",
-  var2 = "status",
-  var_cond = "years"
+  var2 = "practice",
+  var_cond = "status"
 )
 ```
-These tests provide a useful bridge between exploratory entropy analysis and more explicit structural modeling. Association graphs suggest candidate dependence structures, and divergence-based goodness-of-fit tests allow us to evaluate whether such simplified models are consistent with the observed dyad data.
 
-Overall, the entropy-based methods presented in this cahapter not only reveal patterns in network data, but also provide a principled way to test whether these patterns are statistically meaningful.
+For comparison, we can also test pairwise independence without conditioning. By default, if no conditioning variable is specified, `div_gof() ` tests whether the two variables are independent:
+
+```{r}
+#| label: dyad-gof-pairwise
+div_gof(
+  dat = dyad_var,
+  var1 = "friend",
+  var2 = "cowork"
+)
+```
+The function can also be used to test whether a single variable is uniformly distributed across its observed categories. For example:
+
+```{r}
+#| label: dyad-gof-uniform
+div_gof(
+  dat = dyad_var,
+  var_uniform = "friend"
+)
+```
 
 
+Finally, reduced models can be compared to the saturated empirical model. The saturated model corresponds to the unrestricted empirical distribution and has divergence equal to zero. For example, we can compare the pairwise independence model for `friend` and `cowork` to the saturated model:
 
+```{r}
+#| label: dyad-gof-nested
+m_full <- list(D = 0, df = 0)
 
+m_reduced <- div_gof(
+  dat = dyad_var,
+  var1 = "friend",
+  var2 = "cowork"
+)
 
+div_gof(
+  dat = dyad_var,
+  model_full = m_full,
+  model_reduced = list(D = m_reduced$D, df = m_reduced$df)
+)
+```
 
+These examples show how divergence-based tests complement the exploratory association graph. The graph suggests candidate dependence structures, while `div_gof()` provides a formal way to evaluate whether those simplified structures are consistent with the observed dyad data.
 
