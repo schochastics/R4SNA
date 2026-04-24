@@ -3335,7 +3335,7 @@ Table&nbsp;8.11: Prediction power matrix for <code>indeg_adv</code>. Entries rep
 </div>
 </figure>
 </div>
-<p>These prediction strengths can be visualized using a prediction plot in a heat map style. The plot displays a color-coded matrix with rows corresponding to <span class="math inline">\(X\)</span> and columns to <span class="math inline">\(Y\)</span>, where darker colors indicate higher predictive power (i.e., lower prediction uncertainty for <code>indeg_adv</code>). This is shown in <a href="#fig-expred" class="quarto-xref">Figure&nbsp;<span>8.3</span></a>.</p>
+<p>These prediction strengths can be visualized using a heatmap representation. The plot displays a color-coded matrix with rows corresponding to <span class="math inline">\(X\)</span> and columns to <span class="math inline">\(Y\)</span>, where darker colors indicate higher predictive power (i.e., lower prediction uncertainty for <code>indeg_adv</code>). This is shown in <a href="#fig-expred" class="quarto-xref">Figure&nbsp;<span>8.3</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-expred" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3352,27 +3352,7 @@ Figure&nbsp;8.3: Prediction power heatmap for <span class="math inline">\(Z\)</s
 </div>
 <p>The prediction power heatmap shows that the strongest overall predictor of <code>indeg_adv</code> is the network-based variable <code>deg_likfrn</code>, which yields the lowest expected conditional entropy among single predictors. This indicates that likely friendship ties are highly informative for explaining advice in-degree.</p>
 <p>Among other single predictors, <code>years</code> also performs well, followed by <code>status</code>, while variables such as <code>office</code> and <code>practice</code> provide weaker predictive power. Considering pairs of predictors, the strongest combinations typically involve <code>years</code> together with network-based variables such as <code>deg_mutadv</code> and <code>deg_cwk</code>, yielding the lowest prediction uncertainty overall. These results suggest that both network position, particularly likely friendship ties, and experience (<code>years</code>) play a central role in explaining variation in advice in-degree.</p>
-<p>Using a helper function <code>make_pred_plot()</code> shown below, we can create similar plots for all vertex variables to compare the results. This is shown in <a href="#fig-predplot-vertex" class="quarto-xref">Figure&nbsp;<span>8.4</span></a>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>make_pred_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(mat, title) {</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">as.table</span>(<span class="fu">as.matrix</span>(mat)))</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="st">"EH"</span>)</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>EH), ]</span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> Y, <span class="at">y =</span> X, <span class="at">fill =</span> EH)) <span class="sc">+</span></span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(EH, <span class="dv">2</span>)), <span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"steelblue"</span>, <span class="at">high =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> title, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
-<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">7</span>),</span>
-<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
-<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
-<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<p>Using <code>make_pred_plot()</code>, we can create similar plots for all vertex variables to compare the results. We illustrate this for all vertex variables in <a href="#fig-predplot-vertex" class="quarto-xref">Figure&nbsp;<span>8.4</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-predplot-vertex" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3395,18 +3375,18 @@ Figure&nbsp;8.4: Prediction power heatmaps for vertex variables; darker cells in
 <p>We next assess prediction power for all dyad variables derived from the law firm network, including co-working, advice, and friendship relations, as well as dyadic versions of the attribute variables. For each dyad variable, we compute the expected conditional entropies <span class="math inline">\(EH(Z \mid X,Y)\)</span> using all other dyad variables as predictors, and visualize the results using prediction heatmaps.</p>
 <p>For each target variable in <code>dyad_var</code>, we compute the prediction power matrix based on all other dyad variables, and then visualize the results using heatmaps of expected conditional entropies <span class="math inline">\(EH(Z \mid X,Y)\)</span>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>pred_dyad_status    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"status"</span>, dyad_var)</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>pred_dyad_gender    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"gender"</span>, dyad_var)</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>pred_dyad_office    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"office"</span>, dyad_var)</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>pred_dyad_years     <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"years"</span>, dyad_var)</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>pred_dyad_age       <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"age"</span>, dyad_var)</span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>pred_dyad_practice  <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"practice"</span>, dyad_var)</span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>pred_dyad_lawschool <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"lawschool"</span>, dyad_var)</span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>pred_dyad_cowork    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"cowork"</span>, dyad_var)</span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>pred_dyad_advice    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"advice"</span>, dyad_var)</span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>pred_dyad_friend    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"friend"</span>, dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>pred_dyad_status    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"status"</span>, dyad_var)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>pred_dyad_gender    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"gender"</span>, dyad_var)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>pred_dyad_office    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"office"</span>, dyad_var)</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>pred_dyad_years     <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"years"</span>, dyad_var)</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>pred_dyad_age       <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"age"</span>, dyad_var)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>pred_dyad_practice  <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"practice"</span>, dyad_var)</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>pred_dyad_lawschool <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"lawschool"</span>, dyad_var)</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>pred_dyad_cowork    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"cowork"</span>, dyad_var)</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>pred_dyad_advice    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"advice"</span>, dyad_var)</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>pred_dyad_friend    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"friend"</span>, dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>To visualize these matrices, we again use the helper function that converts each prediction matrix into a heatmap. Darker cells indicate lower expected conditional entropy and thus stronger predictive power. This is shown in <a href="#fig-predplot-dyad" class="quarto-xref">Figure&nbsp;<span>8.5</span></a>.</p>
+<p>To visualize these matrices, we again use the function <code>make_pred_plot()</code>, shown in <a href="#fig-predplot-dyad" class="quarto-xref">Figure&nbsp;<span>8.5</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-predplot-dyad" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3445,6 +3425,21 @@ Figure&nbsp;8.6: Prediction power heatmaps for triad variables; darker cells ind
 </figure>
 </div>
 </div>
+</div>
+<div class="{callout-note}">
+<p>Tetravariate entropies extend the same idea to quadruples of variables. For four variables <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span>, <span class="math inline">\(Z\)</span>, and <span class="math inline">\(U\)</span>, the tetravariate entropy is denoted by</p>
+<p><span class="math display">\[
+H(X,Y,Z,U).
+\]</span></p>
+<p>The function <code>entropy_tetravar()</code> computes tetravariate entropy quantities for all quadruples of variables in a dataframe. In addition to <span class="math inline">\(H(X,Y,Z,U)\)</span>, it returns expected conditional entropies and expected conditional joint entropies, such as</p>
+<p><span class="math display">\[
+EH(U \mid X,Y,Z) = H(X,Y,Z,U) - H(X,Y,Z),
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+EJ(X,Y \mid Z,U) = H(X,Z,U) + H(Y,Z,U) - H(Z,U) - H(X,Y,Z,U).
+\]</span></p>
+<p>These quantities are useful for studying prediction uncertainty and conditional dependence among four variables.</p>
 </div>
 </section>
 </section>
@@ -3505,11 +3500,11 @@ D(p,q) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z) = EJ(X,Y \mid Z),
 </section>
 <section id="example-dyad-variables" class="level4" data-number="8.3.5.2">
 <h4 data-number="8.3.5.2" class="anchored" data-anchor-id="example-dyad-variables"><span class="header-section-number">8.3.5.2</span> Example: Dyad Variables</h4>
-<p>We illustrate a simple example of this test using the <code>netropy</code> package. The association graph for the dyad variables above suggests several simple structural models that may be of substantive interest. In the corporate law firm example, one such model is that <code>friend</code> and <code>cowork</code> are conditionally independent given <code>advice</code>, that is,</p>
+<p>We illustrate the use of divergence-based goodness-of-fit tests for dyad variables. The association graph constructed above suggests candidate dependence structures that can be formally evaluated. In the corporate law firm example, the variables <code>friend</code>, <code>cowork</code>, and <code>advice</code> form a closely connected group, motivating the conditional independence model</p>
 <p><span class="math display">\[
 \text{friend} \perp \text{cowork} \mid \text{advice}.
 \]</span></p>
-<p>This is highlighted in <a href="#fig-divtest" class="quarto-xref">Figure&nbsp;<span>8.7</span></a>.</p>
+<p>This structure is highlighted in <a href="#fig-divtest" class="quarto-xref">Figure&nbsp;<span>8.7</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-divtest" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3518,52 +3513,89 @@ D(p,q) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z) = EJ(X,Y \mid Z),
 <img src="netropy_files/figure-html/fig-divtest-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-divtest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.7: Association graph for dyad variables (threshold <span class="math inline">\(J &gt; 0.1\)</span>). The variables <code>friend</code>, <code>cowork</code>, and <code>advice</code> (highlighted in red) form a tightly connected group, suggesting a strong dependence structure and motivating the conditional independence model <span class="math inline">\(\text{friend} \perp \text{cowork} \mid \text{advice}\)</span>.
+Figure&nbsp;8.7: Association graph for dyad variables (threshold <span class="math inline">\(J &gt; 0.1\)</span>). The variables <code>friend</code>, <code>cowork</code>, and <code>advice</code> are highlighted, motivating the conditional independence model <span class="math inline">\(\text{friend} \perp \text{cowork} \mid \text{advice}\)</span>.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Intuitively, this means that any association between friendship and co-working may be explained through the advice relation. In other words, once the advice relation is taken into account, there may be little additional dependence between <code>friend</code> and <code>cowork</code>.</p>
-<p>To assess whether the proposed conditional independence model is plausible, we use a divergence-based goodness-of-fit test. The function <code>div_gof()</code> compares the empirical distribution of the dyad variables with the distribution implied by the hypothesized model.</p>
-<p>By default, no conditioning variable is specified, meaning that the function tests pairwise independence rather than conditional independence. To evaluate a conditional independence model, the conditioning variable must be explicitly included in the test specification.</p>
+<p>Intuitively, this model says that any association between friendship and co-working may be explained by the advice relation. In other words, once <code>advice</code> is taken into account, there should be little additional dependence between <code>friend</code> and <code>cowork</code>.</p>
+<p>To test this hypothesis, we use <code>div_gof()</code> and explicitly specify the conditioning variable:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span>,</span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_cond =</span> <span class="st">"advice"</span></span>
-<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>the specified model of conditional independence cannot be rejected</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span>,</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_cond =</span> <span class="st">"advice"</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     D df(D)
-1 0.94    12</code></pre>
+<pre><code>                                       test     D   chi2 df critical_value
+1 friend independent of cowork given advice 0.003 11.959 12         21.798
+       decision
+1 cannot reject</code></pre>
 </div>
 </div>
-<p>The output reports the divergence measure and the associated degrees of freedom, together with a message of whether the null is rejected or not. Since the specified model of conditional independence is not rejected, this supports the interpretation that the dependence between friendship and co-working is largely explained by advice.</p>
-<p>The same approach can be used to test other candidate models suggested by the association graph. For example, the slide also highlights the conditional independence relation <span class="math display">\[
-\text{gender} \perp \text{status} \mid \text{years},
+<p>The same type of conditional independence test can be applied to attribute-based variables. For example, the association structure also suggests the model <span class="math display">\[
+\text{gender} \perp \text{practice} \mid \text{status}.
 \]</span></p>
-<p>as well as a broader separation between the relational variables (<code>friend</code>, <code>cowork</code>, <code>advice</code>) and the attribute variables (<code>age</code>, <code>status</code>, <code>years</code>). For instance, the second model can be tested as follows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"gender"</span>,</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"practice"</span>,</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_cond =</span> <span class="st">"status"</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                         test     D   chi2 df critical_value
+1 gender independent of practice given status 0.018 61.758 27         41.697
+  decision
+1   reject</code></pre>
+</div>
+</div>
+<p>For comparison, we can also test pairwise independence without conditioning. By default, if no conditioning variable is specified, <code>div_gof()</code> tests whether the two variables are independent:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"gender"</span>,</span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"status"</span>,</span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_cond =</span> <span class="st">"years"</span></span>
-<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>the specified model of conditional independence cannot be rejected</code></pre>
-</div>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     D df(D)
-1 1.77    54</code></pre>
+<pre><code>                          test     D    chi2 df critical_value decision
+1 friend independent of cowork 0.041 140.035  3          7.899   reject</code></pre>
 </div>
 </div>
-<p>These tests provide a useful bridge between exploratory entropy analysis and more explicit structural modeling. Association graphs suggest candidate dependence structures, and divergence-based goodness-of-fit tests allow us to evaluate whether such simplified models are consistent with the observed dyad data.</p>
-<p>Overall, the entropy-based methods presented in this cahapter not only reveal patterns in network data, but also provide a principled way to test whether these patterns are statistically meaningful.</p>
+<p>The function can also be used to test whether a single variable is uniformly distributed across its observed categories. For example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_uniform =</span> <span class="st">"friend"</span></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                test     D     chi2 df critical_value decision
+1 uniformity: friend 1.119 3853.341  3          7.899   reject</code></pre>
+</div>
+</div>
+<p>Finally, reduced models can be compared to the saturated empirical model. The saturated model corresponds to the unrestricted empirical distribution and has divergence equal to zero. For example, we can compare the pairwise independence model for <code>friend</code> and <code>cowork</code> to the saturated model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>m_full <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">D =</span> <span class="dv">0</span>, <span class="at">df =</span> <span class="dv">0</span>)</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>m_reduced <span class="ot">&lt;-</span> <span class="fu">div_gof</span>(</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_full =</span> m_full,</span>
+<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_reduced =</span> <span class="fu">list</span>(<span class="at">D =</span> m_reduced<span class="sc">$</span>D, <span class="at">df =</span> m_reduced<span class="sc">$</span>df)</span>
+<span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     test     D    chi2 df critical_value decision
+1 nested model comparison 0.041 141.243  3          7.899   reject</code></pre>
+</div>
+</div>
+<p>These examples show how divergence-based tests complement the exploratory association graph. The graph suggests candidate dependence structures, while <code>div_gof()</code> provides a formal way to evaluate whether those simplified structures are consistent with the observed dyad data.</p>
 
 
 </section>
