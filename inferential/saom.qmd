@@ -100,9 +100,9 @@ each time peiod:
 #| message: false
 
 # Load data as graph object from networkdata and extract all three wave networks
-glasgow_g1 <- networkdata::glasgow129[[1]]
-glasgow_g2 <- networkdata::glasgow129[[2]]
-glasgow_g3 <- networkdata::glasgow129[[3]]
+glasgow_g1 <- glasgow129[[1]]
+glasgow_g2 <- glasgow129[[2]]
+glasgow_g3 <- glasgow129[[3]]
 ```
 These `igraph` objects are our network snapshots and consider various SAOMs. We
 begin by converting each network snapshot into a binary adjacency matrix. These
@@ -113,9 +113,9 @@ each time point.
 #| message: false
 
 # Convert to adjacency matrices
-net1 <- as.matrix(as_adjacency_matrix(glasgow_g1, sparse = FALSE))
-net2 <- as.matrix(as_adjacency_matrix(glasgow_g2, sparse = FALSE))
-net3 <- as.matrix(as_adjacency_matrix(glasgow_g3, sparse = FALSE))
+net1 <- as_adjacency_matrix(glasgow_g1, sparse = FALSE)
+net2 <- as_adjacency_matrix(glasgow_g2, sparse = FALSE)
+net3 <- as_adjacency_matrix(glasgow_g3, sparse = FALSE)
 ```
 
 We then combine them into a 3-dimensional array with dimensions
@@ -1017,8 +1017,6 @@ my_algorithm <- sienaAlgorithmCreate(projname = "saom_1", seed = 123)
 ```
 
 ::: {.callout-note}
-# Note on setting the seed
-
 Setting a seed as argument ensures reproducible results across runs given same R
 setup. Due to the stochastic nature of the algorithm and differences in
 computational environments, minor variations may still occur across:
@@ -1075,8 +1073,18 @@ interpretation):
 ```{r}
 #| output: false
 #| message: false
+#| eval: !expr knitr::is_html_output()
+#| echo: !expr knitr::is_html_output()
 
 siena_table(saom_1, type = "html", sig = TRUE)
+```
+
+```{r}
+#| output: false
+#| message: false
+#| eval: !expr knitr::is_latex_output()
+#| echo: !expr knitr::is_latex_output()
+
 siena_table(saom_1, type = "tex", sig = TRUE)
 ```
 
@@ -1353,8 +1361,18 @@ Finally, as before, we display the model results inline:
 ```{r}
 #| output: false
 #| message: false
+#| eval: !expr knitr::is_html_output()
+#| echo: !expr knitr::is_html_output()
 
 siena_table(saom_2, type = "html", sig = TRUE)
+```
+
+```{r}
+#| output: false
+#| message: false
+#| eval: !expr knitr::is_latex_output()
+#| echo: !expr knitr::is_latex_output()
+
 siena_table(saom_2, type = "tex", sig = TRUE)
 ```
 
