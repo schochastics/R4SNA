@@ -24,7 +24,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -357,6 +376,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#the-core-packages" id="toc-the-core-packages" class="nav-link" data-scroll-target="#the-core-packages">The core packages</a></li>
   <li><a href="#other-packages" id="toc-other-packages" class="nav-link" data-scroll-target="#other-packages">Other packages</a></li>
   </ul></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/intro.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -417,7 +437,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="the-core-packages" class="level3">
 <h3 class="anchored" data-anchor-id="the-core-packages">The core packages</h3>
-<p>Two package families dominate network analysis in R: <code>igraph</code> and the <code>statnet</code> family, which centers on the <code>network</code> data structure and includes <code>sna</code>, <code>ergm</code>, and other modeling packages. Both provide their own graph class and a broadly overlapping set of analytic methods. For descriptive analysis they are largely interchangeable, but each owns a different corner of inferential modeling. <code>igraph</code> is generally faster, since its algorithms are implemented in C, and it has attracted more downstream packages. <a href="#fig-crannet" class="quarto-xref">Figure&nbsp;<span>1</span></a> shows how many CRAN packages depend on, import, or suggest <code>igraph</code>, <code>network</code>, and <code>graph</code>, a package only available via Bioconductor.</p>
+<p>Two package families dominate network analysis in R: <code>igraph</code> <span class="citation" data-cites="csardi2006igraph">(<a href="#ref-csardi2006igraph" role="doc-biblioref">Csárdi and Nepusz 2006</a>)</span> and the <code>statnet</code> family <span class="citation" data-cites="hunter2008ergm">(<a href="#ref-hunter2008ergm" role="doc-biblioref">Hunter et al. 2008</a>)</span>, which centers on the <code>network</code> data structure and includes <code>sna</code>, <code>ergm</code>, and other modeling packages. Both provide their own graph class and a broadly overlapping set of analytic methods. For descriptive analysis they are largely interchangeable, but each owns a different corner of inferential modeling. <code>igraph</code> is generally faster, since its algorithms are implemented in C, and it has attracted more downstream packages. <a href="#fig-crannet" class="quarto-xref">Figure&nbsp;<span>1</span></a> shows how many CRAN packages depend on, import, or suggest <code>igraph</code>, <code>network</code>, and <code>graph</code>, a package only available via Bioconductor.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-crannet" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -438,20 +458,62 @@ Figure&nbsp;1: Network of CRAN packages that depend on, import, or suggest <code
 <h3 class="anchored" data-anchor-id="other-packages">Other packages</h3>
 <p>Beyond the two core families, the book uses a number of specialized packages. The most important are:</p>
 <ul>
-<li><code>ggraph</code> and <code>graphlayouts</code>: grammar-of-graphics network visualization and additional layout algorithms.</li>
-<li><code>tidygraph</code>: a tidyverse-style interface to <code>igraph</code>.</li>
-<li><code>netrankr</code>: a unified framework for centrality indices.</li>
-<li><code>signnet</code>: methods for signed networks.</li>
-<li><code>backbone</code>: backbone extraction from weighted and two-mode networks.</li>
-<li><code>RSiena</code>: stochastic actor-oriented models for longitudinal networks.</li>
-<li><code>relevent</code>: relational event models.</li>
-<li><code>egor</code>: ego-centered network data.</li>
-<li><code>networkdata</code>: a large collection of network datasets used throughout the book.</li>
+<li><code>ggraph</code> <span class="citation" data-cites="pedersen2025ggraph">(<a href="#ref-pedersen2025ggraph" role="doc-biblioref">Pedersen 2025</a>)</span>: grammar-of-graphics for network visualization.</li>
+<li><code>graphlayouts</code> <span class="citation" data-cites="schoch2023graphlayouts">(<a href="#ref-schoch2023graphlayouts" role="doc-biblioref">Schoch 2023a</a>)</span>: advanced layout algorithms for networks.</li>
+<li><code>tidygraph</code> <span class="citation" data-cites="pedersen2024tidygraph">(<a href="#ref-pedersen2024tidygraph" role="doc-biblioref">Pedersen 2024</a>)</span>: a tidyverse-style interface to <code>igraph</code>.</li>
+<li><code>netrankr</code> <span class="citation" data-cites="schoch2022netrankr">(<a href="#ref-schoch2022netrankr" role="doc-biblioref">Schoch 2022a</a>)</span>: a unified framework for centrality indices.</li>
+<li><code>signnet</code> <span class="citation" data-cites="schoch2023signnet">(<a href="#ref-schoch2023signnet" role="doc-biblioref">Schoch 2023b</a>)</span>: methods for signed networks.</li>
+<li><code>backbone</code> <span class="citation" data-cites="neal2022backbone">(<a href="#ref-neal2022backbone" role="doc-biblioref">Neal 2022</a>)</span>: backbone extraction from weighted and two-mode networks.</li>
+<li><code>RSiena</code> <span class="citation" data-cites="snijders2026rsiena">(<a href="#ref-snijders2026rsiena" role="doc-biblioref">Snijders et al. 2026</a>)</span>: stochastic actor-oriented models for longitudinal networks.</li>
+<li><code>relevent</code> <span class="citation" data-cites="butts2023relevent">(<a href="#ref-butts2023relevent" role="doc-biblioref">Butts 2023</a>)</span>: relational event models.</li>
+<li><code>egor</code> <span class="citation" data-cites="krenz2025egor">(<a href="#ref-krenz2025egor" role="doc-biblioref">Krenz et al. 2025</a>)</span>: ego-centered network data.</li>
+<li><code>networkdata</code> <span class="citation" data-cites="schoch2022networkdata">(<a href="#ref-schoch2022networkdata" role="doc-biblioref">Schoch 2022b</a>)</span>: a large collection of network datasets used throughout the book.</li>
 </ul>
 <p>Each chapter lists the libraries it loads at the top, so you can install packages as you go rather than upfront.</p>
 
 
 </section>
+</section>
+<section id="bibliography" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-butts2023relevent" class="csl-entry" role="listitem">
+Butts, Carter T. 2023. <em>Relevent: Relational Event Models</em>. <a href="https://doi.org/10.32614/CRAN.package.relevent">https://doi.org/10.32614/CRAN.package.relevent</a>.
+</div>
+<div id="ref-csardi2006igraph" class="csl-entry" role="listitem">
+Csárdi, Gábor, and Tamás Nepusz. 2006. <span>“The Igraph Software Package for Complex Network Research.”</span> <em>InterJournal</em> Complex Systems: 1695. <a href="https://igraph.org">https://igraph.org</a>.
+</div>
+<div id="ref-hunter2008ergm" class="csl-entry" role="listitem">
+Hunter, David R, Mark S Handcock, Carter T Butts, Steven M Goodreau, and Martina Morris. 2008. <span>“Ergm: A Package to Fit, Simulate and Diagnose Exponential-Family Models for Networks.”</span> <em>Journal of Statistical Software</em> 24 (3): 1–29.
+</div>
+<div id="ref-krenz2025egor" class="csl-entry" role="listitem">
+Krenz, Till, Pavel N Krivitsky, Raffaele Vacca, Michal Bojanowski, and Andreas Herz. 2025. <em>Egor: Import and Analyse Ego-Centered Network Data</em>. <a href="https://doi.org/10.32614/CRAN.package.egor">https://doi.org/10.32614/CRAN.package.egor</a>.
+</div>
+<div id="ref-neal2022backbone" class="csl-entry" role="listitem">
+Neal, Zachary P. 2022. <span>“Backbone: An r Package to Extract Network Backbones.”</span> <em>PLOS ONE</em> 17 (5): e0269137. <a href="https://doi.org/10.1371/journal.pone.0269137">https://doi.org/10.1371/journal.pone.0269137</a>.
+</div>
+<div id="ref-pedersen2024tidygraph" class="csl-entry" role="listitem">
+Pedersen, Thomas Lin. 2024. <em>Tidygraph: A Tidy API for Graph Manipulation</em>. <a href="https://doi.org/10.32614/CRAN.package.tidygraph">https://doi.org/10.32614/CRAN.package.tidygraph</a>.
+</div>
+<div id="ref-pedersen2025ggraph" class="csl-entry" role="listitem">
+Pedersen, Thomas Lin. 2025. <em>Ggraph: An Implementation of Grammar of Graphics for Graphs and Networks</em>. <a href="https://doi.org/10.32614/CRAN.package.ggraph">https://doi.org/10.32614/CRAN.package.ggraph</a>.
+</div>
+<div id="ref-schoch2022netrankr" class="csl-entry" role="listitem">
+Schoch, David. 2022a. <span>“Netrankr: An r Package for Total, Partial, and Probabilistic Rankings in Networks.”</span> <em>Journal of Open Source Software</em>, no. 77: 4563.
+</div>
+<div id="ref-schoch2022networkdata" class="csl-entry" role="listitem">
+Schoch, David. 2022b. <em>Networkdata: Repository of Network Datasets (V0.1.14)</em>. <a href="https://doi.org/10.5281/zenodo.7189928">https://doi.org/10.5281/zenodo.7189928</a>.
+</div>
+<div id="ref-schoch2023graphlayouts" class="csl-entry" role="listitem">
+Schoch, David. 2023a. <span>“Graphlayouts: Layout Algorithms for Network Visualizations in r.”</span> <em>Journal of Open Source Software</em> 8 (84): 5238. <a href="https://doi.org/10.21105/joss.05238">https://doi.org/10.21105/joss.05238</a>.
+</div>
+<div id="ref-schoch2023signnet" class="csl-entry" role="listitem">
+Schoch, David. 2023b. <span>“Signnet: An r Package for Analyzing Signed Networks.”</span> <em>Journal of Open Source Software</em> 8 (81): 4987. <a href="https://doi.org/10.21105/joss.04987">https://doi.org/10.21105/joss.04987</a>.
+</div>
+<div id="ref-snijders2026rsiena" class="csl-entry" role="listitem">
+Snijders, Tom A B, Ruth M Ripley, Krists Boitmanis, et al. 2026. <em>Siena - Simulation Investigation for Empirical Network Analysis</em>. University of Groningen. <a href="https://www.stats.ox.ac.uk/~snijders/siena/">https://www.stats.ox.ac.uk/~snijders/siena/</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
