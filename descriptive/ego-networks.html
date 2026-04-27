@@ -548,7 +548,7 @@ Note
 <section id="constructing-an-ego-network-with-egor" class="level3" data-number="7.2.1">
 <h3 data-number="7.2.1" class="anchored" data-anchor-id="constructing-an-ego-network-with-egor"><span class="header-section-number">7.2.1</span> Constructing an Ego Network with <code>egor</code></h3>
 <p>An <code>egor</code> object stores the multiple data levels required for ego-centered network analysis. These levels include <strong>ego-level data</strong> (attributes of respondents), <strong>alter-level data</strong> (attributes of the individuals named by the respondent), and <strong>alter–alter ties</strong> (relationships among those alters).</p>
-<p>In this chapter, we draw on ego network data from the <strong>UC Berkeley Social Networks Study (UCNets)</strong> <span class="citation" data-cites="fischer2020uc">(<a href="#ref-fischer2020uc" role="doc-biblioref">Fischer 2020</a>)</span>, a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the <em>first wave</em> and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in the <a href="../appendix/ucnets-egor.html" class="quarto-xref"><span>Appendix A</span></a>. This code already processes the raw survey files and combines them into an <code>egor</code> object, the data structure used by the <code>egor</code> package for ego-centered network analysis. An <code>egor</code> object contains three linked levels of data: ego-level attributes (characteristics of the respondents), alter-level attributes (characteristics of the individuals named in each respondent’s personal network), and alter–alter ties (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the <a href="https://ucnets.berkeley.edu/">UCNets project website</a>.</p>
+<p>In this chapter, we draw on ego network data from the <strong>UC Berkeley Social Networks Study (UCNets)</strong> <span class="citation" data-cites="fischer2020uc">(<a href="#ref-fischer2020uc" role="doc-biblioref">Fischer 2020</a>)</span>, a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the <em>first wave</em> and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in <a href="../appendix/ucnets-egor.html" class="quarto-xref"><span>Appendix A</span></a>. This code already processes the raw survey files and combines them into an <code>egor</code> object, the data structure used by the <code>egor</code> package for ego-centered network analysis. An <code>egor</code> object contains three linked levels of data: ego-level attributes (characteristics of the respondents), alter-level attributes (characteristics of the individuals named in each respondent’s personal network), and alter–alter ties (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the <a href="https://ucnets.berkeley.edu/">UCNets project website</a>.</p>
 <p>We begin by exploring each of the three components of the <code>egor</code> object (ego attributes, alter attributes, and alter–alter ties), in order to understand how the ego network data are structured before proceeding to the analysis.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ego_net_w1<span class="sc">$</span>ego) <span class="co"># ego level</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -610,24 +610,24 @@ Note
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
-IGRAPH b508638 DNW- 6 2 -- 
+IGRAPH df69853 DNW- 6 2 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from b508638 (vertex names):
++ edges from df69853 (vertex names):
 [1] 2-&gt;5 2-&gt;5
 
 [[2]]
-IGRAPH df1009c DNW- 15 8 -- 
+IGRAPH 4555593 DNW- 15 8 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from df1009c (vertex names):
++ edges from 4555593 (vertex names):
 [1] 2-&gt;3 3-&gt;5 2-&gt;3 2-&gt;5 1-&gt;4 2-&gt;5 3-&gt;5 1-&gt;4
 
 [[3]]
-IGRAPH 16f3028 DNW- 5 6 -- 
+IGRAPH 65e00c4 DNW- 5 6 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
 | (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from 16f3028 (vertex names):
++ edges from 65e00c4 (vertex names):
 [1] 1-&gt;2 1-&gt;3 1-&gt;2 2-&gt;3 1-&gt;3 2-&gt;3</code></pre>
 </div>
 </div>
@@ -971,7 +971,6 @@ H = - \sum_i p_i \log(p_i)
 <blockquote class="blockquote">
 <p><em>Are respondents with larger, more diverse, or more kin-centered personal networks more likely to report better health?</em></p>
 </blockquote>
-<p>So we are basically checking whether individuals embedded in larger, more diverse, or more supportive personal networks may report better health.</p>
 <p>Our outcome is the ego-level variable <code>health</code>, which records respondents’ self-rated health. In the data preparation step, this variable was retained as an ordered factor with the categories:</p>
 <ul>
 <li><code>excellent</code></li>
@@ -984,13 +983,13 @@ H = - \sum_i p_i \log(p_i)
 </section>
 <section id="predictors" class="level4" data-number="7.5.1.2">
 <h4 data-number="7.5.1.2" class="anchored" data-anchor-id="predictors"><span class="header-section-number">7.5.1.2</span> Predictors</h4>
-<p>We include four ego-network measures as predictors:</p>
+<p>We include three ego-network measures as predictors:</p>
 <ul>
 <li><strong><code>ego_size</code></strong>: the number of alters in the ego network</li>
 <li><strong><code>prop_family</code></strong>: the proportion of alters who are family members</li>
 <li><strong><code>gender_entropy</code></strong>: a measure of gender diversity among alters</li>
 </ul>
-<p>Note that we do not use <code>prop_same_race</code> due to its high number of missing observations.</p>
+<p>A fourth candidate, <code>prop_same_race</code>, is not used here because of its high number of missing observations.</p>
 <p>To account for basic respondent characteristics, we also include three ego-level controls:</p>
 <ul>
 <li><strong><code>age</code></strong></li>

@@ -454,7 +454,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../descriptive/introduction.html">Descriptive Network Analysis</a></li><li class="breadcrumb-item"><a href="../descriptive/two-mode-networks.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Two-Mode Networks</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Two-Mode Networks</span></h1>
+<h1 class="title"><span id="sec-two-mode-networks" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Two-Mode Networks</span></span></h1>
 </div>
 
 
@@ -494,7 +494,7 @@ window.Quarto = {
 <p>Two-mode network data represent relationships between two distinct types of entities rather than ties among members of a single set. Typical examples include individuals and organizations, students and courses, or authors and publications. Instead of being represented as a standard actor-by-actor adjacency matrix, two-mode networks are stored as an <strong>incidence matrix</strong> or <strong>biadjacency matrix</strong>, in which rows represent one type of node (e.g., individuals) and columns represent the other type (e.g., events or organizations). The entries in the matrix indicate whether a tie exists across the two sets—for instance, whether a person attended an event or belongs to an organization. This incidence matrix structure makes it possible to analyze affiliation patterns, shared participation, and broader forms of social or institutional embeddedness.</p>
 <p>Two-mode networks are especially useful for analyzing how connections emerge indirectly, for example, when two individuals are linked because they attend the same event or belong to the same organization.</p>
 <p>To illustrate methods tailored for two-mode networks, we will use the well-known <em>Southern Women</em> dataset <span class="citation" data-cites="davis2009deep">(<a href="#ref-davis2009deep" role="doc-biblioref">Davis et al. 2009</a>)</span>. This classic dataset records the attendance patterns of 18 women at 14 social events in the American South, and has become a foundational example in network analysis. The network is included in the <code>networkdata</code> package and provides a canonical example of an affiliation (incidence) matrix suitable for demonstrating two-mode network methods and one-mode projections.</p>
-<p>The biadjacency matrix and can be obtained via <code>as_biadjacency_matrix()</code>. This matrix is shown in <a href="#fig-incmat" class="quarto-xref">Figure&nbsp;<span>5.1</span></a> and the network itself in <a href="#fig-southern-women-plot" class="quarto-xref">Figure&nbsp;<span>5.2</span></a>.</p>
+<p>The biadjacency matrix can be obtained via <code>as_biadjacency_matrix()</code>. This matrix is shown in <a href="#fig-incmat" class="quarto-xref">Figure&nbsp;<span>5.1</span></a> and the network itself in <a href="#fig-southern-women-plot" class="quarto-xref">Figure&nbsp;<span>5.2</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"southern_women"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>southern_women</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -728,9 +728,9 @@ FLORA         1     1         1      1    2     1       1      2     2</code></p
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>projs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$proj1
-IGRAPH 629b5ec UNW- 18 139 -- 
+IGRAPH 11e77c3 UNW- 18 139 -- 
 + attr: name (v/c), weight (e/n)
-+ edges from 629b5ec (vertex names):
++ edges from 11e77c3 (vertex names):
  [1] EVELYN --LAURA     EVELYN --BRENDA    EVELYN --THERESA   EVELYN --CHARLOTTE
  [5] EVELYN --FRANCES   EVELYN --ELEANOR   EVELYN --RUTH      EVELYN --PEARL    
  [9] EVELYN --NORA      EVELYN --VERNE     EVELYN --MYRNA     EVELYN --KATHERINE
@@ -742,9 +742,9 @@ IGRAPH 629b5ec UNW- 18 139 --
 + ... omitted several edges
 
 $proj2
-IGRAPH f8d9725 UNW- 14 66 -- 
+IGRAPH 61887e3 UNW- 14 66 -- 
 + attr: name (v/c), weight (e/n)
-+ edges from f8d9725 (vertex names):
++ edges from 61887e3 (vertex names):
  [1] 6/27--3/2   6/27--4/12  6/27--9/26  6/27--2/25  6/27--5/19  6/27--9/16 
  [7] 6/27--4/8   6/27--3/15  3/2 --4/12  3/2 --9/26  3/2 --2/25  3/2 --5/19 
 [13] 3/2 --9/16  3/2 --4/8   3/2 --3/15  4/12--9/26  4/12--2/25  4/12--5/19 
@@ -778,7 +778,7 @@ Figure&nbsp;5.3: Weighted projection of the Southern Women network onto the wome
 <p>The simplest way to binarize a weighted projection is to define a global threshold and remove all ties whose weights fall below that threshold. A commonly used benchmark is the mean edge weight, sometimes adjusted upward by adding one or two standard deviations.</p>
 <p>The rationale for using the mean is statistical and substantive. In many projected networks, especially those derived from affiliation data, the distribution of edge weights is highly skewed: most pairs share only one or two affiliations, while a smaller number share many. Using the mean as a cutoff removes very weak and potentially incidental connections. Adding one or two standard deviations makes the criterion stricter, retaining only ties that are substantially stronger than average. In effect, this approach filters out background noise and highlights particularly cohesive relationships.</p>
 <p>However, this choice is heuristic rather than theoretically mandated. The appropriate threshold depends on the research question: lower thresholds preserve more information but may produce very dense graphs, while higher thresholds emphasize strong ties but risk discarding meaningful structure. Consequently, it is often useful to explore how results change across different threshold values.</p>
-<p>Below,, we binarize the weighted women–women projection using the mean edge weight as a global threshold. First, we extract the women’s projection from the list returned by <code>bipartite_projection()</code>. We then compute the mean of the edge weights and remove all ties whose weights are less than or equal to this threshold. Finally, we delete the <code>weight</code> attribute so that the resulting graph is treated as a simple unweighted (binary) network.</p>
+<p>Below, we binarize the weighted women–women projection using the mean edge weight as a global threshold. First, we extract the women’s projection from the list returned by <code>bipartite_projection()</code>. We then compute the mean of the edge weights and remove all ties whose weights are less than or equal to this threshold. Finally, we delete the <code>weight</code> attribute so that the resulting graph is treated as a simple unweighted (binary) network.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>women_proj <span class="ot">&lt;-</span> projs<span class="sc">$</span>proj1</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>threshold <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">E</span>(projs<span class="sc">$</span>proj1)<span class="sc">$</span>weight)</span>
@@ -786,9 +786,9 @@ Figure&nbsp;5.3: Weighted projection of the Southern Women network onto the wome
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>women_bin <span class="ot">&lt;-</span> <span class="fu">delete_edge_attr</span>(women_bin, <span class="st">"weight"</span>)</span>
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>women_bin</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH 1b3c2d6 UN-- 18 46 -- 
+<pre><code>IGRAPH c2f56a7 UN-- 18 46 -- 
 + attr: name (v/c)
-+ edges from 1b3c2d6 (vertex names):
++ edges from c2f56a7 (vertex names):
  [1] EVELYN --LAURA     EVELYN --BRENDA    EVELYN --THERESA   EVELYN --CHARLOTTE
  [5] EVELYN --FRANCES   EVELYN --ELEANOR   EVELYN --RUTH      EVELYN --PEARL    
  [9] LAURA  --BRENDA    LAURA  --THERESA   LAURA  --CHARLOTTE LAURA  --FRANCES  
@@ -866,10 +866,10 @@ Figure&nbsp;5.4: Binary projection of the Southern Women network onto the women 
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>senators <span class="ot">&lt;-</span> <span class="fu">backbone_from_projection</span>(cosponsor, <span class="at">model =</span> <span class="st">"sdsm"</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">signed =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>senators</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH d4d55e9 UN-- 110 1591 -- sdsm backbone
+<pre><code>IGRAPH 432575e UN-- 110 1591 -- sdsm backbone
 + attr: name (g/c), call (g/x), narrative (g/c), name (v/c), party
 | (v/c), oldweight (e/n)
-+ edges from d4d55e9 (vertex names):
++ edges from 432575e (vertex names):
  [1] Enzi, Michael B.--Moran, Jerry     Enzi, Michael B.--Scott, Tim      
  [3] Enzi, Michael B.--Daines, Steve    Enzi, Michael B.--Perdue, David   
  [5] Enzi, Michael B.--Blunt, Roy       Enzi, Michael B.--Inhofe, James M.
