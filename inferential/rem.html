@@ -415,7 +415,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../appendix/ucnets-egor.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Constructing the UCNets Ego Network Dataset</span></span></a>
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Creating the UCNets Ego Network Dataset</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/rem-frozen-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Creating Relational Event Data for the Frozen Character Network</span></span></a>
   </div>
 </li>
       </ul>
@@ -900,96 +906,74 @@ Table&nbsp;19.2: Summary of exogenous covariates used in relational event models
 <li><strong><code>covar</code></strong>: a list of covariate matrices corresponding to the exogenous effects specified in <code>effects</code>.</li>
 <li><strong><code>ordinal</code></strong>: a logical argument indicating whether the event data are ordinal. Set <code>TRUE</code> if the data only record the order of events (without exact timestamps), and <code>FALSE</code> if precise event times are available.</li>
 </ul>
-<p>In our case, the dataset consists of a sequence of dialogue interactions between characters in <em>Frozen</em>, where each event records which character speaks to another and the order in which the interaction occurs. Because the data contain only the ordering of events rather than precise timestamps, we specify <code>ordinal = TRUE</code> when estimating the model.</p>
+<p>In our case, the dataset consists of a sequence of dialogue interactions between characters in <em>Frozen</em>, where each event records which character speaks to another and the order in which the interaction occurs (see <a href="../appendix/rem-frozen-data.html" class="quarto-xref"><span>Appendix B</span></a> for details on how the data are created). To get a sense of the structure, we look at the first 10 rows of the data.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Edit this code once frozen is in networkdata</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the two files</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>frozenlines <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"frozenlines.csv"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>frozenchars <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"frozenchars.csv"</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the structure</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(frozenlines)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>'data.frame':   634 obs. of  17 variables:
- $ eventID         : int  1 2 3 4 5 6 7 8 9 10 ...
- $ sceneID         : int  1 1 1 1 1 1 2 3 3 3 ...
- $ speakerID       : int  1 1 2 1 2 1 1 1 1 2 ...
- $ Anna..1.        : int  0 0 1 0 1 0 0 0 0 1 ...
- $ Elsa..2.        : int  1 1 0 1 0 1 1 1 1 0 ...
- $ Olaf..3.        : int  0 0 0 0 0 0 0 0 0 0 ...
- $ King..4.        : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Queen..5.       : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Kristoff..6.    : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Bulda..8.       : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Grand.Pabbie..9.: int  0 0 0 0 0 0 0 0 0 0 ...
- $ Kai..10.        : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Hans..11.       : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Duke..12.       : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Oaken..13.      : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Gerda..14.      : int  0 0 0 0 0 0 0 0 0 0 ...
- $ Marshmallow..15.: int  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Preview of the relational event data created from the <em>Frozen</em> character network as described in <a href="../appendix/rem-frozen-data.html" class="quarto-xref"><span>Appendix B</span></a></caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">time</th>
+<th style="text-align: right;">sender</th>
+<th style="text-align: right;">receiver</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(frozenchars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>'data.frame':   14 obs. of  4 variables:
- $ characterID   : int  1 2 3 4 5 6 7 8 9 10 ...
- $ character.name: chr  "Anna" "Elsa" "Olaf" "King" ...
- $ charfem       : int  1 1 0 0 1 0 1 0 0 0 ...
- $ nlines        : int  249 69 73 9 2 115 3 8 9 59 ...</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(frozenlines)[<span class="dv">4</span><span class="sc">:</span><span class="fu">ncol</span>(frozenlines)] <span class="ot">&lt;-</span> frozenchars<span class="sc">$</span>characterID</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>receiver_cols <span class="ot">&lt;-</span> <span class="dv">4</span><span class="sc">:</span><span class="fu">ncol</span>(frozenlines)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(frozenlines)) {</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  sender <span class="ot">&lt;-</span> frozenlines<span class="sc">$</span>speakerID[i]</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  event  <span class="ot">&lt;-</span> frozenlines<span class="sc">$</span>eventID[i]</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find receivers with value 1</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  receivers <span class="ot">&lt;-</span> receiver_cols[frozenlines[i, receiver_cols] <span class="sc">==</span> <span class="dv">1</span>]</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(receivers) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(r <span class="cf">in</span> receivers){</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>      edges[[k]] <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">time =</span> event,</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">sender =</span> sender,</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">receiver =</span> <span class="fu">as.integer</span>(<span class="fu">names</span>(frozenlines)[r])</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>      k <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine all edges</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>edgelist <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, edges)</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort by event order</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>edgelist <span class="ot">&lt;-</span> edgelist[<span class="fu">order</span>(edgelist<span class="sc">$</span>time), ]</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(edgelist)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  time sender receiver
-1    1      1        2
-2    2      1        2
-3    3      2        1
-4    4      1        2
-5    5      2        1
-6    6      1        2</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make sure eachevent is unique (this can be a manual fix from networkdata)</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>edgelist <span class="ot">&lt;-</span> edgelist[<span class="fu">order</span>(edgelist<span class="sc">$</span>time), ]</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>edgelist<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(edgelist)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>edgelist <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(edgelist)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Network size ----</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>n_actors <span class="ot">&lt;-</span> <span class="fu">nrow</span>(frozenchars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Before estimating the relational event models, it is helpful to visualize the aggregated dialogue network. Figure <a href="#fig-frozen" class="quarto-xref">Figure&nbsp;<span>19.1</span></a> shows the <em>Frozen</em> character interaction network, with node color indicating gender.</p>
+<p>Note that because the data contain only the ordering of events rather than precise timestamps, we specify <code>ordinal = TRUE</code> when estimating the model. Hpwever, before estimating the relational event models, we visualize the aggregated dialogue network. Figure <a href="#fig-frozen" class="quarto-xref">Figure&nbsp;<span>19.1</span></a> shows the <em>Frozen</em> character interaction network, with node color indicating gender and edge width reflects interaction frequency.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-frozen" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1031,13 +1015,13 @@ Figure&nbsp;19.1: Aggregated dialogue network of Frozen characters. Node colour 
 <p>This effect captures the tendency for the same sender–receiver interaction to occur repeatedly. If the previous event was <span class="math inline">\(i \rightarrow j\)</span>, this statistic measures whether the same interaction <span class="math inline">\(i \rightarrow j\)</span> occurs again immediately afterward.</p>
 <p>In conversational terms, repetition indicates that a speaker may continue addressing the same character across consecutive lines of dialogue.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Prepping edgelist.
 Checking/prepping covariates.
@@ -1045,7 +1029,7 @@ Computing preliminary statistics
 Fitting model
 Obtaining goodness-of-fit statistics</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
@@ -1083,8 +1067,8 @@ e^{2.24} \approx 9.4
 <p>As before, the model includes reciprocity and repetition. In addition, it now allows the probability of an interaction to depend on the gender of the sender and the receiver.</p>
 <p>The gender indicator is first constructed as an actor-level covariate aligned with the character IDs:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># female indicator by character ID</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)], <span class="at">ncol =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># female indicator by character ID</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)], <span class="at">ncol =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Formally, the event intensity for a potential interaction <span class="math inline">\(i \rightarrow j\)</span> at time <span class="math inline">\(t\)</span> is given by</p>
 <p><span class="math display">\[
@@ -1111,20 +1095,20 @@ e^{2.24} \approx 9.4
 <p>Importantly, these effects are estimated while controlling for the conversational dynamics captured by reciprocity and repetition. This allows us to assess whether gender differences in dialogue persist after accounting for basic turn-taking behaviour and repeated exchanges between the same characters.</p>
 <p>As in the previous model, the coefficients are expressed in log-relative rates, meaning that exponentiating a coefficient yields the multiplicative change in the event rate associated with a one-unit change in the corresponding statistic.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># female indicator by character ID</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)], <span class="at">ncol =</span> <span class="dv">1</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovSnd"</span>, <span class="st">"CovRec"</span>),</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovSnd =</span> female,</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovRec =</span> female</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># female indicator by character ID</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)], <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovSnd"</span>, <span class="st">"CovRec"</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovSnd =</span> female,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovRec =</span> female</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Prepping edgelist.
 Checking/prepping covariates.
@@ -1132,15 +1116,15 @@ Computing preliminary statistics
 Fitting model
 Obtaining goodness-of-fit statistics</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
-RRecSnd  3.669320 0.149300 24.5769   &lt;2e-16 ***
-RSndSnd  2.171287 0.132459 16.3922   &lt;2e-16 ***
-CovSnd.1 0.797349 0.082131  9.7083   &lt;2e-16 ***
-CovRec.1 0.106777 0.085729  1.2455   0.2129    
+RRecSnd  3.669318 0.149300 24.5769   &lt;2e-16 ***
+RSndSnd  2.171290 0.132459 16.3922   &lt;2e-16 ***
+CovSnd.1 0.797348 0.082131  9.7083   &lt;2e-16 ***
+CovRec.1 0.106776 0.085729  1.2455   0.2129    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Null deviance: 6879.697 on 661 degrees of freedom
@@ -1217,18 +1201,18 @@ e^{0.80} \approx 2.22
 <p>The sender gender effect (<code>CovSnd</code>) continues to test whether female characters are more likely to initiate dialogue, while the receiver gender effect (<code>CovRec</code>) captures whether female characters are more likely to be addressed. The interaction effect (<code>CovInt</code>) captures whether interactions between female characters occur at a higher or lower rate than would be expected from these individual effects.</p>
 <p>Importantly, these effects are estimated while controlling for the conversational dynamics captured by reciprocity and repetition. This allows us to examine whether gender-based interaction patterns persist once basic conversational mechanisms are taken into account.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovSnd"</span>, <span class="st">"CovRec"</span>, <span class="st">"CovInt"</span>),</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovSnd =</span> female,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovRec =</span> female,</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovInt =</span> female</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovSnd"</span>, <span class="st">"CovRec"</span>, <span class="st">"CovInt"</span>),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovSnd =</span> female,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovRec =</span> female,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovInt =</span> female</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Prepping edgelist.
 Checking/prepping covariates.
@@ -1236,16 +1220,16 @@ Computing preliminary statistics
 Fitting model
 Obtaining goodness-of-fit statistics</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
-RRecSnd   3.66897  0.14930 24.5738   &lt;2e-16 ***
+RRecSnd   3.66899  0.14930 24.5739   &lt;2e-16 ***
 RSndSnd   2.17218  0.13247 16.3972   &lt;2e-16 ***
-CovSnd.1  0.49629 51.54251  0.0096   0.9923    
-CovRec.1 -0.19453 51.54251 -0.0038   0.9970    
-CovInt.1  0.30070 51.54250  0.0058   0.9953    
+CovSnd.1  0.49636 51.94810  0.0096   0.9924    
+CovRec.1 -0.19446 51.94810 -0.0037   0.9970    
+CovInt.1  0.30064 51.94809  0.0058   0.9954    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Null deviance: 6879.697 on 661 degrees of freedom
@@ -1295,13 +1279,13 @@ e^{2.17} \approx 8.8
 <p>where <span class="math inline">\(\text{Context}_t\)</span> represents an event-level covariate capturing features of the situation at time <span class="math inline">\(t\)</span>.</p>
 <p>In practice, such variables are included in <code>relevent</code> using the <code>CovEvent</code> term in the <code>effects</code> argument and supplying the corresponding event-level covariate through the <code>covar</code> list. For example:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rem.dyad</span>(</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovEvent"</span>),</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(<span class="at">CovEvent =</span> context_variable),</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rem.dyad</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovEvent"</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(<span class="at">CovEvent =</span> context_variable),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Including contextual covariates (<code>context_variable</code> in above code) allows relational event models to move beyond purely structural explanations of interaction sequences and to account for how social behaviour is shaped by situational or institutional conditions.</p>
 </div>
@@ -1315,7 +1299,7 @@ e^{2.17} \approx 8.8
 <h4 class="unnumbered anchored" data-anchor-id="actual-vs.-predicted">Actual vs.&nbsp;Predicted</h4>
 <p>For illustration, we focus on Model 3, the most complete specification including reciprocity, repetition, and gender effects. One useful component of the model output is the object <code>predicted.match</code>, which records whether the model correctly predicts the sender and receiver for each observed event.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(model3<span class="sc">$</span>predicted.match)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(model3<span class="sc">$</span>predicted.match)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  sender receiver
 1   TRUE     TRUE
@@ -1329,10 +1313,10 @@ e^{2.17} \approx 8.8
 <p>Each row corresponds to an observed interaction in the dialogue sequence. The first column indicates whether the model correctly predicted the sender of the event, and the second column indicates whether it correctly predicted the receiver. Because the relational event model is trying to predict the exact sequence of interactions, this is a strict criterion: a prediction is fully correct only when both the sender and the receiver are correctly identified.</p>
 <p>To summarize predictive accuracy, we can tabulate the sender and receiver matches.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>send_col <span class="ot">&lt;-</span> model3<span class="sc">$</span>predicted.match[, <span class="st">"sender"</span>]</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>receive_col <span class="ot">&lt;-</span> model3<span class="sc">$</span>predicted.match[, <span class="st">"receiver"</span>]</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(send_col, receive_col)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>send_col <span class="ot">&lt;-</span> model3<span class="sc">$</span>predicted.match[, <span class="st">"sender"</span>]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>receive_col <span class="ot">&lt;-</span> model3<span class="sc">$</span>predicted.match[, <span class="st">"receiver"</span>]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(send_col, receive_col)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        receive_col
 send_col FALSE TRUE
@@ -1344,7 +1328,7 @@ send_col FALSE TRUE
 <p>In 143 cases the model correctly predicts both the sender and the receiver, meaning that it successfully reproduces the exact interaction in the event sequence. In 370 cases the model fails to correctly identify either the sender or the receiver, indicating interactions that are poorly captured by the current specification. There are also cases where the model predicts only one component correctly: in 13 events the sender is predicted correctly but the receiver is not, while in 135 events the receiver is predicted correctly but the sender is not.</p>
 <p>To better understand these proportions, we can convert the table into relative frequencies.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(send_col, receive_col))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(send_col, receive_col))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        receive_col
 send_col      FALSE       TRUE
@@ -1360,7 +1344,7 @@ send_col      FALSE       TRUE
 <p>Another way to assess the goodness of fit of a relational event model is by examining the residuals. Residuals measure the discrepancy between the observed interaction and the interaction that the model would predict given the event history and the included covariates. Large residual values therefore indicate events that were substantially more or less likely than expected under the model.</p>
 <p>A useful first step is to examine a summary of the residual distribution.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3<span class="sc">$</span>residuals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3<span class="sc">$</span>residuals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   1.678   3.320   4.646   5.904   6.944  17.265 </code></pre>
@@ -1371,7 +1355,7 @@ send_col      FALSE       TRUE
 <p>The summary provides an overview of the range and distribution of residuals across the event sequence. While many events will typically have residuals close to zero, larger values may indicate interactions that the model has difficulty explaining.</p>
 <p>To identify potential outliers, we can locate events with particularly large residuals. For illustration, we define outlying cases as those with residuals greater than 12 (<span class="math inline">\(\approx  Q_3 + 1.5 \times IQR)\)</span>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>high_resids <span class="ot">&lt;-</span> <span class="fu">which</span>(model3<span class="sc">$</span>residuals <span class="sc">&gt;</span> <span class="dv">12</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>high_resids <span class="ot">&lt;-</span> <span class="fu">which</span>(model3<span class="sc">$</span>residuals <span class="sc">&gt;</span> <span class="dv">12</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>These indices correspond to the positions of events in the event sequence where the observed interaction deviates strongly from the model’s predictions. We can inspect these events directly in the event list.</p>
 <p>A visualization of the residual distribution and this threshold is shown below in <a href="#fig-rem-residuals" class="quarto-xref">Figure&nbsp;<span>19.2</span></a>.</p>
@@ -1390,7 +1374,7 @@ Figure&nbsp;19.2: Distribution of residuals from Model 3 of the relational event
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>edgelist[high_resids, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>edgelist[high_resids, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    time sender receiver
 12    12      1        3
@@ -1458,11 +1442,11 @@ Figure&nbsp;19.2: Distribution of residuals from Model 3 of the relational event
 <h4 class="unnumbered anchored" data-anchor-id="comparing-model-specifications">Comparing Model Specifications</h4>
 <p>To compare the three model specifications, we examine their Bayesian Information Criterion (BIC) values. The BIC provides a measure of model fit that penalizes model complexity, meaning that lower values indicate a better balance between explanatory power and the number of estimated parameters.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model1_BIC =</span> model1<span class="sc">$</span>BIC,</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model2_BIC =</span> model2<span class="sc">$</span>BIC,</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model3_BIC =</span> model3<span class="sc">$</span>BIC</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model1_BIC =</span> model1<span class="sc">$</span>BIC,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model2_BIC =</span> model2<span class="sc">$</span>BIC,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model3_BIC =</span> model3<span class="sc">$</span>BIC</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Model1_BIC Model2_BIC Model3_BIC 
   4008.732   3928.606   3935.100 </code></pre>
