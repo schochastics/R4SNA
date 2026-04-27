@@ -523,45 +523,42 @@ Figure&nbsp;16.1: Visualization of the <em>Les Misérables</em> co-appearance ne
 <p>The code below yields <a href="#tbl-gnp" class="quarto-xref">Table&nbsp;<span>16.1</span></a> which summarizes key structural properties of the observed <em>Les Misérables</em> network and the corresponding <span class="math inline">\(G(n, p)\)</span> random graph. These include the global clustering coefficient (measuring the tendency of nodes to form closed triads), the average geodesic distance (a measure of path efficiency), and the maximum degree (the highest number of connections any single node has).</p>
 <p>The observed network shows substantially higher clustering, a slightly shorter average path length, and a much larger maximum degree. These results highlight that the empirical network is both more locally cohesive and more hierarchically structured than its random counterpart. The presence of hubs and local clusters (common in real-world networks) is not reproduced by the <span class="math inline">\(G(n, p)\)</span> model which assumes uniform and independent edge probabilities.</p>
 <p>Together, these differences support the conclusion that random tie formation alone cannot explain the structure of this network.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the Les Misérables network from networkdata</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"miserables"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>g_obs <span class="ot">&lt;-</span> miserables</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic stats of the observed network</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">vcount</span>(g_obs)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">ecount</span>(g_obs)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>density_obs <span class="ot">&lt;-</span> <span class="fu">edge_density</span>(g_obs)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>deg_obs <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_obs)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>clustering_obs <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_obs, <span class="at">type =</span> <span class="st">"global"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dist_obs <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a G(n, p) graph with the same density</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>g_gnp <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="at">n =</span> n, <span class="at">p =</span> density_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>deg_gnp <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_gnp)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>clustering_gnp <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_gnp, <span class="at">type =</span> <span class="st">"global"</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>dist_gnp <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_gnp, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine comparison into a data frame</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"G(n, p)"</span>),</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">Clustering =</span> <span class="fu">c</span>(clustering_obs, clustering_gnp),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">AvgPathLength =</span> <span class="fu">c</span>(dist_obs, dist_gnp),</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">MaxDegree =</span> <span class="fu">c</span>(<span class="fu">max</span>(deg_obs), <span class="fu">max</span>(deg_gnp))</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <div id="tbl-gnp" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-gnp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;16.1: Comparison of structural features: Observed vs G(n, p)
 </figcaption>
 <div aria-describedby="tbl-gnp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the Les Misérables network from networkdata</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"miserables"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>g_obs <span class="ot">&lt;-</span> miserables</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic stats of the observed network</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">vcount</span>(g_obs)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">ecount</span>(g_obs)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>density_obs <span class="ot">&lt;-</span> <span class="fu">edge_density</span>(g_obs)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>deg_obs <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_obs)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>clustering_obs <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_obs, <span class="at">type =</span> <span class="st">"global"</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>dist_obs <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a G(n, p) graph with the same density</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>g_gnp <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="at">n =</span> n, <span class="at">p =</span> density_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>deg_gnp <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_gnp)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>clustering_gnp <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_gnp, <span class="at">type =</span> <span class="st">"global"</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>dist_gnp <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_gnp, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine comparison into a data frame</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"G(n, p)"</span>),</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">Clustering =</span> <span class="fu">c</span>(clustering_obs, clustering_gnp),</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">AvgPathLength =</span> <span class="fu">c</span>(dist_obs, dist_gnp),</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">MaxDegree =</span> <span class="fu">c</span>(<span class="fu">max</span>(deg_obs), <span class="fu">max</span>(deg_gnp))</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Format with kable</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(comparison, <span class="at">caption =</span> <span class="st">"Comparison of structural features: Observed vs G(n, p)"</span>,</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">align =</span> <span class="st">"c"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -657,12 +654,6 @@ Figure&nbsp;16.2: Comparison of node degree distributions in the observed <em>Le
 <h3 class="unnumbered anchored" data-anchor-id="example-configuration-model">Example: Configuration Model</h3>
 <p>In this example, we continue with the <em>Les Misérables</em> co-appearance network and compare it to a random network generated from the configuration model. The goal is to assess how well the configuration model replicates key structural features of the observed network when it exactly preserves the degree sequence but randomizes the specific tie configuration.</p>
 <p>We use the <code>igraph</code> package to compute network properties and simulate the configuration model using <code>sample_degseq()</code>. The configuration model guarantees that each node retains its observed degree. We create a comparison table and visualize the degree distribution as before in <a href="#tbl-confmod" class="quarto-xref">Table&nbsp;<span>16.2</span></a> and <a href="#fig-confmod" class="quarto-xref">Figure&nbsp;<span>16.3</span></a>.</p>
-<div id="tbl-confmod" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-confmod-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;16.2: Comparison of structural features: Observed vs Configuration Model
-</figcaption>
-<div aria-describedby="tbl-confmod-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get observed degree sequence</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>deg_seq <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_obs)</span>
@@ -692,11 +683,15 @@ Table&nbsp;16.2: Comparison of structural features: Observed vs Configuration Mo
 <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">Clustering =</span> <span class="fu">c</span>(clustering_obs, clustering_conf),</span>
 <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">AvgPathLength =</span> <span class="fu">c</span>(dist_obs, dist_conf),</span>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">MaxDegree =</span> <span class="fu">c</span>(<span class="fu">max</span>(deg_seq), <span class="fu">max</span>(deg_conf))</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Display comparison table with kable</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(conf_comparison, <span class="at">caption =</span> <span class="st">"Comparison of structural features: Observed vs Configuration Model"</span>,</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">align =</span> <span class="st">"c"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tbl-confmod" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-confmod-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;16.2: Comparison of structural features: Observed vs Configuration Model
+</figcaption>
+<div aria-describedby="tbl-confmod-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -783,12 +778,6 @@ Figure&nbsp;16.3: Comparison of degree distributions for the observed <em>Les Mi
 <h3 class="unnumbered anchored" data-anchor-id="example-the-small-world-model">Example: The Small World Model</h3>
 <p>To evaluate how well the small-world model captures structural features of a real network, we simulate a small-world graph using the same number of nodes and approximate average degree as the <em>Les Misérables</em> co-appearance network. We then compare the simulated graph to the observed one in terms of degree distribution, clustering, and average path length.</p>
 <p>The simulation uses <code>igraph::sample_smallworld()</code>, which generates a Watts–Strogatz small-world graph by starting from a regular ring lattice and randomly rewiring edges with a given probability <span class="math inline">\(p\)</span>. We set <span class="math inline">\(p = 0.05\)</span> to introduce moderate randomness while maintaining local structure (we discuss the choice of <span class="math inline">\(p\)</span> in more detail below).</p>
-<div id="tbl-sw" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sw-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;16.3: Comparison of structural features: Observed vs Small-World Model
-</figcaption>
-<div aria-describedby="tbl-sw-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>avg_deg_obs <span class="ot">&lt;-</span> <span class="fu">mean</span>(deg_obs)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">round</span>(avg_deg_obs <span class="sc">/</span> <span class="dv">2</span>)  <span class="co"># average degree per side for ring lattice</span></span>
@@ -812,11 +801,15 @@ Table&nbsp;16.3: Comparison of structural features: Observed vs Small-World Mode
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">Clustering =</span> <span class="fu">c</span>(clustering_obs, clustering_sw),</span>
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">AvgPathLength =</span> <span class="fu">c</span>(dist_obs, dist_sw),</span>
 <span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">MaxDegree =</span> <span class="fu">c</span>(<span class="fu">max</span>(deg_obs), <span class="fu">max</span>(deg_sw))</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Print formatted table</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(sw_comparison, <span class="at">caption =</span> <span class="st">"Comparison of structural features: Observed vs Small-World Model"</span>,</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">align =</span> <span class="st">"c"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tbl-sw" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sw-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;16.3: Comparison of structural features: Observed vs Small-World Model
+</figcaption>
+<div aria-describedby="tbl-sw-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
