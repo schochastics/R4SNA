@@ -43,7 +43,7 @@ An `egor` object stores the multiple data levels required for ego-centered netwo
 
 
 
-In this chapter, we draw on ego network data from the **UC Berkeley Social Networks Study (UCNets)** [@fischer2020uc], a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the *first wave* and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in the  @sec-apx-ucnets. This code already processes the raw survey files and combines them into an `egor` object, the data structure used by the `egor` package for ego-centered network analysis. An `egor` object contains three linked levels of data: ego-level attributes (characteristics of the respondents), alter-level attributes (characteristics of the individuals named in each respondent's personal network), and alter–alter ties (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the [UCNets project website](https://ucnets.berkeley.edu/).
+In this chapter, we draw on ego network data from the **UC Berkeley Social Networks Study (UCNets)** [@fischer2020uc], a longitudinal study of personal networks in the San Francisco Bay Area conducted between 2015 and 2018. Specifically, we use data from the *first wave* and select only a subset of variables relevant for the examples presented here. Several of these variables are also recoded to create analytically useful ego-, alter-, and alter–alter-level measures. The full code used to construct the dataset is provided in @sec-apx-ucnets. This code already processes the raw survey files and combines them into an `egor` object, the data structure used by the `egor` package for ego-centered network analysis. An `egor` object contains three linked levels of data: ego-level attributes (characteristics of the respondents), alter-level attributes (characteristics of the individuals named in each respondent's personal network), and alter–alter ties (relationships among those alters within each ego network). Because the UCNets data are restricted-access, readers must register and obtain access themselves in order to reproduce the dataset from the original files. Further information about the study is available at the [UCNets project website](https://ucnets.berkeley.edu/).
 
 
 ```{r}
@@ -552,8 +552,6 @@ Here we illustrate this approach by examining whether features of respondents' e
 
 > *Are respondents with larger, more diverse, or more kin-centered personal networks more likely to report better health?*
 
-So we are basically checking whether individuals embedded in larger, more diverse, or more supportive personal networks may report better health.
-
 Our outcome is the ego-level variable `health`, which records respondents' self-rated health. In the data preparation step, this variable was retained as an ordered factor with the categories:
 
 - `excellent`
@@ -566,13 +564,13 @@ Because these categories are ordered but not measured on an interval scale, an o
 
 #### Predictors
 
-We include four ego-network measures as predictors:
+We include three ego-network measures as predictors:
 
 - **`ego_size`**: the number of alters in the ego network
 - **`prop_family`**: the proportion of alters who are family members
 - **`gender_entropy`**: a measure of gender diversity among alters
 
-Note that we do not use `prop_same_race` due to its high number of missing observations. 
+A fourth candidate, `prop_same_race`, is not used here because of its high number of missing observations.
 
 To account for basic respondent characteristics, we also include three ego-level controls:
 

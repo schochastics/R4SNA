@@ -1,4 +1,4 @@
-# Two-Mode Networks
+# Two-Mode Networks {#sec-two-mode-networks}
 
 A **two-mode network** is a network that consists of two disjoint sets of nodes (like people and events). Ties connect the two sets, for example participation of people in events.
 
@@ -27,6 +27,7 @@ library(backbone)
 #| label: libraries-silent
 #| include: false
 library(ggraph)
+library(tidyverse)
 ```
 
 ## Two-Mode Data Structure
@@ -36,7 +37,7 @@ Two-mode networks are especially useful for analyzing how connections emerge ind
 
 To illustrate methods tailored for two-mode networks, we will use the well-known *Southern Women* dataset [@davis2009deep]. This classic dataset records the attendance patterns of 18 women at 14 social events in the American South, and has become a foundational example in network analysis.  The network is included in the `networkdata` package and provides a canonical example of an affiliation (incidence) matrix suitable for demonstrating two-mode network methods and one-mode projections. 
 
-The biadjacency matrix and can be obtained via `as_biadjacency_matrix()`. This matrix is shown in @fig-incmat and the network itself in @fig-southern-women-plot.
+The biadjacency matrix can be obtained via `as_biadjacency_matrix()`. This matrix is shown in @fig-incmat and the network itself in @fig-southern-women-plot.
 
 
 ```{r}
@@ -53,9 +54,8 @@ A
 #| label: fig-incmat
 #| echo: false
 #| message: false
-#| fig.cap: "Incidence matrix representation of the Southern Women two-mode network. Rows correspond to the 18 women and columns to the 14 social events; black cells indicate attendance at an event, and white cells indicate non-attendance. "
+#| fig-cap: "Incidence matrix representation of the Southern Women two-mode network. Rows correspond to the 18 women and columns to the 14 social events; black cells indicate attendance at an event, and white cells indicate non-attendance."
 
-library(tidyverse)
 # Convert to tidy format
 df <- as.data.frame(A) |>
   rownames_to_column("woman") |>
@@ -116,7 +116,7 @@ Several packages provide methods for analyzing two-mode networks directly, witho
 
 For example, recall that the standard clustering coefficient is based on counting triangles, i.e. closed triplets of nodes. However, triangles cannot exist in a two-mode network because ties only occur between the two distinct node sets (e.g., women $\leftrightarrow$ events), not within them. This means the usual definition of transitivity must be adapted [@opsahl2013triadic].
 
-If we naively apply `igraph`’s transitivity function to the bipartite graph, it will return zero or undefined local values, precisely because triangles are structurally impossible.
+If we naively apply `igraph`'s transitivity function to the bipartite graph, it will return zero or undefined local values, precisely because triangles are structurally impossible.
 
 ```{r}
 #| label: transitivity-sw
@@ -175,7 +175,7 @@ projs
 #| fig-height: 8
 #| fig-width: 10
 #| echo: false
-#| fig.cap: "Weighted projection of the Southern Women network onto the women."
+#| fig-cap: "Weighted projection of the Southern Women network onto the women."
 proj <- graph_from_adjacency_matrix(
   B,
   weighted = TRUE,
@@ -206,7 +206,7 @@ The rationale for using the mean is statistical and substantive. In many project
 
 However, this choice is heuristic rather than theoretically mandated. The appropriate threshold depends on the research question: lower thresholds preserve more information but may produce very dense graphs, while higher thresholds emphasize strong ties but risk discarding meaningful structure. Consequently, it is often useful to explore how results change across different threshold values.
 
-Below,, we binarize the weighted women–women projection using the mean edge weight as a global threshold. First, we extract the women’s projection from the list returned by `bipartite_projection()`. We then compute the mean of the edge weights and remove all ties whose weights are less than or equal to this threshold. Finally, we delete the `weight` attribute so that the resulting graph is treated as a simple unweighted (binary) network.
+Below, we binarize the weighted women–women projection using the mean edge weight as a global threshold. First, we extract the women's projection from the list returned by `bipartite_projection()`. We then compute the mean of the edge weights and remove all ties whose weights are less than or equal to this threshold. Finally, we delete the `weight` attribute so that the resulting graph is treated as a simple unweighted (binary) network.
 
 ```{r}
 #| label: southern-rm-proj
@@ -280,7 +280,7 @@ senators <- backbone_from_projection(cosponsor, model = "sdsm", alpha = 0.05, si
 senators
 ```
 
-With `signed = FALSE`, the procedure performs a one-tailed test for each edge that has a non-zero weight in the weighted projection. The output is a filtered (or “backbone”) projection that retains only those senator–senator ties whose co-sponsorship strength is significantly greater than expected in the null model at the chosen significance level (`alpha = 0.05`). In other words, the projection keeps unusually strong co-sponsorship relationships and discards ties that could plausibly arise from baseline activity levels alone.
+With `signed = FALSE`, the procedure performs a one-tailed test for each edge that has a non-zero weight in the weighted projection. The output is a filtered (or "backbone") projection that retains only those senator–senator ties whose co-sponsorship strength is significantly greater than expected in the null model at the chosen significance level (`alpha = 0.05`). In other words, the projection keeps unusually strong co-sponsorship relationships and discards ties that could plausibly arise from baseline activity levels alone.
 
 When `signed = TRUE`, the procedure performs a two-tailed test for every pair of nodes. This yields a signed backbone: positive edges indicate pairs that co-sponsor significantly more than expected, while negative edges indicate pairs that co-sponsor significantly less than expected under the same null model. The resulting projection is therefore a signed network (see @sec-signed-networks).
 
@@ -311,4 +311,4 @@ ggraph(senators, "stress") +
 
 The backbone projection reveals a strongly polarized cosponsorship structure. Nodes are senators, colored by party, and the layout places more strongly connected senators closer together. The most salient feature is the clear separation into two large clusters: a predominantly Republican cluster on the left (red) and a predominantly Democratic cluster on the right (blue). Within each party cluster, the network is very dense, indicating that many pairs of same-party senators cosponsor bills together at rates that are *significantly stronger than expected* given their overall cosponsorship activity (as captured by the SDSM null model).
 
-In contrast, there are only a small number of edges spanning the gap between the two clusters. These cross-party ties represent relatively rare cases of unusually strong bipartisan cosponsorship. Senators positioned near the boundary between the clusters, and the few cross-cluster edges attached to them, can be interpreted as potential “broker-like” actors in this backbone, in the sense that they are among the limited set of senators whose cosponsorship patterns connect the two partisan blocs. The Independent senators (yellow) appear closer to one side but near the interface, consistent with the idea that independents often align with one coalition while occasionally participating in cross-party collaborations. Overall, the figure shows that once we filter the projection to retain only statistically meaningful ties, cosponsorship is dominated by within-party collaboration, with comparatively little bipartisan structure.
+In contrast, there are only a small number of edges spanning the gap between the two clusters. These cross-party ties represent relatively rare cases of unusually strong bipartisan cosponsorship. Senators positioned near the boundary between the clusters, and the few cross-cluster edges attached to them, can be interpreted as potential "broker-like" actors in this backbone, in the sense that they are among the limited set of senators whose cosponsorship patterns connect the two partisan blocs. The Independent senators (yellow) appear closer to one side but near the interface, consistent with the idea that independents often align with one coalition while occasionally participating in cross-party collaborations. Overall, the figure shows that once we filter the projection to retain only statistically meaningful ties, cosponsorship is dominated by within-party collaboration, with comparatively little bipartisan structure.

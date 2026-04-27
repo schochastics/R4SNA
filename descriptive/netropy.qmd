@@ -15,17 +15,23 @@ Together, these tools form a coherent framework that supports both exploratory a
 
 ## Packages Needed for this Chapter
 ```{r}
+#| label: libraries
 #| message: false
-#| warning: false
 library(netropy)
 library(igraph)
 library(ggplot2)
 ```
 
+```{r}
+#| label: libraries-silent
+#| include: false
+library(patchwork)
+```
+
 ## Network Data Representation and Transformation
 Network data consist of variables defined on different domains, most commonly nodes (vertices) and dyads (edges). While vertex variables are observed on $n$ nodes, edge variables are observed on $\binom{n}{2}$ dyads. Since entropy analysis requires all variables to be defined on a common domain, these differences must be resolved through appropriate transformations.
 
-Let $V = {1, \dots, n}$ denote a set of nodes. Suppose $X_i$, $i = 1, \dots, m’$, are vertex variables with $r_i$ outcomes, and $Y_j$, $j = 1, \dots, m’’$, are edge (or dyad) variables with $r’_j$ outcomes. The corresponding joint outcome sizes are $r’ = \prod r_i$ and $r’’ = \prod r’_j$. Because these variables are observed on different domains, they cannot be directly combined in entropy calculations.
+Let $V = \{1, \dots, n\}$ denote a set of nodes. Suppose $X_i$, $i = 1, \dots, m'$, are vertex variables with $r_i$ outcomes, and $Y_j$, $j = 1, \dots, m''$, are edge (or dyad) variables with $r'_j$ outcomes. The corresponding joint outcome sizes are $r' = \prod r_i$ and $r'' = \prod r'_j$. Because these variables are observed on different domains, they cannot be directly combined in entropy calculations.
 
 One possibility is to transform vertex variables to the edge domain. For each pair $(u,v)$, define $X_i^* = (X_u, X_v)$. This yields a dataset with $\binom{n}{2}$ observations, allowing the transformed vertex variables to be analyzed jointly with edge (or dyad) variables (see @tbl-edge-representation).
 
@@ -52,7 +58,7 @@ An alternative is to transform edge variables to the vertex domain. For each nod
 : Vertex-Based Representation. Observed  vertex variables are given by $X_i$, transformed vertex variables are given by $Y_i^*$ {#tbl-vertex-representation}
 
 
-A useful extension is to construct edge attributes directly from vertex attributes. For example, if $(W_i, T_i, P_i)$ are binary vertex variables for node $i$, then edge-level variables can be defined by $W_{ij} = W_i + W_j$, $T_{ij} = T_i + T_j$, and $P_{ij} = P_i + P_j$ [@frank2016multivariate]. These new variables take values in ${0,1,2}$ and can be analyzed jointly with other dyadic variables.
+A useful extension is to construct edge attributes directly from vertex attributes. For example, if $(W_i, T_i, P_i)$ are binary vertex variables for node $i$, then edge-level variables can be defined by $W_{ij} = W_i + W_j$, $T_{ij} = T_i + T_j$, and $P_{ij} = P_i + P_j$ [@frank2016multivariate]. These new variables take values in $\{0,1,2\}$ and can be analyzed jointly with other dyadic variables.
 
 These transformations involve trade-offs. Extending vertex variables to the edge domain increases the number of observations but also enlarges the joint outcome space. Aggregating edge variables to the vertex domain simplifies the data structure but may reduce variability and finer relational detail. Nevertheless, these transformations are essential because they make it possible to bring variables from different domains into a common analytical framework. The same principles extend naturally to higher-order structures such as triads.
 
@@ -94,8 +100,7 @@ adj_likfrn <-  as_adjacency_matrix(g_likfrn, sparse = FALSE)
 
 
 ### Data Editing
-#### Vertex Variables {.unnumbered}
-
+#### Vertex Variables
 Observed node variables are the attributes in the data frame `df_att`. The first 5 lines of this data frame are:
 ```{r}
 head(df_att, 5)
@@ -134,7 +139,6 @@ We use these plots to choose cutpoints that divide the data into three approxima
 #| fig-height: 5
 #| fig-width: 10
 #| fig-cap: "Empirical cumulative distribution functions (CDFs) for `years at firm` and `age`. The dashed horizontal lines indicate the target quantiles (approximately one-third and two-thirds), while the dotted vertical lines show the selected cutpoints used to define three approximately equally sized categories for each variable."
-library(patchwork)
 pyears <- ggplot(frq_years, aes(x = years, y = cum.rel.freq)) +
   geom_step(linewidth = 1) +
   geom_point() +
@@ -272,8 +276,7 @@ First 10 rows of the vertex-level dataset.
 :::
 
 
-#### Dyad Variables {.unnumbered}
-
+#### Dyad Variables
 Dyad variables (or edge variables) are constructed as pairs of incident vertex variables, resulting in $\binom{71}{2} = 2485$ observations (i.e., the number of rows in the dyadic data frames created below). 
 
 The observed node attributes in the data frame `att_var` are therefore transformed into dyadic attributes by pairing the values of two connected vertices. For example, the binary variable `status` yields four possible dyadic outcomes: $(0,0)$, $(0,1)$, $(1,0)$, and $(1,1)$. Similarly, the categorical variable `office` with three levels results in nine possible dyadic outcomes: $(0,0)$, $(0,1)$, $(0,2)$, $(1,0)$, $(1,1)$, $(1,2)$, $(2,0)$, $(2,1)$, and $(2,2)$.
@@ -341,7 +344,7 @@ knitr::kable(
 First 10 rows of the dyadic dataset.
 :::
 
-#### Triad Variables {.unnumbered}
+#### Triad Variables
 A similar function, `get_triad_var()`, is used to transform vertex variables and different relation types into triad-level variables. These variables represent combinations of three nodes and therefore yield $\binom{71}{3} = 57155$ observations in the law firm dataset. Each observation corresponds either to a triple of individual attributes or to the configuration of relations among three nodes.
 
 As for dyad variables, the function requires specifying the type of input: `type = "att"` for vertex attributes (given as column vectors) and `type = "tie"` for relational data (given as adjacency matrices).
@@ -428,14 +431,13 @@ H(X) \leq H(X,Y) \leq H(X) + H(Y).
 $$
 
 - The lower bound is attained if and only if there is a functional relationship $Y = f(X)$.
-- The upper bound is attained if and only if $X$ and $Y$ are stochastically independent, $X \bot Y$.
+- The upper bound is attained if and only if $X$ and $Y$ are stochastically independent, $X \perp Y$.
 
 In particular, if $H(X,Y) = H(X)$ or $H(X,Y) = H(Y)$, one of the variables is redundant and does not provide additional information.
 
 The function `entropy_bivar()` computes the bivariate entropies for all pairs of variables in a data frame. The results are returned as an upper triangular matrix, where each cell contains the joint entropy of the corresponding row and column variables. The diagonal entries represent the univariate entropies of each variable.
 
-#### Vertex Variables {.unnumbered}
-
+#### Vertex Variables
 We apply the function to the data frame containing all observed and transformed vertex variables.
 
 ```{r}
@@ -478,7 +480,7 @@ colnames(red_vertex2)[rowSums(red_vertex2) >= 1]
 
 Here, the variable `senior` is flagged as redundant with respect to all other variables, as indicated by the row of ones. This occurs because `senior` consists entirely of unique values, meaning it does not share any repeated structure with other variables and therefore does not contribute meaningful information for entropy-based analysis. In contrast, all other variables show zeros, indicating no redundancy among them.
 
-#### Dyad Variables {.unnumbered}
+#### Dyad Variables
 The data frame `dyad_var` contains 13 observed and transformed dyad-level variables. To compute the univariate and bivariate entropies, we apply the function `entropy_bivar()`:
 
 ```{r}
@@ -494,7 +496,7 @@ knitr::kable(
   round(h2_dyad, 2),
 )
 ```
-Bivariate entropy matrix for dyad variables. Redundancy is observed among the advice and friendship variants: the variables `mutadv`, `mutfrn`, and `likfrn` do not provide additional information beyond `advice` and `friend`, respectively, and should therefore excluded from subsequent analyses.
+Bivariate entropy matrix for dyad variables. Redundancy is observed among the advice and friendship variants: the variables `mutadv`, `mutfrn`, and `likfrn` do not provide additional information beyond `advice` and `friend`, respectively, and should therefore be excluded from subsequent analyses.
 :::
 
 
@@ -505,9 +507,7 @@ dyad_var <- dyad_var[-c(10, 12:13)]
 
 The resulting data frame contains the non-redundant dyad variables used in the subsequent entropy analysis.
 
-#### Triad Variables {.unnumbered}
-
-
+#### Triad Variables
 The data frame `triad_var` contains the observed and transformed triad-level variables. To compute the univariate and bivariate entropies, we apply the function `entropy_bivar()`:
 
 ```{r}
@@ -541,7 +541,7 @@ $$
 J(X,Y) = H(X) + H(Y) - H(X,Y),
 $$
 
-which is a non-negative measure of association between $X$ and $Y$. It is equal to $0$ if and only if $X$ and $Y$ are stochastically independent, $X \bot Y$, that is, when $p(x,y) = p(x,+)p(+,y)$.
+which is a non-negative measure of association between $X$ and $Y$. It is equal to $0$ if and only if $X$ and $Y$ are stochastically independent, $X \perp Y$, that is, when $p(x,y) = p(x,+)p(+,y)$.
 
 For three variables, the trivariate entropy is bounded by
 
@@ -555,7 +555,7 @@ $$
 EJ(X,Y \mid Z) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z),
 $$
 
-which is again non-negative and equals $0$ if and only if $X \bot Y \mid Z$. This quantity can therefore be used to assess conditional independence.
+which is again non-negative and equals $0$ if and only if $X \perp Y \mid Z$. This quantity can therefore be used to assess conditional independence.
 
 Joint entropy values $J(X,Y)$ for all pairs of variables can be used to explore the dependence structure through association graphs. In such graphs, nodes represent variables and edges connect pairs of variables whose joint entropy exceeds a chosen threshold. By gradually lowering the threshold, additional edges appear and the graph becomes more connected. 
 
@@ -563,8 +563,7 @@ Connected components that form cliques indicate groups of mutually dependent var
 
 The function `joint_entropy()` computes joint entropy values for all pairs of variables in a data frame. The output is returned as a list containing: (i) an upper triangular matrix of joint entropy values, with univariate entropies on the diagonal, and (ii) a data frame summarizing the frequency distribution of unique joint entropy values. An optional argument controls the precision (number of decimal places) used in constructing this frequency distribution; the default is 3.
 
-#### Vertex Variables {.unnumbered}
-
+#### Vertex Variables
 We apply the function to the data frame containing the observed and transformed vertex variables:
 
 ```{r}
@@ -606,8 +605,7 @@ These relationships can be conveniently visualized using the function `assoc_gra
 assoc_graph(vertex_var, 0.25)
 ```
 
-#### Dyad Variables {.unnumbered}
-
+#### Dyad Variables
 Joint entropies for the dyad variables are computed in the same way as for the vertex variables. Rather than presenting the full output, we focus on visualizing the dependence structure using an association graph. We set a threshold of 0.10 to display the strongest associations:
 
 ```{r}
@@ -621,8 +619,7 @@ From the graph, several patterns can be observed. There is a strong dependence a
 
 In addition, the graph suggests that the relations `cowork` and `friend` are conditionally independent given `advice`. That is, any observed dependence between `cowork` and `friend` can be explained through their association with `advice`.
 
-#### Triad Variables {.unnumbered}
-
+#### Triad Variables
 Similarly, joint entropies for the triad variables are computed for the reduced data frame (with redundant variables removed). The dependence structure is again visualized using an association graph. We set a threshold of 0.25 to focus on the strongest associations:
 
 ```{r}
@@ -662,7 +659,7 @@ The function `prediction_power()` computes this quantity for all pairs of variab
 For easier interpretation, prediction results can be visualized using prediction plots, which display a color-coded matrix with rows representing $X$ and columns representing $Y$. Darker colors indicate lower prediction uncertainty and thus higher predictive power for $Z$.
 In the following, we compute and visualize prediction power for vertex, dyad, and triad variables.
 
-#### Vertex Variables {.unnumbered}
+#### Vertex Variables
 Trivariate entropies for all combinations of vertex variables can be computed using the function `entropy_trivar()`:
 
 ```{r}
@@ -684,7 +681,7 @@ pred_vertex_frnout <- prediction_power("outdeg_frn", vertex_var)
 pred_vertex_frnmut <- prediction_power("deg_mutfrn", vertex_var)
 pred_vertex_frnlik <- prediction_power("deg_likfrn", vertex_var)
 ```
-As an illustration, consider predicting the variable `indeg_adv`, which represents the in-degree in the advice network (i.e., how often a lawyer is asked for advice). The prediction power was computed an assigned to `pred_vertex_advin` and shown in @tbl-expred.
+As an illustration, consider predicting the variable `indeg_adv`, which represents the in-degree in the advice network (i.e., how often a lawyer is asked for advice). The prediction power was computed and assigned to `pred_vertex_advin` and shown in @tbl-expred.
 
 
 ::: {#tbl-expred}
@@ -745,8 +742,7 @@ From @fig-predplot-vertex, we note the following. The vertex variables, network-
 Attribute-based variables such as `years` and `age` also contribute to prediction, especially when combined with network measures, while variables such as `office` and `practice` tend to have weaker predictive power. Overall, the results highlight that structural position in the network is more informative than individual attributes for predicting vertex-level outcomes.
 
 
-#### Dyad Variables {.unnumbered}
-
+#### Dyad Variables
 We next assess prediction power for all dyad variables derived from the law firm network, including co-working, advice, and friendship relations, as well as dyadic versions of the attribute variables. For each dyad variable, we compute the expected conditional entropies $EH(Z \mid X,Y)$ using all other dyad variables as predictors, and visualize the results using prediction heatmaps.
 
 For each target variable in `dyad_var`, we compute the prediction power matrix based on all other dyad variables, and then visualize the results using heatmaps of expected conditional entropies $EH(Z \mid X,Y)$.
@@ -796,7 +792,7 @@ p10 <- make_pred_plot(pred_dyad_friend,    "friend")
 
 Overall, the plots show that relational variables such as `advice`, `cowork`, and `friend` are strong predictors of each other, particularly when combined. Attribute-based variables such as `years` and `age` contribute to prediction, but are generally less informative on their own, highlighting the importance of network structure in explaining dyadic interactions.
 
-#### Triad Variables {.unnumbered}
+#### Triad Variables
 We do a similar visualization for all triad variables as shown in @fig-predplot-triad and note the following.
 
 Across the triad variables, predictive performance varies substantially by target variable, and the heatmaps do not show a simple pattern of structural variables always dominating. Instead, the strongest predictors depend on which triad attribute is being predicted.
@@ -883,8 +879,7 @@ which, for large samples, is approximately $\chi^2$-distributed with degrees of 
 
 #### Testing Independence Structures
 
-##### Pairwise Independence  {.unnumbered}
-
+##### Pairwise Independence
 To test whether two variables $X$ and $Y$ are independent, we compare:
 
 - the empirical joint distribution $p(x,y)$, and  
@@ -900,8 +895,7 @@ $$
 $$
 Thus, joint entropy directly measures deviation from independence: small values indicate independence, while large values indicate dependence. 
 
-##### Conditional Independence  {.unnumbered}
-
+##### Conditional Independence
 More generally, we may test whether two variables are independent given a third variable:
 
 $$
@@ -924,7 +918,7 @@ $$
 $$
 
 
-##### Nested Model Specifications  {.unnumbered}
+##### Nested Model Specifications
 Divergence-based tests also allow us to compare nested models, that is, models where one is a constrained version of another. For example, we may start with a model that assumes a set of conditional independence relations and then impose additional constraints to obtain a simpler model.
 
 Formally, let $q_1$ and $q_2$ be two models such that $q_2$ is nested within $q_1$ (i.e., $q_2$ imposes more independence assumptions). The difference in divergence
@@ -1061,6 +1055,7 @@ which provides a fast and convenient rule for hypothesis testing.
 
 Alternatively, exact critical values from the chi-square distribution can be used by setting:
 ```{r}
+#| eval: false
 use_approx_cv = FALSE
 ```
 
