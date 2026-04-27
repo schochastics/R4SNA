@@ -1155,12 +1155,105 @@ Overall maximum convergence ratio:    0.0396
 Total of 2412 iteration steps.</code></pre>
 </div>
 </div>
-<p>A nicer summary of the model is obtained by running the following which saves the table of results as an html file (including significance stars for easy interpretation):</p>
+<p>A nicer summary of the model is obtained by running the following, which renders the table of results inline (including significance stars for easy interpretation):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_1, <span class="at">type=</span><span class="st">"html"</span>, <span class="at">sig=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_1, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_1, <span class="at">type =</span> <span class="st">"tex"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<iframe src="saom_1.html" width="100%" height="210px" style="border:none;">
-</iframe>
+<pre><code>                &lt;TD&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; (s.e.) &lt;/TD&gt;  &lt;/TR&gt;</code></pre><table border="1" rules="none" frame="hsides">
+<tbody><tr>
+<td>
+Effect
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;par.
+</td>
+<td>
+</td>
+
+</tr><tr>
+<td>
+Rate 1
+</td>
+<td align="right">
+8.580
+</td>
+<td align="left">
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.698)
+</td>
+</tr>
+<tr>
+<td>
+Rate 2
+</td>
+<td align="right">
+7.238
+</td>
+<td align="left">
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.605)
+</td>
+</tr>
+<tr>
+<td>
+outdegree-(density)
+</td>
+<td align="right">
+&nbsp;–2.411
+</td>
+<td align="left">
+***
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.041)
+</td>
+</tr>
+<tr>
+<td>
+reciprocity
+</td>
+<td align="right">
+2.705
+</td>
+<td align="left">
+***
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.086)
+</td>
+</tr>
+<tr>
+<td colspan="9">
+<hr>
+</td>
+</tr>
+</tbody></table>
+<table border="1" rules="none" frame="below">
+<tbody><tr>
+<td colspan="4" align="left">
+&amp;#134 p &lt; 0.1; * p &lt; 0.05; ** p &lt; 0.01; *** p &lt; 0.001;
+</td>
+</tr>
+<tr>
+</tr>
+<tr>
+<td colspan="9" align="left">
+all convergence t ratios &lt; 0.03.
+</td>
+</tr>
+<tr>
+</tr>
+<tr>
+<td colspan="9" align="left">
+Overall maximum convergence ratio 0.04.
+</td>
+</tr>
+<tr>
+</tr>
+</tbody></table>
 <p><strong>So, how do we interpret the parameter estimates?</strong></p>
 <p>Before interpreting parameter estimates, it’s essential to assess whether the estimation has converged adequately. In RSiena, convergence is assessed using two main criteria:</p>
 <ol type="1">
@@ -1241,37 +1334,37 @@ Suppose <span class="math inline">\(x_{ji} = 1\)</span> (the other actor already
 <p>In sum, Model 2 captures not only who adolescents choose to befriend structurally, but also how individual traits shape social dynamics providing a more realistic and theoretically grounded model of network evolution.</p>
 <p>We begin by converting the 3D network array we created above into a <code>sienaDependent</code> object:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert array into RSiena dependent object</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>siena_net <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(net_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert array into RSiena dependent object</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>siena_net <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(net_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Like before, this object represents the longitudinal network that serves as the dependent variable in the SAOM. Different from before, we extract covariate values from the network’s node attributes. Sex (<code>sex.F</code>) is treated as a time-invariant covariate, while smoking behavior (<code>familysmoking</code>) is treated as time-varying across the three network waves.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>sex_char <span class="ot">&lt;-</span> <span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>sex.F</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>sex_num <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"F"</span>, <span class="dv">1</span>,</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"M"</span>, <span class="dv">0</span>, <span class="cn">NA</span>))</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to fixed covariate object                  </span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>sex_cov <span class="ot">&lt;-</span> <span class="fu">coCovar</span>(sex_num)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract smoking behavior (assumed changing)</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>smoke1 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g1)<span class="sc">$</span>tobacco)</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>smoke2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>tobacco)</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>smoke3 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g3)<span class="sc">$</span>tobacco)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>smoking_array <span class="ot">&lt;-</span> <span class="fu">cbind</span>(smoke1, smoke2, smoke3)</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to changing covariate object</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>smoking_cov <span class="ot">&lt;-</span> <span class="fu">varCovar</span>(smoking_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sex_char <span class="ot">&lt;-</span> <span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>sex.F</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>sex_num <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"F"</span>, <span class="dv">1</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"M"</span>, <span class="dv">0</span>, <span class="cn">NA</span>))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to fixed covariate object                  </span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>sex_cov <span class="ot">&lt;-</span> <span class="fu">coCovar</span>(sex_num)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract smoking behavior (assumed changing)</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>smoke1 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g1)<span class="sc">$</span>tobacco)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>smoke2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>tobacco)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>smoke3 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g3)<span class="sc">$</span>tobacco)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>smoking_array <span class="ot">&lt;-</span> <span class="fu">cbind</span>(smoke1, smoke2, smoke3)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to changing covariate object</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>smoking_cov <span class="ot">&lt;-</span> <span class="fu">varCovar</span>(smoking_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Next we combine the network and covariates into a single Siena data object that will be used for estimation.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data_mod2 <span class="ot">&lt;-</span> <span class="fu">sienaDataCreate</span>(siena_net, sex_cov, smoking_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>data_mod2 <span class="ot">&lt;-</span> <span class="fu">sienaDataCreate</span>(siena_net, sex_cov, smoking_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We define the effects to be included in the model. This includes structural effects (like outdegree, reciprocity, and transitive triplets) as well as ego, alter, and similarity effects for both sex and smoking covariates.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with the default effect set</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">getEffects</span>(data_mod2)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add structural effects</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, outdegree, recip, transTrip)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with the default effect set</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">getEffects</span>(data_mod2)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add structural effects</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, outdegree, recip, transTrip)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  effectNumber effectName          shortName include fix   test  initialValue
 1 17           reciprocity         recip     TRUE    FALSE FALSE          0  
@@ -1280,8 +1373,8 @@ Suppose <span class="math inline">\(x_{ji} = 1\)</span> (the other actor already
 1 0   
 2 0   </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for sex</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for sex</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  effectNumber effectName         shortName include fix   test  initialValue
 1 264          sex_cov alter      altX      TRUE    FALSE FALSE          0  
@@ -1292,8 +1385,8 @@ Suppose <span class="math inline">\(x_{ji} = 1\)</span> (the other actor already
 2 0   
 3 0   </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for smoking</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"smoking_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for smoking</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"smoking_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  effectNumber effectName             shortName include fix   test 
 1 448          smoking_cov alter      altX      TRUE    FALSE FALSE
@@ -1307,26 +1400,214 @@ Suppose <span class="math inline">\(x_{ji} = 1\)</span> (the other actor already
 </div>
 <p>We define the estimation settings using <code>sienaAlgorithmCreate()</code>. A seed is included to support reproducibility of the results.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span>  <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_2"</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span>  <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_2"</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
 </div>
 </div>
 <p>We now estimate the model using the <code>siena07()</code> function, which runs the simulation-based estimation procedure.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>saom_2 <span class="ot">&lt;-</span> <span class="fu">siena07</span>(</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  my_algorithm,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_mod2,</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> my_effects,</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>saom_2 <span class="ot">&lt;-</span> <span class="fu">siena07</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  my_algorithm,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_mod2,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> my_effects,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Finally, as before, we display the model results as an HTML table:</p>
+<p>Finally, as before, we display the model results inline:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_2, <span class="at">type=</span><span class="st">"html"</span>, <span class="at">sig=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_2, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_2, <span class="at">type =</span> <span class="st">"tex"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<iframe src="saom_2.html" width="100%" height="350px" style="border:none;">
-</iframe>
+<pre><code>                &lt;TD&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; (s.e.) &lt;/TD&gt;  &lt;/TR&gt;</code></pre><table border="1" rules="none" frame="hsides">
+<tbody><tr>
+<td>
+Effect
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;par.
+</td>
+<td>
+</td>
+
+</tr><tr>
+<td>
+Rate 1
+</td>
+<td align="right">
+10.753
+</td>
+<td align="left">
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(1.033)
+</td>
+</tr>
+<tr>
+<td>
+Rate 2
+</td>
+<td align="right">
+9.062
+</td>
+<td align="left">
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.829)
+</td>
+</tr>
+<tr>
+<td>
+outdegree-(density)
+</td>
+<td align="right">
+&nbsp;–2.862
+</td>
+<td align="left">
+***
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.056)
+</td>
+</tr>
+<tr>
+<td>
+reciprocity
+</td>
+<td align="right">
+1.990
+</td>
+<td align="left">
+***
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.092)
+</td>
+</tr>
+<tr>
+<td>
+transitive-triplets
+</td>
+<td align="right">
+0.447
+</td>
+<td align="left">
+***
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.031)
+</td>
+</tr>
+<tr>
+<td>
+sex-cov-alter
+</td>
+<td align="right">
+&nbsp;–0.158
+</td>
+<td align="left">
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.108)
+</td>
+</tr>
+<tr>
+<td>
+sex-cov-ego
+</td>
+<td align="right">
+0.160
+</td>
+<td align="left">
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.112)
+</td>
+</tr>
+<tr>
+<td>
+sex-cov-similarity
+</td>
+<td align="right">
+0.918
+</td>
+<td align="left">
+***
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.094)
+</td>
+</tr>
+<tr>
+<td>
+smoking-cov-alter
+</td>
+<td align="right">
+0.110
+</td>
+<td align="left">
+&amp;#134
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.066)
+</td>
+</tr>
+<tr>
+<td>
+smoking-cov-ego
+</td>
+<td align="right">
+0.072
+</td>
+<td align="left">
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.063)
+</td>
+</tr>
+<tr>
+<td>
+smoking-cov-similarity
+</td>
+<td align="right">
+0.380
+</td>
+<td align="left">
+**
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.126)
+</td>
+</tr>
+<tr>
+<td colspan="9">
+<hr>
+</td>
+</tr>
+</tbody></table>
+<table border="1" rules="none" frame="below">
+<tbody><tr>
+<td colspan="4" align="left">
+&amp;#134 p &lt; 0.1; * p &lt; 0.05; ** p &lt; 0.01; *** p &lt; 0.001;
+</td>
+</tr>
+<tr>
+</tr>
+<tr>
+<td colspan="9" align="left">
+all convergence t ratios &lt; 0.09.
+</td>
+</tr>
+<tr>
+</tr>
+<tr>
+<td colspan="9" align="left">
+Overall maximum convergence ratio 0.18.
+</td>
+</tr>
+<tr>
+</tr>
+</tbody></table>
 <p>We now interpret the results from Model 2, starting with an assessment of convergence, followed by the interpretation of parameter estimates.</p>
 <section id="convergence-assessment-1" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="convergence-assessment-1">Convergence Assessment</h5>
@@ -1362,7 +1643,7 @@ Shows a strong and significant tendency for actors to form ties with others of t
 </ul>
 <p>The SAOM estimation includes three effects based on the covariate <code>sex</code>, coded as <code>0</code> for boys and <code>1</code> for girls, and centered around the mean value</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(sex_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(sex_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.4341085</code></pre>
 </div>
@@ -1460,7 +1741,7 @@ This positive and significant parameter indicates a clear tendency toward homoph
 </ul>
 <p>Based on the model output and the centered smoking covariate, we interpret the smoking-related effects in the SAOM model. The smoking variable is ordinal with three categories: 1 = no smoking, 2 = occasional smoking, and 3 = regular smoking. The covariate is centered by subtracting its mean. In this case, the mean value is computed in R as:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(smoking_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(smoking_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.377261</code></pre>
 </div>
