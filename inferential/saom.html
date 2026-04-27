@@ -1092,7 +1092,7 @@ Analyze the estimated parameters to understand the underlying social processes. 
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the estimation algorithm</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span> <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_1"</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
+<pre><code>If you use this algorithm object, siena07 will create/use an output file saom_1.txt .</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -1156,7 +1156,7 @@ Total of 2412 iteration steps.</code></pre>
 </div>
 <p>A nicer summary of the model is obtained by running the following which saves the table of results as an html file (including significance stars for easy interpretation):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_1, <span class="at">type=</span><span class="st">"html"</span>, <span class="at">sig=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena.table</span>(saom_1, <span class="at">type=</span><span class="st">"html"</span>, <span class="at">sig=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <iframe src="saom_1.html" width="100%" height="210px" style="border:none;">
 </iframe>
@@ -1272,43 +1272,32 @@ Suppose <span class="math inline">\(x_{ji} = 1\)</span> (the other actor already
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add structural effects</span></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, outdegree, recip, transTrip)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName          shortName include fix   test  initialValue
-1 17           reciprocity         recip     TRUE    FALSE FALSE          0  
-2 23           transitive triplets transTrip TRUE    FALSE FALSE          0  
-  parm
-1 0   
-2 0   </code></pre>
+<pre><code>  effectName          include fix   test  initialValue parm
+1 reciprocity         TRUE    FALSE FALSE          0   0   
+2 transitive triplets TRUE    FALSE FALSE          0   0   </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for sex</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName         shortName include fix   test  initialValue
-1 264          sex_cov alter      altX      TRUE    FALSE FALSE          0  
-2 279          sex_cov ego        egoX      TRUE    FALSE FALSE          0  
-3 325          sex_cov similarity simX      TRUE    FALSE FALSE          0  
-  parm
-1 0   
-2 0   
-3 0   </code></pre>
+<pre><code>  effectName         include fix   test  initialValue parm
+1 sex_cov alter      TRUE    FALSE FALSE          0   0   
+2 sex_cov ego        TRUE    FALSE FALSE          0   0   
+3 sex_cov similarity TRUE    FALSE FALSE          0   0   </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for smoking</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"smoking_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName             shortName include fix   test 
-1 448          smoking_cov alter      altX      TRUE    FALSE FALSE
-2 463          smoking_cov ego        egoX      TRUE    FALSE FALSE
-3 509          smoking_cov similarity simX      TRUE    FALSE FALSE
-  initialValue parm
-1          0   0   
-2          0   0   
-3          0   0   </code></pre>
+<pre><code>  effectName             include fix   test  initialValue parm
+1 smoking_cov alter      TRUE    FALSE FALSE          0   0   
+2 smoking_cov ego        TRUE    FALSE FALSE          0   0   
+3 smoking_cov similarity TRUE    FALSE FALSE          0   0   </code></pre>
 </div>
 </div>
 <p>We define the estimation settings using <code>sienaAlgorithmCreate()</code>. A seed is included to support reproducibility of the results.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span>  <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_2"</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
+<pre><code>If you use this algorithm object, siena07 will create/use an output file saom_2.txt .</code></pre>
 </div>
 </div>
 <p>We now estimate the model using the <code>siena07()</code> function, which runs the simulation-based estimation procedure.</p>
@@ -1322,7 +1311,7 @@ Suppose <span class="math inline">\(x_{ji} = 1\)</span> (the other actor already
 </div>
 <p>Finally, as before, we display the model results as an HTML table:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_2, <span class="at">type=</span><span class="st">"html"</span>, <span class="at">sig=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena.table</span>(saom_2, <span class="at">type=</span><span class="st">"html"</span>, <span class="at">sig=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <iframe src="saom_2.html" width="100%" height="350px" style="border:none;">
 </iframe>
