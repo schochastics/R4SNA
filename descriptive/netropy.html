@@ -3595,6 +3595,33 @@ Figure&nbsp;8.7: Association graph for dyad variables (threshold <span class="ma
 1 nested model comparison 0.041 141.243  3          7.899   reject</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The divergence-based test statistic used in <code>div_gof()</code> is <span class="math display">\[
+\chi^2 = 2nD \cdot \log(2),
+\]</span> which is approximately chi-square distributed with degrees of freedom depending on the specified model.</p>
+<p>By default, the function uses a large-sample approximation to the 5% critical value, <span class="math display">\[
+\text{cv} \approx df + \sqrt{8\,df},
+\]</span> which provides a fast and convenient rule for hypothesis testing.</p>
+<p>Alternatively, exact critical values from the chi-square distribution can be used by setting:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>use_approx_cv <span class="ot">=</span> <span class="cn">FALSE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>In this case, the significance level can be controlled explicitly via the argument <code>alpha</code> (default is 0.05), allowing for more precise hypothesis testing:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(..., <span class="at">use_approx_cv =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.01</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Lower values of alpha correspond to stricter tests (harder to reject the model), while higher values make rejection more likely. In particular, smaller <code>alpha</code> reduces the probability of incorrectly rejecting a true null hypothesis.</p>
+</div>
+</div>
 <p>These examples show how divergence-based tests complement the exploratory association graph. The graph suggests candidate dependence structures, while <code>div_gof()</code> provides a formal way to evaluate whether those simplified structures are consistent with the observed dyad data.</p>
 
 
