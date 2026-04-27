@@ -437,8 +437,8 @@ $$
 
   | Statistic           | Description                                                       | Formula                                                     |
   | ------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
-  | Reciprocity         | Immediate response to previous interaction                        | $Y_{ij}(t-1)Y_{ji}(t)$                                      |
-  | Repetition          | Same sender repeats interaction                                   | $Y_{ij}(t-1)Y_{ij}(t)$                                      |
+  | Reciprocity         | Immediate response to previous interaction                        | $Y_{ij}(t-1) \cdot Y_{ji}(t)$                               |
+  | Repetition          | Same sender repeats interaction                                   | $Y_{ij}(t-1) \cdot Y_{ij}(t)$                               |
   | Past interaction    | Proportion of sender’s past interactions directed toward receiver | $\frac{N_{ij}(t-1)}{\sum_k N_{ik}(t-1)+\sum_k N_{ki}(t-1)}$ |
   | Sender activity     | Proportion of past events sent by the sender                      | $\frac{\sum_k N_{ik}(t-1)}{\sum_{p\ne q}N_{pq}(t-1)}$       |
   | Sender popularity   | Proportion of past events received by the sender                  | $\frac{\sum_k N_{ki}(t-1)}{\sum_{p\ne q}N_{pq}(t-1)}$       |
@@ -591,7 +591,7 @@ knitr::kable(head(edgelist, 10), caption = "Preview of the relational event data
 
 Note that because the data contain only the ordering of events rather than
 precise timestamps, we specify `ordinal = TRUE` when estimating the model.
-Hpwever, before estimating the relational event models, we visualize the
+However, before estimating the relational event models, we visualize the
 aggregated dialogue network. Figure @fig-frozen shows the *Frozen* character
 interaction network, with node color indicating gender and edge width reflects
 interaction frequency.
@@ -1152,7 +1152,7 @@ situational or institutional conditions.
 
 :::
 
-### Assessing Goodnes of Fit
+### Assessing Goodness of Fit
 
 After estimating the relational event models, it is useful to evaluate how well
 they reproduce the observed interaction sequence. Information criteria such as
@@ -1244,15 +1244,6 @@ explaining.
 
 To identify potential outliers, we can locate events with particularly large
 residuals. For illustration, we define outlying cases as those with residuals
-greater than 10.
-
-The summary provides an overview of the range and distribution of residuals
-across the event sequence. While many events will typically have residuals close
-to zero, larger values may indicate interactions that the model has difficulty
-explaining.
-
-To identify potential outliers, we can locate events with particularly large
-residuals. For illustration, we define outlying cases as those with residuals
 greater than 12 ($\approx  Q_3 + 1.5 \times IQR)$.
 
 ```{r}
@@ -1325,7 +1316,9 @@ explain the dialogue interactions.
 
 By contrast, Model 3, which additionally includes the interaction between sender
 and receiver gender, produces a slightly higher BIC (3935.10) than Model 2.
-Because the BIC penalizes additional parameters,
+Because the BIC penalizes additional parameters, the small increase suggests
+that the interaction term does not add enough explanatory power to justify the
+extra complexity, and Model 2 offers the best balance of fit and parsimony.
 
 Taken together, prediction accuracy, residual diagnostics, and information
 criteria provide a comprehensive picture of model performance. These tools help

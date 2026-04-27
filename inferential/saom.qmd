@@ -40,7 +40,7 @@ view that explicitly models *how* ties change over time due to actor decisions.
 @tbl-ergmsaom shows the core differences between ERGMs. While ERGMs model the
 global structure of a network at a single point in time, SAOMs treat network
 evolution as a dynamic process driven by actors making sequential decisions. In
-othr words, SAOMs extend the logic of ERGMs into the temporal domain, capturing
+other words, SAOMs extend the logic of ERGMs into the temporal domain, capturing
 the mechanisms of change rather than just the final structure.
 
 ::: {#tbl-ergmsaom}
@@ -94,7 +94,7 @@ the following:
   - Smoking: 1 = No, 2 = Occasional, 3 = Regular
 
 We load the data from the `networkdata` package and extract a graph object for
-each time peiod:
+each time period:
 
 ```{r}
 #| message: false
@@ -678,14 +678,14 @@ The objective function introduced above is composed of a linear combination of
 effects, each capturing a specific structural pattern or social mechanism. These
 effects are conceptually similar to those used in Exponential Random Graph
 Models (ERGMs), although they differ in interpretation due to the dynamic and
-actor-oriented nature of SAOMs.These effects fall into two main categories:
+actor-oriented nature of SAOMs. These effects fall into two main categories:
 
 - Endogenous effects: derived from the structure of the network itself.
 - Exogenous effects: related to external actor attributes.
 
 The objective function for actor $i$ evaluating network $x'$ can be written as:
 $$
-f_i(x') = \sum_k \theta_k \cdot s_{ik}(x’)
+f_i(x') = \sum_k \theta_k \cdot s_{ik}(x')
 $$
 where $\theta_k$ is the parameter for effect $k$, and $s_{ik}(x')$ is the
 statistic for effect $k$ as computed for actor $i$ in network $x'$. Each effect
@@ -694,7 +694,7 @@ data. The weighted sum of these effects (plus random noise) determines the
 actor's utility for each potential tie change. This guides the probabilistic
 decision-making process at the heart of the SAOM framework.
 
-This section focuses on a few commonly used endogenous effect; those based
+This section focuses on a few commonly used endogenous effects; those based
 solely on the structure of the network (without using external covariates). Many
 other effects can be modeled, depending on the theoretical focus and complexity
 of the network under study.
@@ -706,7 +706,7 @@ of maintaining ties. It counts the number of outgoing ties from actor $i$ in the
 new network configuration $x'$:
 
 $$
-s_i^{\text{out}}(x’) = \sum_j x’_{ij}
+s_i^{\text{out}}(x') = \sum_j x'_{ij}
 $$
 This term typically has a negative coefficient, penalizing actors for having too
 many ties, and thus introducing a cost to maintaining social relationships.
@@ -717,7 +717,7 @@ The reciprocity effect captures the tendency for actors to form mutual ties
 (equivalent to the `mutual` term in ERGMs). It counts how many of actor i's
 outgoing ties are reciprocated:
 $$
-s_i^{\text{rec}}(x') = \sum_j x'{ij} x'{ji}
+s_i^{\text{rec}}(x') = \sum_j x'_{ij} x'_{ji}
 $$
 A positive coefficient for this effect reflects a preference for mutual
 connections, e.g., *"I send a tie to those who also send one to me."*
@@ -730,7 +730,7 @@ If actor $i$ sends a tie to $h$, and $h$ sends a tie to $j$, then $i$ is more
 likely to send a tie to $j$:
 
 $$
-s_i^{\text{trans}}(x’) = \sum_{j,h} x’{ij} x’{ih} x’_{hj}
+s_i^{\text{trans}}(x') = \sum_{j,h} x'_{ij} x'_{ih} x'_{hj}
 $$
 This effect models social closure or hierarchy and contributes to the formation
 of cohesive subgroups or cliques.
@@ -742,7 +742,7 @@ actors to form circular structures in the network, i.e. it captures feedback
 loops in the network. Specifically, it counts the number of directed cycles of
 length three involving actor $i$:
 $$
-s_i^{\text{cyc}}(x') = \sum_{j,h} x'{ij} x'{jh} x'_{hi}
+s_i^{\text{cyc}}(x') = \sum_{j,h} x'_{ij} x'_{jh} x'_{hi}
 $$
 This effect often receives a negative coefficient, discouraging cyclic patterns
 that may indicate instability or lack of hierarchy.
@@ -822,21 +822,21 @@ examples are shown here, SAOMs offer a broad range of endogenous and exogenous
 effects that researchers can incorporate to test theoretically meaningful
 network processes.
 
-### Parameter Estimation and Interpration
+### Parameter Estimation and Interpretation
 
-In Stochastic Actor-Oriented Models (SAOMs), each parameter $\beta_k$ quantifies
+In Stochastic Actor-Oriented Models (SAOMs), each parameter $\theta_k$ quantifies
 the importance of a specific effect $s_{ik}(x')$ in the actor's decision-making
 process during network evolution. These parameters help us understand how
 different structural or covariate-based features influence the likelihood of a
 network configuration.
 
-The interpretation of $\beta_k$ is as follows:
+The interpretation of $\theta_k$ is as follows:
 
 - If $\theta_k = 0$, the statistic $s_{ik}(x')$ has no effect on the transition
   probabilities and thus plays no role in the network dynamics.
 - If $\theta_k > 0$, actor $i$ is more likely to move toward a network
   configuration $x'$ with a higher value of $s_{ik}(x')$.
-- If $\beta_k < 0$, configurations with lower values of $s_{ik}(x')$ are more
+- If $\theta_k < 0$, configurations with lower values of $s_{ik}(x')$ are more
   attractive to the actor.
 
 Importantly, these preferences are assumed to be stable over time. That is, the
@@ -978,7 +978,7 @@ structure (e.g., network dynamics, covariates, behaviors). It doesn't add any
 effects to the model yet though, it just initializes the structure that will
 hold them.
 
-We begin by calling `getEffects()` on our `friend_data` object to create a
+We begin by calling `getEffects()` on our `data_mod1` object to create a
 default effects object. This object holds all possible effects for the given
 data structure and is used as a base for customization. You can have a look at
 these effects directly by calling it:
@@ -1037,7 +1037,7 @@ the `siena07()` function. This function runs the RSiena estimation procedure. It
 takes the following inputs:
 
 - `my_algorithm`: the algorithm settings we defined earlier.
-- `data = friend_data`: the network data in RSiena format.
+- `data = data_mod1`: the network data in RSiena format.
 - `effects = my_effects`: the specified model effects (in this case, outdegree
   and reciprocity).
 - `batch = TRUE`: suppresses user prompts during the estimation, making it
@@ -1535,7 +1535,7 @@ objective function is given by:
 $$
 \theta_{\text{ego}}(v_i - \bar{v}) + \theta_{\text{alter}}(v_j - \bar{v}) + \theta_{\text{sim}} \left(1 - \frac{|v_i - v_j|}{R_v}\right)
 $$
-whree $R_s$ refers to the range of the covariate $s$. Substituting the estimated
+where $R_v$ refers to the range of the covariate $v$. Substituting the estimated
 values from the model:
 
 $$
@@ -1730,7 +1730,7 @@ Thus, the rate functions control the rhythm of the co-evolutionary process,
 determining how often actors are allowed to revise either their ties or
 behaviors.
 
-### Network and Behavioral Obejctive Functions
+### Network and Behavioral Objective Functions
 
 In the co-evolution framework of SAOMs, actors can make changes not only to
 their outgoing network ties but also to their own behavior. To model this dual
