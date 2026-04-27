@@ -1045,5 +1045,32 @@ div_gof(
 )
 ```
 
+
+::: {.callout-note}
+The divergence-based test statistic used in `div_gof()` is
+$$
+\chi^2 = 2nD \cdot \log(2),
+$$
+which is approximately chi-square distributed with degrees of freedom depending on the specified model.
+
+By default, the function uses a large-sample approximation to the 5% critical value,
+$$
+\text{cv} \approx df + \sqrt{8\,df},
+$$
+which provides a fast and convenient rule for hypothesis testing.
+
+Alternatively, exact critical values from the chi-square distribution can be used by setting:
+```{r}
+use_approx_cv = FALSE
+```
+
+In this case, the significance level can be controlled explicitly via the argument `alpha` (default is 0.05), allowing for more precise hypothesis testing:
+```{r}
+#| eval: false
+div_gof(..., use_approx_cv = FALSE, alpha = 0.01)
+```
+Lower values of alpha correspond to stricter tests (harder to reject the model), while higher values make rejection more likely. In particular, smaller `alpha` reduces the probability of incorrectly rejecting a true null hypothesis.
+:::
+
 These examples show how divergence-based tests complement the exploratory association graph. The graph suggests candidate dependence structures, while `div_gof()` provides a formal way to evaluate whether those simplified structures are consistent with the observed dyad data.
 
