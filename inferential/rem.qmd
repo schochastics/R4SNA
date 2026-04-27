@@ -341,12 +341,12 @@ The main arguments of the `rem.dyad()` function are:
 - **`covar`**: a list of covariate matrices corresponding to the exogenous effects specified in `effects`.
 - **`ordinal`**: a logical argument indicating whether the event data are ordinal. Set `TRUE` if the data only record the order of events (without exact timestamps), and `FALSE` if precise event times are available.
 
-In our case, the dataset consists of a sequence of dialogue interactions between characters in *Frozen*, where each event records which character speaks to another and the order in which the interaction occurs. Because the data contain only the ordering of events rather than precise timestamps, we specify `ordinal = TRUE` when estimating the model.
-
+In our case, the dataset consists of a sequence of dialogue interactions between characters in *Frozen*, where each event records which character speaks to another and the order in which the interaction occurs (see @sec-apx-remfrozen for details on how the data are created).  To get a sense of the structure, we look at the first 10 rows of the data.
 
 ```{r}
 #| label: data
 #| message: false
+#| include: false
 
 # Edit this code once frozen is in networkdata
 # Read the two files
@@ -391,9 +391,7 @@ edgelist <- do.call(rbind, edges)
 # Sort by event order
 edgelist <- edgelist[order(edgelist$time), ]
 
-head(edgelist)
-
-# make sure eachevent is unique (this can be a manual fix from networkdata)
+# make sure each event is unique (this can be a manual fix from networkdata)
 edgelist <- edgelist[order(edgelist$time), ]
 edgelist$time <- 1:nrow(edgelist)
 
@@ -402,7 +400,14 @@ edgelist <- as.matrix(edgelist)
 n_actors <- nrow(frozenchars)
 ```
 
-Before estimating the relational event models, it is helpful to visualize the aggregated dialogue network. Figure @fig-frozen shows the *Frozen* character interaction network, with node color indicating gender.
+```{r}
+#| label: preview-data
+#| echo: false
+knitr::kable(head(edgelist, 10), caption = "Preview of the relational event data created from the *Frozen* character network as described in @sec-apx-remfrozen")
+```
+
+Note that because the data contain only the ordering of events rather than precise timestamps, we specify `ordinal = TRUE` when estimating the model.
+Hpwever, before estimating the relational event models, we visualize the aggregated dialogue network. Figure @fig-frozen shows the *Frozen* character interaction network, with node color indicating gender and edge width reflects interaction frequency.
 
 ```{r}
 #| label: fig-frozen
@@ -458,7 +463,7 @@ ggraph(g, layout = "stress") +
     values = c("Female" = "skyblue", "Male" = "tan")
   ) +
   scale_size(
-    range = c(5, 17),
+    range = c(10, 25),
     transform = "sqrt"
   ) +
    guides(

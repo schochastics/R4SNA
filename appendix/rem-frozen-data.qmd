@@ -1,0 +1,76 @@
+# Creating Relational Event Data for the Frozen Character Network {#sec-apx-remfrozen .appendix}
+
+The relational event model data is created from two input files: `frozenlines.csv` and `frozenchars.csv`. The first file contains the dialogue events, including the speaker for each event and indicators for which characters are addressed. The second file contains information about the characters and provides the character identifiers used in the network. Both files can be downloaded from: <https://github.com/schochastics/R4SNA/tree/main/data-raw>.
+
+The goal is to transform the dialogue-level data into an event-based edge list. Each row in the final data represents one directed interaction from a sender to a receiver at a specific point in the sequence.
+
+```{r}
+#| label: data
+#| message: false
+
+# Read the two files directly from the GitHub repository
+frozenlines <- read.csv("https://raw.githubusercontent.com/schochastics/R4SNA/main/data-raw/frozenlines.csv")
+frozenchars <- read.csv("https://raw.githubusercontent.com/schochastics/R4SNA/main/data-raw/frozenchars.csv")
+
+# Inspect the structure of the data
+str(frozenlines)
+str(frozenchars)
+
+# Replace receiver column names with character IDs
+names(frozenlines)[4:ncol(frozenlines)] <- frozenchars$characterID
+
+# Identify receiver columns
+receiver_cols <- 4:ncol(frozenlines)
+
+edges <- list()
+k <- 1
+
+for (i in 1:nrow(frozenlines)) {
+  
+  sender <- frozenlines$speakerID[i]
+  event  <- frozenlines$eventID[i]
+  
+  # Find all receivers marked with value 1
+  receivers <- receiver_cols[frozenlines[i, receiver_cols] == 1]
+  
+  if (length(receivers) > 0) {
+    
+    for (r in receivers) {
+      edges[[k]] <- data.frame(
+        time = event,
+        sender = sender,
+        receiver = as.integer(names(frozenlines)[r])
+      )
+      k <- k + 1
+    }
+  }
+}
+
+# Combine all sender-receiver events
+edgelist <- do.call(rbind, edges)
+
+# Sort by original event order
+edgelist <- edgelist[order(edgelist$time), ]
+
+# Ensure that every relational event has a unique time stamp
+edgelist$time <- 1:nrow(edgelist)
+
+# Convert to matrix format for the relational event model
+edgelist <- as.matrix(edgelist)
+
+# Number of actors in the network
+n_actors <- nrow(frozenchars)
+```
+
+The resulting object, `edgelist`, contains three columns: `time`, `sender`, and `receiver`. Let's look at the first 10 rows:
+
+```{r}
+# Show the first rows of the resulting data as a table
+knitr::kable(head(edgelist, 10), caption = "First rows of the relational event data")
+```
+
+The `time` variable records the order of the relational events, while `sender` and `receiver` identify the directed tie. If a single dialogue event addresses multiple receivers, the code creates one row for each sender-receiver pair. This is necessary because relational event models require events to be represented as dyadic interactions.
+
+
+
+The final line stores the total number of actors in `n_actors`, which is needed when specifying the size of the network for the relational event model.
