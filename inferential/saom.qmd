@@ -1068,17 +1068,25 @@ To print a summary of the estimation results:
 saom_1
 ```
 
-A nicer summary of the model is obtained by running the following which saves
-the table of results as an html file (including significance stars for easy
+A nicer summary of the model is obtained by running the following, which
+renders the table of results inline (including significance stars for easy
 interpretation):
 
 ```{r}
 #| output: false
 #| message: false
 
-siena_table(saom_1, type="html", sig=TRUE)
+siena_table(saom_1, type = "html", sig = TRUE)
+siena_table(saom_1, type = "tex", sig = TRUE)
 ```
-<iframe src="saom_1.html" width="100%" height="210px" style="border:none;"></iframe>
+
+```{r}
+#| echo: false
+#| results: asis
+
+f <- if (knitr::is_latex_output()) "saom_1.tex" else "saom_1.html"
+cat(readLines(f), sep = "\n")
+```
 
 **So, how do we interpret the parameter estimates?**
 
@@ -1340,15 +1348,23 @@ saom_2 <- siena07(
 )
 ```
 
-Finally, as before, we display the model results as an HTML table:
+Finally, as before, we display the model results inline:
 
 ```{r}
 #| output: false
 #| message: false
 
-siena_table(saom_2, type="html", sig=TRUE)
+siena_table(saom_2, type = "html", sig = TRUE)
+siena_table(saom_2, type = "tex", sig = TRUE)
 ```
-<iframe src="saom_2.html" width="100%" height="350px" style="border:none;"></iframe>
+
+```{r}
+#| echo: false
+#| results: asis
+
+f <- if (knitr::is_latex_output()) "saom_2.tex" else "saom_2.html"
+cat(readLines(f), sep = "\n")
+```
 
 We now interpret the results from Model 2, starting with an assessment of
 convergence, followed by the interpretation of parameter estimates.
