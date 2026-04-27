@@ -1,13 +1,19 @@
 # Cohesive Subgroups {#sec-cohesive-subgroups}
 
-In this chapter, we explore cohesive subgroups within networks, focusing on cliques, community detection, blockmodeling, and core-periphery structures. Each concept offers a different way to examine how nodes cluster based on connectivity, from tightly-knit cliques, where every member is connected, to broader communities grouped by denser internal links. Blockmodeling abstracts these patterns into roles and relationships, while core-periphery structures reveal hierarchical organization with central and peripheral actors.
-
+In this chapter, we explore cohesive subgroups within networks, focusing on
+cliques, community detection, blockmodeling, and core-periphery structures. Each
+concept offers a different way to examine how nodes cluster based on
+connectivity, from tightly-knit cliques, where every member is connected, to
+broader communities grouped by denser internal links. Blockmodeling abstracts
+these patterns into roles and relationships, while core-periphery structures
+reveal hierarchical organization with central and peripheral actors.
 
 ## Packages Needed for this Chapter
 
 ```{r}
 #| label: libraries
 #| message: false
+
 library(igraph)
 library(networkdata)
 library(blockmodeling)
@@ -17,17 +23,26 @@ library(netUtils)
 ```{r}
 #| label: libraries_silent
 #| include: false
+
 library(ggraph)
 library(patchwork)
 ```
 
-## Cliques 
+## Cliques
 
-The simplest and most strict notion of a cohesive subgroup is the **clique**: a set of nodes where every pair is directly connected, forming a complete **subgraph**. In social terms, a clique is a group where everyone knows everyone else. A **maximal clique** is a clique that cannot be extended by adding more nodes while keeping this property. It is as large as it can be.
+The simplest and most strict notion of a cohesive subgroup is the **clique**: a
+set of nodes where every pair is directly connected, forming a complete
+**subgraph**. In social terms, a clique is a group where everyone knows everyone
+else. A **maximal clique** is a clique that cannot be extended by adding more
+nodes while keeping this property. It is as large as it can be.
 
-The `networkdata` package includes a small example graph called `clique_graph` which we use as an illustration for various clique concepts (see @fig-clique-graph-blank).
+The `networkdata` package includes a small example graph called `clique_graph`
+which we use as an illustration for various clique concepts (see
+@fig-clique-graph-blank).
+
 ```{r}
 #| label: load-clique-graph
+
 data("clique_graph")
 ```
 
@@ -35,22 +50,29 @@ data("clique_graph")
 #| label: fig-clique-graph-blank
 #| echo: false
 #| fig-cap: "The example network used to illustrate cliques and k-core decomposition."
+
 ggraph(clique_graph, "stress") +
   geom_edge_link0(edge_color = "grey66") +
   geom_node_point(shape = 21, size = 8, fill = "grey25") +
   theme_void()
 ```
 
-Maximal cliques can be calculated with the `max_cliques()` function of `igraph`. Note that this is only feasible for fairly small networks given the complexity of the task. The `min` parameter can be used to set a minimum size of discovered cliques. Below, we are only interested to find maximal cliques of size 3 or more. 
+Maximal cliques can be calculated with the `max_cliques()` function of `igraph`.
+Note that this is only feasible for fairly small networks given the complexity
+of the task. The `min` parameter can be used to set a minimum size of discovered
+cliques. Below, we are only interested to find maximal cliques of size 3 or
+more.
 
 ```{r}
 #| label: calc_max_cliques
+
 # only return cliques with three or more nodes
 cl <- max_cliques(clique_graph, min = 3)
 cl
 ```
 
-There is also a `max` parameter which allows to set a maximum size of discovered cliques.
+There is also a `max` parameter which allows to set a maximum size of discovered
+cliques.
 
 @fig-clique-graph shows the network and the uncovered maximal cliques.
 
@@ -93,15 +115,23 @@ ggraph(clique_graph, "stress") +
 
 ```
 
-Related to cliques is the **k-core decomposition** of a network. A k-core is a subgraph in which every node has at least k neighbors within the subgraph. A k-core is thus a relaxed version of a clique.  
-The function `coreness()` of `igraph` can be used to calculate the k-core membership for each node.
+Related to cliques is the **k-core decomposition** of a network. A k-core is a
+subgraph in which every node has at least k neighbors within the subgraph. A
+k-core is thus a relaxed version of a clique.\
+The function `coreness()` of `igraph` can be used to calculate the k-core
+membership for each node.
+
 ```{r}
 #| label: kcore
+
 kcore <- coreness(clique_graph)
 kcore
 ```
 
-@fig-kcore shows the k-core decomposition of the example network. The nested hulls show the 2-core, 3-core, and 4-core. Note that the 4-core is not a clique since not all nodes are connected to each other, but it is still a cohesive subgroup in the sense that every node has at least 4 neighbors within the group.
+@fig-kcore shows the k-core decomposition of the example network. The nested
+hulls show the 2-core, 3-core, and 4-core. Note that the 4-core is not a clique
+since not all nodes are connected to each other, but it is still a cohesive
+subgroup in the sense that every node has at least 4 neighbors within the group.
 
 ```{r}
 #| label: fig-kcore
@@ -128,13 +158,28 @@ ggraph(clique_graph, "stress") +
 
 ```
 
-Cliques are the prototypical and most strict definition of a cohesive subgroup in a network. In empirical networks, however, we rarely encounter situations where we can partition the whole network into a set of cliques. Real networks are messy: ties are missing, groups overlap, and boundaries are fuzzy. We therefore need methods that find approximate groupings based on the overall pattern of connections rather than requiring every possible tie to be present.
+Cliques are the prototypical and most strict definition of a cohesive subgroup
+in a network. In empirical networks, however, we rarely encounter situations
+where we can partition the whole network into a set of cliques. Real networks
+are messy: ties are missing, groups overlap, and boundaries are fuzzy. We
+therefore need methods that find approximate groupings based on the overall
+pattern of connections rather than requiring every possible tie to be present.
 
 ## Community Detection
 
-Unlike cliques, which have a precise mathematical definition, the notion of a "community" or "cluster" in a network is inherently fuzzy. The general intuition, however, is straightforward: a community is a group of nodes that are more densely connected to each other than to the rest of the network. But there is no universally accepted formal definition of what this actually means. How dense is dense enough? How sparse must the connections to outsiders be? Different algorithms operationalise this intuition in different ways, which is why they can produce different results on the same network. This is not a flaw but a reflection of the fact that "community" is a flexible concept whose meaning depends on the context of the analysis.
+Unlike cliques, which have a precise mathematical definition, the notion of a
+"community" or "cluster" in a network is inherently fuzzy. The general
+intuition, however, is straightforward: a community is a group of nodes that are
+more densely connected to each other than to the rest of the network. But there
+is no universally accepted formal definition of what this actually means. How
+dense is dense enough? How sparse must the connections to outsiders be?
+Different algorithms operationalise this intuition in different ways, which is
+why they can produce different results on the same network. This is not a flaw
+but a reflection of the fact that "community" is a flexible concept whose
+meaning depends on the context of the analysis.
 
-@fig-clustered-graph shows a network with a visible and intuitive cluster structure.
+@fig-clustered-graph shows a network with a visible and intuitive cluster
+structure.
 
 ```{r}
 #| label: fig-clustered-graph
@@ -153,12 +198,14 @@ ggraph(g, "stress") +
   theme_void()
 ```
 
-In contrast, the network in @fig-random-graph does not really seem to have any well defined cluster structure on first sight.
+In contrast, the network in @fig-random-graph does not really seem to have any
+well defined cluster structure on first sight.
 
 ```{r}
 #| label: fig-random-graph
 #| echo: false
 #| fig-cap: "A network without obvious cluster structure."
+
 n1 <- 5
 n2 <- 20
 
@@ -173,26 +220,46 @@ ggraph(g, "stress") +
 
 ```
 
-The `igraph` package includes a number of different clustering algorithms as shown below.
+The `igraph` package includes a number of different clustering algorithms as
+shown below.
 
 ```{r}
 #| label: cluster_alg
-#| echo: FALSE
+#| echo: false
+
 algs <- as.character(lsf.str("package:igraph"))
 algs[stringr::str_detect(algs, "cluster_")]
 ```
 
-Most of these algorithms are based on "modularity maximization". The idea behind modularity is to compare the observed number of edges within groups to what we would expect if edges were placed at random while preserving each node's degree. Formally, modularity is defined as
+Most of these algorithms are based on "modularity maximization". The idea behind
+modularity is to compare the observed number of edges within groups to what we
+would expect if edges were placed at random while preserving each node's degree.
+Formally, modularity is defined as
 
 $$
 Q = \frac{1}{2m} \sum_{ij} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(c_i, c_j)
 $$
 
-where $m$ is the total number of edges, $A_{ij}$ is the adjacency matrix entry (1 if nodes $i$ and $j$ are connected, 0 otherwise), $k_i$ is the degree of node $i$, and $\delta(c_i, c_j)$ equals 1 if nodes $i$ and $j$ are assigned to the same community and 0 otherwise. The term $\frac{k_i k_j}{2m}$ is the expected number of edges between $i$ and $j$ under a null model that preserves degree. Modularity values typically range from around $-0.5$ to $1$, where values close to zero indicate no more within-group edges than expected by chance, and higher values indicate stronger community structure.
+where $m$ is the total number of edges, $A_{ij}$ is the adjacency matrix entry
+(1 if nodes $i$ and $j$ are connected, 0 otherwise), $k_i$ is the degree of node
+$i$, and $\delta(c_i, c_j)$ equals 1 if nodes $i$ and $j$ are assigned to the
+same community and 0 otherwise. The term $\frac{k_i k_j}{2m}$ is the expected
+number of edges between $i$ and $j$ under a null model that preserves degree.
+Modularity values typically range from around $-0.5$ to $1$, where values close
+to zero indicate no more within-group edges than expected by chance, and higher
+values indicate stronger community structure.
 
-The workflow of a cluster analysis is always the same, independent from the chosen method. We illustrate the workflow using the infamous karate club network, already encountered in @sec-centrality. This network was collected by Wayne Zachary in the 1970s and it captures friendships among 34 members of a university karate club. During the study, a conflict between the club's instructor and the administrator led to the club splitting into two factions, making it a classic benchmark for community detection.
+The workflow of a cluster analysis is always the same, independent from the
+chosen method. We illustrate the workflow using the infamous karate club
+network, already encountered in @sec-centrality. This network was collected by
+Wayne Zachary in the 1970s and it captures friendships among 34 members of a
+university karate club. During the study, a conflict between the club's
+instructor and the administrator led to the club splitting into two factions,
+making it a classic benchmark for community detection.
+
 ```{r}
 #| label: karate
+
 data("karate")
 ```
 
@@ -202,6 +269,7 @@ The network is shown in @fig-karate-plot.
 #| label: fig-karate-plot
 #| echo: false
 #| fig-cap: "Zachary's karate club network."
+
 ggraph(karate, "stress") +
   geom_edge_link0(edge_color = "grey66") +
   geom_node_point(shape = 21, size = 5, fill = "grey66") +
@@ -209,10 +277,15 @@ ggraph(karate, "stress") +
   coord_equal()
 ```
 
-For the cluster analysis, we first pick an algorithm and run it on the network. Here, we use the Louvain method [@blondel2008louvain] for modularity maximization via `cluster_louvain()`. The result is a community object from which we can extract a membership vector (which community each node belongs to) and a list of communities (which nodes belong to each community).
+For the cluster analysis, we first pick an algorithm and run it on the network.
+Here, we use the Louvain method [@blondel2008louvain] for modularity
+maximization via `cluster_louvain()`. The result is a community object from
+which we can extract a membership vector (which community each node belongs to)
+and a list of communities (which nodes belong to each community).
 
 ```{r}
 #| label: cluster_ex
+
 ## compute clustering
 clu <- cluster_louvain(karate)
 
@@ -225,10 +298,17 @@ com <- communities(clu)
 com
 ```
 
-Finding the partition that maximises modularity is a computationally hard problem (NP-hard, to be precise). No algorithm can guarantee finding the global optimum in reasonable time, so all practical methods rely on heuristics, such as the fast greedy approach [@clauset2004community]. Different heuristics explore the space of possible partitions in different ways, which means they can arrive at different solutions on the same network. To see how much results vary, we run several algorithms and compare their modularity scores.
+Finding the partition that maximises modularity is a computationally hard
+problem (NP-hard, to be precise). No algorithm can guarantee finding the global
+optimum in reasonable time, so all practical methods rely on heuristics, such as
+the fast greedy approach [@clauset2004community]. Different heuristics explore
+the space of possible partitions in different ways, which means they can arrive
+at different solutions on the same network. To see how much results vary, we run
+several algorithms and compare their modularity scores.
 
 ```{r}
 #| label: karate-cluster
+
 imc <- cluster_infomap(karate)
 lec <- cluster_leading_eigen(karate)
 loc <- cluster_louvain(karate)
@@ -244,21 +324,30 @@ scores <- c(
 scores
 ```
 
-For the karate network, `cluster_spinglass()` produces the highest modularity score.
-In practice, the choice of algorithm depends on more than just modularity. `cluster_louvain()` scales well to large networks. There does exist an algorithm which is guaranteed to find the optimal partition, implemented in `cluster_optimal()`, but it is only suitable for very small networks (up to around 100 nodes). Hence, for the karate network, we can actually compute the optimal partition and compare it to the results of the heuristics.
+For the karate network, `cluster_spinglass()` produces the highest modularity
+score. In practice, the choice of algorithm depends on more than just
+modularity. `cluster_louvain()` scales well to large networks. There does exist
+an algorithm which is guaranteed to find the optimal partition, implemented in
+`cluster_optimal()`, but it is only suitable for very small networks (up to
+around 100 nodes). Hence, for the karate network, we can actually compute the
+optimal partition and compare it to the results of the heuristics.
 
 ```{r}
 #| label: optimal-cluster
+
 optc <- cluster_optimal(karate)
 modularity(karate, membership(optc))
 ```
 
-In this case, the spinglass algorithm actually found the optimal partition, which is not a common occurrence. The corresponding clustering of the optimal solution is shown in @fig-karate-clu.
+In this case, the spinglass algorithm actually found the optimal partition,
+which is not a common occurrence. The corresponding clustering of the optimal
+solution is shown in @fig-karate-clu.
 
 ```{r}
 #| label: fig-karate-clu
 #| echo: false
 #| fig-cap: "Karate club network coloured by community membership (optimal partition)."
+
 V(karate)$clu <- membership(optc)
 ggraph(karate, "stress") +
   geom_edge_link0(edge_color = "grey66") +
@@ -272,10 +361,11 @@ ggraph(karate, "stress") +
   coord_equal()
 ```
 
-Modularity maximization is still widely considered as the state-of-the-art clustering method
-for networks. There are, however, some technical shortcomings that one should be aware of.
-One of those is the so called "resolution limit". When modularity is being maximized, it can happen
-that smaller clusters are merged together to form bigger clusters. The prime example is a graph which
+Modularity maximization is still widely considered as the state-of-the-art
+clustering method for networks. There are, however, some technical shortcomings
+that one should be aware of. One of those is the so called "resolution limit".
+When modularity is being maximized, it can happen that smaller clusters are
+merged together to form bigger clusters. The prime example is a graph which
 consists of cliques connected in a ring.
 
 ```{r}
@@ -296,7 +386,7 @@ K50 <- graph_from_adjacency_matrix(AA, "undirected", diag = FALSE)
 
 ```
 
-@fig-K50-blank shows such a graph, consisting of 50 cliques of size 5. 
+@fig-K50-blank shows such a graph, consisting of 50 cliques of size 5.
 
 ```{r}
 #| label: fig-K50-blank
@@ -304,6 +394,7 @@ K50 <- graph_from_adjacency_matrix(AA, "undirected", diag = FALSE)
 #| fig-cap: "A ring of 50 cliques of size 5, used to illustrate the resolution limit."
 #| width: 8
 #| height: 8
+
 ggraph(K50, "stress") +
   geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
   geom_node_point(shape = 21, fill = "grey66", size = 2, show.legend = FALSE) +
@@ -311,21 +402,31 @@ ggraph(K50, "stress") +
   coord_fixed()
 ```
 
-Intuitively, any clustering method should return a cluster for each clique, so we would expect to find 50 clusters of size 5.
+Intuitively, any clustering method should return a cluster for each clique, so
+we would expect to find 50 clusters of size 5.
 
 ```{r}
 #| label: clu-louvain-K50
+
 clu_louvain <- cluster_louvain(K50)
 table(membership(clu_louvain))
 
 ```
 
-However, the Louvain method merges multiple cliques together to form a rather unintuitive clustering. This is a consequence of the resolution limit. The algorithm fails to resolve the smaller clusters because merging them into bigger clusters actually increases the modularity. 
+However, the Louvain method merges multiple cliques together to form a rather
+unintuitive clustering. This is a consequence of the resolution limit. The
+algorithm fails to resolve the smaller clusters because merging them into bigger
+clusters actually increases the modularity.
 
-A clustering algorithm that fixes this issue is the so called Leiden algorithm [@traag2019leiden]. It is available in `igraph` via `cluster_leiden()` and can essentially be used as a drop-in replacement for `cluster_louvain()`. When used with the CPM (Constant Potts Model) objective function, it avoids the resolution limit entirely.
+A clustering algorithm that fixes this issue is the so called Leiden algorithm
+[@traag2019leiden]. It is available in `igraph` via `cluster_leiden()` and can
+essentially be used as a drop-in replacement for `cluster_louvain()`. When used
+with the CPM (Constant Potts Model) objective function, it avoids the resolution
+limit entirely.
 
 ```{r}
 #| label: clu-leiden-K50
+
 clu_leiden <- cluster_leiden(
   K50,
   objective_function = "CPM",
@@ -335,10 +436,12 @@ table(membership(clu_leiden))
 
 ```
 
-Choosing the right `resolution` parameter can, however, be tricky in practical context. A common heuristic is to set the resolution parameter as follows.
+Choosing the right `resolution` parameter can, however, be tricky in practical
+context. A common heuristic is to set the resolution parameter as follows.
 
 ```{r}
 #| label: resolution-heuristic
+
 r <- quantile(degree(karate))[2] / (vcount(karate) - 1)
 r
 ```
@@ -352,6 +455,7 @@ leidenc <- cluster_leiden(
 ```
 
 The resulting clustering is shown in @fig-karate-leiden.
+
 ```{r}
 #| label: fig-karate-leiden
 #| echo: false
@@ -370,15 +474,39 @@ ggraph(karate, "stress") +
   coord_equal()
 ```
 
-Comparing @fig-karate-clu and @fig-karate-leiden, we can see that the Leiden algorithm with this resolution parameter produces a different partition than the optimal modularity solution. Neither result is inherently more "correct" than the other. As discussed at the start of this section, there is no universal definition of what a community is, and different methods (and different parameter settings) operationalise the concept differently. The optimal modularity partition maximises one particular quality function; the Leiden CPM partition optimises another. By tuning the `resolution` parameter in `cluster_leiden()`, we could obtain a partition that matches the modularity-optimal one, but that would just mean we have chosen parameters to agree with a specific criterion, not that we have found the "true" communities.
+Comparing @fig-karate-clu and @fig-karate-leiden, we can see that the Leiden
+algorithm with this resolution parameter produces a different partition than the
+optimal modularity solution. Neither result is inherently more "correct" than
+the other. As discussed at the start of this section, there is no universal
+definition of what a community is, and different methods (and different
+parameter settings) operationalise the concept differently. The optimal
+modularity partition maximises one particular quality function; the Leiden CPM
+partition optimises another. By tuning the `resolution` parameter in
+`cluster_leiden()`, we could obtain a partition that matches the
+modularity-optimal one, but that would just mean we have chosen parameters to
+agree with a specific criterion, not that we have found the "true" communities.
 
-In practice, this means that community detection results should always be interpreted with care. It is good practice to try multiple algorithms and parameter settings, and to evaluate the results against substantive knowledge about the network. If different methods consistently identify the same groups, we can be more confident that the structure is real. If they disagree, the differences themselves can be informative about the ambiguity of group boundaries in the network.
+In practice, this means that community detection results should always be
+interpreted with care. It is good practice to try multiple algorithms and
+parameter settings, and to evaluate the results against substantive knowledge
+about the network. If different methods consistently identify the same groups,
+we can be more confident that the structure is real. If they disagree, the
+differences themselves can be informative about the ambiguity of group
+boundaries in the network.
 
 ## Blockmodeling
 
-Community detection focuses on finding groups of nodes that are densely connected internally. Blockmodeling takes a slightly different perspective: it groups nodes based on *patterns* of connections, not just density. Two nodes belong to the same block if they relate to other blocks in similar ways, regardless of whether they are connected to each other. This makes blockmodeling particularly useful for role analysis in sociology and organisational context.
+Community detection focuses on finding groups of nodes that are densely
+connected internally. Blockmodeling takes a slightly different perspective: it
+groups nodes based on *patterns* of connections, not just density. Two nodes
+belong to the same block if they relate to other blocks in similar ways,
+regardless of whether they are connected to each other. This makes blockmodeling
+particularly useful for role analysis in sociology and organisational context.
 
-Several packages implement different kinds of blockmodels but the most basic deterministic and commonly used approaches can be found in the package `blockmodeling` [@ziberna2007blockmodeling; @ziberna2008blockmodeling; @ziberna2014blockmodeling].
+Several packages implement different kinds of blockmodels but the most basic
+deterministic and commonly used approaches can be found in the package
+`blockmodeling`
+[@ziberna2007blockmodeling; @ziberna2008blockmodeling; @ziberna2014blockmodeling].
 
 We illustrate blockmodeling on a random network with 3 dense blocks of size 20.
 
@@ -386,6 +514,7 @@ We illustrate blockmodeling on a random network with 3 dense blocks of size 20.
 #| label: fig-blockmodel-network
 #| echo: false
 #| fig-cap: "A random network with three dense blocks of 20 nodes each."
+
 n1 <- 3
 n2 <- 20
 
@@ -400,10 +529,21 @@ ggraph(g, "stress") +
 
 ```
 
-Compared to community detection, blockmodeling requires us to specify more about the structure we expect to find. The main function `optRandomParC()` from the `blockmodeling` package takes the adjacency matrix as input. We then define a block structure matrix (`blk`) that describes our expectation for each pair of blocks. Each cell specifies a block type: `"com"` (complete) means we expect all possible ties to be present, while `"nul"` (null) means we expect no ties. In the example below, we place `"com"` on the diagonal and `"nul"` on the off-diagonal, which corresponds to the familiar clustering scenario where nodes are densely connected within groups and sparsely connected between them. The function then tries multiple random starting partitions (`rep`) and optimises each one, returning the best assignment of nodes to blocks.
+Compared to community detection, blockmodeling requires us to specify more about
+the structure we expect to find. The main function `optRandomParC()` from the
+`blockmodeling` package takes the adjacency matrix as input. We then define a
+block structure matrix (`blk`) that describes our expectation for each pair of
+blocks. Each cell specifies a block type: `"com"` (complete) means we expect all
+possible ties to be present, while `"nul"` (null) means we expect no ties. In
+the example below, we place `"com"` on the diagonal and `"nul"` on the
+off-diagonal, which corresponds to the familiar clustering scenario where nodes
+are densely connected within groups and sparsely connected between them. The
+function then tries multiple random starting partitions (`rep`) and optimises
+each one, returning the best assignment of nodes to blocks.
 
 ```{r}
 #| label: calc-rnd-block
+
 A <- as_adjacency_matrix(g)
 ## define expected block structure: complete on diagonal, null off-diagonal
 blk <- matrix(
@@ -427,6 +567,7 @@ res <- optRandomParC(
 ```
 
 The result can be accessed with `clu()`.
+
 ```{r}
 clu(res)
 ```
@@ -444,18 +585,33 @@ ggraph(g, "stress") +
 
 ```
 
-Note that blockmodeling is computationally expensive and best suited for small networks. Consult the package documentation for more involved block types. For signed networks, a dedicated blockmodeling approach is available in the `signnet` package (see @sec-signed-networks).
+Note that blockmodeling is computationally expensive and best suited for small
+networks. Consult the package documentation for more involved block types. For
+signed networks, a dedicated blockmodeling approach is available in the
+`signnet` package (see @sec-signed-networks).
 
 ## Core-Periphery
 
-Community detection aims to find clusters or groups of nodes within the network that are more densely connected to each other than to nodes outside the group. The core-periphery structure, in contrast, posits that a network is organized into a densely connected core and a sparsely connected periphery. The core consists of central nodes that are highly connected to each other and also to peripheral nodes. Peripheral nodes, on the other hand, have fewer connections and are mostly connected to nodes in the core rather than to each other.
+Community detection aims to find clusters or groups of nodes within the network
+that are more densely connected to each other than to nodes outside the group.
+The core-periphery structure, in contrast, posits that a network is organized
+into a densely connected core and a sparsely connected periphery. The core
+consists of central nodes that are highly connected to each other and also to
+peripheral nodes. Peripheral nodes, on the other hand, have fewer connections
+and are mostly connected to nodes in the core rather than to each other.
 
-The difference between the two concepts becomes clear when looking at the adjacency matrix. In a community structure, dense blocks appear along the diagonal, each corresponding to a tightly connected group (@fig-compare-clu-cp, left). In a core-periphery structure, a single dense block sits in one corner of the matrix, representing the core, while the rest remains sparse (@fig-compare-clu-cp, right).
+The difference between the two concepts becomes clear when looking at the
+adjacency matrix. In a community structure, dense blocks appear along the
+diagonal, each corresponding to a tightly connected group (@fig-compare-clu-cp,
+left). In a core-periphery structure, a single dense block sits in one corner of
+the matrix, representing the core, while the rest remains sparse
+(@fig-compare-clu-cp, right).
 
 ```{r}
 #| label: fig-compare-clu-cp
 #| echo: false
 #| fig-cap: "Comparison of community structure and core-periphery structure by patterns in the adjacency matrix. Left: community structure with dense blocks along the diagonal. Right: core-periphery structure with a dense block in the top-left corner and sparse connections elsewhere."
+
 set.seed(1108)
 g_clu <- sample_islands(3, 8, 0.8, 2)
 V(g_clu)$clu <- rep(1:3, each = 8)
@@ -493,24 +649,40 @@ p2 <- ggraph(g_cp, "matrix") +
 p1 + p2
 ```
 
-Core-periphery structures can appear in many different contexts. In international trade networks, a small number of wealthy, industrialised countries form a densely interconnected core, while developing nations at the periphery trade primarily with core countries but rarely with each other. In scientific collaboration networks, a core of highly productive researchers co-author with many others and with each other, while peripheral researchers have fewer and more localised collaborations. The concept was originally formalised by @borgatti2000core, who proposed a **discrete core-periphery model**. 
+Core-periphery structures can appear in many different contexts. In
+international trade networks, a small number of wealthy, industrialised
+countries form a densely interconnected core, while developing nations at the
+periphery trade primarily with core countries but rarely with each other. In
+scientific collaboration networks, a core of highly productive researchers
+co-author with many others and with each other, while peripheral researchers
+have fewer and more localised collaborations. The concept was originally
+formalised by @borgatti2000core, who proposed a **discrete core-periphery
+model**.
 
-The idea of the model is that nodes either belong to the core, or the periphery. The membership of nodes is derived by optimizing the correlation between the observed adjacency matrix and an idealized adjacency matrix as shown in @fig-compare-clu-cp (right). 
+The idea of the model is that nodes either belong to the core, or the periphery.
+The membership of nodes is derived by optimizing the correlation between the
+observed adjacency matrix and an idealized adjacency matrix as shown in
+@fig-compare-clu-cp (right).
 
-Several such optimization techniques are implemented in the function `core_periphery()` of the `netUtils` package. 
+Several such optimization techniques are implemented in the function
+`core_periphery()` of the `netUtils` package.
 
-To illustrate the function, we use the `core_graph` from the `networkdata` package, a small network with a perfect core-periphery structure.
+To illustrate the function, we use the `core_graph` from the `networkdata`
+package, a small network with a perfect core-periphery structure.
 
 ```{r}
 #| label: load-core-graph
+
 data("core_graph")
 ```
 
-@fig-core-graph shows the graph together with its adjacency matrix. 
+@fig-core-graph shows the graph together with its adjacency matrix.
+
 ```{r}
 #| label: fig-core-graph
 #| echo: false
 #| fig-cap: "A graph with a perfect core-periphery structure. Left: network layout with core and periphery nodes. Right: adjacency matrix showing the block pattern."
+
 cp <- core_periphery(core_graph)
 V(core_graph)$type <- c("periphery", "core")[cp$vec + 1]
 p1 <- ggraph(core_graph, "stress") +
@@ -536,42 +708,69 @@ p2 <- ggraph(core_graph, "matrix") +
 p1 + p2
 ```
 
-Using the `core_periphery()` function, we try to recover the core-periphery structure of this graph.
+Using the `core_periphery()` function, we try to recover the core-periphery
+structure of this graph.
 
 ```{r}
 #| label: core-graph-cp
+
 cp <- core_periphery(core_graph)
 cp
 ```
 
-The function returns a list with two entries. The first, `vec`, returns the membership of nodes. It is one if a node is in the core and zero if not. The second entry `corr` represents the correlation of the adjacency matrix with the ideal adjacency matrix derived from the `vec` memberships. In this case, the correlation is one meaning that we have discovered a perfect core-periphery structure. 
+The function returns a list with two entries. The first, `vec`, returns the
+membership of nodes. It is one if a node is in the core and zero if not. The
+second entry `corr` represents the correlation of the adjacency matrix with the
+ideal adjacency matrix derived from the `vec` memberships. In this case, the
+correlation is one meaning that we have discovered a perfect core-periphery
+structure.
 
-The function also has an argument which allows to use different optimization techniques to find core-periphery structures (the problem of finding the optimal solution is computationally too complex). To illustrate this on a real-world network, we use the US domestic flights network from the `networkdata` package. This network connects 276 airports based on scheduled flights and is a natural candidate for core-periphery analysis: major hub airports (Atlanta, Denver, Dallas-Fort Worth, etc.) serve as a densely interconnected core, while smaller regional airports on the periphery connect primarily to these hubs.
+The function also has an argument which allows to use different optimization
+techniques to find core-periphery structures (the problem of finding the optimal
+solution is computationally too complex). To illustrate this on a real-world
+network, we use the US domestic flights network from the `networkdata` package.
+This network connects 276 airports based on scheduled flights and is a natural
+candidate for core-periphery analysis: major hub airports (Atlanta, Denver,
+Dallas-Fort Worth, etc.) serve as a densely interconnected core, while smaller
+regional airports on the periphery connect primarily to these hubs.
 
 ```{r}
 #| label: us-flights-cp
+
 data("us_flights")
 cp_dc <- core_periphery(us_flights, method = "rk1_dc")
 cp_dc$corr
 sum(cp_dc$vec)
 ```
 
-The rank-one approximation via degrees (`rk1_dc`) identifies `r sum(cp_dc$vec)` core airports with a correlation of `r round(cp_dc$corr, 2)`. This is a strong sign that the structure of the US airline system follows a core-periphery pattern. We can compare the three available optimization methods.
+The rank-one approximation via degrees (`rk1_dc`) identifies `r sum(cp_dc$vec)`
+core airports with a correlation of `r round(cp_dc$corr, 2)`. This is a strong
+sign that the structure of the US airline system follows a core-periphery
+pattern. We can compare the three available optimization methods.
 
 ```{r}
 #| label: us-flights-cp-methods
 #| cache: true
+
 cp_ec <- core_periphery(us_flights, method = "rk1_ec")
 cp_ga <- core_periphery(us_flights, method = "GA", iter = 2500)
 c(rk1_dc = cp_dc$corr, rk1_ec = cp_ec$corr, GA = cp_ga$corr)
 ```
 
-Similar as `rk1_dc`, `rk1_ec` is a rank-one matrix approximation methods which infers an idealized structure from the eigenvectors of the adjacency matrix instead of the degrees. These methods are extremely fast but might result in a lower quality of the result compared to `GA` which runs a genetic algorithm to search for the optimal solution (This needs the R package `GA` to be installed). In our case, however, the genetic algorithm does not seem to find a much better solution than the rank-one approximations, which is a good sign that the fast methods are sufficient for the US domestic flights network.
+Similar as `rk1_dc`, `rk1_ec` is a rank-one matrix approximation methods which
+infers an idealized structure from the eigenvectors of the adjacency matrix
+instead of the degrees. These methods are extremely fast but might result in a
+lower quality of the result compared to `GA` which runs a genetic algorithm to
+search for the optimal solution (This needs the R package `GA` to be installed).
+In our case, however, the genetic algorithm does not seem to find a much better
+solution than the rank-one approximations, which is a good sign that the fast
+methods are sufficient for the US domestic flights network.
 
 ```{r}
 #| label: fig-us-flights-cp
 #| echo: false
 #| fig-cap: "Core-periphery structure of the US domestic flights network. Left: network layout with core and periphery airports. Right: adjacency matrix showing the block pattern."
+
 V(us_flights)$type <- c("periphery", "core")[cp_dc$vec + 1]
 p1 <- ggraph(us_flights, "stress") +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +

@@ -1,15 +1,26 @@
 # Interactive Visualization
 
 ::: {.content-visible when-format="pdf"}
-*This chapter demonstrates interactive network visualizations. The figures below are static placeholders. The fully interactive versions are available in the online HTML edition at <https://schochastics.io/R4SNA>.*
+*This chapter demonstrates interactive network visualizations. The figures below
+are static placeholders. The fully interactive versions are available in the
+online HTML edition at <https://schochastics.io/R4SNA>.*
 :::
 
-The previous chapters focused on creating static network plots with `ggraph`. Static visualizations are essential for publications and reports, but interactive visualizations open up a different mode of exploration: users can pan across the canvas, zoom into dense regions, hover over nodes for details, and drag elements to untangle complex structures. This chapter surveys the landscape of interactive network visualization in R and then provides a thorough introduction to `g6R`, a modern and feature-rich package for building interactive network graphics.
+The previous chapters focused on creating static network plots with `ggraph`.
+Static visualizations are essential for publications and reports, but
+interactive visualizations open up a different mode of exploration: users can
+pan across the canvas, zoom into dense regions, hover over nodes for details,
+and drag elements to untangle complex structures. This chapter surveys the
+landscape of interactive network visualization in R and then provides a thorough
+introduction to `g6R`, a modern and feature-rich package for building
+interactive network graphics.
 
 ## Packages Needed for this Chapter
+
 ```{r}
 #| label: libraries
 #| message: false
+
 library(igraph)
 library(networkdata)
 library(visNetwork)
@@ -21,18 +32,27 @@ library(g6R)
 ```{r}
 #| label: is-html
 #| echo: false
+
 is_html <- knitr::is_html_output()
 ```
-The packages `visNetwork`, `networkD3`, and `threejs` only appear briefly in the overview. The remainder of the chapter focuses on `g6R`.
+The packages `visNetwork`, `networkD3`, and `threejs` only appear briefly in the
+overview. The remainder of the chapter focuses on `g6R`.
 
 ## Data Preparation
 
-We use the *Florentine Families* marriage network, introduced in earlier chapters. With 16 families and 20 ties it is small enough that every label, hull, and bubble in this chapter renders without clutter, and it comes with a `wealth` attribute that gives us a meaningful categorical grouping for later plugin demos.
+We use the *Florentine Families* marriage network, introduced in earlier
+chapters. With 16 families and 20 ties it is small enough that every label,
+hull, and bubble in this chapter renders without clutter, and it comes with a
+`wealth` attribute that gives us a meaningful categorical grouping for later
+plugin demos.
 
-The Pucci family is isolated in the marriage network, so we restrict to the connected component of 15 families and bucket the wealth attribute into three tiers.
+The Pucci family is isolated in the marriage network, so we restrict to the
+connected component of 15 families and bucket the wealth attribute into three
+tiers.
 
 ```{r}
 #| label: data
+
 data("flo_marriage")
 
 flo <- subgraph(
@@ -57,16 +77,21 @@ palette3 <- c(low = "#1A5878", mid = "#AD8941", high = "#C44237")
 
 ## Interactive Network Visualization Tools in R
 
-There exist several R packages that can produce interactive network visualizations, each wrapping a different JavaScript library. We briefly survey three popular options before diving into `g6R`.
+There exist several R packages that can produce interactive network
+visualizations, each wrapping a different JavaScript library. We briefly survey
+three popular options before diving into `g6R`.
 
 ### visNetwork
 
-The `visNetwork` package wraps the vis.js library and offers a broad toolkit for interactive networks. Converting an `igraph` object requires mapping a few vertex attributes to the column names that `visNetwork` expects.
+The `visNetwork` package wraps the vis.js library and offers a broad toolkit for
+interactive networks. Converting an `igraph` object requires mapping a few
+vertex attributes to the column names that `visNetwork` expects.
 
 ```{r}
 #| label: fig-visnetwork
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network rendered with `visNetwork`."
+
 V(flo)$label <- V(flo)$name
 V(flo)$group <- V(flo)$wealth_tier
 V(flo)$value <- V(flo)$degree
@@ -80,16 +105,20 @@ visNetwork(vis_data$nodes, vis_data$edges, width = "100%", height = "400px") |>
 ![Florentine marriage network rendered with `visNetwork`.](img/screenshots/fig-visnetwork.png){#fig-visnetwork}
 :::
 
-Out of the box, `visNetwork` provides draggable nodes, zoom, and hover highlighting (see @fig-visnetwork). It is well suited for quick interactive previews that do not require much customization.
+Out of the box, `visNetwork` provides draggable nodes, zoom, and hover
+highlighting (see @fig-visnetwork). It is well suited for quick interactive
+previews that do not require much customization.
 
 ### networkD3
 
-The `networkD3` package wraps D3.js and produces force-directed layouts (see @fig-networkd3).
+The `networkD3` package wraps D3.js and produces force-directed layouts (see
+@fig-networkd3).
 
 ```{r}
 #| label: fig-networkd3
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network rendered with `networkD3`."
+
 d3_data <- igraph_to_networkD3(flo, group = V(flo)$wealth_tier)
 
 forceNetwork(
@@ -111,12 +140,15 @@ forceNetwork(
 
 ### threejs
 
-The `threejs` package renders networks in 3D using WebGL (see @fig-threejs). The result is visually striking, although 3D layouts can make it harder to judge distances and read labels.
+The `threejs` package renders networks in 3D using WebGL (see @fig-threejs). The
+result is visually striking, although 3D layouts can make it harder to judge
+distances and read labels.
 
 ```{r}
 #| label: fig-threejs
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network in 3D with `threejs`."
+
 graphjs(flo,
   vertex.size = 0.3 + 0.2 * V(flo)$degree
 )
@@ -126,26 +158,51 @@ graphjs(flo,
 ![Florentine marriage network in 3D with `threejs`.](img/screenshots/fig-threejs.png){#fig-threejs}
 :::
 
-Each of these packages has its place. `visNetwork` is mature and full-featured, `networkD3` leverages the power of D3.js, and `threejs` offers 3D rendering. For the remainder of this chapter we focus on `g6R`, which provides the most comprehensive framework for interactive graph visualization in R, with a rich plugin system and high-performance rendering.
+Each of these packages has its place. `visNetwork` is mature and full-featured,
+`networkD3` leverages the power of D3.js, and `threejs` offers 3D rendering. For
+the remainder of this chapter we focus on `g6R`, which provides the most
+comprehensive framework for interactive graph visualization in R, with a rich
+plugin system and high-performance rendering.
 
 ## Getting Started with g6R
 
-The `g6R` package is an R binding to AntV's G6 graph visualization engine. It produces `htmlwidgets` that render in Quarto documents, the RStudio viewer, and Shiny applications.
+The `g6R` package is an R binding to AntV's G6 graph visualization engine. It
+produces `htmlwidgets` that render in Quarto documents, the RStudio viewer, and
+Shiny applications.
 
 ### g6_igraph() vs building a g6 graph explicitly
 
-The package ships an `g6_igraph()` convenience function that converts an `igraph` object directly into a g6 widget. This is by far the quickest path to a rendered network and is a reasonable choice when all you need is a quick interactive preview. However, `g6_igraph()` hides the data structure that G6 actually consumes under the hood, and not every feature in the package reliably survives the conversion: plugins such as `hull()` and `bubble_sets()` reference nodes by id and are sensitive to how ids are encoded. Some per-node style keys are silently dropped depending on which `igraph` attributes are present and certain layout options do not pick up node metadata as expected. Readers who want to combine multiple plugins, per-element styling, and richer interaction quickly run into these rough edges.
+The package ships an `g6_igraph()` convenience function that converts an
+`igraph` object directly into a g6 widget. This is by far the quickest path to a
+rendered network and is a reasonable choice when all you need is a quick
+interactive preview. However, `g6_igraph()` hides the data structure that G6
+actually consumes under the hood, and not every feature in the package reliably
+survives the conversion: plugins such as `hull()` and `bubble_sets()` reference
+nodes by id and are sensitive to how ids are encoded. Some per-node style keys
+are silently dropped depending on which `igraph` attributes are present and
+certain layout options do not pick up node metadata as expected. Readers who
+want to combine multiple plugins, per-element styling, and richer interaction
+quickly run into these rough edges.
 
-For this reason, the rest of the chapter builds the inputs to `g6()` explicitly. We construct a list of nodes and a list of edges with `g6_node()` / `g6_edge()`, and pass those to `g6()`. It is slightly more verbose than `g6_igraph(flo)`, but in return every plugin, behaviour, and style property we demonstrate receives exactly the data structure it expects.
+For this reason, the rest of the chapter builds the inputs to `g6()` explicitly.
+We construct a list of nodes and a list of edges with `g6_node()` / `g6_edge()`,
+and pass those to `g6()`. It is slightly more verbose than `g6_igraph(flo)`, but
+in return every plugin, behaviour, and style property we demonstrate receives
+exactly the data structure it expects.
 
 ### Building nodes and edges
 
-A g6 node is a list with at minimum an `id`. It can also carry a `data` slot for attributes the reader may want to inspect or use in JavaScript callbacks, and a `style` slot for visual properties such as `fill`, `size`, `labelText`, `stroke`, and `lineWidth`. An edge is a list with `source` and `target` fields.
+A g6 node is a list with at minimum an `id`. It can also carry a `data` slot for
+attributes the reader may want to inspect or use in JavaScript callbacks, and a
+`style` slot for visual properties such as `fill`, `size`, `labelText`,
+`stroke`, and `lineWidth`. An edge is a list with `source` and `target` fields.
 
-We use `Map()` to zip the igraph attributes into per-node and per-edge lists, and `g6_nodes()` / `g6_edges()` to assemble them.
+We use `Map()` to zip the igraph attributes into per-node and per-edge lists,
+and `g6_nodes()` / `g6_edges()` to assemble them.
 
 ```{r}
 #| label: build-g6-data
+
 nodes <- do.call(g6_nodes, unname(Map(
   function(name, tier, deg) {
     g6_node(
@@ -176,17 +233,24 @@ edges <- do.call(g6_edges, unname(Map(
 )))
 ```
 
-Node size is scaled from degree, fill comes from the wealth tier, and the family name is used both as id and as label. Edges get a uniform light-grey stroke.
+Node size is scaled from degree, fill comes from the wealth tier, and the family
+name is used both as id and as label. Edges get a uniform light-grey stroke.
 
 ### A first interactive network
 
-With `nodes` and `edges` in hand, the shortest viable `g6R` pipeline is a single `g6()` call piped into a layout. @fig-g6r-first shows the result: the force simulation animates as the graph loads, but no user interactions are wired up yet. So after the layout settles, no further interactions are possible. These are added through behaviours, which are covered in their own section later. `g6_options()` is used here to make the canvas fill the available space (`autoFit = "view"`) and resize responsively (`autoResize = TRUE`). 
-
+With `nodes` and `edges` in hand, the shortest viable `g6R` pipeline is a single
+`g6()` call piped into a layout. @fig-g6r-first shows the result: the force
+simulation animates as the graph loads, but no user interactions are wired up
+yet. So after the layout settles, no further interactions are possible. These
+are added through behaviours, which are covered in their own section later.
+`g6_options()` is used here to make the canvas fill the available space
+(`autoFit = "view"`) and resize responsively (`autoResize = TRUE`).
 
 ```{r}
 #| label: fig-g6r-first
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with `g6R` using just a layout and no behaviours."
+
 g6(nodes, edges) |>
   g6_layout() |> 
   g6_options(autoFit = "view", autoResize = TRUE)
@@ -199,7 +263,9 @@ g6(nodes, edges) |>
 
 ### The g6R workflow
 
-Customization in `g6R` follows a pipe-based workflow. Starting from the initial graph, you chain together functions that each control a different aspect of the visualization:
+Customization in `g6R` follows a pipe-based workflow. Starting from the initial
+graph, you chain together functions that each control a different aspect of the
+visualization:
 
 ```r
 g6(nodes, edges)      |>
@@ -213,15 +279,29 @@ Each of these building blocks is covered in its own section below.
 
 ## Layouts
 
-Layout algorithms determine where nodes are placed on the canvas. Unlike the static layouts computed by `igraph` or `graphlayouts`, the layouts in `g6R` run client-side in the browser. Force-directed layouts animate as nodes settle into position, making the layout process itself part of the interactive experience.
+Layout algorithms determine where nodes are placed on the canvas. Unlike the
+static layouts computed by `igraph` or `graphlayouts`, the layouts in `g6R` run
+client-side in the browser. Force-directed layouts animate as nodes settle into
+position, making the layout process itself part of the interactive experience.
 
-The default layout in `g6R` is `d3_force_layout()`, which simulates physical forces to position nodes: linked nodes attract each other while all nodes repel, producing a layout that tends to place densely connected groups close together. This is the layout used in @fig-g6r-first.
+The default layout in `g6R` is `d3_force_layout()`, which simulates physical
+forces to position nodes: linked nodes attract each other while all nodes repel,
+producing a layout that tends to place densely connected groups close together.
+This is the layout used in @fig-g6r-first.
 
-Another force-directed option is `force_atlas2_layout()`, a variant of the ForceAtlas2 algorithm popularized by Gephi. It produces a more compact layout with less overlap, and the `preventOverlap` option can be set to `TRUE` to further reduce node collisions at the cost of a longer layout time. For small networks like the Florentine families the difference is negligible. In @fig-g6r-d3atlas we also set `kr = 20` to increase the strength of repulsion and spread the nodes out a bit more. 
+Another force-directed option is `force_atlas2_layout()`, a variant of the
+ForceAtlas2 algorithm popularized by Gephi. It produces a more compact layout
+with less overlap, and the `preventOverlap` option can be set to `TRUE` to
+further reduce node collisions at the cost of a longer layout time. For small
+networks like the Florentine families the difference is negligible. In
+@fig-g6r-d3atlas we also set `kr = 20` to increase the strength of repulsion and
+spread the nodes out a bit more.
+
 ```{r}
 #| label: fig-g6r-d3atlas
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with the `force_atlas2` layout."
+
 g6(nodes, edges) |>
   g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
   g6_options(autoFit = "view", autoResize = TRUE)
@@ -231,20 +311,30 @@ g6(nodes, edges) |>
 ![Florentine marriage network with the `force_atlas2` layout.](img/screenshots/fig-g6r-d3atlas.png){#fig-g6r-d3atlas}
 :::
 
-The package implements several other layout algorithms, including `concentric_layout()` for ring-based arrangements and `dendrogram_layout()` for tree graphs.
+The package implements several other layout algorithms, including
+`concentric_layout()` for ring-based arrangements and `dendrogram_layout()` for
+tree graphs.
 
 ## Styling Nodes and Edges
 
-There are two complementary ways to control the appearance of nodes and edges. Per-element styles, set in the `style` slot of each node or edge, give every element its own colour, size, and label as we did in the data preparation above. Global defaults, set with `g6_options()`, apply to all elements and can be overridden by per-element styles.
+There are two complementary ways to control the appearance of nodes and edges.
+Per-element styles, set in the `style` slot of each node or edge, give every
+element its own colour, size, and label as we did in the data preparation above.
+Global defaults, set with `g6_options()`, apply to all elements and can be
+overridden by per-element styles.
 
 ### Per-element styling
 
-Because the `nodes` and `edges` lists we built already carry a `style` slot for each element, any change to family-specific appearance lives right next to the data. The next code block keeps all the elements in place but switches to a thicker border on every node (see @fig-g6r-per-element).
+Because the `nodes` and `edges` lists we built already carry a `style` slot for
+each element, any change to family-specific appearance lives right next to the
+data. The next code block keeps all the elements in place but switches to a
+thicker border on every node (see @fig-g6r-per-element).
 
 ```{r}
 #| label: fig-g6r-per-element
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with thicker node borders applied per element."
+
 nodes_bold <- do.call(g6_nodes, unname(Map(
   function(name, tier, deg) {
     g6_node(
@@ -273,12 +363,17 @@ g6(nodes_bold, edges) |>
 
 ### Global defaults with g6_options()
 
-For styling that applies uniformly to every element, `g6_options()` is cleaner than touching each node. It takes nested option builders like `node_options()`, `edge_options()`, and the corresponding `*_style_options()` helpers, that mirror G6's global style configuration. In @fig-g6r-options-style we shrink the label font, move labels below the node, and thin out the edge strokes globally.
+For styling that applies uniformly to every element, `g6_options()` is cleaner
+than touching each node. It takes nested option builders like `node_options()`,
+`edge_options()`, and the corresponding `*_style_options()` helpers, that mirror
+G6's global style configuration. In @fig-g6r-options-style we shrink the label
+font, move labels below the node, and thin out the edge strokes globally.
 
 ```{r}
 #| label: fig-g6r-options-style
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with global label and edge defaults applied through `g6_options()`."
+
 g6(nodes, edges) |>
   g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
   g6_options(
@@ -305,16 +400,20 @@ g6(nodes, edges) |>
 
 ## Behaviors
 
-Behaviors define how users can interact with the visualization. They are added through `g6_behaviors()` and can be mixed freely.
+Behaviors define how users can interact with the visualization. They are added
+through `g6_behaviors()` and can be mixed freely.
 
 ### Navigation: drag and zoom
 
-The most basic behaviors allow users to navigate the canvas. `drag_canvas()` enables click-and-drag panning, while `zoom_canvas()` enables scroll-wheel zooming. Together they make the graph in @fig-g6r-nav navigable.
+The most basic behaviors allow users to navigate the canvas. `drag_canvas()`
+enables click-and-drag panning, while `zoom_canvas()` enables scroll-wheel
+zooming. Together they make the graph in @fig-g6r-nav navigable.
 
 ```{r}
 #| label: fig-g6r-nav
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with basic navigation behaviors."
+
 g6(nodes, edges) |>
   g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
   g6_behaviors(drag_canvas(), zoom_canvas())
@@ -326,12 +425,19 @@ g6(nodes, edges) |>
 
 ### Element interaction
 
-Beyond canvas navigation, users can interact with individual elements. `drag_element_force()` lets you reposition nodes while the force simulation adjusts around them. Setting `fixed = TRUE` keeps a node where you drop it rather than letting the simulation pull it back. `hover_activate()` highlights a node and its direct neighbours on mouseover, and `click_select()` enables selection, with `multiple = TRUE` allowing shift-click to accumulate a selection set.
+Beyond canvas navigation, users can interact with individual elements.
+`drag_element_force()` lets you reposition nodes while the force simulation
+adjusts around them. Setting `fixed = TRUE` keeps a node where you drop it
+rather than letting the simulation pull it back. `hover_activate()` highlights a
+node and its direct neighbours on mouseover, and `click_select()` enables
+selection, with `multiple = TRUE` allowing shift-click to accumulate a selection
+set.
 
 ```{r}
 #| label: fig-g6r-interact
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with drag, hover, and click-select behaviors."
+
 g6(nodes, edges) |>
   g6_layout() |>
   g6_behaviors(
@@ -345,16 +451,22 @@ g6(nodes, edges) |>
 ![Florentine marriage network with drag, hover, and click-select behaviors.](img/screenshots/fig-g6r-interact.png){#fig-g6r-interact}
 :::
 
-In @fig-g6r-interact, try hovering over a node to see its neighbourhood highlighted, or shift-click to select multiple families.
+In @fig-g6r-interact, try hovering over a node to see its neighbourhood
+highlighted, or shift-click to select multiple families.
 
 ### Lasso and brush selection
 
-For selecting groups of nodes, `g6R` provides two area-selection tools. `brush_select()` draws a rectangular selection box, while `lasso_select()` allows freehand drawing around the nodes of interest. @fig-g6r-lasso enables the lasso selection and @fig-g6r-brush enables the brush selection, both by holding down shift while dragging on the canvas. 
+For selecting groups of nodes, `g6R` provides two area-selection tools.
+`brush_select()` draws a rectangular selection box, while `lasso_select()`
+allows freehand drawing around the nodes of interest. @fig-g6r-lasso enables the
+lasso selection and @fig-g6r-brush enables the brush selection, both by holding
+down shift while dragging on the canvas.
 
 ```{r}
 #| label: fig-g6r-lasso
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with lasso selection active."
+
 g6(nodes, edges) |>
   g6_layout() |>
   g6_behaviors(
@@ -366,11 +478,11 @@ g6(nodes, edges) |>
 ![Florentine marriage network with lasso selection active.](img/screenshots/fig-g6r-lasso.png){#fig-g6r-lasso}
 :::
 
-
 ```{r}
 #| label: fig-g6r-brush
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with brush selection active."
+
 g6(nodes, edges) |>
   g6_layout() |>
   g6_behaviors(
@@ -384,18 +496,29 @@ g6(nodes, edges) |>
 
 ## Plugins
 
-Plugins add features on top of the base visualization. They are activated through `g6_plugins()` and can be combined freely. The two plugins that make `g6R` stand out as a graph-visualization tool, hulls and bubble sets, come first.
+Plugins add features on top of the base visualization. They are activated
+through `g6_plugins()` and can be combined freely. The two plugins that make
+`g6R` stand out as a graph-visualization tool, hulls and bubble sets, come
+first.
 
 ### Visual grouping: hulls
 
-In @fig-network-grps-sol of the previous chapter, we used `geom_mark_hull()` from `ggforce` to highlight clusters in a static plot. The `hull()` plugin in `g6R` is the interactive analogue: it draws a convex polygon around a named set of nodes and redraws as the nodes move. The `members` argument is a character vector of node ids, which is where the explicit list-based construction pays off. We can simply split the family names by wealth tier.
+In @fig-network-grps-sol of the previous chapter, we used `geom_mark_hull()`
+from `ggforce` to highlight clusters in a static plot. The `hull()` plugin in
+`g6R` is the interactive analogue: it draws a convex polygon around a named set
+of nodes and redraws as the nodes move. The `members` argument is a character
+vector of node ids, which is where the explicit list-based construction pays
+off. We can simply split the family names by wealth tier.
 
-@fig-g6r-hull uses the `"drag-element"` behaviour (which updates node positions directly) rather than `drag_element_force()`, and sets `animation = FALSE`. Under this combination the hull reliably redraws.
+@fig-g6r-hull uses the `"drag-element"` behaviour (which updates node positions
+directly) rather than `drag_element_force()`, and sets `animation = FALSE`.
+Under this combination the hull reliably redraws.
 
 ```{r}
 #| label: fig-g6r-hull
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with hulls around wealth tiers."
+
 tier_members <- split(V(flo)$name, V(flo)$wealth_tier)
 
 g6(nodes, edges) |>
@@ -426,12 +549,18 @@ g6(nodes, edges) |>
 
 ### Visual grouping: bubble sets
 
-The `bubble_sets()` plugin offers an alternative visual style. Instead of sharp convex hulls, it wraps groups in smooth, rounded contours that can overlap organically, as shown in @fig-g6r-bubble. This is often more legible than hulls when groups share members or sit close to each other on the canvas. As with the hull plugin, the bubble outline redraws cleanly under the `"drag-element"` behaviour with `animation = FALSE`.
+The `bubble_sets()` plugin offers an alternative visual style. Instead of sharp
+convex hulls, it wraps groups in smooth, rounded contours that can overlap
+organically, as shown in @fig-g6r-bubble. This is often more legible than hulls
+when groups share members or sit close to each other on the canvas. As with the
+hull plugin, the bubble outline redraws cleanly under the `"drag-element"`
+behaviour with `animation = FALSE`.
 
 ```{r}
 #| label: fig-g6r-bubble
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with bubble sets around wealth tiers."
+
 g6(nodes, edges) |>
   g6_layout() |>
   g6_behaviors("drag-element") |>
@@ -460,12 +589,18 @@ g6(nodes, edges) |>
 
 ### Tooltips
 
-Tooltips display information when the user hovers over a node. The default tooltip only shows the node's id, so to surface the attributes we stored in the `data` slot earlier we pass a `getContent` callback to `tooltips()`. The callback is a small JavaScript function, wrapped with `JS()`  that receives the hovered items and returns the HTML to render. Hovering over a family in @fig-g6r-tooltip now shows its name, wealth tier, and degree.
+Tooltips display information when the user hovers over a node. The default
+tooltip only shows the node's id, so to surface the attributes we stored in the
+`data` slot earlier we pass a `getContent` callback to `tooltips()`. The
+callback is a small JavaScript function, wrapped with `JS()` that receives the
+hovered items and returns the HTML to render. Hovering over a family in
+@fig-g6r-tooltip now shows its name, wealth tier, and degree.
 
 ```{r}
 #| label: fig-g6r-tooltip
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with hover tooltips."
+
 tooltip_content <- JS(
   "(event, items) => {
     let result = ``;
@@ -489,12 +624,15 @@ g6(nodes, edges) |>
 
 ### Legend
 
-The `legend` plugin reads a field name from node data and draws a legend for it directly on the canvas. In @fig-g6r-legend we point it at `wealth_tier`, which matches the colour split used by the hulls and bubbles above.
+The `legend` plugin reads a field name from node data and draws a legend for it
+directly on the canvas. In @fig-g6r-legend we point it at `wealth_tier`, which
+matches the colour split used by the hulls and bubbles above.
 
 ```{r}
 #| label: fig-g6r-legend
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with a wealth-tier legend."
+
 g6(nodes, edges) |>
   g6_layout() |>
   g6_plugins(legend(nodeField = "wealth_tier", showTitle = TRUE, titleText = "Wealth Tier", position = "top"))
@@ -506,12 +644,17 @@ g6(nodes, edges) |>
 
 ### Fisheye lens
 
-The fisheye plugin applies a focus-plus-context distortion: the area under the cursor is magnified while the rest of the graph remains visible at a reduced scale. On the 15-node graph in @fig-g6r-fisheye it is more of a curiosity, but on dense networks where zooming alone would lose the global context the fisheye becomes genuinely useful.
+The fisheye plugin applies a focus-plus-context distortion: the area under the
+cursor is magnified while the rest of the graph remains visible at a reduced
+scale. On the 15-node graph in @fig-g6r-fisheye it is more of a curiosity, but
+on dense networks where zooming alone would lose the global context the fisheye
+becomes genuinely useful.
 
 ```{r}
 #| label: fig-g6r-fisheye
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with fisheye distortion."
+
 g6(nodes, edges) |>
   g6_layout() |>
   g6_plugins(fish_eye())
@@ -523,12 +666,16 @@ g6(nodes, edges) |>
 
 ### Minimap
 
-A minimap provides a thumbnail overview of the entire graph, with a shaded rectangle indicating the currently visible viewport. It is overkill for the 15-node graph in @fig-g6r-minimap, but becomes indispensable for networks in the thousands of nodes.
+A minimap provides a thumbnail overview of the entire graph, with a shaded
+rectangle indicating the currently visible viewport. It is overkill for the
+15-node graph in @fig-g6r-minimap, but becomes indispensable for networks in the
+thousands of nodes.
 
 ```{r}
 #| label: fig-g6r-minimap
-#| eval: !expr is_html
+#| eval: is_html
 #| fig-cap: "Florentine marriage network with a minimap for navigation."
+
 g6(nodes, edges) |>
   g6_layout() |>
   g6_plugins(minimap())

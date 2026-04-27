@@ -4,57 +4,103 @@
 #| label: libs
 #| echo: false
 #| message: false
+
 library(igraph)
 library(ggraph)
 ```
 
-R has become one of the richest environments for social network analysis. Dozens of packages on CRAN implement everything from basic centrality scores to stochastic actor-oriented models, and most of them interoperate through a small set of shared data structures. This book is an opinionated tour of that ecosystem: what to reach for, when, and why.
+R has become one of the richest environments for social network analysis. Dozens
+of packages on CRAN implement everything from basic centrality scores to
+stochastic actor-oriented models, and most of them interoperate through a small
+set of shared data structures. This book is an opinionated tour of that
+ecosystem: what to reach for, when, and why.
 
 ## What you will learn
 
-You will learn how to represent network data in R, compute the standard descriptive quantities (density, distance, centrality, community structure), produce publication-quality visualizations with `ggraph`, and fit inferential models such as ERGMs, SAOMs, and relational event models to test hypotheses about how networks form and evolve. The emphasis throughout is on *doing*: each method is introduced alongside the code needed to run it and the output to expect.
+You will learn how to represent network data in R, compute the standard
+descriptive quantities (density, distance, centrality, community structure),
+produce publication-quality visualizations with `ggraph`, and fit inferential
+models such as ERGMs, SAOMs, and relational event models to test hypotheses
+about how networks form and evolve. The emphasis throughout is on *doing*: each
+method is introduced alongside the code needed to run it and the output to
+expect.
 
 ## How this book is organized
 
-After this introduction, [Network Data and Analysis](network-data.qmd) motivates the network perspective and covers the foundations: nodes, edges, attributes, the common matrix and edge-list representations, and how to import or construct a network in `igraph`. It is the one chapter the rest of the book assumes you have read.
+After this introduction, [Network Data and Analysis](network-data.qmd) motivates
+the network perspective and covers the foundations: nodes, edges, attributes,
+the common matrix and edge-list representations, and how to import or construct
+a network in `igraph`. It is the one chapter the rest of the book assumes you
+have read.
 
 From there the book splits into four parts:
 
-- **Descriptive Network Analysis** covers whole-network and node-level summaries (basic statistics, centrality, cohesive subgroups), together with specialized toolkits for two-mode, signed, and ego networks, and an information-theoretic view through entropy analysis.
-- **Network Visualization** mainly focuses on `ggraph`, with chapters on layouts, aesthetic mappings, visual enhancements, and interactive output via `g6R`.
-- **Inferential Network Analysis** moves beyond description to statistical modeling: non-parametric tests, random graph models, ERGMs, stochastic actor-oriented models, and relational event models.
-- **Tidy Network Analysis** revisits descriptive analysis through the lens of `tidygraph`, which layers tidyverse semantics on top of `igraph`.
+- **Descriptive Network Analysis** covers whole-network and node-level summaries
+  (basic statistics, centrality, cohesive subgroups), together with specialized
+  toolkits for two-mode, signed, and ego networks, and an information-theoretic
+  view through entropy analysis.
+- **Network Visualization** mainly focuses on `ggraph`, with chapters on
+  layouts, aesthetic mappings, visual enhancements, and interactive output via
+  `g6R`.
+- **Inferential Network Analysis** moves beyond description to statistical
+  modeling: non-parametric tests, random graph models, ERGMs, stochastic
+  actor-oriented models, and relational event models.
+- **Tidy Network Analysis** revisits descriptive analysis through the lens of
+  `tidygraph`, which layers tidyverse semantics on top of `igraph`.
 
-
-The parts are largely self-contained, so you can read the book linearly or skip to whichever topic is closest to the problem in front of you.
+The parts are largely self-contained, so you can read the book linearly or skip
+to whichever topic is closest to the problem in front of you.
 
 ## What you won't learn
 
-This is a book about *doing* network analysis in R, not a textbook on network theory or graph algorithms. We introduce just enough theory to use each method responsibly and point to canonical references for deeper treatments. We also do not cover network analysis in Python, Gephi, or other GUI-driven tools, and we do not teach base R or the tidyverse from scratch. If you need a primer on either, [R for Data Science (2e)](https://r4ds.hadley.nz/) is a good companion.
+This is a book about *doing* network analysis in R, not a textbook on network
+theory or graph algorithms. We introduce just enough theory to use each method
+responsibly and point to canonical references for deeper treatments. We also do
+not cover network analysis in Python, Gephi, or other GUI-driven tools, and we
+do not teach base R or the tidyverse from scratch. If you need a primer on
+either, [R for Data Science (2e)](https://r4ds.hadley.nz/) is a good companion.
 
 ## Prerequisites
 
-We assume you are generally numerically literate and have some basic programming experience. If you have never programmed before, [Hands-On Programming with R](https://rstudio-education.github.io/hopr/) is a useful adjunct to this book.
+We assume you are generally numerically literate and have some basic programming
+experience. If you have never programmed before, [Hands-On Programming with
+R](https://rstudio-education.github.io/hopr/) is a useful adjunct to this book.
 
-You need four things to run the code in this book: R, an IDE, a handful of core network packages, and a supporting cast of packages used in individual chapters.
+You need four things to run the code in this book: R, an IDE, a handful of core
+network packages, and a supporting cast of packages used in individual chapters.
 
 ### R
 
-Install R from CRAN at <https://cloud.r-project.org>. A new major version comes out once a year, with two or three minor releases in between. We recommend R 4.5.3 for this book.
+Install R from CRAN at <https://cloud.r-project.org>. A new major version comes
+out once a year, with two or three minor releases in between. We recommend R
+4.5.3 for this book.
 
 ### IDE
 
-We make no assumption about your development environment. RStudio (<https://posit.co/download/rstudio-desktop/>) is a popular choice and integrates well with the RStudio addins we occasionally reference, but VS Code, Positron, Emacs, or Vim will all work.
+We make no assumption about your development environment. RStudio
+(<https://posit.co/download/rstudio-desktop/>) is a popular choice and
+integrates well with the RStudio addins we occasionally reference, but VS Code,
+Positron, Emacs, or Vim will all work.
 
 ### The core packages
 
-Two package families dominate network analysis in R: `igraph` [@csardi2006igraph] and the `statnet` family [@hunter2008ergm], which centers on the `network` data structure and includes `sna`, `ergm`, and other modeling packages. Both provide their own graph class and a broadly overlapping set of analytic methods. For descriptive analysis they are largely interchangeable, but each owns a different corner of inferential modeling. `igraph` is generally faster, since its algorithms are implemented in C, and it has attracted more downstream packages. @fig-crannet shows how many CRAN packages depend on, import, or suggest `igraph`, `network`, and `graph`, a package only available via Bioconductor.
+Two package families dominate network analysis in R: `igraph`
+[@csardi2006igraph] and the `statnet` family [@hunter2008ergm], which centers on
+the `network` data structure and includes `sna`, `ergm`, and other modeling
+packages. Both provide their own graph class and a broadly overlapping set of
+analytic methods. For descriptive analysis they are largely interchangeable, but
+each owns a different corner of inferential modeling. `igraph` is generally
+faster, since its algorithms are implemented in C, and it has attracted more
+downstream packages. @fig-crannet shows how many CRAN packages depend on,
+import, or suggest `igraph`, `network`, and `graph`, a package only available
+via Bioconductor.
 
 ```{r}
 #| label: fig-crannet
 #| echo: false
 #| message: false
 #| fig-cap: "Network of CRAN packages that depend on, import, or suggest `igraph`, `network`, and `graph`. The figure was produced with the `cranet` package."
+
 sg <- readRDS("descriptive/data/crannet.RDS")
 ggraph(sg, "stress") +
   geom_edge_link0(
@@ -76,21 +122,32 @@ ggraph(sg, "stress") +
   coord_equal(clip = "off")
 ```
 
-Because of this imbalance, `igraph` is the default in the **Descriptive Network Analysis** and **Network Visualization** parts. The **Inferential Network Analysis** part leans on `network` and `statnet`, since `ergm` and its companions are built on top of `network`. The `intergraph` package converts between the two representations, and we use it whenever we need to move between ecosystems.
+Because of this imbalance, `igraph` is the default in the **Descriptive Network
+Analysis** and **Network Visualization** parts. The **Inferential Network
+Analysis** part leans on `network` and `statnet`, since `ergm` and its
+companions are built on top of `network`. The `intergraph` package converts
+between the two representations, and we use it whenever we need to move between
+ecosystems.
 
 ### Other packages
 
-Beyond the two core families, the book uses a number of specialized packages. The most important are:
+Beyond the two core families, the book uses a number of specialized packages.
+The most important are:
 
 - `ggraph` [@pedersen2025ggraph]: grammar-of-graphics for network visualization.
-- `graphlayouts` [@schoch2023graphlayouts]: advanced layout algorithms for networks.
+- `graphlayouts` [@schoch2023graphlayouts]: advanced layout algorithms for
+  networks.
 - `tidygraph` [@pedersen2024tidygraph]: a tidyverse-style interface to `igraph`.
 - `netrankr` [@schoch2022netrankr]: a unified framework for centrality indices.
 - `signnet` [@schoch2023signnet]: methods for signed networks.
-- `backbone` [@neal2022backbone]: backbone extraction from weighted and two-mode networks.
-- `RSiena` [@snijders2026rsiena]: stochastic actor-oriented models for longitudinal networks.
+- `backbone` [@neal2022backbone]: backbone extraction from weighted and two-mode
+  networks.
+- `RSiena` [@snijders2026rsiena]: stochastic actor-oriented models for
+  longitudinal networks.
 - `relevent` [@butts2023relevent]: relational event models.
 - `egor` [@krenz2025egor]: ego-centered network data.
-- `networkdata` [@schoch2022networkdata]: a large collection of network datasets used throughout the book.
+- `networkdata` [@schoch2022networkdata]: a large collection of network datasets
+  used throughout the book.
 
-Each chapter lists the libraries it loads at the top, so you can install packages as you go rather than upfront.
+Each chapter lists the libraries it loads at the top, so you can install
+packages as you go rather than upfront.

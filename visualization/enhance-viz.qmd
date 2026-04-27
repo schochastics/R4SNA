@@ -1,12 +1,18 @@
 # Enhancing Visualizations
 
-The previous chapters covered the core building blocks of `ggraph` including layouts, node and edge geoms, and techniques for visualizing specific network types. With those tools alone, you can already produce clear, publication-ready network plots. This chapter goes a step further, showing how to combine `ggraph` with companion packages like `ggforce` and how to apply a number of small but effective tricks that address common visualization challenges.
-
+The previous chapters covered the core building blocks of `ggraph` including
+layouts, node and edge geoms, and techniques for visualizing specific network
+types. With those tools alone, you can already produce clear, publication-ready
+network plots. This chapter goes a step further, showing how to combine `ggraph`
+with companion packages like `ggforce` and how to apply a number of small but
+effective tricks that address common visualization challenges.
 
 ## Packages Needed for this Chapter
+
 ```{r}
 #| label: libraries1
 #| message: false
+
 library(igraph)
 library(ggraph)
 library(graphlayouts)
@@ -18,6 +24,7 @@ As before, we use the Game of Thrones dataset using some preprocessing steps.
 
 ```{r}
 #| label: data
+
 data("got")
 
 gotS1 <- got[[1]]
@@ -41,11 +48,13 @@ V(gotS1)$size <- degree(gotS1)
 
 ## Combining `ggraph` and `ggforce`
 
-The `ggforce` package and `ggraph` work pretty nicely together. For example, you can use
-the `geom_mark_*()` functions to highlight clusters. @fig-network-grps-sol shows the result.
+The `ggforce` package and `ggraph` work pretty nicely together. For example, you
+can use the `geom_mark_*()` functions to highlight clusters.
+@fig-network-grps-sol shows the result.
 
 ```{r}
 #| label: network-grps
+
 set.seed(665)
 
 ## create network with a group structure
@@ -56,8 +65,9 @@ V(g)$grp <- as.character(rep(1:9, each = 40))
 ```
 
 ```{r}
-#| label:  fig-network-grps-sol
+#| label: fig-network-grps-sol
 #| fig-cap: "Network with group structure highlighted using `geom_mark_hull()`."
+
 ggraph(g, layout = "backbone", keep = 0.4) +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
@@ -74,11 +84,13 @@ ggraph(g, layout = "backbone", keep = 0.4) +
   theme(legend.position = "none")
 ```
 
-It is also possible to add labels to the clusters as shown in @fig-network-grps-label-sol.
+It is also possible to add labels to the clusters as shown in
+@fig-network-grps-label-sol.
 
 ```{r}
 #| label: fig-network-grps-label-sol
 #| fig-cap: "Network with labelled group hulls."
+
 ggraph(g, layout = "backbone", keep = 0.4) +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
@@ -97,15 +109,25 @@ ggraph(g, layout = "backbone", keep = 0.4) +
 
 ## Polishing Details
 
-When building network visualizations, a few recurring challenges tend to appear once plots become more complex: arrow endpoints that overlap with nodes, edges bleeding through transparent nodes, or labels that disappear into dense graphs. The following subsections address each of these issues with targeted techniques. Note that each problem certainly has multiple solutions, and the ones shown here just illustrate one possible approach.
+When building network visualizations, a few recurring challenges tend to appear
+once plots become more complex: arrow endpoints that overlap with nodes, edges
+bleeding through transparent nodes, or labels that disappear into dense graphs.
+The following subsections address each of these issues with targeted techniques.
+Note that each problem certainly has multiple solutions, and the ones shown here
+just illustrate one possible approach.
 
 ### Aligning Arrow Endpoints with Node Size
 
-In directed networks where node size is mapped to an attribute, edges drawn with arrows often overlap with larger nodes. @fig-arrow-size illustrates the problem: `end_cap` is set based on degree, but because `ggraph` maps the size aesthetic through a scale, the actual rendered size of each node does not match the value passed to `end_cap`.
+In directed networks where node size is mapped to an attribute, edges drawn with
+arrows often overlap with larger nodes. @fig-arrow-size illustrates the problem:
+`end_cap` is set based on degree, but because `ggraph` maps the size aesthetic
+through a scale, the actual rendered size of each node does not match the value
+passed to `end_cap`.
 
 ```{r}
 #| label: fig-arrow-size
 #| fig-cap: "Directed network where arrows overlap with nodes of varying size."
+
 set.seed(1071)
 g <- sample_pa(30, 1)
 V(g)$degree <- degree(g, mode = "in")
@@ -126,13 +148,19 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-A solution is to bypass the size scale entirely using base R's `I()` function, which passes values through "as is" — a node with value 5 will be rendered at exactly 5 points. Because `I()` removes any automatic rescaling, we need to normalise the degree values to the desired size range beforehand.
+A solution is to bypass the size scale entirely using base R's `I()` function,
+which passes values through "as is" --- a node with value 5 will be rendered at
+exactly 5 points. Because `I()` removes any automatic rescaling, we need to
+normalise the degree values to the desired size range beforehand.
 
-@fig-arrows-size-sol shows the result: the arrow endpoints now align properly with the node sizes, creating a cleaner and more accurate visualization of the directed network.
+@fig-arrows-size-sol shows the result: the arrow endpoints now align properly
+with the node sizes, creating a cleaner and more accurate visualization of the
+directed network.
 
 ```{r}
 #| label: fig-arrows-size-sol
 #| fig-cap: "Directed network with corrected arrow endpoints using `I()` for node sizes."
+
 normalise <- function(x, from = range(x), to = c(0, 1)) {
   x <- (x - from[1]) / (from[2] - from[1])
   if (!identical(to, c(0, 1))) {
@@ -161,11 +189,15 @@ ggraph(g, "stress") +
 
 ### Transparent Nodes Without Edge Bleed-Through
 
-A useful principle in network visualization is that edges should not be drawn on top of nodes. Drawing edges before nodes in the layer stack normally takes care of this. However, when node opacity is mapped to an attribute, edges become visible through the semi-transparent nodes again, as shown in @fig-alpha-nodes.
+A useful principle in network visualization is that edges should not be drawn on
+top of nodes. Drawing edges before nodes in the layer stack normally takes care
+of this. However, when node opacity is mapped to an attribute, edges become
+visible through the semi-transparent nodes again, as shown in @fig-alpha-nodes.
 
 ```{r}
 #| label: fig-alpha-nodes
 #| fig-cap: "Network with transparent nodes where edges are visible underneath."
+
 g <- sample_gnp(20, 0.5)
 V(g)$degree <- degree(g)
 
@@ -180,16 +212,15 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-The fix is to add an extra node layer between the edges 
-and the transparent nodes: a set of fully opaque points in 
-the background colour. These act as masks that hide the 
-edges underneath, while the coloured layer on top still 
-shows the intended transparency effect. 
-@fig-alpha-nodes-sol shows the result.
+The fix is to add an extra node layer between the edges and the transparent
+nodes: a set of fully opaque points in the background colour. These act as masks
+that hide the edges underneath, while the coloured layer on top still shows the
+intended transparency effect. @fig-alpha-nodes-sol shows the result.
 
 ```{r}
 #| label: fig-alpha-nodes-sol
 #| fig-cap: "Network with opaque white background layer to hide edges beneath transparent nodes."
+
 ggraph(g, "stress") +
   geom_edge_link(edge_colour = "grey66") +
   geom_node_point(size = 8, col = "white") +
@@ -202,17 +233,22 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-Note that the background colour of the masking layer needs to match the plot background — in this case white, since `theme_graph()` uses a white background by default.
+Note that the background colour of the masking layer needs to match the plot
+background --- in this case white, since `theme_graph()` uses a white background
+by default.
 
 ### Improving Label Readability in Dense Networks
 
-In dense networks, node labels can easily become unreadable when they overlap with edges and other nodes. @fig-unreadable-labels shows a typical example where even bold labels are difficult to parse.
+In dense networks, node labels can easily become unreadable when they overlap
+with edges and other nodes. @fig-unreadable-labels shows a typical example where
+even bold labels are difficult to parse.
 
 ```{r}
 #| label: fig-unreadable-labels
 #| fig-cap: "Dense network with hard-to-read node labels."
 #| fig-width: 8
 #| fig-height: 8
+
 g <- sample_gnp(50, 0.7)
 V(g)$name <- sapply(1:50, function(x) paste0(sample(LETTERS, 4), collapse = ""))
 E(g)$weight <- runif(ecount(g))
@@ -230,7 +266,11 @@ ggraph(g, "stress") +
   coord_fixed()
 ```
 
-As noted in the basics chapter, the node layout is accessible to every layer, so we can reach for geoms from other packages that operate on standard `x` and `y` aesthetics. The `shadowtext` package provides `geom_shadowtext()`, which draws a coloured halo behind each label, making it stand out against both edges and nodes, shown in @fig-shadowtext-labels.
+As noted in the basics chapter, the node layout is accessible to every layer, so
+we can reach for geoms from other packages that operate on standard `x` and `y`
+aesthetics. The `shadowtext` package provides `geom_shadowtext()`, which draws a
+coloured halo behind each label, making it stand out against both edges and
+nodes, shown in @fig-shadowtext-labels.
 
 ```{r}
 #| label: fig-shadowtext-labels

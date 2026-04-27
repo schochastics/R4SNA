@@ -1,9 +1,38 @@
 # Introduction
 
-A network is naturally described by two tables: one for the nodes and their attributes, one for the edges and their attributes. `igraph` already hints at this view through `graph_from_data_frame()`, which expects exactly that pair of data frames as input. The `tidygraph` package takes the idea further and makes it the primary interface. Its core class, `tbl_graph`, sub-classes `igraph`, so every function introduced in earlier parts of the book continues to work — what changes is how you reach for nodes and edges when you want to add, filter, or summarise information.
+A network is naturally described by two tables: one for the nodes and their
+attributes, one for the edges and their attributes. `igraph` already hints at
+this view through `graph_from_data_frame()`, which expects exactly that pair of
+data frames as input. The `tidygraph` package takes the idea further and makes
+it the primary interface. Its core class, `tbl_graph`, sub-classes `igraph`, so
+every function introduced in earlier parts of the book continues to work ---
+what changes is how you reach for nodes and edges when you want to add, filter,
+or summarise information.
 
-What you gain by working with networks in this form is the full vocabulary of the tidyverse. Verbs like `mutate()`, `filter()`, `select()`, and the various joins operate on whichever of the two tables is currently **active**, and the package harmonises the indices and algorithms from `igraph` and `netrankr` behind a small number of discoverable function families: `centrality_*()` for centrality scores, `group_*()` for community detection, `node_*()` for any node-level measure, `edge_*()` for any edge-level measure. In practice that means you can type `centrality_` in the console, press Tab, and browse the catalogue — no need to remember whether the `igraph` name was `betweenness()` or `closeness()` or something else entirely.
+What you gain by working with networks in this form is the full vocabulary of
+the tidyverse. Verbs like `mutate()`, `filter()`, `select()`, and the various
+joins operate on whichever of the two tables is currently **active**, and the
+package harmonises the indices and algorithms from `igraph` and `netrankr`
+behind a small number of discoverable function families: `centrality_*()` for
+centrality scores, `group_*()` for community detection, `node_*()` for any
+node-level measure, `edge_*()` for any edge-level measure. In practice that
+means you can type `centrality_` in the console, press Tab, and browse the
+catalogue --- no need to remember whether the `igraph` name was `betweenness()`
+or `closeness()` or something else entirely.
 
-This part reuses the Florentine marriage network from the Descriptive part, so every tidygraph idiom can be compared directly against the `igraph` code you have already seen. [Basics of tidygraph](tidygraph-basics.qmd) introduces the `tbl_graph` class, the `activate()` mechanism that switches between the node and edge tables, the standard `dplyr` verbs, joins between networks, and the `morph()` family of verbs that are specific to tidygraph. [Descriptive Network Analysis](tidygraph-descriptive.qmd) then revisits centrality, clustering, and other node- and edge-level measures in the tidy idiom.
+This part reuses the Florentine marriage network from the Descriptive part, so
+every tidygraph idiom can be compared directly against the `igraph` code you
+have already seen. [Basics of tidygraph](tidygraph-basics.qmd) introduces the
+`tbl_graph` class, the `activate()` mechanism that switches between the node and
+edge tables, the standard `dplyr` verbs, joins between networks, and the
+`morph()` family of verbs that are specific to tidygraph. [Descriptive Network
+Analysis](tidygraph-descriptive.qmd) then revisits centrality, clustering, and
+other node- and edge-level measures in the tidy idiom.
 
-A word on scope: the tidy framework currently covers descriptive network analysis well, but the inferential side of the ecosystem — ERGMs, SAOMs, relational event models — still expects the "untidy" packages introduced in the inferential part of the book. If you are curious about how `tbl_graph` is implemented under the hood, the original [introductory blog post](https://www.data-imaginist.com/2017/introducing-tidygraph/) remains the clearest reference.
+A word on scope: the tidy framework currently covers descriptive network
+analysis well, but the inferential side of the ecosystem --- ERGMs, SAOMs,
+relational event models --- still expects the "untidy" packages introduced in
+the inferential part of the book. If you are curious about how `tbl_graph` is
+implemented under the hood, the original [introductory blog
+post](https://www.data-imaginist.com/2017/introducing-tidygraph/) remains the
+clearest reference.
