@@ -709,25 +709,30 @@ P(i \rightarrow j \text{ occurs next}) =
 </section>
 <section id="endogenous-statistics" class="level3" data-number="19.3.1">
 <h3 data-number="19.3.1" class="anchored" data-anchor-id="endogenous-statistics"><span class="header-section-number">19.3.1</span> Endogenous Statistics</h3>
-<p>Relational event models allow us to incorporate <strong>endogenous statistics</strong>, which capture patterns that arise from the history of interactions itself. These statistics represent mechanisms through which past events influence the likelihood of future events. Some of these endogenous statistics are summarized in the following and in <a href="#tbl-endstats" class="quarto-xref">Table&nbsp;<span>19.1</span></a>.</p>
-<p>Assume we have <span class="math inline">\(1,\dots,n\)</span> actors. A potential relational event at time <span class="math inline">\(t\)</span> is an ordered pair <span class="math inline">\((i,j)\)</span> with <span class="math inline">\(i \neq j\)</span>, where actor <span class="math inline">\(i\)</span> is the sender and actor <span class="math inline">\(j\)</span> is the receiver.</p>
+<p>Relational event models allow us to incorporate <strong>endogenous statistics</strong>, which capture patterns that arise from the history of interactions itself. These statistics represent mechanisms through which past events influence the likelihood of future events. Some of these endogenous statistics are summarized in the following and in <span class="quarto-unresolved-ref">?tbl-endstats</span>.</p>
+<p>Assume we have <span class="math inline">\(n\)</span> actors indexed by <span class="math inline">\(i,j \in \{1,\dots,n\}\)</span> with <span class="math inline">\(i \neq j\)</span>. A potential relational event at time <span class="math inline">\(t\)</span> is an ordered pair <span class="math inline">\((i,j)\)</span>, where actor <span class="math inline">\(i\)</span> is the sender and actor <span class="math inline">\(j\)</span> is the receiver.</p>
+<p>Let <span class="math inline">\(Y_{ij}(t) \in \{0,1\}\)</span> be an indicator such that <span class="math inline">\(Y_{ij}(t)=1\)</span> if the event <span class="math inline">\(i \rightarrow j\)</span> occurs at time <span class="math inline">\(t\)</span>, and <span class="math inline">\(0\)</span> otherwise. Further, let</p>
+<p><span class="math display">\[
+N_{ij}(t) = \sum_{\tau \le t} Y_{ij}(\tau)
+\]</span></p>
+<p>denote the cumulative number of events from actor <span class="math inline">\(i\)</span> to actor <span class="math inline">\(j\)</span> up to time <span class="math inline">\(t\)</span>. All statistics below are evaluated based on the event history up to time <span class="math inline">\(t-1\)</span>.</p>
 <section id="reciprocity" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="reciprocity">Reciprocity</h4>
-<p>Reciprocity captures the tendency for actors to immediately respond to interactions they have received. If the previous event was <span class="math inline">\(i \rightarrow j\)</span>, the statistic equals 1 when the next event is <span class="math inline">\(j \rightarrow i\)</span>.</p>
+<p>Reciprocity captures the tendency for actors to immediately respond to interactions they have received.</p>
 <p><span class="math display">\[
-s_{\text{reciprocity}}(i,j,t) = Y_{ij}(t-1) \cdot Y_{ji}(t)
-\]</span> where <span class="math inline">\(Y_{ij}(t) \in \{0,1\}\)</span> is an indicator variable such that <span class="math inline">\(Y_{ij}(t) = 1\)</span> if the event <span class="math inline">\(i \rightarrow j\)</span> occurs at time <span class="math inline">\(t\)</span>, and <span class="math inline">\(Y_{ij}(t) = 0\)</span> otherwise.</p>
+s_{\text{reciprocity}}(i,j,t) = Y_{ij}(t-1)\cdot Y_{ji}(t)
+\]</span></p>
 </section>
 <section id="repetition" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="repetition">Repetition</h4>
 <p>Repetition captures the continuation of a dyadic interaction, meaning the same sender repeats an interaction with the same receiver.</p>
 <p><span class="math display">\[
-s_{\text{repetition}}(i,j,t) = Y_{ij}(t-1) \cdot Y_{ij}(t)
+s_{\text{repetition}}(i,j,t) = Y_{ij}(t-1)\cdot Y_{ij}(t)
 \]</span></p>
 </section>
 <section id="past-interaction" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="past-interaction">Past Interaction</h4>
-<p>This statistic measures the strength of the historical relationship between the sender and receiver. It is defined as the proportion of the sender’s previous interactions that were directed toward the receiver.</p>
+<p>This statistic measures the strength of the historical relationship between the sender and receiver as the proportion of past interactions directed toward the receiver.</p>
 <p><span class="math display">\[
 s_{\text{past}}(i,j,t) =
 \frac{N_{ij}(t-1)}
@@ -736,16 +741,16 @@ s_{\text{past}}(i,j,t) =
 </section>
 <section id="sender-activity" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="sender-activity">Sender Activity</h4>
-<p>Sender activity captures how frequently the sender has initiated interactions in the past. It is defined as the proportion of all previous events that were sent by the current sender.</p>
+<p>Sender activity captures how frequently the sender has initiated interactions in the past.</p>
 <p><span class="math display">\[
 s_{\text{sender activity}}(i,j,t) =
 \frac{\sum_{k=1}^{n} N_{ik}(t-1)}
 {\sum_{p \neq q} N_{pq}(t-1)}
-\]</span> where <span class="math inline">\(N_{ij}(t) = \sum_{\tau \le t} Y_{ij}(\tau)\)</span> is the cumulative count of events from actor <span class="math inline">\(i\)</span> to actor <span class="math inline">\(j\)</span> up to time <span class="math inline">\(t\)</span>. Thus, <span class="math inline">\(N_{ij}(t-1)\)</span> represents the history of interactions from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span> prior to the current event at time <span class="math inline">\(t\)</span>.</p>
+\]</span></p>
 </section>
 <section id="sender-popularity" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="sender-popularity">Sender Popularity</h4>
-<p>Sender popularity measures how often the sender has previously received interactions from others.</p>
+<p>Sender popularity measures how often the sender has previously received interactions.</p>
 <p><span class="math display">\[
 s_{\text{sender popularity}}(i,j,t) =
 \frac{\sum_{k=1}^{n} N_{ki}(t-1)}
@@ -754,7 +759,7 @@ s_{\text{sender popularity}}(i,j,t) =
 </section>
 <section id="receiver-activity" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="receiver-activity">Receiver Activity</h4>
-<p>Receiver activity captures how frequently the receiver has initiated interactions in the past.</p>
+<p>Receiver activity captures how frequently the receiver has initiated interactions.</p>
 <p><span class="math display">\[
 s_{\text{receiver activity}}(i,j,t) =
 \frac{\sum_{k=1}^{n} N_{jk}(t-1)}
@@ -768,14 +773,8 @@ s_{\text{receiver activity}}(i,j,t) =
 s_{\text{receiver popularity}}(i,j,t) =
 \frac{\sum_{k=1}^{n} N_{kj}(t-1)}
 {\sum_{p \neq q} N_{pq}(t-1)}
-\]</span></p>
-<div id="tbl-endstats" class="striped quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-endstats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;19.1: Summary of some endogenous statistics used in relational event models.
-</figcaption>
-<div aria-describedby="tbl-endstats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="table-striped caption-top table">
+\]</span> ::: {#tbl-endstats}</p>
+<table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
 <col style="width: 33%">
@@ -826,9 +825,7 @@ Table&nbsp;19.1: Summary of some endogenous statistics used in relational event 
 </tr>
 </tbody>
 </table>
-</div>
-</figure>
-</div>
+<p>Summary of some endogenous statistics used in relational event models. {.striped} :::</p>
 </section>
 </section>
 <section id="exogenous-covariates" class="level3" data-number="19.3.2">
@@ -851,11 +848,11 @@ v_i =
 <li><strong>Sender–receiver interaction</strong>: indicates whether both sender and receiver possess the attribute</li>
 </ul>
 <p>These covariates allow the model to test whether actor characteristics influence interaction patterns, such as whether certain actors are more likely to initiate communication, receive interactions, or interact preferentially with others sharing the same attribute.</p>
-<p>The exogenous covariates included in the model are summarized in <a href="#tbl-exstats" class="quarto-xref">Table&nbsp;<span>19.2</span></a>.</p>
+<p>The exogenous covariates included in the model are summarized in <a href="#tbl-exstats" class="quarto-xref">Table&nbsp;<span>19.1</span></a>.</p>
 <div id="tbl-exstats" class="striped quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-exstats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;19.2: Summary of exogenous covariates used in relational event models.
+Table&nbsp;19.1: Summary of exogenous covariates used in relational event models.
 </figcaption>
 <div aria-describedby="tbl-exstats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table-striped caption-top table">
@@ -1120,10 +1117,10 @@ Obtaining goodness-of-fit statistics</code></pre>
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
-RRecSnd  3.669318 0.149300 24.5768   &lt;2e-16 ***
-RSndSnd  2.171290 0.132459 16.3922   &lt;2e-16 ***
-CovSnd.1 0.797348 0.082131  9.7083   &lt;2e-16 ***
-CovRec.1 0.106776 0.085729  1.2455   0.2129    
+RRecSnd  3.669320 0.149300 24.5769   &lt;2e-16 ***
+RSndSnd  2.171287 0.132459 16.3922   &lt;2e-16 ***
+CovSnd.1 0.797349 0.082131  9.7083   &lt;2e-16 ***
+CovRec.1 0.106777 0.085729  1.2455   0.2129    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Null deviance: 6879.697 on 661 degrees of freedom
@@ -1224,11 +1221,11 @@ Obtaining goodness-of-fit statistics</code></pre>
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
-RRecSnd   3.66897  0.14930 24.5738   &lt;2e-16 ***
-RSndSnd   2.17217  0.13247 16.3971   &lt;2e-16 ***
-CovSnd.1  0.49673 52.58931  0.0094   0.9925    
-CovRec.1 -0.19409 52.58931 -0.0037   0.9971    
-CovInt.1  0.30026 52.58930  0.0057   0.9954    
+RRecSnd   3.66898  0.14930 24.5739   &lt;2e-16 ***
+RSndSnd   2.17218  0.13247 16.3972   &lt;2e-16 ***
+CovSnd.1  0.49603 51.15008  0.0097   0.9923    
+CovRec.1 -0.19479 51.15008 -0.0038   0.9970    
+CovInt.1  0.30096 51.15007  0.0059   0.9953    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Null deviance: 6879.697 on 661 degrees of freedom
