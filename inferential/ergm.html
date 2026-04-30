@@ -522,26 +522,27 @@ window.Quarto = {
 </section>
 <section id="ergm-modeling-outline" class="level2" data-number="17.2">
 <h2 data-number="17.2" class="anchored" data-anchor-id="ergm-modeling-outline"><span class="header-section-number">17.2</span> ERGM Modeling Outline</h2>
-<p>Exponential Random Graph Models (ERGMs) are a powerful family of statistical models for analyzing and simulating social networks. Unlike simpler random graph models, ERGMs are designed to capture the complex dependencies that often characterize real-world networks, (such as reciprocity, transitivity, or clustering) by explicitly modeling how the presence of one tie can affect the likelihood of others.</p>
+<p>Exponential Random Graph Models (ERGMs) are a powerful family of statistical models for analyzing and simulating social networks. Unlike simpler random graph models, ERGMs are designed to capture the complex dependencies that often characterize real-world networks (such as reciprocity, transitivity, or clustering) by explicitly modeling how the presence of one tie can affect the likelihood of others.</p>
 <p>The core idea is as follows. ERGMs specify a probability distribution over the set of all possible networks with a given number of nodes. The probability of observing a particular graph <span class="math inline">\(G\)</span> is defined as:</p>
 <p><span class="math display">\[
-P(G) = \frac{1}{\kappa} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G) \right)
-\]</span> where</p>
+P(G) = \frac{1}{\kappa} \exp\left( \sum_{k=1}^{K} \theta_k \cdot s_k(G) \right)
+\]</span></p>
+<p>where</p>
 <ul>
-<li><span class="math inline">\(s_i(G)\)</span> is a network statistic that counts a specific configuration (e.g., number of edges, mutual ties, triangles).</li>
-<li><span class="math inline">\(\theta_i\)</span> is the parameter associated with statistic <span class="math inline">\(s_i(G)\)</span>; it tells us how strongly that configuration influences tie formation.</li>
+<li><span class="math inline">\(s_k(G)\)</span> is a network statistic that counts a specific configuration (e.g., number of edges, mutual ties, triangles).</li>
+<li><span class="math inline">\(\theta_k\)</span> is the parameter associated with statistic <span class="math inline">\(s_k(G)\)</span>; it tells us how strongly that configuration influences tie formation.</li>
 <li><span class="math inline">\(\kappa\)</span> is a normalizing constant ensuring that all possible graphs sum to a probability of 1: <span class="math display">\[
-\kappa = \sum_{G'} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G') \right)
+\kappa = \sum_{G'} \exp\left( \sum_{k=1}^{K} \theta_k \cdot s_k(G') \right)
 \]</span></li>
 </ul>
-<p>This formulation makes clear that networks with more of the structures positively weighted by <span class="math inline">\(\theta\)</span> are more probable. For instance, a large positive <span class="math inline">\(\theta_{\text{mutual}}\)</span> implies that the observed network contains more reciprocated ties than expected by chance.</p>
+<p>This formulation makes clear that networks with more of the structures positively weighted by <span class="math inline">\(\theta_k\)</span> are more probable. For instance, a large positive <span class="math inline">\(\theta_{\text{mutual}}\)</span> implies that the observed network contains more reciprocated ties than expected by chance.</p>
 <p>In general, we interpret the parameters as follows:</p>
 <ul>
-<li>A positive <span class="math inline">\(\theta_i\)</span> means that the corresponding configuration (e.g., triangles) is overrepresented in the observed network than what is expected by pure chance.</li>
-<li>A negative <span class="math inline">\(\theta_i\)</span> indicates that the configuration is underrepresented than what is expected by pure chance.</li>
-<li>A zero value implies that the configuration occurs at chance levels.</li>
+<li>A positive <span class="math inline">\(\theta_k\)</span> means that the corresponding configuration (e.g., triangles) is overrepresented in the observed network relative to what is expected by chance.</li>
+<li>A negative <span class="math inline">\(\theta_k\)</span> indicates that the configuration is underrepresented relative to what is expected by chance.</li>
+<li>A value of <span class="math inline">\(\theta_k = 0\)</span> implies that the configuration occurs at chance levels.</li>
 </ul>
-<p>The statistics <span class="math inline">\(s_i\)</span> are network configurations. As mentioned, ERGMs rely on small, interpretable network configurations to explain structure. These include:</p>
+<p>The statistics <span class="math inline">\(s_k\)</span> are network configurations. As mentioned, ERGMs rely on small, interpretable network configurations to explain structure. These include:</p>
 <ul>
 <li><strong>Edges</strong>: baseline tendency for tie formation (controls overall density)</li>
 <li><strong>Mutual</strong>: reciprocity in directed networks</li>
@@ -550,7 +551,7 @@ P(G) = \frac{1}{\kappa} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G) \right)
 <li><strong>Homophily</strong>: ties between nodes with similar attributes</li>
 </ul>
 <p>Each of these configurations reflects a hypothesized mechanism that may drive the evolution of network structure. We formalize some of the standard statistics in the following.</p>
-<p>In the following section, we will move through <strong>four generations of dependence assumptions</strong> yielding different ERGM specifications with statistics (network configurations) that are included in the model.</p>
+<p>In the following section, we will move through four generations of dependence assumptions yielding different ERGM specifications with statistics (network configurations) that are included in the model.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -577,20 +578,20 @@ P(G) = \frac{1}{\kappa} \exp\left( \sum_{i=1}^{p} \theta_i \cdot s_i(G) \right)
 <section id="dyadic-independence-edges-and-homophily" class="level4" data-number="17.2.1.1">
 <h4 data-number="17.2.1.1" class="anchored" data-anchor-id="dyadic-independence-edges-and-homophily"><span class="header-section-number">17.2.1.1</span> Dyadic Independence: Edges and Homophily</h4>
 <p>To begin working with exponential random graph models (ERGMs), we first need to understand how models are specified and what kinds of network structures they describe. In this section, we introduce the simplest possible ERGM, one that assumes Bernoulli dependence, and show how it connects to the familiar <span class="math inline">\(G(n, p)\)</span> model. This first step lays the foundation for more complex ERGMs that incorporate structural dependencies.</p>
-<p>The Bernoulli ERGM assumes that all possible edges form independently of one another. In other words, the probability that a tie exists between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> is unrelated to whether other ties are present elsewhere in the network. This is a very strong assumption and one that is often unrealistic in practice, but it is useful as a baseline.</p>
-<p>Let <span class="math inline">\(Y_{uv}\)</span> be a binary random variable indicating the presence (<span class="math inline">\(1\)</span>) or absence (<span class="math inline">\(0\)</span>) of a tie between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>. The full graph <span class="math inline">\(G\)</span> can then be represented by its adjacency matrix <span class="math inline">\(Y\)</span>, where <span class="math inline">\(Y_{uv}\)</span> encodes the tie between <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>.</p>
-<p>In the general formulation of an exponential random graph model, one could imagine assigning a different parameter <span class="math inline">\(\theta_{uv}\)</span> to every possible tie <span class="math inline">\((u, v)\)</span> in the network. This would allow the model to express highly specific tendencies for each dyad. The probability of observing a network <span class="math inline">\(G\)</span> under this formulation would be:</p>
+<p>The Bernoulli ERGM assumes that all possible edges form independently of one another. In other words, the probability that a tie exists between nodes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is unrelated to whether other ties are present elsewhere in the network. This is a very strong assumption and one that is often unrealistic in practice, but it is useful as a baseline.</p>
+<p>Let <span class="math inline">\(Y_{ij}\)</span> be a binary random variable indicating the presence (<span class="math inline">\(1\)</span>) or absence (<span class="math inline">\(0\)</span>) of a tie between nodes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. The full graph <span class="math inline">\(G\)</span> can then be represented by its adjacency matrix <span class="math inline">\(Y\)</span>, where <span class="math inline">\(Y_{ij}\)</span> encodes the tie between <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>.</p>
+<p>In the general formulation of an exponential random graph model, one could imagine assigning a different parameter <span class="math inline">\(\theta_{ij}\)</span> to every possible tie <span class="math inline">\((i, j)\)</span> in the network. This would allow the model to express highly specific tendencies for each dyad. The probability of observing a network <span class="math inline">\(G\)</span> under this formulation would be:</p>
 <p><span class="math display">\[
-P(G) = \frac{1}{\kappa} \exp\left( \sum_{u&lt;v} \theta_{uv} y_{uv} \right)
+P(G) = \frac{1}{\kappa} \exp\left( \sum_{i&lt;j} \theta_{ij} y_{ij} \right)
 \]</span></p>
 <p>However, this model quickly becomes infeasible because it would require estimating a separate parameter for every possible edge, a number that grows quadratically with the number of nodes.</p>
 <p>To make the model estimable and interpretable, ERGMs rely on the <strong>homogeneity assumption</strong>: the effect of a given configuration (such as an edge, triangle, or mutual tie) is the same wherever it appears in the network. That is, all instances of the same configuration share a single global parameter. For the Bernoulli ERGM, this means:</p>
 <p><span class="math display">\[
-\theta_{uv} = \theta \quad \text{for all } (u, v)
+\theta_{ij} = \theta \quad \text{for all } (i, j)
 \]</span></p>
 <p>Applying this assumption simplifies the model considerably:</p>
 <p><span class="math display">\[
-P(G) = \frac{1}{\kappa} \exp\left( \theta \sum_{u&lt;v} y_{uv} \right) = \frac{1}{\kappa} \exp(\theta \cdot L)
+P(G) = \frac{1}{\kappa} \exp\left( \theta \sum_{i&lt;j} y_{ij} \right) = \frac{1}{\kappa} \exp(\theta \cdot L)
 \]</span></p>
 <p>Here, <span class="math inline">\(L\)</span> is the total number of edges in the network, <span class="math inline">\(\theta\)</span> is a single parameter that governs the overall probability of tie formation, and <span class="math inline">\(\kappa\)</span> is the normalizing constant ensuring all probabilities sum to 1.</p>
 <p>This structure implies that each potential tie forms independently with the same probability, much like in a <span class="math inline">\(G(n, p)\)</span> random graph. Here, the parameter <span class="math inline">\(\theta\)</span> governs the log-odds of a tie between any two nodes. More formally, the relationship between <span class="math inline">\(\theta\)</span> and the tie probability <span class="math inline">\(p\)</span> (i.e., the density of the network) is:</p>
@@ -599,7 +600,7 @@ P(G) = \frac{1}{\kappa} \exp\left( \theta \sum_{u&lt;v} y_{uv} \right) = \frac{1
 \]</span></p>
 <p>This means that:</p>
 <ul>
-<li>When <span class="math inline">\(\theta = 0\)</span>, the expected density is <span class="math inline">\(p\)</span> = 0.5</li>
+<li>When <span class="math inline">\(\theta = 0\)</span>, the expected density is <span class="math inline">\(p = 0.5\)</span></li>
 <li>When <span class="math inline">\(\theta &lt; 0\)</span>, the expected density is less than 0.5 (a sparse network)</li>
 <li>When <span class="math inline">\(\theta &gt; 0\)</span>, the expected density is greater than 0.5</li>
 </ul>
@@ -681,15 +682,15 @@ p = \frac{e^{-3.02673}}{1 + e^{-3.02673}} \approx 0.046
 <p>Another class of network statistics in ERGMs captures <strong>homophily</strong>: the tendency of individuals to form ties with others who are similar to themselves in a particular attribute, such as gender, age, race, or occupation.</p>
 <p>Let each node in the network have a categorical attribute, denoted:</p>
 <p><span class="math display">\[
-a : V \rightarrow \{1, \dots, c\}
+x_i \in \{1, \dots, C\}
 \]</span></p>
-<p>This maps each actor to one of <span class="math inline">\(c\)</span> categories. To model homophily, we define a statistic that counts the number of ties between actors who share the same attribute value:</p>
+<p>This assigns each actor <span class="math inline">\(i\)</span> to one of <span class="math inline">\(C\)</span> categories. To model homophily, we define a statistic that counts the number of ties between actors who share the same attribute value:</p>
 <p><span class="math display">\[
-m_a(G) = \left| \left\{ \{u, v\} \in E : a(u) = a(v) \right\} \right|
+m_x(G) = \sum_{i&lt;j} y_{ij} \cdot \mathbf{1}(x_i = x_j)
 \]</span></p>
-<p>That is, <span class="math inline">\(m_a(G)\)</span> is the number of edges where both endpoints belong to the same category. Adding this statistic to the ERGM, the model becomes:</p>
+<p>That is, <span class="math inline">\(m_x(G)\)</span> is the number of edges where both endpoints belong to the same category. Adding this statistic to the ERGM, the model becomes:</p>
 <p><span class="math display">\[
-P(G) = \frac{1}{\kappa} \exp\left( \theta_1 \cdot L + \theta_2 \cdot m_a(G) \right)
+P(G) = \frac{1}{\kappa} \exp\left( \theta_1 \cdot L + \theta_2 \cdot m_x(G) \right)
 \]</span></p>
 <p>We interpret the homophily parameter as follows:</p>
 <ul>
@@ -785,11 +786,17 @@ AIC: 573.4  BIC: 583.6  (Smaller is better. MC Std. Err. = 0)</code></pre>
 </section>
 <section id="dyadic-dependence-reciprocity" class="level4" data-number="17.2.1.2">
 <h4 data-number="17.2.1.2" class="anchored" data-anchor-id="dyadic-dependence-reciprocity"><span class="header-section-number">17.2.1.2</span> Dyadic Dependence: Reciprocity</h4>
-<p>In ERGMs, we can explicitly model <strong>dyadic dependence</strong>, that is, the statistical relationship between the presence or absence of ties within pairs of nodes (dyads). This is particularly important in directed networks, where the direction of a tie from node <span class="math inline">\(u\)</span> to node <span class="math inline">\(v\)</span> may be statistically related to the reverse tie from <span class="math inline">\(v\)</span> to <span class="math inline">\(u\)</span>.</p>
-<p>To capture this, we include a <strong>reciprocity</strong> term in the model specification. This term counts the number of mutually connected dyads* i.e., pairs where both <span class="math inline">\(y_{uv} = 1\)</span> and <span class="math inline">\(y_{vu} = 1\)</span>. Including this term allows the model to account for the observed tendency in many social networks for actors to reciprocate ties (such as returning a favor, replying to a message, or forming a mutual friendship).</p>
+<p>In ERGMs, we can explicitly model <strong>dyadic dependence</strong>, that is, the statistical relationship between the presence or absence of ties within pairs of nodes (dyads). This is particularly important in directed networks, where the direction of a tie from node <span class="math inline">\(i\)</span> to node <span class="math inline">\(j\)</span> may be statistically related to the reverse tie from <span class="math inline">\(j\)</span> to <span class="math inline">\(i\)</span>.</p>
+<p>To capture this, we include a <strong>reciprocity</strong> term in the model specification. This term counts the number of mutually connected dyads, i.e., pairs where both <span class="math inline">\(y_{ij} = 1\)</span> and <span class="math inline">\(y_{ji} = 1\)</span>. Including this term allows the model to account for the observed tendency in many social networks for actors to reciprocate ties (such as returning a favor, replying to a message, or forming a mutual friendship).</p>
 <p>An ERGM with both an edge and a reciprocity statistic is specified as:</p>
-<p><span class="math inline">\(P(G) = \frac{1}{\kappa} \exp\left(\theta_1 \cdot L + \theta_2 \cdot R\right)\)</span></p>
-<p>where <span class="math inline">\(L = \sum_{u \neq v} y_{uv}\)</span> is the total number of directed ties (edges) and <span class="math inline">\(R = \sum_{u \neq v} y_{uv} \cdot y_{vu}\)</span>.</p>
+<p><span class="math display">\[
+P(G) = \frac{1}{\kappa} \exp\left(\theta_1 \cdot L + \theta_2 \cdot R\right)
+\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(L = \sum_{i \neq j} y_{ij}\)</span> is the total number of directed ties (edges),</li>
+<li><span class="math inline">\(R = \sum_{i &lt; j} y_{ij} \cdot y_{ji}\)</span> is the number of reciprocated dyads.</li>
+</ul>
 <p>A positive value for <span class="math inline">\(\theta_2\)</span> indicates a tendency toward reciprocation, while a negative value suggests an avoidance of mutual ties.</p>
 <section id="example-coleman-friendship-1" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="example-coleman-friendship-1">Example: Coleman Friendship</h5>
@@ -805,27 +812,27 @@ ergm(formula = coleman_mat ~ edges + mutual)
 Monte Carlo Maximum Likelihood Results:
 
        Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges   -3.7178     0.1003      0  -37.08   &lt;1e-04 ***
-mutual   3.7536     0.2394      0   15.68   &lt;1e-04 ***
+edges  -3.72090    0.09447      0  -39.39   &lt;1e-04 ***
+mutual  3.75787    0.22827      0   16.46   &lt;1e-04 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 7286  on 5256  degrees of freedom
- Residual Deviance: 1714  on 5254  degrees of freedom
+ Residual Deviance: 1719  on 5254  degrees of freedom
  
-AIC: 1718  BIC: 1731  (Smaller is better. MC Std. Err. = 1.064)</code></pre>
+AIC: 1723  BIC: 1736  (Smaller is better. MC Std. Err. = 1.72)</code></pre>
 </div>
 </div>
 <p>The edge term has a strong negative estimate (<span class="math inline">\(\hat{\theta}_{\text{edges}} = -3.72\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), indicating that ties are generally infrequent in the network. This negative coefficient reflects the baseline log-odds of a directed tie existing between two nodes in the absence of any reciprocation or other structural tendencies.</p>
-<p>In contrast, the mutual term has a strong positive estimate (<span class="math inline">\(\hat{\theta}_{\text{mutual}} = 3.77\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), which suggests a highly significant tendency for reciprocated ties. In other words, when a tie exists from node <span class="math inline">\(u\)</span> to node <span class="math inline">\(v\)</span>, the likelihood that node <span class="math inline">\(u\)</span> also ties back to node <span class="math inline">\(v\)</span> is much greater than would be expected by chance, controlling for overall network sparsity.</p>
+<p>In contrast, the mutual term has a strong positive estimate (<span class="math inline">\(\hat{\theta}_{\text{mutual}} = 3.77\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), which suggests a highly significant tendency for reciprocated ties. In other words, when a tie exists from node <span class="math inline">\(i\)</span> to node <span class="math inline">\(j\)</span>, the likelihood that node <span class="math inline">\(j\)</span> also ties back to node <span class="math inline">\(i\)</span>is much greater than would be expected by chance, controlling for overall network sparsity.</p>
 <p>This combination of results suggests that while directed ties are rare in general, when ties do form, they are very likely to be mutual; a common feature in social networks. Overall, this ERGM confirms that dyadic dependence in the form of reciprocity is a defining feature of the Coleman data network.</p>
 </section>
 </section>
 <section id="markov-dependence-triangles-and-stars" class="level4" data-number="17.2.1.3">
 <h4 data-number="17.2.1.3" class="anchored" data-anchor-id="markov-dependence-triangles-and-stars"><span class="header-section-number">17.2.1.3</span> Markov Dependence: Triangles and Stars</h4>
-<p><strong>Markov random graphs</strong> are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes depends only on ties that are “locally adjacent”, specifically, those that share a node. This assumption, known as <strong>Markov dependence</strong>, implies that edges are conditionally independent unless they share a common node. This implies that the presence or absence of a tie between two nodes may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.</p>
+<p><strong>Markov random graphs</strong> are a foundational class of models in network statistics, based on the idea that the presence or absence of a tie between two nodes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> depends only on ties that are “locally adjacent”, specifically, those that share a node. This assumption, known as <strong>Markov dependence</strong>, implies that edges are conditionally independent unless they share a common node. In other words, the presence or absence of a tie may influence other ties in the network, but only if those ties are adjacent. This locality of dependence makes the model tractable while capturing meaningful structural effects.</p>
 <p>Formally introduced by <span class="citation" data-cites="frank1986markov">Frank and Strauss (<a href="#ref-frank1986markov" role="doc-biblioref">1986</a>)</span>, Markov random graphs were inspired by analogous models in spatial statistics, e.g., Besag’s auto-logistic models which similarly use local dependencies to define global probability distributions <span class="citation" data-cites="besag1972nearest">(<a href="#ref-besag1972nearest" role="doc-biblioref">Besag 1972</a>)</span>. The key insight is that network ties can exhibit local dependencies (like clustering or centralization) that can be modeled using well-defined building blocks.</p>
-<p>Under Markov dependence, ERGMs are typically specified using <strong>edges, <span class="math inline">\(k\)</span>-stars, and triangle terms</strong>, since these configurations reflect dependencies between adjacent ties. Examples of such configurations are shown in <a href="#fig-markov" class="quarto-xref">Figure&nbsp;<span>17.1</span></a>.</p>
+<p>Under Markov dependence, ERGMs are typically specified using <strong>edges, <span class="math inline">\(k\)</span>-stars, and triangles</strong>, since these configurations reflect dependencies between adjacent ties. Examples of such configurations are shown in <a href="#fig-markov" class="quarto-xref">Figure&nbsp;<span>17.1</span></a>.</p>
 <div id="fig-markov" class="center quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-markov-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -837,17 +844,22 @@ Figure&nbsp;17.1: Common network configurations used in Markov-dependent ERGMs. 
 </figure>
 </div>
 <p>A <strong>triangle</strong> occurs when three nodes are all pairwise connected. In undirected networks, this represents a basic unit of <strong>triadic closure</strong>; the idea that “a friend of a friend is likely to become a friend.” In ERGM terms, a triangle statistic is defined as:</p>
-<p><span class="math inline">\(T = \sum_{u &lt; v &lt; w} y_{uv} \cdot y_{uw} \cdot y_{vw}\)</span></p>
+<p><span class="math display">\[
+T = \sum_{i &lt; j &lt; \ell} y_{ij} \cdot y_{i\ell} \cdot y_{j\ell}
+\]</span></p>
 <p>Including a triangle term in the model allows us to test for <strong>transitivity</strong>. A positive coefficient on this term suggests a tendency toward forming closed triads, while a <strong>negative</strong> coefficient implies avoidance of such closure.</p>
 <p>In <strong>directed networks</strong>, we distinguish between:</p>
 <ul>
-<li><strong>Transitive triads</strong>: if <span class="math inline">\(u \to v\)</span> and <span class="math inline">\(v \to w\)</span>, then <span class="math inline">\(u \to w\)</span></li>
-<li><strong>Cyclic triads</strong>: if <span class="math inline">\(u \to v\)</span>, <span class="math inline">\(v \to w\)</span>, and <span class="math inline">\(w \to u\)</span></li>
+<li><strong>Transitive triads</strong>: if <span class="math inline">\(i \to j\)</span> and <span class="math inline">\(j \to \ell\)</span>, then <span class="math inline">\(i \to \ell\)</span></li>
+<li><strong>Cyclic triads</strong>: if <span class="math inline">\(i \to j\)</span>, <span class="math inline">\(j \to \ell\)</span>, and <span class="math inline">\(\ell \to i\)</span></li>
 </ul>
 <p>Each type can be specified as a separate statistic in an ERGM to assess different triadic dynamics.</p>
 <p><strong>Star configurations</strong> capture the tendency for nodes to have many ties, i.e., to be “popular” or “active” in the network. A <span class="math inline">\(k\)</span>-star is a configuration where a single node is connected to <span class="math inline">\(k\)</span> others. The star statistic of order <span class="math inline">\(k\)</span> is:</p>
-<p><span class="math inline">\(S_k = \sum_u \sum_{v_1 &lt; \dots &lt; v_k \neq u} y_{uv_1} \cdot \dots \cdot y_{uv_k}\)</span></p>
-<p>Including star terms allows the model to capture degree heterogeneity, reflecting whether some individuals tend to form many more ties than others. Note that in directed networks, we can specify:</p>
+<p><span class="math display">\[
+S_k = \sum_{i} \sum_{\substack{j_1 &lt; \dots &lt; j_k \\ j_m \neq i}}
+y_{i j_1} \cdot \dots \cdot y_{i j_k}
+\]</span></p>
+<p>where all <span class="math inline">\(j_1,\dots,j_k\)</span> are distinct and different from <span class="math inline">\(i\)</span>. Including star terms allows the model to capture degree heterogeneity, reflecting whether some individuals tend to form many more ties than others. Note that in directed networks, we can specify:</p>
 <ul>
 <li><strong>Out-stars</strong> (activity): a node sending many ties</li>
 <li><strong>In-stars</strong> (popularity): a node receiving many ties</li>
@@ -949,8 +961,8 @@ AIC: 87.49  BIC: 98.64  (Smaller is better. MC Std. Err. = 0.2036)</code></pre>
 <section id="social-circuit-dependence-gwesp" class="level4" data-number="17.2.1.4">
 <h4 data-number="17.2.1.4" class="anchored" data-anchor-id="social-circuit-dependence-gwesp"><span class="header-section-number">17.2.1.4</span> Social Circuit Dependence: GWESP</h4>
 <p>In response to the degeneracy issues inherent in classic Markov ERGMs, researchers have proposed alternative specifications that build more stable dependence structures into the model. One promising approach is based on <strong>social circuit dependence</strong> <span class="citation" data-cites="pattison2002neighborhood">Snijders et al. (<a href="#ref-snijders2006new" role="doc-biblioref">2006</a>)</span>.</p>
-<p>Social circuit dependence modifies the way tie dependencies are specified in the model. Instead of assuming that two ties are conditionally dependent simply because they share a node (as in Markov dependence), social circuit dependence restricts dependence to occur only when two ties would complete a <strong>4-cycle</strong> in the network. Under social circuit dependence, network ties are assumed to self-organize through 4-cycles, i.e., closed paths involving four distinct nodes. Two potential ties are considered conditionally dependent only if they would complete a 4-cycle in the network. In other words, the existence of a tie between <span class="math inline">\((u, v)\)</span> is only dependent on a tie between <span class="math inline">\((w, z)\)</span> if adding both would close such a circuit.</p>
-<p>Examples of configurations based on this depdence assumption are shown in <a href="#fig-soccirc" class="quarto-xref">Figure&nbsp;<span>17.2</span></a>.</p>
+<p>Social circuit dependence modifies the way tie dependencies are specified in the model. Instead of assuming that two ties are conditionally dependent simply because they share a node (as in Markov dependence), social circuit dependence restricts dependence to occur only when two ties would complete a <strong>4-cycle</strong> in the network. Under social circuit dependence, network ties are assumed to self-organize through 4-cycles, i.e., closed paths involving four distinct nodes. Two potential ties are considered conditionally dependent only if they would complete a 4-cycle in the network. In other words, the existence of a tie between <span class="math inline">\((i, j)\)</span> is only dependent on a tie between <span class="math inline">\((\ell, m)\)</span> if adding both would close such a circuit.</p>
+<p>Examples of configurations based on this dependence assumption are shown in <a href="#fig-soccirc" class="quarto-xref">Figure&nbsp;<span>17.2</span></a>.</p>
 <div id="fig-soccirc" class="center quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-soccirc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -975,21 +987,23 @@ Figure&nbsp;17.3: Visualization of the GWESP (Geometrically Weighted Edgewise Sh
 </div>
 <p>To formalize this, we let:</p>
 <ul>
-<li><span class="math inline">\(y_{uv} = 1\)</span> if there is a tie between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>,</li>
-<li><span class="math inline">\(p_{uv}\)</span> be the number of shared partners between nodes <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> (i.e., nodes <span class="math inline">\(w\)</span> such that <span class="math inline">\(y_{uw} = y_{vw} = 1\)</span>),</li>
+<li><span class="math inline">\(y_{ij} = 1\)</span> if there is a tie between nodes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>,</li>
+<li><span class="math inline">\(p_{ij}\)</span> be the number of shared partners between nodes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, i.e., <span class="math display">\[
+p_{ij} = \sum_{\ell \neq i,j} y_{i\ell} \cdot y_{j\ell},
+\]</span></li>
 <li><span class="math inline">\(\alpha\)</span> be a decay parameter (usually a small positive number, e.g., 0.25).</li>
 </ul>
 <p>Then the GWESP statistic is defined as:</p>
 <p><span class="math display">\[
-\text{GWESP}(G; \alpha) = \sum_{u &lt; v} y_{uv} \cdot \left(1 - (1 - e^{-\alpha})^{p_{uv}} \right)
+\text{GWESP}(G; \alpha) = \sum_{i &lt; j} y_{ij} \cdot \left(1 - (1 - e^{-\alpha})^{p_{ij}} \right)
 \]</span></p>
 <ul>
 <li>This formula sums over all existing ties in the graph.</li>
-<li>For each tie <span class="math inline">\((u, v)\)</span>, it calculates a weighted function of the number of their shared partners.</li>
+<li>For each tie <span class="math inline">\((i, j)\)</span>, it calculates a weighted function of the number of their shared partners.</li>
 <li>The decay parameter <span class="math inline">\(\alpha\)</span> controls how quickly the contribution of additional shared partners diminishes.</li>
 </ul>
 <p>When <span class="math inline">\(\alpha\)</span> is close to zero, the statistic approaches a simple count of edges with at least one shared partner. When <span class="math inline">\(\alpha\)</span> is larger, the contribution of each additional shared partner is increasingly discounted.</p>
-<p>GWESP provides a smooth and stable way to model transitivity in networks. It is often used in place of triangle counts to reduce the risk of model degeneracy; where the model produces unrealistic networks concentrated on extremes (e.g., empty or complete graphs).</p>
+<p>GWESP provides a smooth and more stable way to model triadic closure in networks. It is often used in place of triangle counts to reduce the risk of model degeneracy; where the model produces unrealistic networks concentrated on extremes (e.g., empty or complete graphs).</p>
 <p>In practice, GWESP is typically included in ERGMs with a fixed decay value using the <code>gwesp()</code> term in <code>ergm::ergm()</code>.</p>
 <p>A commonly used value for <span class="math inline">\(\alpha\)</span> is <strong>0.693</strong>, which is approximately <span class="math inline">\(\log(2)\)</span>. This choice has a convenient and interpretable consequence: With <span class="math inline">\(\alpha = \log(2)\)</span>, each additional shared partner contributes about half as much as the one before. For example, the first shared partner contributes ~50% of the max possible increment, the second adds ~25%, the third adds ~12.5%, and so on. This exponential discounting reflects a realistic assumption: <em>having one or two mutual friends greatly increases the chance of tie formation, but the influence of additional mutual friends diminishes quickly</em>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -1087,17 +1101,22 @@ AIC: 511.3  BIC: 529.1  (Smaller is better. MC Std. Err. = 0.4067)</code></pre>
 <li><code>nodematch("practice")</code> (<span class="math inline">\(\hat\theta = 0.61\)</span>, <em>p</em> &lt; 0.001): Strong evidence of homophily, lawyers are significantly more likely to collaborate within their own practice area.</li>
 <li><code>gwesp(0.693)</code> (<span class="math inline">\(\hat\theta = 1.15\)</span>, <em>p</em> &lt; 0.001): High and significant triadic closure effect, indicating a strong tendency for collaboration among those with shared partners consistent with social circuit dependence.</li>
 </ul>
-<p>Taken together, the results indicate that processes of <strong>attribute-related activity</strong>, <strong>assortative mixing by attribute (homophily)</strong>, and <strong>structural closure</strong> (via triadic dependence) operate concurrently in shaping tie formation within the Lazega co-working network.</p>
+<p>Taken together, the results indicate that processes of attribute-related activity, assortative mixing by attribute (homophily), and structural closure (via triadic dependence) operate concurrently in shaping tie formation within the Lazega co-working network.</p>
 </section>
 </section>
 </section>
 <section id="sec-ergmest" class="level3" data-number="17.2.2">
 <h3 data-number="17.2.2" class="anchored" data-anchor-id="sec-ergmest"><span class="header-section-number">17.2.2</span> Model Estimation</h3>
-<p>Estimating the parameters of an Exponential Random Graph Model (ERGM) involves finding the parameter vector <span class="math inline">\(\boldsymbol{\theta}\)</span> that maximizes the likelihood of observing the network <span class="math inline">\(G_{\text{obs}}\)</span> under the specified model:</p>
+<p>Estimating the parameters of an Exponential Random Graph Model (ERGM) involves finding the parameter vector <span class="math inline">\(\boldsymbol{\theta}\)</span> that maximizes the likelihood of observing the network <span class="math inline">\(G_{\text{obs}}\)</span>:</p>
 <p><span class="math display">\[
-\hat{\boldsymbol{\theta}} = \arg\max_{\boldsymbol{\theta}} \, P(G_{\text{obs}} \mid \boldsymbol{\theta}) = \frac{\exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G_{\text{obs}}) \right)}{\kappa(\boldsymbol{\theta})}
+\hat{\boldsymbol{\theta}} = \arg\max_{\boldsymbol{\theta}} \, P(G_{\text{obs}} \mid \boldsymbol{\theta})
 \]</span></p>
-<p>Here, <span class="math inline">\(\mathbf{s}(G)\)</span> is a vector of network statistics (e.g., number of edges, mutual ties, triangles), and <span class="math inline">\(\kappa(\boldsymbol{\theta})\)</span> is a normalizing constant that sums the exponential terms over all possible networks with the same number of nodes:</p>
+<p>Under the ERGM specification, this likelihood is given by:</p>
+<p><span class="math display">\[
+P(G_{\text{obs}} \mid \boldsymbol{\theta}) =
+\frac{\exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G_{\text{obs}}) \right)}{\kappa(\boldsymbol{\theta})}
+\]</span></p>
+<p>Here, <span class="math inline">\(\mathbf{s}(G) = (s_1(G), \dots, s_K(G))^\top\)</span> is a vector of network statistics (e.g., number of edges, mutual ties, triangles), and <span class="math inline">\(\kappa(\boldsymbol{\theta})\)</span> is a normalizing constant that sums the exponential terms over all possible networks with the same number of nodes:</p>
 <p><span class="math display">\[
 \kappa(\boldsymbol{\theta}) = \sum_{G'} \exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G') \right)
 \]</span></p>
@@ -1184,7 +1203,7 @@ Steps 2 and 3 are repeated iteratively. At each round, the model simulates netwo
 <p>We will consider the diagnostics for the <code>model_sc</code> on the lawyer data set above:</p>
 <section id="example-lawyers-network---cowork-among-partners-1" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="example-lawyers-network---cowork-among-partners-1">Example: Lawyers Network - Cowork Among Partners</h5>
-<p>The <code>mcmc.diagnostics()</code> function in the <code>ergm</code> package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consists of two parts. The first part is a plot:</p>
+<p>The <code>mcmc.diagnostics()</code> function in the <code>ergm</code> package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consist of two parts. The first part is a plot:</p>
 <div id="fig-mcmc" class="center quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mcmc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1459,69 +1478,68 @@ Figure&nbsp;17.5: Goodness-of-fit (GOF) diagnostics for the ERGM fitted to the L
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>gof_sc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Goodness-of-fit for model statistics 
+Goodness-of-fit for degree 
 
-                        obs          min     mean     max MC p-value
-edges              115.0000 1.200000e+01 109.0000 163.000       0.88
-nodecov.practice   129.0000 8.000000e+00 127.8600 168.000       0.96
-nodematch.practice  72.0000 6.000000e+00  69.0000 109.000       0.86
-gwesp.fixed.0.693  181.2969 1.634248e-13 170.4622 282.617       0.86
+         obs min mean max MC p-value
+degree0    2   0 3.42  10       0.90
+degree1    3   0 2.24   8       0.74
+degree2    2   0 2.14   8       1.00
+degree3    4   0 2.72   7       0.66
+degree4    2   0 2.81   8       1.00
+degree5    4   0 2.83   7       0.60
+degree6    4   0 3.25   7       0.88
+degree7    1   0 2.77   7       0.34
+degree8    1   0 2.50   8       0.64
+degree9    5   0 2.83   9       0.34
+degree10   1   0 2.48   9       0.62
+degree11   1   0 1.84   5       0.92
+degree12   2   0 1.39   6       0.70
+degree13   3   0 1.06   5       0.20
+degree14   0   0 0.73   4       0.98
+degree15   1   0 0.37   3       0.58
+degree16   0   0 0.24   2       1.00
+degree17   0   0 0.14   3       1.00
+degree18   0   0 0.16   2       1.00
+degree19   0   0 0.04   1       1.00
+degree20   0   0 0.02   1       1.00
+degree21   0   0 0.02   1       1.00
+
+Goodness-of-fit for edgewise shared partner 
+
+      obs min  mean max MC p-value
+esp0    5   0  4.86  11       1.00
+esp1   16   6 16.27  31       0.98
+esp2   29   8 26.01  44       0.62
+esp3   17   8 25.21  41       0.28
+esp4   23   4 19.69  51       0.74
+esp5   11   0 11.76  27       1.00
+esp6   10   0  5.62  20       0.38
+esp7    4   0  2.47  10       0.56
+esp8    0   0  0.87   7       1.00
+esp9    0   0  0.33   3       1.00
+esp10   0   0  0.04   1       1.00
+esp11   0   0  0.04   1       1.00
+esp12   0   0  0.02   1       1.00
 
 Goodness-of-fit for minimum geodesic distance 
 
     obs min   mean max MC p-value
-1   115  12 109.00 163       0.88
-2   275   5 249.36 383       0.80
-3   148   2 100.70 206       0.06
-4    21   0  19.14  68       0.84
-5     2   0   3.47  37       0.80
-6     0   0   0.45  12       1.00
-7     0   0   0.02   1       1.00
-Inf  69   0 147.86 610       0.78
+1   115  56 113.19 170       0.92
+2   275 106 264.57 393       0.92
+3   148  11 106.60 192       0.26
+4    21   0  18.60  66       0.76
+5     2   0   2.61  19       0.62
+6     0   0   0.21   5       1.00
+7     0   0   0.01   1       1.00
+Inf  69   0 124.21 434       0.84
 
-Goodness-of-fit for degree 
+Goodness-of-fit for model statistics 
 
-   obs min mean max MC p-value
-0    2   0 3.94  17       0.82
-1    3   0 2.80  14       0.90
-2    2   0 2.22   8       1.00
-3    4   0 2.39   8       0.42
-4    2   0 2.83   6       0.92
-5    4   0 3.03   6       0.78
-6    4   0 2.68   6       0.58
-7    1   0 2.70   9       0.52
-8    1   0 2.70   8       0.58
-9    5   0 2.48   6       0.20
-10   1   0 2.34   6       0.66
-11   1   0 1.93   7       0.92
-12   2   0 1.58   6       0.92
-13   3   0 0.85   6       0.14
-14   0   0 0.57   3       1.00
-15   1   0 0.35   3       0.62
-16   0   0 0.29   2       1.00
-17   0   0 0.19   2       1.00
-18   0   0 0.07   1       1.00
-19   0   0 0.02   1       1.00
-20   0   0 0.01   1       1.00
-21   0   0 0.02   1       1.00
-22   0   0 0.01   1       1.00
-
-Goodness-of-fit for edgewise shared partner 
-
-   obs min  mean max MC p-value
-0    5   0  5.25  14       1.00
-1   16   0 15.26  30       0.96
-2   29   0 24.81  47       0.62
-3   17   0 24.76  46       0.48
-4   23   0 17.73  40       0.60
-5   11   0 11.70  31       1.00
-6   10   0  5.50  19       0.38
-7    4   0  2.53  10       0.52
-8    0   0  1.05   7       0.98
-9    0   0  0.27   2       1.00
-10   0   0  0.09   3       1.00
-11   0   0  0.04   1       1.00
-13   0   0  0.01   1       1.00</code></pre>
+                        obs      min     mean      max MC p-value
+edges              115.0000 56.00000 113.1900 170.0000       0.92
+nodecov.practice   129.0000 74.00000 130.0500 174.0000       1.00
+nodematch.practice  72.0000 40.00000  70.8400 119.0000       0.94
+gwesp.fixed.0.693  181.2969 69.40236 177.6489 291.4062       0.76</code></pre>
 </div>
 </div>
 <p>The numerical output provides a detailed assessment of how well the fitted ERGM reproduces both the modeled terms and modeled structural features of the observed network.</p>
