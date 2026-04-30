@@ -210,32 +210,44 @@ Estimation relies on the partial likelihood, which compares the intensity of the
 
 Relational event models allow us to incorporate **endogenous statistics**, which capture patterns that arise from the history of interactions itself. These statistics represent mechanisms through which past events influence the likelihood of future events. Some of these endogenous statistics are summarized in the following and in @tbl-endstats.
 
-Assume we have $1,\dots,n$ actors. A potential
-relational event at time $t$ is an ordered pair $(i,j)$ with $i \neq j$, where
+Assume we have $n$ actors indexed by $i,j \in \{1,\dots,n\}$ with $i \neq j$.
+A potential relational event at time $t$ is an ordered pair $(i,j)$, where
 actor $i$ is the sender and actor $j$ is the receiver.
+
+Let $Y_{ij}(t) \in \{0,1\}$ be an indicator such that $Y_{ij}(t)=1$ if the
+event $i \rightarrow j$ occurs at time $t$, and $0$ otherwise. Further, let
+
+$$
+N_{ij}(t) = \sum_{\tau \le t} Y_{ij}(\tau)
+$$
+
+denote the cumulative number of events from actor $i$ to actor $j$ up to time
+$t$. All statistics below are evaluated based on the event history up to time
+$t-1$.
 
 #### Reciprocity {.unnumbered}
 
-Reciprocity captures the tendency for actors to immediately respond to interactions they have received. If the previous event was $i \rightarrow j$, the statistic equals 1 when the next event is $j \rightarrow i$.
+Reciprocity captures the tendency for actors to immediately respond to
+interactions they have received.
 
 $$
-s_{\text{reciprocity}}(i,j,t) = Y_{ij}(t-1) \cdot Y_{ji}(t)
+s_{\text{reciprocity}}(i,j,t) = Y_{ij}(t-1)\cdot Y_{ji}(t)
 $$
-where $Y_{ij}(t) \in \{0,1\}$ is an indicator variable such that
-$Y_{ij}(t) = 1$ if the event $i \rightarrow j$ occurs at time $t$, and
-$Y_{ij}(t) = 0$ otherwise.
 
 #### Repetition {.unnumbered}
 
-Repetition captures the continuation of a dyadic interaction, meaning the same sender repeats an interaction with the same receiver.
+Repetition captures the continuation of a dyadic interaction, meaning the same
+sender repeats an interaction with the same receiver.
 
 $$
-s_{\text{repetition}}(i,j,t) = Y_{ij}(t-1) \cdot Y_{ij}(t)
+s_{\text{repetition}}(i,j,t) = Y_{ij}(t-1)\cdot Y_{ij}(t)
 $$
 
 #### Past Interaction {.unnumbered}
 
-This statistic measures the strength of the historical relationship between the sender and receiver. It is defined as the proportion of the sender’s previous interactions that were directed toward the receiver.
+This statistic measures the strength of the historical relationship between the
+sender and receiver as the proportion of past interactions directed toward the
+receiver.
 
 $$
 s_{\text{past}}(i,j,t) =
@@ -245,20 +257,19 @@ $$
 
 #### Sender Activity {.unnumbered}
 
-Sender activity captures how frequently the sender has initiated interactions in the past. It is defined as the proportion of all previous events that were sent by the current sender.
+Sender activity captures how frequently the sender has initiated interactions
+in the past.
 
 $$
 s_{\text{sender activity}}(i,j,t) =
 \frac{\sum_{k=1}^{n} N_{ik}(t-1)}
 {\sum_{p \neq q} N_{pq}(t-1)}
 $$
-where $N_{ij}(t) = \sum_{\tau \le t} Y_{ij}(\tau)$ is the cumulative count of
-events from actor $i$ to actor $j$ up to time $t$. Thus, $N_{ij}(t-1)$ represents the history of interactions from $i$ to $j$
-prior to the current event at time $t$.
 
 #### Sender Popularity {.unnumbered}
 
-Sender popularity measures how often the sender has previously received interactions from others.
+Sender popularity measures how often the sender has previously received
+interactions.
 
 $$
 s_{\text{sender popularity}}(i,j,t) =
@@ -268,7 +279,8 @@ $$
 
 #### Receiver Activity {.unnumbered}
 
-Receiver activity captures how frequently the receiver has initiated interactions in the past.
+Receiver activity captures how frequently the receiver has initiated
+interactions.
 
 $$
 s_{\text{receiver activity}}(i,j,t) =
@@ -278,14 +290,14 @@ $$
 
 #### Receiver Popularity {.unnumbered}
 
-Receiver popularity measures how frequently the receiver has previously been the target of interactions.
+Receiver popularity measures how frequently the receiver has previously been
+the target of interactions.
 
 $$
 s_{\text{receiver popularity}}(i,j,t) =
 \frac{\sum_{k=1}^{n} N_{kj}(t-1)}
 {\sum_{p \neq q} N_{pq}(t-1)}
 $$
-
 ::: {#tbl-endstats}
 
 | Statistic | Description | Formula |
