@@ -142,10 +142,11 @@ explanation.
 Longitudinal network data consist of a set of actors $N = \{1, 2, \dots, n\}$
 and a series of observed adjacency matrices:
 $$
-x(t_0),\ x(t_1),\ \dots,\ x(t_M)
+Y(t_0),\ Y(t_1),\ \dots,\ Y(t_M)
 $$
 where each matrix captures the presence or absence of ties between actors at a
-particular time point.
+particular time point, that is $y_{ij}(t) = 1$ if actor $i$ has a tie to actor $j$ at time $t$, and
+$y_{ij}(t) = 0$ otherwise.
 
 These repeated measures make it possible to ask and answer key questions:
 
@@ -164,8 +165,8 @@ of their similarity) or influence (they became similar after forming a tie).
 Only a longitudinal framework allows us to tease apart these mechanisms.
 
 Time also matters for structural tendencies. Consider transitivity: when we
-observe a triadic closure (i.e., if $i$ is tied to $j$ and $j$ to $h$, then $i$
-may become tied to $h$), we cannot know whether it reflects an intentional
+observe a triadic closure (i.e., if $i$ is tied to $j$ and $j$ to $\ell$, then $i$
+may become tied to $\ell$), we cannot know whether it reflects an intentional
 closure or merely a residual pattern without knowing the order in which ties
 appeared.
 
@@ -191,29 +192,48 @@ empirical analysis.
 
 To understand the dynamics of network evolution in Stochastic Actor-Oriented
 Models (SAOMs), it is helpful to first grasp the concept of a **stochastic
-process**; a collection of random variables indexed by time:
+process**, a collection of random variables indexed by time:
 
 $$
-\{ X(t), t \in T \}
+\{ X(t),\ t \in T \}
 $$
+
 where:
 
 - $T$ is the index set (typically representing time),
-- $S$ is the **state space**, the set of all possible values that $X(t)$ can
-  take.
+- $S$ is the **state space**, the set of all possible values that $X(t)$ can take.
 
-A particular type of stochastic process relevant to SAOMs is the
+In the context of longitudinal network analysis, the stochastic process
+represents the network evolving over time. That is, we can interpret the state
+as the network at time $t$, so that
+
+$$
+X(t) \equiv Y(t),
+$$
+
+where $Y(t)$ is the adjacency matrix at time $t$, with entries
+$y_{ij}(t) \in \{0,1\}$ indicating whether a tie from actor $i$ to actor $j$
+is present at time $t$.
+
+
+SAOMs are based on a particular type of stochastic process: the
 **continuous-time Markov chain (CTMC)**. A CTMC is defined by:
 
-1. A finite **state space** $S$ (e.g., actor states or network configurations),
+1. A finite **state space** $S$ (e.g., all possible network configurations),
 2. A **continuous time domain** $t \in [0, \infty)$,
-3. The **Markov property**: the future state depends only on the present state,
-   not the past:
-   $$
-   P(X(t_j) = x_j \mid X(t) = x(t), \, \forall t \leq t_i) = P(X(t_j) = x_j \mid X(t_i) = x_i)
-   $$
-   This **memoryless** property allows us to model tie changes or actor
-   decisions that depend only on the current configuration.
+3. The **Markov property**, which states that the future state depends only on
+   the present state, not on the past:
+
+$$
+P\bigl(X(t_j) = s_j \mid \{X(t): t \le t_i\}\bigr)
+=
+P\bigl(X(t_j) = s_j \mid X(t_i) = s_i\bigr)
+$$
+
+This **memoryless** property implies that future network evolution depends only
+on the current configuration. In the context of SAOMs, actors make tie changes
+based solely on the present network structure (e.g., existing ties, shared
+partners, or attributes), without direct dependence on earlier configurations.
 
 The CTMC evolves through a sequence of randomly timed transitions. Each state is
 held for a random duration, and transitions to the next state are governed by
@@ -230,7 +250,7 @@ of the CTMC.
 #### Example: A Cat’s Daily Activities {.unnumbered}
 
 To bring the concept of a continuous-time Markov chain (CTMC) to life (or to all
-nine lives of our cat) consider a model of a house cat's daily activities. At
+nine lives of our cat), consider a model of a house cat's daily activities. At
 any given moment, the cat is in one of the following behavioral states:
 
 - $0$: Sleeping
@@ -239,7 +259,7 @@ any given moment, the cat is in one of the following behavioral states:
 - $3$: Plotting chaos (e.g., knocking things off shelves)
 
 We define $X(t)$ as the cat's current activity at time $t$. The process
-$\{X(t), t \geq 0\}$ satisfies:
+$\{X(t), t \in [0, \infty)\}$ satisfies:
 
 - A finite state space $S = \{0, 1, 2, 3\}$\
 - Continuous transitions over time\
@@ -247,34 +267,34 @@ $\{X(t), t \geq 0\}$ satisfies:
 
 The cat transitions between states at random times. Each stay in a state lasts
 for a random holding time, and transitions to the next state occur
-probabilistically based on a jump matrix.
+probabilistically based on a transition (jump) matrix.
 
-The holding time $T_i$ in state $i$ is modeled using an exponential
+The holding time $T_r$ in state $r$ is modeled using an exponential
 distribution:
 $$
-f_{T_i}(t) = \lambda_i e^{-\lambda_i t}, \quad t > 0
+f_{T_r}(t) = \lambda_r e^{-\lambda_r t}, \quad t > 0
 $$
 
-- $\lambda_i$ is the rate of leaving state $i$.
-- $\mathbb{E}[T_i] = \frac{1}{\lambda_i}$ is the expected duration in state $i$.
+- $\lambda_r$ is the rate of leaving state $r$.
+- $\mathbb{E}[T_r] = \frac{1}{\lambda_r}$ is the expected duration in state $r$.
 
 The exponential distribution's **memoryless property** means that the
 probability of remaining in a state is independent of how long the cat has
 already been in it:
 $$
-P(T_i > s + t \mid T_i > t) = P(T_i > s)
+P(T_r > s + t \mid T_r > t) = P(T_r > s)
 $$
 So, even after two hours of napping, the chance that the cat naps another 30
 minutes is the same as if it had just started.
 
 Once the holding time ends, the cat jumps to a new state. The **transition
-matrix** $P = (p_{ij})$ governs this:
+(jump) matrix** $P = (p_{rs})$ governs this:
 $$
-p_{ij} = P(X(t') = j \mid X(t) = i)
+p_{rs} = P(X(t^+) = s \mid X(t) = r)
 $$
-For each state $i$, the row of probabilities $p_{ij}$ must sum to 1:
+For each state $r$, the row of probabilities $p_{rs}$ must sum to 1:
 $$
-\sum_{j \in S} p_{ij} = 1
+\sum_{s \in S} p_{rs} = 1
 $$
 
 @fig-catex illustrates a single realization of such a process. This visual shows
@@ -349,8 +369,8 @@ shown in @fig-catex2.
 
 ::: {#fig-catex2}
 ```{r}
-#| fig-height: 5
-#| fig-width: 5
+#| fig-height: 4
+#| fig-width: 4
 #| message: false
 #| echo: false
 
@@ -396,7 +416,7 @@ probabilities.
 :::
 
 @fig-catex2 is a visual representation of this matrix. Each arrow in the graph
-corresponds to a non-zero entry $p_{ij}$ in the matrix. The curved edges
+corresponds to a non-zero entry $p_{rs}$ in the matrix. The curved edges
 indicate transitions between pairs of states, and the labels on the arrows match
 the values in the matrix. Together, the matrix and the graph describe a **jump
 chain** over the set of behavioral states. These transitions are stochastic
@@ -407,8 +427,7 @@ In summary, a Continuous-Time Markov Chain (CTMC):
 
 - Determines how long the system remains in a state using the holding time,
   typically modeled as exponentially distributed.
-- Uses a transition matrix (or jump matrix) to govern which state is entered
-  next.
+- Uses a transition (jump) matrix to govern which state is entered next.
 - Is memoryless and evolves in continuous time, meaning the future depends only
   on the present state and not the past.
 
@@ -420,75 +439,89 @@ driven solely by the current network state.
 
 Stochastic Actor-Oriented Models (SAOMs), introduced by @snijders1996stochastic,
 provide a principled framework for analyzing how social networks evolve over
-time. To formally define the model, we start by framing them as a type of
-continuous-time Markov chain (CTMC), operating on a network space.
+time. Formally, network evolution is represented as a continuous-time Markov
+chain (CTMC) operating on a space of networks.
 
-As previously introduced, a Continuous-Time Markov Chain (CTMC) is characterized
+As previously introduced, a continuous-time Markov chain (CTMC) is characterized
 by three key components:
 
-- A finite state space: For SAOMs, this space includes all possible directed
-  networks (i.e., all adjacency matrices) that can be constructed from $n$
-  actors.
-- A continuous-time process: Network changes (such as the creation or
-  dissolution of ties) occur at random, unpredictable points in time.
-- The Markov property: The likelihood of a transition depends solely on the
-  network's current configuration, not on how it arrived there.
+- **A finite state space**: For SAOMs, this is the set $\mathcal{Y}$ of all
+  possible directed networks on $n$ actors. Each state $Y \in \mathcal{Y}$ is an
+  adjacency matrix with entries $y_{ij} \in \{0,1\}$ for $i \neq j$.
+- **A continuous-time process**: Network changes (such as the creation or
+  dissolution of ties $y_{ij}(t)$) occur at random points in continuous time.
+- **The Markov property**: The probability of a transition depends only on the
+  current network state $Y(t)$, not on the sequence of past networks that
+  preceded it.
 
-In the sections that follow, we explore how each of these components applies
-specifically to SAOMs.
+In the sections that follow, we explore how each of these components is specified
+in SAOMs, including how actors are selected to make changes and how tie updates
+are determined.
 
 #### State Space of Networks
 
-Let $X$ be the set of all possible adjacency matrices (i.e., network
-configurations) defined on $n$ actors. Each matrix corresponds to a different
-possible state of the network. The size of this space is:
+Let $\mathcal{Y}$ denote the set of all possible adjacency matrices (i.e.,
+network configurations) defined on $n$ actors. Each matrix $Y \in \mathcal{Y}$
+represents a possible state of the network.
+
+For directed networks without self-ties, the size of this state space is:
 
 $$
-|X| = 2^{n(n-1)}
+|\mathcal{Y}| = 2^{n(n-1)}
 $$
 
-This comes from the fact that each of the $n(n-1)$ possible directed ties
-between distinct actors can independently be either present (1) or absent (0).
+This follows from the fact that each of the $n(n-1)$ possible directed ties
+between distinct actors $(i,j)$ with $i \neq j$ can independently be either
+present ($y_{ij} = 1$) or absent ($y_{ij} = 0$).
+
+In the SAOM framework, the stochastic process $\{Y(t), t \geq 0\}$ evolves over
+this state space, with each realization corresponding to a sequence of network
+configurations over time.
 
 For instance, with a 4-node directed network shown in @fig-saomex, we can
-represent different adjacency matrices as the network evolves over time. We see
-a step-by-step representation of how a network evolves through successive tie
-changes, starting from an empty network and progressing toward a fully connected
-one.
+represent different adjacency matrices as the network evolves. The figure
+illustrates a step-by-step sequence of tie changes, starting from an empty
+network and progressing toward a more connected structure.
 
 ::: {#fig-saomex .center}
 ![](img/‎‎saom-state-ex.png){width="100%"}
 
-An example of how a directed network grows step by step as ties are added. Each
-panel pairs the network with its adjacency matrix, where a 1 indicates a
-directed tie. The process moves from an empty network to a fully connected one.
+An example of network evolution as a sequence of micro-steps in continuous time.
+At each step, a single directed tie $y_{ij}$ is updated, producing a new network
+state and its corresponding adjacency matrix.
 :::
 
 #### Continuous-time process
 
-Stochastic Actor-Oriented Models (SAOMs) are based on the assumption that social
-networks evolve as a continuous-time Markov process. This means the network
-changes gradually and randomly over time through small, actor-driven steps such
-as adding or removing ties.
+Stochastic Actor-Oriented Models (SAOMs) assume that the network evolves as a
+continuous-time Markov process. Formally, the stochastic process
+$\{Y(t), t \geq 0\}$ changes over time through a sequence of small,
+actor-driven modifications, where individual ties $y_{ij}(t)$ may be created or
+dissolved.
 
-However, in empirical studies, we rarely observe the full trajectory of these
-changes. Instead, we only see the network at a limited number of discrete
-observation moments (e.g., survey waves at $t_1$, $t_2$, $\ldots$). The actual
-tie changes (who added or dropped a connection and when) occur in the unobserved
-latent process between these time points.
+In empirical applications, however, we do not observe the full trajectory of
+this process. Instead, we observe the network only at a finite set of discrete
+time points (e.g., survey waves):
+$$
+t_1,\ t_2,\ \ldots,\ t_M.
+$$
 
-This distinction is critical:
+At each observation moment, we record a network $Y(t_m)$, but the intermediate
+tie changes (i.e., which actor changed which tie $(i,j)$ and at what exact time)
+remain unobserved. These changes occur in a latent process between observation
+moments.
 
-- Observed process: snapshots of the network at specific time points.
-- Latent process: the underlying continuous sequence of micro-steps, where
-  actors make sequential, stochastic decisions based on the current state of the
-  network.
+This distinction is fundamental:
 
-SAOMs aim to reconstruct and simulate this hidden evolution process, inferring
-the actor behaviors that most likely produced the observed transitions.
+- **Observed process**: a sequence of network snapshots
+  $Y(t_1), Y(t_2), \ldots, Y(t_M)$.
+- **Latent process**: the underlying continuous-time evolution, consisting of
+  a sequence of micro-steps in which actors stochastically update individual
+  ties $y_{ij}(t)$ based on the current network state $Y(t)$.
 
-[image] network states evolve at $t_0$, $t_1$, ..., but what we observe are
-discrete "snapshots" of this hidden continuous-time trajectory.
+SAOMs aim to model and simulate this latent evolution process, allowing us to
+infer the actor-level mechanisms that most likely generated the observed changes
+between $Y(t_1)$ and $Y(t_M)$.
 
 #### The Markov Property
 
@@ -497,17 +530,23 @@ probability of moving to a new network state depends only on the current state,
 not on the path taken to get there. This is the Markov property and is formally
 defined as:
 $$
-P(X(t_j) = x_j \mid X(t) = x(t), \, \forall t \leq t_i) = P(X(t_j) = x_j \mid X(t_i) = x_i)
+P\bigl(Y(t_j) = y' \mid \{Y(t): t \leq t_i\}\bigr)
+=
+P\bigl(Y(t_j) = y' \mid Y(t_i) = y\bigr)
 $$
-where $X(t)$ denotes the state (i.e., network configuration) at time $t$. In
-other words, the future evolution of the process depends solely on the present
-state $x_i$ and not on the entire sequence of previous states. The model is
-memoryless: it "forgets" the past once the current state is known.
+where $Y(t)$ denotes the network state (i.e., adjacency matrix) at time $t$,
+and $y, y' \in \mathcal{Y}$ are particular network configurations at times
+$t_i$ and $t_j$, respectively.
+
+In other words, the future evolution of the process depends solely on the
+current network state $Y(t_i)$ and not on the entire sequence of previous
+states. The model is memoryless: it "forgets" the past once the current state is
+known.
 
 In the context of SAOMs, this means that when an actor is given the opportunity
-to make a change, such as forming or dissolving a tie, they do so based only on
-the present network structure and covariate information. There is no dependence
-on the path the network took to reach its current configuration.
+to make a change, such as forming or dissolving a tie $y_{ij}(t)$, they do so
+based only on the current network structure and covariate information. There is
+no dependence on the path the network took to reach its current configuration.
 
 This assumption significantly simplifies the modeling of network dynamics. It
 eliminates the need to track full network histories and allows for tractable
@@ -517,16 +556,16 @@ recalling a complete relational past.
 
 Nonetheless, the Markov assumption is a modeling abstraction. While it
 facilitates analysis and interpretation, it may not capture certain behaviors
-where history matters such as long-term reciprocity, reputation building, or
+where history matters, such as long-term reciprocity, reputation building, or
 delayed responses. Still, for many applications, it offers a powerful and
 flexible framework for understanding how networks evolve over time.
 
 #### Actor-Oriented Modeling Assumptions
 
 A central challenge in modeling network dynamics is the vast number of possible
-future configurations. For a directed network with $n$ actors, there are
-$2^{n(n-1)}$ possible states, making exhaustive evaluation of all potential
-transitions computationally infeasible.
+network configurations. For a directed network with $n$ actors, the state space
+$\mathcal{Y}$ contains $2^{n(n-1)}$ possible networks, making exhaustive
+evaluation of all potential transitions computationally infeasible.
 
 SAOMs address this by adopting an **actor-driven approach**. Instead of modeling
 global changes to the network, SAOMs assume that individual actors make
@@ -536,33 +575,36 @@ realistic representation of social behavior.
 
 The SAOM framework relies on three core assumptions:
 
-1. **One actor at a time**: At each micro-step, a single actor is randomly
+1. **One actor at a time**: At each micro-step, a single actor $i$ is randomly
    selected and given the opportunity to revise their outgoing ties. This
    reflects individual, sequential decision-making.
 
-2. **One tie at a time**: The selected actor may consider one outgoing tie;
-   either forming it, dissolving it, or choosing to leave it unchanged. Only one
-   tie can be changed per step, which keeps the space of possible transitions
-   manageable.
+2. **One tie at a time**: The selected actor $i$ considers one outgoing tie
+   $y_{ij}(t)$ for some $j \neq i$, and may choose to create it
+   ($y_{ij}(t) = 1$), dissolve it ($y_{ij}(t) = 0$), or leave it unchanged.
+   Only one tie variable can change per step, which keeps the space of possible
+   transitions manageable.
 
 3. **Actor-controlled change**: Each actor controls only their own outgoing
    ties. Tie changes arise solely from the actor's individual evaluation of the
-   network and are not the result of simultaneous or coordinated actions.
+   current network state $Y(t)$ and are not the result of simultaneous or
+   coordinated actions.
 
 Together, these assumptions define a process of sequential micro-steps, each
 involving:
 
-- Selecting an actor at random,
-- Considering one possible tie change,
+- Selecting an actor $i$ at random,
+- Considering a possible change to one tie $y_{ij}(t)$,
 - And waiting a randomly determined time before the next opportunity arises.
 
 This process unfolds in continuous time and follows the structure of a
 continuous-time Markov chain (CTMC). It consists of two key components: the
-holding time; which determines how long the current network state persists, and
-the jump chain; which defines the probability of transitioning to a new network
-state via a single tie change.
+**holding time**, which determines how long the current network state $Y(t)$
+persists, and the **jump chain**, which defines the probability of transitioning
+to a new network state via a single tie update.
 
-#### The Holding Time and The Jump Chain
+
+#### The Holding Time and the Jump Chain
 
 The **holding time** in SAOMs refers to the waiting period before an actor is
 given the opportunity to change one of their outgoing ties. In accordance with
@@ -578,28 +620,27 @@ Here, $\lambda_i$ is the rate parameter, determining how frequently actor $i$
 receives opportunities to change their ties. The choice of $\lambda_i$ defines
 how the actor selection process unfolds:
 
-- Homogeneous specification: All actors have the same rate $\lambda$, implying
-  equal opportunity:
+- **Homogeneous specification**: All actors have the same rate $\lambda$,
+  implying equal opportunity:
   $$
-  \lambda_i = \lambda \quad \text{for all } i, \qquad P(i \text{ has opportunity for change}) = \frac{1}{n}
+  \lambda_i = \lambda \quad \text{for all } i, \qquad 
+  P(i \text{ is selected}) = \frac{1}{n}
   $$
-- Heterogeneous specification: The rate varies across actors based on covariates
-  or network structure:
+
+- **Heterogeneous specification**: The rate varies across actors based on
+  covariates or network structure:
   $$
-  \lambda_i = \lambda_i(\theta, x, v)
+  \lambda_i = \lambda_i(\theta, Y(t), v)
   $$
-  where $\theta$ is a parameter vector, $x$ is the current network
+  where $\theta$ is a parameter vector, $Y(t)$ is the current network
   configuration, and $v$ are actor-specific covariates. In this case:
   $$
-  P(i \text{ has opportunity for change}) = \frac{\lambda_i(\theta, x, v)}{\sum_{j=1}^{n} \lambda_j(\theta, x, v)}
+  P(i \text{ is selected}) = 
+  \frac{\lambda_i(\theta, Y(t), v)}{\sum_{r=1}^{n} \lambda_r(\theta, Y(t), v)}
   $$
   This flexibility allows the model to reflect actor-level heterogeneity in the
-  speed of network change. However, for simplicity and interpretability, we
-  often assume that all actors have the same average rate of change, that is,
-  $\lambda$ is constant across actors, but may vary over time. In this case,
-  actors are equally likely to be selected at any given moment, though the
-  overall tempo of change can still shift over time depending on the
-  time-varying rate parameter.
+  speed of network change. In many applications, however, a homogeneous rate is
+  assumed for simplicity and interpretability.
 
 This setup relies on the memoryless property of the exponential distribution:
 $$
@@ -608,349 +649,382 @@ $$
 That is, the probability that actor $i$ will be selected in the next instant is
 unaffected by how long they have already been waiting. This property aligns
 naturally with the continuous-time Markov assumption and greatly simplifies
-simulation. In summary, the holding time determines when micro-steps occur. It
-is random, memoryless, and depending on the specification; either homogeneous or
-heterogeneous across actors, shaping the rhythm of network evolution in SAOMs.
+simulation. In summary, the holding time determines *when* micro-steps occur.
 
-Once an actor has been selected and the waiting time (holding time) has elapsed,
-the next question becomes: *what* change (if any) will this actor make to the
-network? This is where the **jump chain** which governs what change occurs once
-an actor is selected. At each micro-step, actor $i$ evaluates a set of feasible
-alternatives $\{x^{(1)}, x^{(2)}, \dots, x^{(J)}\}$, each differing from the
-current network $x$ by a change in one of $i$'s outgoing ties; either forming,
-dissolving, or maintaining a tie.
+Once an actor has been selected and the holding time has elapsed, the next
+question becomes: *what* change (if any) will this actor make to the network?
+This is governed by the **jump chain**, which determines the next network state.
 
-Each alternative $x^{(j)}$ is assigned a utility:
+At each micro-step, actor $i$ evaluates a set of feasible alternatives
+$\{Y^{(a)}\}_{a=1}^{A}$, each differing from the current network $Y(t)$ by at
+most a change in one outgoing tie $y_{ij}(t)$ (i.e., forming, dissolving, or
+maintaining a tie).
 
+Each alternative $Y^{(a)}$ is assigned a utility:
 $$
-U_{ij} = F_{ij} + \varepsilon_{ij}
+U_{ia} = F_{ia} + \varepsilon_{ia}
 $$
 
-Here, $F_{ij}$ represents the deterministic component of the utility function
-typically defined through an evaluation function that incorporates structural
-effects like reciprocity, transitivity, or covariate similarity. The
-$\varepsilon_{ij}$ term introduces randomness via a Gumbel-distributed
+Here, $F_{ia}$ represents the deterministic component of the utility function,
+typically defined through an objective function that incorporates structural
+effects such as reciprocity, transitivity, or covariate similarity. The
+$\varepsilon_{ia}$ term introduces randomness via a Gumbel-distributed
 disturbance, reflecting unobserved preferences or decision noise.
 
 This setup defines a **random utility model**, where actor $i$ selects among
-alternatives probabilistically rather than deterministically. Under the Gumbel
-assumption, the choice probabilities follow the familiar multinomial logit:
+alternatives probabilistically. Under the Gumbel assumption, the choice
+probabilities follow a multinomial logit form:
 
 $$
-p_{ij} = \frac{\exp(F_{ij})}{\sum_{h=1}^{J} \exp(F_{ih})}
+p_{ia} = \frac{\exp(F_{ia})}{\sum_{b=1}^{A} \exp(F_{ib})}
 $$
 
-These probabilities form a jump matrix $P = (p_{ij})$, describing the likelihood
-of transitioning from one network state to another. Because only one actor can
-change one tie at each micro-step, the number of feasible transitions is small,
-and the matrix is extremely sparse; a feature that makes SAOMs computationally
-tractable even for large networks.
+where $F_{ia}$ is the deterministic utility that actor $i$ assigns to
+alternative $a$, corresponding to the candidate network $Y^{(a)}$.
 
-We can now elaborate more precisely on how this deterministic component $F_{ij}$
-is constructed. It is typically written as an **objective function** composed of
-weighted network statistics:
+These probabilities define the jump chain, describing the likelihood of moving
+from the current network state $Y(t)$ to a new state $Y^{(a)}$. Because only one
+actor changes at most one tie at each micro-step, the set of feasible
+transitions is small, making the process computationally tractable.
+
+We now make explicit how the deterministic component $F_{ia}$ is constructed.
+It is given by an **objective function**:
 
 $$
-f_i(\theta, x') = \sum_{k=1}^{K} \theta_k \cdot s_k(x', v)
+F_{ia} = f_i(\theta, Y^{(a)}) = \sum_{k=1}^{K} \theta_k \cdot s_{ik}(Y^{(a)}, v)
 $$
+
 where:
 
-- $x'$ is the candidate network after a tie change,
-- $s_k(x', v)$ is the $k$-th effect evaluated on $x'$ (e.g., number of mutual
-  ties),
+- $Y^{(a)}$ is the candidate network after a tie change,
+- $s_{ik}(Y^{(a)}, v)$ is the contribution of effect $k$ for actor $i$,
 - $\theta_k$ is the parameter associated with that effect.
 
-This formulation provides a clear interpretation: actors evaluate the
-desirability of possible tie changes based on known network mechanisms and
-covariates. The random utility formulation introduces variability in behavior
-while allowing estimation of interpretable model parameters $\theta$.
+This formulation makes clear that the utility of an alternative depends on how
+the resulting network configuration aligns with the actor's preferences, as
+captured by the statistics $s_{ik}(\cdot)$. The random utility formulation
+introduces stochasticity while allowing for interpretable parameter estimation.
 
-In summary, the jump chain models which network configuration the process will
-move to, conditional on actor selection. Combined with the holding time, which
+In summary, the jump chain determines *which* network configuration the process
+moves to, conditional on actor selection. Combined with the holding time, which
 governs *when* actors are selected, it defines the dynamics of the SAOM as a
-continuous-time Markov process. Actor decisions are sequential, stochastic, and
-based only on the current network, thus preserving the Markov property and
-allowing for rich but tractable modeling of network evolution.
+continuous-time Markov process.
 
 #### Endogenous Effects in the Objective Function
 
-The objective function introduced above is composed of a linear combination of
-effects, each capturing a specific structural pattern or social mechanism. These
-effects are conceptually similar to those used in Exponential Random Graph
-Models (ERGMs), although they differ in interpretation due to the dynamic and
-actor-oriented nature of SAOMs. These effects fall into two main categories:
+The objective function introduced above is a linear combination of effects, each
+capturing a specific structural pattern or social mechanism. These effects are
+conceptually similar to those used in Exponential Random Graph Models (ERGMs),
+although they differ in interpretation due to the dynamic and actor-oriented
+nature of SAOMs. They fall into two main categories:
 
-- Endogenous effects: derived from the structure of the network itself.
-- Exogenous effects: related to external actor attributes.
+- **Endogenous effects**: derived from the structure of the network itself.
+- **Exogenous effects**: related to external actor attributes.
 
-The objective function for actor $i$ evaluating network $x'$ can be written as:
+The objective function for actor $i$ evaluating a candidate network $Y^{(a)}$
+is given by:
+
 $$
-f_i(x') = \sum_k \theta_k \cdot s_{ik}(x')
+f_i(\theta, Y^{(a)}) = \sum_{k=1}^{K} \theta_k \cdot s_{ik}(Y^{(a)})
 $$
-where $\theta_k$ is the parameter for effect $k$, and $s_{ik}(x')$ is the
-statistic for effect $k$ as computed for actor $i$ in network $x'$. Each effect
-enters the evaluation function with an associated parameter to be estimated from
-data. The weighted sum of these effects (plus random noise) determines the
-actor's utility for each potential tie change. This guides the probabilistic
-decision-making process at the heart of the SAOM framework.
 
-This section focuses on a few commonly used endogenous effects; those based
-solely on the structure of the network (without using external covariates). Many
-other effects can be modeled, depending on the theoretical focus and complexity
-of the network under study.
+where $\theta_k$ is the parameter for effect $k$, and s_{ik}(Y^{(a)}) is
+the value of effect $k$ evaluated for actor $i$ in the candidate network
+$Y^{(a)}$. Each effect enters the objective function with an associated
+parameter to be estimated from data. The weighted sum of these effects (together
+with a stochastic component) determines the actor's utility for each potential
+tie change, guiding the probabilistic decision-making process at the heart of
+the SAOM framework.
+
+This section focuses on a set of commonly used endogenous effects, that is,
+effects based solely on the structure of the network (without using external
+covariates). Many other effects can be specified, depending on the theoretical
+focus and complexity of the network under study.
 
 ##### 1. Outdegree Effect {.unnumbered}
 
 Similar to the `edges` term in ERGM, this effect reflects the tendency (or cost)
 of maintaining ties. It counts the number of outgoing ties from actor $i$ in the
-new network configuration $x'$:
+candidate network configuration $Y^{(a)}$:
 
 $$
-s_i^{\text{out}}(x') = \sum_j x'_{ij}
+s_i^{\text{out}}(Y^{(a)}) = \sum_{j} y^{(a)}_{ij}
 $$
+
 This term typically has a negative coefficient, penalizing actors for having too
 many ties, and thus introducing a cost to maintaining social relationships.
 
 ##### 2. Reciprocity Effect {.unnumbered}
 
 The reciprocity effect captures the tendency for actors to form mutual ties
-(equivalent to the `mutual` term in ERGMs). It counts how many of actor i's
+(equivalent to the `mutual` term in ERGMs). It counts how many of actor $i$'s
 outgoing ties are reciprocated:
+
 $$
-s_i^{\text{rec}}(x') = \sum_j x'_{ij} x'_{ji}
+s_i^{\text{rec}}(Y^{(a)}) = \sum_{j} y^{(a)}_{ij} \, y^{(a)}_{ji}
 $$
+
 A positive coefficient for this effect reflects a preference for mutual
 connections, e.g., *"I send a tie to those who also send one to me."*
 
 ##### 3. Transitive Triplets Effect {.unnumbered}
 
 Closely related to the `triangles` or `GWESP` terms in ERGMs, this effect models
-triadic closure. The transitive effect reflects a tendency for triadic closure.
-If actor $i$ sends a tie to $h$, and $h$ sends a tie to $j$, then $i$ is more
-likely to send a tie to $j$:
+triadic closure. The transitive effect reflects a tendency toward forming
+closed triads. If actor $i$ sends a tie to $h$, and $h$ sends a tie to $j$, then
+$i$ is more likely to send a tie to $j$.
 
 $$
-s_i^{\text{trans}}(x') = \sum_{j,h} x'_{ij} x'_{ih} x'_{hj}
+s_i^{\text{trans}}(Y^{(a)}) = \sum_{j,h} y^{(a)}_{ij} \, y^{(a)}_{jh} \, y^{(a)}_{ih}
 $$
-This effect models social closure or hierarchy and contributes to the formation
-of cohesive subgroups or cliques.
+
+This effect captures the formation of transitive triples (closed triads), where
+$i \to j$, $j \to h$, and $i \to h$. It reflects processes such as social
+closure, hierarchy, and the formation of cohesive subgroups.
 
 ##### 4. Three-Cycle Effect {.unnumbered}
 
-The three-cycle effect (think cyclic triads in ERGMs) captures the tendency of
-actors to form circular structures in the network, i.e. it captures feedback
-loops in the network. Specifically, it counts the number of directed cycles of
-length three involving actor $i$:
+The three-cycle effect (analogous to cyclic triads in ERGMs) captures the
+tendency of actors to form circular structures in the network. Specifically,
+it counts the number of directed cycles of length three involving actor $i$:
+
 $$
-s_i^{\text{cyc}}(x') = \sum_{j,h} x'_{ij} x'_{jh} x'_{hi}
+s_i^{\text{cyc}}(Y^{(a)}) = \sum_{j,h} y^{(a)}_{ij} \, y^{(a)}_{jh} \, y^{(a)}_{hi}
 $$
-This effect often receives a negative coefficient, discouraging cyclic patterns
-that may indicate instability or lack of hierarchy.
+
+This effect captures patterns such as $i \to j \to h \to i$, representing
+feedback loops or non-hierarchical structures in the network. It often receives
+a negative coefficient, discouraging cyclic patterns and favoring more
+hierarchical or transitive structures.
 
 Next, we introduce exogenous effects, which link actor behavior to covariates
 such as attributes or group memberships.
 
 #### Exogenous Effects in the Objective Function {#sec-exeffects}
+In addition to modeling endogenous network tendencies (such as reciprocity or
+transitivity), SAOMs allow the inclusion of **exogenous covariates** that
+influence tie formation. These covariates capture observed attributes of actors
+or dyads that may shape network dynamics.
 
-In addition to modeling endogenous network tendencies, like reciprocity or
-transitivity, SAOMs allow the inclusion of exogenous covariates that influence
-tie formation. These covariates may pertain to individual-level attributes
-(e.g., age, status, gender) or to dyadic relationships (e.g., geographical
-distance, attribute similarity). Just like in ERGMs, these effects enter the
-objective function, which represents the utility an actor associates with each
-possible network configuration.
+We denote covariate information by $v$. Depending on the context, $v$ may include:
+
+- **Actor-level covariates**: $v_i$ (e.g., age, gender, smoking status),
+- **Dyadic covariates**: $v_{ij}$ (e.g., geographic distance or similarity between actors $i$ and $j$).
+
+As in ERGMs, these effects enter the **objective function**, which represents
+the utility that actor $i$ associates with a candidate network configuration
+$Y^{(a)}$:
+
+$$
+f_i(\theta, Y^{(a)}) = \sum_{k=1}^{K} \theta_k \cdot s_{ik}(Y^{(a)}, v)
+$$
+
+Here, the statistics $s_{ik}(Y^{(a)}, v)$ may depend not only on the network
+structure $Y^{(a)}$ but also on the covariates $v$. This allows actor $i$’s
+evaluation of potential tie changes to incorporate both structural features of
+the network and observed attributes of actors or dyads.
 
 Below are common types of exogenous effects.
 
-##### 1.Individual-Level Covariate Effects {.unnumbered} 
+##### 1. Individual-Level Covariate Effects {.unnumbered} 
 
-These are based on node-level covariates and can enter the objective function in
-two ways:
+These effects are based on **actor-level covariates** and can enter the
+objective function in two ways:
 
-1. Covariate-Ego Effect\
+1. **Covariate-Ego Effect**\
    This effect captures whether actors with a particular covariate value are
-   more (or less) likely to form ties.
+   more (or less) likely to form outgoing ties.
    $$
-   s_i^{\text{ego}}(x', v) = v_i \sum_j x'_{ij}
+   s_i^{\text{ego}}(Y^{(a)}, v) = v_i \sum_j y^{(a)}_{ij}
    $$
-   Here, $v_i$ is the covariate value for actor $i$ (the sender), and the
+   Here, $v_i$ is the covariate value for actor $i$ (the *ego*), and the
    statistic counts how many ties they initiate. If the covariate is binary,
-   this can test whether having a trait (e.g., being in a particular group) is
-   associated with being more active.
+   this can test whether having a trait (e.g., belonging to a particular group)
+   is associated with being more active in sending ties.
 
-2. Covariate-Alter Effect\
-   This reflects a preference for forming ties to others with certain attribute
-   values.
+2. **Covariate-Alter Effect**\
+   This effect reflects a preference for forming ties to others (*alters*) with
+   certain attribute values.
    $$
-   s_i^{\text{alter}}(x', v) = \sum_j x'_{ij} v_j
+   s_i^{\text{alter}}(Y^{(a)}, v) = \sum_j y^{(a)}_{ij} \, v_j
    $$
-   Actors are more likely to send ties to alters with higher (or lower)
-   covariate values, depending on the sign of the corresponding parameter.
+   Here, $v_j$ is the covariate value of the potential receiver. A positive
+   parameter indicates that actors are more likely to send ties to alters with
+   higher covariate values (and vice versa).
 
 ##### 2. Dyadic Covariate Effects {.unnumbered}
 
-SAOMs also allow modeling based on dyadic similarity, capturing whether actors
-prefer to connect with others who are similar in some attribute.
+SAOMs also allow modeling based on **dyadic similarity**, capturing whether
+actors prefer to connect with others who are similar in some attribute.
 
-The statistic for covariate-related similarity
+A common specification is the similarity-based effect:
 $$
-s_i^{\text{sim}}(x', v) = \sum_j x'_{ij} \left( 1 - \frac{|v_i - v_j|}{\text{Range}(v)} \right)
+s_i^{\text{sim}}(Y^{(a)}, v) 
+= \sum_j y^{(a)}_{ij} 
+\left( 1 - \frac{|v_i - v_j|}{\max(v) - \min(v)} \right)
 $$
-increases when $i$ sends ties to actors $j$ who are similar in covariate values.
-The similarity is normalized to a [0,1] scale, where 1 means perfect similarity.
+
+This statistic increases when actor $i$ sends ties to actors $j$ who are similar
+in their covariate values. The similarity term is normalized to the interval
+$[0,1]$, where 1 indicates perfect similarity and 0 indicates maximal
+difference.
+
 For binary covariates, this simplifies to an indicator function:
 $$
-s_i^{\text{sim}}(x', v) = \sum_j x'_{ij} \cdot I(v_i = v_j)
+s_i^{\text{sim}}(Y^{(a)}, v) = \sum_j y^{(a)}_{ij} \cdot \mathbf{1}(v_i = v_j)
 $$
 
-This captures simple homophily; a tendency to connect with others who share the
-same attribute (e.g., same gender or group membership).
+This effect captures **homophily**, the tendency of actors to form ties with
+others who share the same attribute (e.g., same gender or group membership).
 
 #### Choosing Effects for the Objective Function
 
-When specifying a Stochastic Actor-Oriented Model (SAOM), selecting which
-effects to include in the actor's objective function is the first step. At a
-minimum, outdegree (a baseline tendency to form ties) and reciprocity (the
-preference for mutual ties) must always be included. Beyond these, additional
-effects should be guided by substantive theory or research hypotheses. For
-example, if theory suggests that individuals tend to befriend friends of their
-friends, a transitive triplet effect may be appropriate. If social similarity
-(homophily) based on covariates like gender is expected, covariate-related
-similarity effects can be added. These choices tailor the model to reflect
-specific structural patterns or attribute-driven mechanisms. While only a few
-examples are shown here, SAOMs offer a broad range of endogenous and exogenous
-effects that researchers can incorporate to test theoretically meaningful
-network processes.
+When specifying a Stochastic Actor-Oriented Model (SAOM), the first step is to
+select which effects to include in the actor's objective function
+$f_i(\theta, Y^{(a)})$. At a minimum, models typically include an outdegree
+effect (capturing a baseline tendency to form ties) and a reciprocity effect
+(capturing the preference for mutual ties). 
+
+Beyond these baseline effects, additional terms should be guided by substantive
+theory or research hypotheses. For example, if theory suggests that individuals
+tend to befriend friends of their friends, a transitive triplet effect may be
+appropriate. If social similarity (homophily) based on covariates such as gender
+is expected, similarity-based covariate effects can be included.
+
+These choices tailor the model to reflect specific structural patterns and
+attribute-driven mechanisms. While only a few examples are presented here,
+SAOMs provide a wide range of endogenous and exogenous effects that can be
+combined to test theoretically meaningful processes of network evolution.
 
 ### Parameter Estimation and Interpretation
 
-In Stochastic Actor-Oriented Models (SAOMs), each parameter $\theta_k$ quantifies
-the importance of a specific effect $s_{ik}(x')$ in the actor's decision-making
-process during network evolution. These parameters help us understand how
-different structural or covariate-based features influence the likelihood of a
-network configuration.
+In Stochastic Actor-Oriented Models (SAOMs), each parameter $\theta_k$
+quantifies the importance of a specific effect $s_{ik}(Y^{(a)}, v)$ in the
+actor's decision-making process during network evolution. These parameters help
+us understand how structural features or covariates influence the likelihood of
+different tie changes.
 
 The interpretation of $\theta_k$ is as follows:
 
-- If $\theta_k = 0$, the statistic $s_{ik}(x')$ has no effect on the transition
-  probabilities and thus plays no role in the network dynamics.
-- If $\theta_k > 0$, actor $i$ is more likely to move toward a network
-  configuration $x'$ with a higher value of $s_{ik}(x')$.
-- If $\theta_k < 0$, configurations with lower values of $s_{ik}(x')$ are more
-  attractive to the actor.
+- If $\theta_k = 0$, the statistic $s_{ik}(Y^{(a)}, v)$ has no effect on the
+  transition probabilities and does not influence network dynamics.
+- If $\theta_k > 0$, actor $i$ is more likely to move toward network states
+  $Y^{(a)}$ that increase the value of $s_{ik}(Y^{(a)}, v)$.
+- If $\theta_k < 0$, actor $i$ prefers changes that decrease the value of
+  $s_{ik}(Y^{(a)}, v)$.
 
 Importantly, these preferences are assumed to be stable over time. That is, the
-entire set of model parameters $\{\theta_1, \dots, \theta_K\}$ is constant,
-meaning the way actors evaluate alternatives does not change during the
-observation window.
+parameter vector $\theta = (\theta_1, \dots, \theta_K)$ is assumed to be constant
+throughout the observation period:
 $$
-\theta_1, \dots, \theta_K \text{ are constant over time}
+\theta_1, \dots, \theta_K \text{ are constant over time.}
 $$
+
 Parameter estimation in SAOMs is performed using simulation-based methods, as
 implemented in the `RSiena` R package (SIENA: Simulation Investigation for
 Empirical Network Analysis).
 
 The core idea is to simulate the network evolution process under the assumed
 model, compare the simulated outcomes with observed data, and iteratively adjust
-parameters to improve the fit. This is known as the **method of moments**, where
-the simulated statistics are aligned with their empirical counterparts.
+the parameters to improve the fit. This approach is based on the **method of
+moments**, where simulated network statistics are aligned with their empirical
+counterparts.
 
 The estimation process typically involves:
 
-- Defining the observed networks at multiple time points.
-- Specifying effects (endogenous and exogenous) to include in the model.
-- Running simulations to estimate parameters via iterative optimization.
+- Defining the observed networks at multiple time points,
+- Specifying the effects (endogenous and exogenous) to include in the model,
+- Running simulations and updating parameters iteratively until convergence.
 
 To assess whether a particular effect significantly contributes to the network
-dynamics, we can conduct a hypothesis test for each parameter $\theta_k$. We
-test the following:
+dynamics, we test each parameter $\theta_k$:
 
-- Null Hypothesis ($H_0$): The observed network patterns related to effect $k$
-  are due to chance.
+- **Null Hypothesis ($H_0$):** The effect has no influence on tie changes,
   $$
   H_0 : \theta_k = 0
   $$
-- Alternative Hypothesis ($H_1$): The effect has a systematic, non-random
-  influence on tie changes.
+- **Alternative Hypothesis ($H_1$):** The effect has a systematic influence,
   $$
   H_1 : \theta_k \ne 0
   $$
-  Under standard conditions, we use the ratio of the parameter estimate to its
-  standard error (i.e., a t-score) as a test statistic:
 
+Under standard conditions, inference is based on the **t-ratio**, defined as the
+ratio of the parameter estimate to its standard error:
 $$
-\left| \frac{\theta_k}{\text{s.e.}(\theta_k)} \right| \ge 2 \Rightarrow \text{Reject } H_0
+\left| \frac{\theta_k}{\text{s.e.}(\theta_k)} \right| \ge 2 
+\;\Rightarrow\; \text{Reject } H_0
 $$
 
-If the absolute t-score exceeds 2, we consider the parameter significantly
-different from 0 at approximately the 5% significance level.
+If the absolute t-ratio exceeds 2, the parameter is considered significantly
+different from zero at approximately the 5% significance level.
 
 ### RSiena
+RSiena is an R package for estimating and simulating Stochastic Actor-Oriented
+Models (SAOMs) for network and behavioral dynamics. It is specifically designed
+to analyze longitudinal network data, where social ties and actor attributes
+evolve over time.
 
-RSiena is an R package for estimating and simulating SAOMs for network and
-behavior dynamics. It is specifically designed to model longitudinal network
-data, where social ties and actor attributes evolve over time.
+In RSiena, the distinction between modeling **network evolution** and the
+**co-evolution of networks and behavior** begins with how the dependent
+variables are specified.
 
-In RSiena, the distinction between modeling the evolution of networks and the
-co-evolution of networks and behavior begins with how the dependent variable is
-defined.
+If only the network is included as a dependent variable (i.e., a
+`sienaDependent` network object), the model focuses on network evolution. This
+framework captures how actors form, maintain, or dissolve ties over time. It
+can include covariates (such as gender or smoking status) to explain **social
+selection**, meaning that actor attributes influence the likelihood of tie
+formation or dissolution. In this case, individual attributes are treated as
+exogenous and remain fixed over time.
 
-If only the network is included as a dependent variable, the model focuses on
-network evolution. This framework captures how actors form, maintain, or
-dissolve ties over time, and it can include covariates (such as gender or
-smoking status) to explain social selection. In this case, individual attributes
-influence the likelihood of tie formation or dissolution, but actors' own
-behaviors remain fixed over time.
-
-Alternatively, RSiena allows for co-evolution models by including both a network
-and a behavioral variable as dependent variables. This setup enables the
+Alternatively, RSiena allows for **co-evolution models** by including both a
+network and a behavioral variable as dependent variables. This setup enables the
 simultaneous modeling of two processes: how networks evolve and how actors'
-behaviors change. This makes it possible to study social influence, where
-individuals may adopt behaviors similar to those of their network peers. The
-model thus estimates both the selection of network ties based on covariates and
-the influence of peers on individual behavior over time.
+behaviors change over time. This makes it possible to study **social influence**,
+where individuals may adopt behaviors similar to those of their network peers.
+The model thus captures both the selection of network ties based on covariates
+and the influence of peers on individual behavior.
 
-Below, we consider a few models that are run in RSiena, and for each model we
-consider the following:
+Below, we outline the typical steps involved in estimating SAOMs using RSiena:
 
-1. Preparing the data\
+1. **Preparing the data**\
    Import and format the network and covariate data into the appropriate
-   structure. This includes creating adjacency matrices for networks over time
-   and vectors or matrices for actor-level covariates. These are then converted
-   into `sienaDependent`, `coCovar`, or `varCovar` objects.
+   structure. This includes creating adjacency matrices for networks observed
+   over time and vectors or matrices for actor-level covariates. These are then
+   converted into RSiena objects such as `sienaDependent`, `coCovar`, or
+   `varCovar`.
 
-2. Specifying the model\
-   Define the model structure by selecting the effects to include. Use
-   `getEffects()` to retrieve the default effects object and `includeEffects()`
-   to specify additional endogenous and covariate-related effects.
+2. **Specifying the model**\
+   Define the model by selecting the effects to include. Use `getEffects()` to
+   retrieve the default effects object and `includeEffects()` to add endogenous
+   and covariate-related effects.
 
-3. Estimating the model\  Set up the estimation procedure using
-   `sienaAlgorithmCreate()` and run the model with `siena07()`. Evaluate model
-   convergence and estimation diagnostics to ensure reliable results.
+3. **Estimating the model**\
+   Set up the estimation procedure using `sienaAlgorithmCreate()` and estimate
+   the model with `siena07()`. Evaluate convergence and diagnostic statistics to
+   ensure reliable results.
 
-4. Interpreting the results\
+4. **Interpreting the results**\
    Analyze the estimated parameters to understand the underlying social
-   processes. This involves examining effect directions, magnitudes, and
-   statistical significance to interpret mechanisms of network change or
+   processes. This involves examining the direction, magnitude, and statistical
+   significance of effects to interpret mechanisms of network change or
    co-evolution.
 
+
 #### Model 1: Structural Effects
+We begin by estimating a simple model specification that includes only two
+effects: an outdegree (density) effect and a reciprocity effect. These capture
+baseline tie propensity and the tendency toward mutual ties, without
+incorporating more complex structural or covariate-based influences. In other
+words, no covariates are included, and the model is specified purely in terms of
+endogenous network dynamics.
 
-We start by estimating a simple model specification that includes only two
-effects: an outdegree (density) term and a reciprocity term, capturing baseline
-tie propensity and mutual tie preference without incorporating more complex
-structural or covariate-based influences. In other words, we are not including
-any covariates, so the model is specified purely in terms of endogenous network
-dynamics.
-
-We convert the 3D network array `net_array` into a `sienaDependent` object using
-the `sienaDependent()` function. This step tells `RSiena` that the array
-represents a dependent network variable observed over multiple waves. The
-resulting object will be used as input in the model definition and estimation.
+We first convert the 3D network array `net_array` into a `sienaDependent`
+object using the `sienaDependent()` function. This step tells `RSiena` that the
+array represents a dependent network variable observed over multiple waves. The
+resulting object is then used as input for model specification and estimation.
 
 ```{r}
 #| message: false
-
 # Convert array into RSiena dependent object
 siena_net <- sienaDependent(net_array)
 ```
@@ -965,7 +1039,6 @@ pass `siena_net` as the argument.
 
 ```{r}
 #| message: false
-
 # Create a Siena data object
 data_mod1 <- sienaDataCreate(siena_net)
 ```
@@ -985,7 +1058,6 @@ these effects directly by calling it:
 
 ```{r}
 #| message: false
-
 # Define the effects: start with default effect object
 my_effects <- getEffects(data_mod1)
 my_effects
@@ -1011,7 +1083,6 @@ to organize temporary output files and logs related to the estimation.
 
 ```{r}
 #| message: false
-
 # Define the estimation algorithm
 my_algorithm <- sienaAlgorithmCreate(projname = "saom_1", seed = 123)
 ```
@@ -1061,7 +1132,6 @@ To print a summary of the estimation results:
 
 ```{r}
 #| message: false
-
 # View results
 saom_1
 ```
@@ -1076,7 +1146,7 @@ interpretation):
 #| eval: !expr knitr::is_html_output()
 #| echo: !expr knitr::is_html_output()
 
-siena_table(saom_1, type = "html", sig = TRUE)
+siena.table(saom_1, type = "html", sig = TRUE)
 ```
 
 ```{r}
@@ -1085,7 +1155,7 @@ siena_table(saom_1, type = "html", sig = TRUE)
 #| eval: !expr knitr::is_latex_output()
 #| echo: !expr knitr::is_latex_output()
 
-siena_table(saom_1, type = "tex", sig = TRUE)
+siena.table(saom_1, type = "tex", sig = TRUE)
 ```
 
 ```{r}
@@ -1129,146 +1199,145 @@ stabilized, and the parameter estimates can be interpreted with confidence.
 
 The rate parameters capture how frequently actors are given the opportunity to
 change their outgoing ties between two consecutive observation moments. These
-are modeled as Poisson-like intensities in a continuous-time Markov framework.
-The table below provides the estimates and their interpretation:
+are modeled as intensities in a continuous-time Markov framework.
 
-- **Rate 1**: Estimate = 8.580 (SE = 0.698)\
-  On average, each actor had around 9 opportunities to change a tie between
+The estimates can be interpreted as follows:
+
+- **Rate 1**: Estimate = 8.580 (SE = 0.698)  
+  On average, each actor had about 9 opportunities to change a tie between
   waves 1 and 2.
 
-- **Rate 2**: Estimate = 7.238 (SE = 0.605)\
-  On average, each actor had around 7 opportunities to change a tie between
+- **Rate 2**: Estimate = 7.238 (SE = 0.605)  
+  On average, each actor had about 7 opportunities to change a tie between
   waves 2 and 3.
 
 These values do not indicate how many changes were actually made, but how often
-actors *could have* made a change. Since actors may choose not to change a tie
-(i.e., they maintain the current state), the actual number of changes is usually
-lower than the number of opportunities. This is why rate parameters typically
-exceed the observed average number of tie changes per actor.
+actors *could have* made a change. Since actors may choose not to modify a tie
+(i.e., retain the current state), the actual number of observed changes is
+typically lower than the number of opportunities.
+
 
 ##### Network Dynamics {.unnumbered}
 
-Once an actor has the opportunity to change, their decision is guided by an
-objective function that evaluates possible alternative network states. Each
-effect included in the model represents a social mechanism or hypothesis about
-actor preferences. The estimated coefficients reflect the direction and strength
-of these preferences. The table below summarizes the main effects from the
-model:
+Once an actor is given an opportunity to change a tie, their decision is guided
+by an objective function that evaluates alternative network states. Each effect
+included in the model represents a social mechanism influencing this decision.
 
-- **Outdegree (density)**: Estimate = --2.411 (SE = 0.041) Strong negative
-  effect: actors are generally reluctant to form many ties.
+The main effects in this model are:
 
-- **Reciprocity**: Estimate = 2.705 (SE = 0.086)\
+- **Outdegree (density)**: Estimate = –2.411 (SE = 0.041)  
+  Strong negative effect: actors are generally reluctant to form many ties.
+
+- **Reciprocity**: Estimate = 2.705 (SE = 0.086)  
   Strong positive effect: actors strongly prefer to reciprocate existing ties.
-  \|
 
-The interpretation of each parameter is as follows:
+Both estimates are statistically significant, as their t-ratios exceed 2.
 
-Outdegree (density) parameter: $\theta_\text{out} = -2.411$ \  A strong negative
-value suggests that actors prefer *sparser networks*. Forming new ties is costly
-or undesirable unless balanced by other effects. The more ties an actor has, the
-lower their objective function, making additional ties increasingly unlikely.
 
-Reciprocity parameter: $\theta_\text{rec} = 2.705$\
-This strong positive value reflects a strong preference for **reciprocating
-existing ties**. If another actor has already sent a tie to ego, ego is much
-more likely to return the tie.
+##### Interpretation of Parameters
 
-Both estimates are statistically significant, as their t-ratios are well above
-2. This supports the conclusion that density aversion and reciprocity are key
-mechanisms shaping the network.
+**Outdegree (density):** $\theta_{\text{out}} = -2.411$  
+A strong negative value indicates that actors prefer *sparser networks*. Forming
+new ties carries a cost, so additional ties are less likely unless offset by
+other favorable effects.
 
-These effects form part of each actor's utility function when evaluating
-potential changes. For actor $i$, the objective function can be written as:
+**Reciprocity:** $\theta_{\text{rec}} = 2.705$  
+A strong positive value reflects a preference for reciprocating existing ties.
+If another actor sends a tie to ego, ego is much more likely to return it.
 
-$$
-f_i(x') = \theta_\text{out} \sum_{j=1}^n x'_{ij} + \theta_\text{rec} \sum_{j=1}^n x'_{ij} x'_{ji}
-$$
 
-Let's consider two scenarios:
+##### Interpreting Utility Changes
 
-1. Adding a reciprocated tie\
-   Suppose $x_{ji} = 1$ (the other actor already sent a tie), and ego adds
-   $x_{ij} = 1$ to reciprocate. The utility change is:
+These effects jointly determine how actors evaluate potential tie changes. The
+objective function for actor $i$ can be written as:
 
 $$
--2.411 + 2.705 = 0.294
+f_i(\theta, Y^{(a)}) =
+\theta_{\text{out}} \sum_{j} y^{(a)}_{ij}
++
+\theta_{\text{rec}} \sum_{j} y^{(a)}_{ij} \, y^{(a)}_{ji}
 $$
 
-This results in a **positive utility**, indicating that the move is likely.
+To understand this, consider two scenarios:
 
-2. Adding a non-reciprocated tie\  If $x_{ji} = 0$, the tie is unreciprocated.
-   The utility is:
+1. **Adding a reciprocated tie**  
+   Suppose $y_{ji}(t) = 1$ (the other actor has already sent a tie), and actor
+   $i$ considers forming $y_{ij} = 1$. The change in utility is:
 
-$$
--2.411
-$$
+   $$
+   -2.411 + 2.705 = 0.294
+   $$
 
-This is **negative utility**, indicating that the change is unlikely.
+   This yields a **positive utility change**, making the move likely.
 
-Overall, the estimation results reveal that actors prefer to reciprocate
-existing ties and are generally cautious about forming many new ties.
-Reciprocated ties offer positive utility, while unreciprocated ties are
-penalized. These preferences are consistent with well-known social mechanisms: a
-desire for mutual relationships and an aversion to the costs of maintaining
-numerous social ties.
+2. **Adding a non-reciprocated tie**  
+   If $y_{ji}(t) = 0$, the tie is not reciprocated. The utility change is:
+
+   $$
+   -2.411
+   $$
+
+   This is **negative**, making the change unlikely.
+
+
+Overall, the results indicate that actors strongly prefer reciprocated ties and
+are cautious about forming many new ties. Reciprocated ties generate positive
+utility, while unreciprocated ties are penalized. These patterns reflect
+well-known social mechanisms: a preference for mutual relationships and an
+aversion to the costs of maintaining many ties.
 
 #### Model 2: Structural + Covariate Effects
 
-Sociological theory suggests that, beyond general tendencies for reciprocity and
-transitivity, actors are influenced by individual characteristics when forming
-or maintaining ties. In adolescent friendship networks, one of the most
+Sociological theory suggests that, beyond general tendencies such as reciprocity
+and transitivity, actors are influenced by individual characteristics when
+forming or maintaining ties. In adolescent friendship networks, one of the most
 important predictors of tie formation is behavioral similarity, such as shared
 lifestyle choices or habits.
 
-Having established the basic SAOM using only endogenous structural effects above
-(like outdegree and reciprocity), we now extend the model to account for
-actor-level covariates. By incorporating exogenous attributes such as sex and
+Having established a baseline SAOM using only endogenous structural effects
+(e.g., outdegree and reciprocity), we now extend the model to incorporate
+actor-level covariates. By including exogenous attributes such as sex and
 smoking behavior, we can investigate how individual characteristics shape tie
-formation in addition to the structural patterns already captured. This richer
-specification allows us to test more nuanced hypotheses about social selection
-and influence mechanisms working within the network.
+formation in addition to structural patterns. This richer specification allows
+us to test more nuanced hypotheses about social selection and influence
+mechanisms within the network.
 
-As mentioned in @sec-exeffects, incorporating covariates into the objective
-function means we need to differentiate between:
+As discussed in @sec-exeffects, incorporating covariates into the objective
+function requires distinguishing between different types of effects:
 
-- Ego effects: How an actor's own covariate value influences their tendency to
-  form or maintain ties (e.g., do smokers send more ties?).
-- Alter effects: How the recipient's covariate value affects the likelihood of
-  receiving a tie (e.g., are smokers more likely to be chosen as friends?).
-- Similarity effects: Whether actors prefer to form ties with others who are
-  similar to themselves in a given attribute (e.g., are adolescents more likely
-  to befriend others with similar smoking behavior?).
+- **Ego effects**: How an actor's own covariate value influences their tendency
+  to form or maintain ties (e.g., do smokers send more ties?).
+- **Alter effects**: How the recipient's covariate value affects the likelihood
+  of receiving a tie (e.g., are smokers more likely to be chosen as friends?).
+- **Similarity effects**: Whether actors prefer to form ties with others who are
+  similar to themselves (e.g., are adolescents more likely to befriend others
+  with similar smoking behavior?).
 
-This new specification remains actor-oriented and stochastic, but adds an
-important layer of covariate-based preference, allowing us to distinguish
+This extended specification remains actor-oriented and stochastic but adds an
+important layer of covariate-based preference. It allows us to distinguish
 between purely structural mechanisms and individual-level traits influencing
-network evolution. It also aligns more closely with theoretical insights from
-social psychology and adolescent health research.
+network evolution, aligning more closely with theoretical insights from social
+psychology and adolescent health research.
 
-Building on the simple structural model (Model 1) that included only the
-outdegree (density) and reciprocity effects, we now extend our specification to
-incorporate exogenous covariate information resulting in a more nuanced model of
-friendship dynamics.
+Building on Model 1, which included only outdegree (density) and reciprocity, we
+now incorporate exogenous covariate information to obtain a more nuanced model
+of friendship dynamics.
 
-In our Model 2 here, we treat sex as a fixed covariate and smoking as a changing
-covariate, measured at each wave. We now include the following effects in
-addition to the structural ones:
+In Model 2, we treat sex as a fixed covariate and smoking behavior as a changing
+covariate observed at each wave. We include the following additional effects:
 
-- Ego effect of smoking: Does an adolescent's smoking status affect how many
-  ties they send?
-- Alter effect of smoking: Are smokers more popular in the network?
-- Similarity in smoking: Are adolescents more likely to form ties with others
-  who smoke similarly?
-- Sex effects: These can be included to examine tie formation with respect to
-  the sex of the pupil.
+- **Ego effect of smoking**: Does an adolescent's smoking status influence how
+  many ties they send?
+- **Alter effect of smoking**: Are smokers more likely to receive ties?
+- **Similarity in smoking**: Are adolescents more likely to form ties with
+  others who have similar smoking behavior?
+- **Sex effects**: Do patterns of tie formation differ by sex?
 
-In sum, Model 2 captures not only who adolescents choose to befriend
-structurally, but also how individual traits shape social dynamics providing a
-more realistic and theoretically grounded model of network evolution.
+In sum, Model 2 captures not only structural tendencies in friendship formation
+but also how individual traits shape social dynamics, resulting in a more
+realistic and theoretically grounded model of network evolution.
 
-We begin by converting the 3D network array we created above into a
-`sienaDependent` object:
+We begin by converting the 3D network array into a `sienaDependent` object:
 
 ```{r}
 #| message: false
@@ -1364,7 +1433,7 @@ Finally, as before, we display the model results inline:
 #| eval: !expr knitr::is_html_output()
 #| echo: !expr knitr::is_html_output()
 
-siena_table(saom_2, type = "html", sig = TRUE)
+siena.table(saom_2, type = "html", sig = TRUE)
 ```
 
 ```{r}
@@ -1373,7 +1442,7 @@ siena_table(saom_2, type = "html", sig = TRUE)
 #| eval: !expr knitr::is_latex_output()
 #| echo: !expr knitr::is_latex_output()
 
-siena_table(saom_2, type = "tex", sig = TRUE)
+siena.table(saom_2, type = "tex", sig = TRUE)
 ```
 
 ```{r}
@@ -1384,91 +1453,103 @@ f <- if (knitr::is_latex_output()) "saom_2.tex" else "saom_2.html"
 cat(readLines(f), sep = "\n")
 ```
 
-We now interpret the results from Model 2, starting with an assessment of
-convergence, followed by the interpretation of parameter estimates.
+We now interpret the results from Model 2, beginning with an assessment of
+convergence, followed by the interpretation of the estimated parameters.
 
 ##### Convergence Assessment {.unnumbered}
 
 In Model 2, all convergence t-ratios are below 0.07, and the overall maximum
-convergence ratio is 0.11. This indicates good convergence, and we can safely
-interpret the estimated parameters.
+convergence ratio is 0.11. This indicates good convergence, and the parameter
+estimates can be interpreted with confidence.
 
 ##### Rate Parameters {.unnumbered}
 
-Rate parameters determine how frequently actors are allowed to change their
-outgoing ties between time periods. These are estimated as:
+Rate parameters determine how frequently actors are given the opportunity to
+change their outgoing ties between observation moments. The estimated rates are:
 
-- Period 1: 10.761 (SE = 1.054)
-- Period 2: 8.981 (SE = 0.850)
+- **Period 1**: 10.761 (SE = 1.054)
+- **Period 2**: 8.981 (SE = 0.850)
 
-These values suggest that, on average, each actor had about 10 opportunities to
-change a tie between wave 1 and 2, and about 9 opportunities between wave 2 and
-3. These values reflect the speed of network change over time but do not
-represent the number of actual changes.
+These values suggest that, on average, each actor had approximately 11
+opportunities to change a tie between waves 1 and 2, and about 9 opportunities
+between waves 2 and 3. Importantly, these values reflect the *rate of
+opportunities* for change, not the number of actual tie changes.
 
 ##### Network Dynamics {.unnumbered}
 
-- **Outdegree (Density)**: $-2.859$ (SE = 0.053)\
-  This strong negative value reflects a general reluctance to form many ties,
-  leading to sparse networks.
+- **Outdegree (density)**: $-2.859$ (SE = 0.053)\
+  This strong negative effect indicates that actors are generally reluctant to
+  form many ties, leading to relatively sparse networks.
 
 - **Reciprocity**: $1.991$ (SE = 0.089)\
-  Indicates a strong tendency for actors to reciprocate existing ties.
+  This positive effect reflects a strong tendency for actors to reciprocate
+  incoming ties.
 
-- **Transitive Triplets**: $0.448$ (SE = 0.026)\
-  Suggests a preference for transitive closure; if $i$ is tied to $j$, and $j$
-  is tied to $k$, then $i$ is more likely to tie to $k$.
+- **Transitive triplets**: $0.448$ (SE = 0.026)\
+  This positive effect indicates a preference for triadic closure: if actor $i$
+  is tied to $j$, and $j$ is tied to $k$, then $i$ is more likely to form a tie
+  to $k$.
 
-These three effects together capture core structural properties of the network
-dynamics: sparsity, mutuality, and local clustering. We now look at the
-covariate related structural effects and start with the covariate sex:
+Together, these effects capture key structural features of the network dynamics:
+sparsity, reciprocity, and local clustering.
 
-- **Sex Alter**: $-0.154$ (SE = 0.097, not significant)\
-  There is no clear evidence that actors avoid or prefer alters based on their
-  sex.
+We now turn to covariate-related effects, starting with sex:
 
-- **Sex Ego**: $0.159$ (SE = 0.103, not significant)\
-  Indicates no significant difference in tie formation activity between male and
-  female actors.
+- **Sex alter**: $-0.154$ (SE = 0.097, not significant)\
+  There is no evidence that actors systematically prefer or avoid alters based
+  on their sex.
 
-- **Sex Similarity**: $0.912$ (SE = 0.093)\
-  Shows a strong and significant tendency for actors to form ties with others of
-  the same sex which is a clear sign of sex-based homophily.
+- **Sex ego**: $0.159$ (SE = 0.103, not significant)\
+  This suggests no significant difference in tie-sending activity between male
+  and female actors.
 
-The SAOM estimation includes three effects based on the covariate `sex`, coded
-as `0` for boys and `1` for girls, and centered around the mean value
+- **Sex similarity**: $0.912$ (SE = 0.093)\
+  This strong and statistically significant effect indicates a clear tendency
+  toward same-sex friendships, i.e., sex-based homophily.
+
+The SAOM specification includes three effects based on the covariate `sex`,
+which is coded as `0` for boys and `1` for girls and is centered around its
+mean value.
 
 ```{r}
 mean(sex_cov)
 ```
-i.e., $\bar{v} = 0.434$. So approximately 43.4% of actors are girls in this
-dataset. Centering covariates is a default behavior in RSiena, ensuring that
-estimated effects are interpreted relative to the average actor. After
-centering, the transformed covariate values become:
+i.e., $\bar{v} = 0.434$. Thus, approximately 43.4% of actors in this dataset
+are girls. In `RSiena`, covariates are mean-centered by default, ensuring that
+estimated effects are interpreted relative to the average actor.
 
-Because all covariates are mean-centered, the contribution of a tie from actor
-$i$ to $j$ to the actor's objective function is:
+After centering, the covariate values become:
 $$
 v_i - \bar{v} =
 \begin{cases}
--0.434 & \text{for boys} \\
-0.566 & \text{for girls}
+-0.434 & \text{if actor } i \text{ is a boy} \\
+\;\;0.566 & \text{if actor } i \text{ is a girl}
 \end{cases}
 $$
-This transformation affects how the ego and alter effects are applied to the
-objective function. The objective function for actor $i$ includes covariate
-effects as follows:
+
+Because covariates are mean-centered, the contribution of a potential tie
+$y_{ij}$ to the objective function depends on these centered values. The
+covariate-related part of the objective function for actor $i$, when evaluating
+a candidate network $Y^{(a)}$, can be written as:
 
 $$
-f_i(x’) = \theta_{\text{ego}}(v_i - \bar{v}) + \theta_{\text{alter}}(v_j - \bar{v}) + \theta_{\text{sim}} \cdot I(v_i = v_j)
+f_i(\theta, Y^{(a)}) =
+\theta_{\text{ego}} (v_i - \bar{v}) \sum_{j} y^{(a)}_{ij}
+\;+\;
+\theta_{\text{alter}} \sum_{j} y^{(a)}_{ij} (v_j - \bar{v})
+\;+\;
+\theta_{\text{sim}} \sum_{j} y^{(a)}_{ij} \, I(v_i = v_j)
 $$
 
-where
+where:
 
-- $v_i$ and $v_j$ are the actor's sex values (0 or 1),
-- $\bar{v} = 0.434$ is the sample mean,
-- $I(v_i = v_j)$ is an indicator variable which equals to 1 if $i$ and $j$ share
-  the same sex, and 0 otherwise.
+- $v_i$ and $v_j$ are the covariate values (sex) for actors $i$ and $j$,
+  respectively (coded as 0 = boy, 1 = girl),
+- $\bar{v} = 0.434$ is the sample mean of the covariate,
+- $y^{(a)}_{ij}$ indicates the presence of a tie from $i$ to $j$ in the
+  candidate network $Y^{(a)}$,
+- $I(v_i = v_j)$ is an indicator function equal to 1 if actors $i$ and $j$
+  share the same sex, and 0 otherwise.
 
 @tbl-sexeff below lists some example contributions to the objective function
 
@@ -1514,43 +1595,51 @@ mean(smoking_cov)
 ```
 
 We now interpret the covariate effects related to smoking behavior. In this
-model, smoking is treated as a three-level categorical covariate: 1 =
-Non-smoker, 2 = Occasional, 3 = Regular. The mean of the covariate, computed via
-`mean(smoke_cov)`, is approximately $\bar{v} = 1.377$.
+model, smoking is treated as a three-level categorical covariate:
+1 = Non-smoker, 2 = Occasional, 3 = Regular. The mean of the covariate,
+computed via `mean(smoke_cov)`, is approximately $\bar{v} = 1.377$.
 
-The centered values become:
+After mean-centering (as done by default in RSiena), the transformed values are:
 
 $$
 v_i - \bar{v} =
 \begin{cases}
--0.377 & \text{if } s_i = 1 \quad \text{(Non-smoker)} \\
-0.623  & \text{if } s_i = 2 \quad \text{(Occasional smoker)} \\
-1.623  & \text{if } s_i = 3 \quad \text{(Regular smoker)}
+-0.377 & \text{if } v_i = 1 \quad \text{(Non-smoker)} \\
+0.623  & \text{if } v_i = 2 \quad \text{(Occasional smoker)} \\
+1.623  & \text{if } v_i = 3 \quad \text{(Regular smoker)}
 \end{cases}
 $$
 
-The contribution of $x_{ij}$ (a tie from actor $i$ to actor $j$) to the
-objective function is given by:
+The contribution of a potential tie $y_{ij}(t)$ (from actor $i$ to actor $j$)
+to the objective function is given by:
 
 $$
-\theta_{\text{ego}}(v_i - \bar{v}) + \theta_{\text{alter}}(v_j - \bar{v}) + \theta_{\text{sim}} \left(1 - \frac{|v_i - v_j|}{R_v}\right)
-$$
-where $R_v$ refers to the range of the covariate $v$. Substituting the estimated
-values from the model:
-
-$$
-0.077(v_i - 1.377) + 0.109(v_j - 1.377) + 0.380 \left(1 - \frac{|v_i - v_j|}{2} \right)
+\theta_{\text{ego}}(v_i - \bar{v}) 
++ \theta_{\text{alter}}(v_j - \bar{v}) 
++ \theta_{\text{sim}} \left(1 - \frac{|v_i - v_j|}{R_v}\right)
 $$
 
-This function combines ego and alter contributions based on smoking level, and
-adds a similarity effect that rewards ties between actors with similar smoking
+where $R_v$ denotes the range of the covariate $v$ (here, $R_v = 3 - 1 = 2$).
+Substituting the estimated parameter values from the model:
+
+$$
+0.077(v_i - 1.377) + 0.109(v_j - 1.377) 
++ 0.380 \left(1 - \frac{|v_i - v_j|}{2} \right)
+$$
+
+This expression combines:
+
+- an **ego effect**, capturing how smoking behavior influences how many ties
+  actor $i$ tends to send,
+- an **alter effect**, capturing how smoking behavior affects how attractive
+  actor $j$ is as a recipient of ties,
+- and a **similarity effect**, which rewards ties between actors with similar
+  smoking levels.
+
+@tbl-smokeeff illustrates how these smoking-related covariate effects contribute
+to the objective function. Each cell reports the total contribution associated
+with a potential tie from ego $i$ to alter $j$, given their respective smoking
 levels.
-
-@tbl-smokeeff shows how smoking-related covariate effects contribute to the
-objective function in SAOM. Each cell computes the total effect of a potential
-tie from ego to alter based on their respective smoking levels. The function
-combines ego and alter contributions based on smoking level, and adds a
-similarity effect that rewards ties between actors with similar smoking levels.
 
 ::: {#tbl-smokeeff}
 
@@ -1575,242 +1664,36 @@ likely to form ties, especially regular-to-regular smokers, indicating a strong
 homophily pattern. The ego and alter terms slightly amplify or reduce this
 tendency depending on individual smoking levels.
 
-## Modeling the Co-Evolution of Networks and Behaviors
-
-Stochastic Actor-Oriented Models (SAOMs) can be extended beyond purely network
-dynamics to model the **co-evolution of social networks and individual
-behaviors**. This allows us to investigate not only how ties form and dissolve,
-but also how individual characteristics evolve in response to social influence
-and vice versa.
-
-In this dual-dynamic setting, we specify two dependent processes: the **network
-evolution** (as before), and the **behavioral evolution** of some attribute
-(e.g., smoking frequency, political attitudes). These processes are treated as
-**interdependent**, allowing us to disentangle two core social mechanisms:
-
-- **Social Selection**: Individuals choose their friends based on behavioral
-  similarity.\
-- **Social Influence**: Individuals adapt their behavior to align with that of
-  their friends.
-
-To illustrate the logic of co-evolution, consider the following example:
-*Similarity in smoking behavior between friends could be the result of two
-different but related mechanisms*:
-
-- Selection: "A smoker may tend to have smoking friends because, once somebody
-  is a smoker, he or she is likely to meet other smokers in smoking areas and
-  thus has more opportunities to form friendship ties with them."
-- Influence: "The friendship with a smoker may have made an actor start smoking
-  in the first place."
-
-This example captures the intuitive appeal of SAOMs for longitudinal social
-data: the model lets us statistically distinguish whether behavioral similarity
-among connected individuals is due to homophilous tie formation (selection) or
-behavioral adaptation over time (influence).
-
-In this SAOM framework, both the network and the behavioral variable are treated
-as endogenous, time-varying processes that evolve in continuous time and
-interact at the micro-level.
-
-The data structure for co-evolution models involves longitudinal panel data
-observed at two or more time points. This includes: - A dynamic network,
-represented by its adjacency matrix at each wave. - A set of covariates, which
-can be constant over time. - One or more behavioral variables, which are treated
-as ordinal categorical variables and evolve over time.
-
-This setup allows us to model how actors form and dissolve ties (social
-selection), and how actors change their behavior in response to the network
-(social influence), using a unified statistical framework.
-
-As outlined above, SAOMs are built on the formalism of continuous-time Markov
-chains (CTMCs). The key features of CTMCs, namely, a finite state space,
-continuous time, and the memoryless (Markov) property, continue to apply here as
-well. What changes is the *structure of the state space*.
-
-In the co-evolution case, the state space becomes the set of all possible
-combinations of network ties and behavioral states. Specifically, if $n$ is the
-number of actors and $B$ is the number of behavior categories, the total number
-of possible configurations is given by:
-
-$$
-|\mathcal{C}| = 2^{n(n-1)} \times C^n
-$$
-
-This exponential growth in the state space reflects the combinatorial complexity
-of jointly modeling ties and behaviors. The Markovian assumption still holds
-though, meaning the probability of a change depends only on the current
-configuration, not the full history. The process unfolds in continuous time,
-through small micro-steps: at each point, a randomly chosen actor may either
-change a tie or adjust their behavior by one unit.
-
-Importantly, actors are assumed to control both their social ties and their
-behavior, making decisions based on immediate gains in a personal objective
-function. This results in two separate utility functions: one governing network
-decisions (e.g., tie formation or dissolution), and the other governing
-behavioral adaptation (e.g., increasing or decreasing smoking). These functions
-are defined over the full state of the system; actors are assumed to have
-perfect knowledge of the network and the behavior of all others, though they act
-myopically (i.e., optimizing only immediate returns). This joint process is
-governed by separate but parallel mechanisms for network and behavioral dynamics
-is summarized in @tbl-coevol. Each micro-step thus has two components:
-
-1. Occurrence: determining what kind of change is considered (network or
-   behavior) and who the focal actor is.
-2. Preference: evaluating the desirability of each possible change, governed by
-   objective functions.
-
-::: {#tbl-coevol}
-  | Type of Change    | Occurrence Mechanism   | Preference Mechanism        |
-  | :---------------- | ---------------------- | --------------------------- |
-  | Network change    | Network rate function  | Network objective function  |
-  | Behavioral change | Behavior rate function | Behavior objective function |
-
-Components of the Co-Evolution Model in SAOMs
-:::
-
-### Rate Functions
-
-As seen in @tbl-coevol, each actor has two distinct opportunities to change: one
-involving their social ties (network) and one involving their behavior. The rate
-functions govern how often these opportunities arise over time.
-
-Just as in the structural SAOM, the process operates in continuous time.
-However, for co-evolution, there are now two separate rate functions per actor:
-
-- The **network rate function** $\lambda_i^{\text{net}}$ determines how
-  frequently actor $i$ may revise their outgoing ties.
-- The **behavior rate function** $\lambda_i^{\text{beh}}$ governs how frequently
-  actor $i$ can adjust their behavioral state.
-
-The waiting times until such events occur are modeled as exponentially
-distributed:
-
-$$
-T_i^{\text{net}} \sim \text{Exp}(\lambda_i^{\text{net}})
-$$
-
-$$
-T_i^{\text{beh}} \sim \text{Exp}(\lambda_i^{\text{beh}})
-$$
-
-Together, these define the total waiting time for either type of event:
-
-$$
-T_i^{\text{net,beh}} \sim \text{Exp}(\lambda_i^{\text{net}} + \lambda_i^{\text{beh}})
-$$
-
-In a **homogeneous specification**, the rates are constant across actors:
-
-$$
-\lambda_i^{\text{net}} = \lambda^{\text{net}}, \quad \lambda_i^{\text{beh}} = \lambda^{\text{beh}}
-$$
-
-The combined rate across all $n$ actors becomes:
-
-$$
-\lambda_{\text{tot}} = n(\lambda^{\text{net}} + \lambda^{\text{beh}})
-$$
-
-Accordingly, the probability that the next micro-step is of a specific type is:
-
-$$
-P(\text{network micro-step}) = \frac{\lambda^{\text{net}}}{\lambda^{\text{net}} + \lambda^{\text{beh}}}
-$$
-
-$$
-P(\text{behavioral micro-step}) = \frac{\lambda^{\text{beh}}}{\lambda^{\text{net}} + \lambda^{\text{beh}}}
-$$
-
-This distinction plays an important role in empirical modeling. For instance, in
-studies of adolescent peer networks and smoking behavior, we often observe that
-network changes occur more frequently than behavioral changes. This reality is
-reflected in the model by setting $\lambda^{\text{net}} > \lambda^{\text{beh}}$.
-
-Thus, the rate functions control the rhythm of the co-evolutionary process,
-determining how often actors are allowed to revise either their ties or
-behaviors.
-
-### Network and Behavioral Objective Functions
-
-In the co-evolution framework of SAOMs, actors can make changes not only to
-their outgoing network ties but also to their own behavior. To model this dual
-evolution, we specify two objective functions: one for network evolution (as
-introduced earlier) and one for behavioral change.
-
-The network objective function remains the same as in purely network-based
-models and captures preferences for structural features such as reciprocity,
-transitivity, or effects of covariates. In addition, we now also define a
-**behavioral utility function** that represents the actor's motivation to adjust
-their behavior in response to the social environment.
-
-This behavioral objective function determines the likelihood of an actor
-increasing, decreasing, or maintaining their behavior. At each micro-step, if
-the actor is selected for a possible behavioral change, they evaluate
-alternative behavioral states and choose probabilistically, guided by the
-behavioral utility.
-
-We assume the data consist of:
-
-- A dynamic network $x(t)$.
-- A set of constant covariates $V_1, \dots, V_H$ (e.g., sex).
-- A set of changing behavior variables $Z_1(t), \dots, Z_L(t)$ measured at
-  $M \geq 2$ time points.
-
-The full state at any time $t_m$ is written as:
-
-$$
-(x, z)(t_m)
-$$
-
-where $x$ is the network and $z$ is the vector of behavioral values. Each actor
-evaluates possible behavior changes using an objective function:
-
-$$
-f_i^{\text{beh}}(z', x, v, z) = \sum_k \theta_k s_{ik}^{\text{beh}}(z', x, v, z)
-$$
-
-Here:
-
-- $z'$ is the proposed behavior configuration.
-- $x$ is the current network.
-- $v$ are actor-level covariates.
-- $z$ is the current behavioral state.
-- $s_{ik}^{\text{beh}}$ are behavioral statistics for actor $i$ (e.g.,
-  similarity to friends).
-- $\theta_k$ are the parameters to be estimated.
-
-This function assigns a utility to each possible behavior level. The actor
-probabilistically chooses the new behavior value using a random utility model,
-similar to how tie changes are selected in the network part of the model. It
-consists of several behavioral effects that reflect hypotheses about what drives
-behavioral change, some of which mentioned in the following.
-
-#### Effects in the Behavioral Objective Function
+#### Modeling the Co-Evolution of Networks and Behaviors
 
 ##### 1. Basic Shape Effects {.unnumbered}
 
-These effects govern the overall shape or distribution of the behavior:
+These effects govern the overall shape or distribution of the behavior.
 
-- Linear shape effect Encourages increase or decrease in behavior depending on
-  the sign of the parameter:
-
-  $$
-  s^\text{beh}_{i,\text{linear}}(x, z, v) = z_i
-  $$
-  If $\theta_{\text{lin}} > 0$, higher behavior values are favored.
-
-- Quadratic shape effect Penalizes extreme behavioral values (high or low),
-  favoring moderation:
+- **Linear shape effect**  
+  This effect encourages an increase or decrease in behavior depending on the
+  sign of the parameter:
 
   $$
-  s^\text{beh}_{i,\text{quadratic}}(x, z, v) = z_i^2
+  s^\text{beh}_{i,\text{linear}}(z) = z_i
+  $$
+
+  If $\theta_{\text{lin}} > 0$, higher behavior values are favored. If
+  $\theta_{\text{lin}} < 0$, lower behavior values are favored.
+
+- **Quadratic shape effect**  
+  This effect penalizes extreme behavioral values (high or low), favoring
+  moderation:
+
+  $$
+  s^\text{beh}_{i,\text{quadratic}}(z) = z_i^2
   $$
 
   A negative estimate for this effect leads to stabilization around the middle
-  values of the behavioral scale, i.e., favors moderate behavior (e.g., smoking
-  occasionally rather than regularly).
+  values of the behavioral scale, i.e., it favors moderate behavior (e.g.,
+  smoking occasionally rather than regularly).
 
-Note that the basic shape eﬀects must be always included in the model
+Note that the basic shape effects are typically included in the behavioral model
 specification.
 
 ##### 2. Social Influence Effects {.unnumbered}
@@ -1820,33 +1703,40 @@ their behavior to become more similar to their peers. These effects assume that
 individuals are influenced by the behavioral attributes of those they are
 connected to.
 
-- Average Similarity\
+- **Average similarity**  
   This effect captures how similar an actor's behavior is to their alters'
   behaviors, averaged across all outgoing ties. It reflects per-peer influence.
   The statistic is defined as:
 
   $$
-  s^\text{beh}_{i,\text{avsim}}(x, z, v) = \frac{1}{x_{i+}} \sum_{j=1}^n x_{ij} \left( \text{sim}_z(ij) - \overline{\text{sim}_z} \right)
+  s^\text{beh}_{i,\text{avsim}}(Y, z) =
+  \frac{1}{y_{i+}} \sum_{j=1}^n y_{ij}
+  \left( \text{sim}_z(i,j) - \overline{\text{sim}_z} \right)
   $$
+
   where:
-  - $x_{ij}$ is 1 if actor $i$ has a tie to actor $j$, and 0 otherwise.
-  - $x_{i+}$ is the number of outgoing ties for actor $i$.
-  - $\text{sim}_z(ij)$ is the behavioral similarity between actor $i$ and $j$
-    defined as
+
+  - $y_{ij}$ is 1 if actor $i$ has a tie to actor $j$, and 0 otherwise.
+  - $y_{i+} = \sum_{j=1}^n y_{ij}$ is the number of outgoing ties for actor $i$.
+  - $\text{sim}_z(i,j)$ is the behavioral similarity between actor $i$ and actor
+    $j$, defined as:
     $$
-    \text{sim}_z(ij) = 1 - \frac{|z_i - z_j|}{R_z}
+    \text{sim}_z(i,j) = 1 - \frac{|z_i - z_j|}{R_z}
     $$
-    where $R_z$ is the range of the behavior variable
+    where $R_z$ is the range of the behavior variable.
   - $\overline{\text{sim}_z}$ is the average similarity across all dyads in the
     network and acts as a centering constant. This centering ensures that the
     statistic has an interpretable baseline, distinguishing whether actors are
-    more similar or less similar to their peers compared to the overall average.
-- Total Similarity\
+    more or less similar to their peers compared to the overall average.
+
+- **Total similarity**  
   This variant captures the total amount of similarity, not normalized by the
   number of ties. It gives more weight to actors with more alters:
 
   $$
-  s^\text{beh}_{i,\text{totsim}}(x, z, v) = \sum_{j=1}^n x_{ij} \left( \text{sim}_z(ij) - \overline{\text{sim}_z} \right)
+  s^\text{beh}_{i,\text{totsim}}(Y, z) =
+  \sum_{j=1}^n y_{ij}
+  \left( \text{sim}_z(i,j) - \overline{\text{sim}_z} \right)
   $$
 
 Both versions reflect social influence. A positive parameter estimate means that
@@ -1860,60 +1750,239 @@ behavior, although negative influence parameters are rare and often
 theoretically unexpected.
 
 The difference between the two lies in how the influence is scaled: average
-similarity treats each alter equally (per tie), while total similarity
-accumulates influence, potentially making actors with more peers more
-susceptible to conformity.
+similarity treats influence on a per-tie basis, while total similarity
+accumulates influence across all alters, potentially making actors with more
+peers more susceptible to conformity.
 
 ##### 3. Network Position Effects {.unnumbered}
 
-Position effects are used in SAOMs to model social selection based on behavior.
-Specifically, they examine whether actors are more or less likely to form ties
-with others based on the behavioral values of those potential tie targets
-(alters).
+Network position effects model whether an actor's behavior is associated with
+their position in the network. In this context, they are behavioral effects:
+they ask whether actors with more incoming or outgoing ties tend to have higher
+or lower behavioral values.
 
-- Outdegree effect Investigates whether actors with more outgoing ties behave
-  differently:
+- **Outdegree effect**  
+  This effect investigates whether actors with more outgoing ties tend to have
+  different behavioral values:
 
   $$
-  s^\text{beh}_{i,\text{out}}(x, z, v) = z_i \sum_{j=1}^n x_{ij}
+  s^\text{beh}_{i,\text{out}}(Y, z) =
+  z_i \sum_{j=1}^n y_{ij}
   $$
 
-- Indegree effect Models whether being popular (having many incoming ties) is
+- **Indegree effect**  
+  This effect models whether being popular (having many incoming ties) is
   related to behavior:
 
   $$
-  s^\text{beh}_{i,\text{ind}}(x, z, v) = z_i \sum_{j=1}^n x_{ji}
+  s^\text{beh}_{i,\text{ind}}(Y, z) =
+  z_i \sum_{j=1}^n y_{ji}
   $$
 
-A positive parameter estimate for a position effect means that actors tend to
-form more ties to alters with higher behavioral values. For instance, if the
-behavior is smoking, a positive estimate suggests a preference for connecting to
-individuals who smoke more.
+A positive parameter estimate for a position effect means that higher behavioral
+values are associated with the corresponding network position. For instance, if
+the behavior is smoking, a positive outdegree effect suggests that actors who
+smoke more tend to send more ties, while a positive indegree effect suggests
+that actors who smoke more tend to receive more ties.
 
-A negative parameter estimate indicates that actors tend to form ties to alters
-with lower behavioral values. This may reflect a tendency to avoid peers with
-more extreme behaviors (e.g., heavy smokers) and instead connect with less
-involved individuals.
+A negative parameter estimate indicates that higher behavioral values are
+associated with fewer ties in that position. For example, actors with higher
+smoking values may be less active in sending ties or less popular as recipients,
+depending on whether the outdegree or indegree effect is negative.
 
 ##### 4. Covariate Effects {.unnumbered}
 
-Covariate effects capture how individual-level attributes, such as sex, age, or
-socioeconomic status, influence the formation and maintenance of social ties.
-These effects allow us to test theories about homophily (preference for similar
-others) or status-based selection.
+Covariate effects capture how actor-level attributes, such as sex, age, or
+socioeconomic status, directly influence behavioral change. Unlike social
+influence effects, these effects do not depend on the network ties themselves;
+they test whether actors with certain attributes tend to have higher or lower
+behavioral values.
 
-Covariates (e.g., sex, SES) can directly influence behavior, independent of the
-network:
-
-- Covariate effect Actor attributes (covariates) can be included in the
-  behavioral objective function as main effects and will indicate whether an
-  attribute $v_i$ is associated with higher or lower behavior values:
+- **Covariate effect**  
+  Actor attributes can be included in the behavioral objective function as main
+  effects. This indicates whether an attribute $v_i$ is associated with higher
+  or lower behavior values:
 
   $$
-  s^\text{beh}_{i,\text{covariate}}(x, z, v) = v_i
+  s^\text{beh}_{i,\text{covariate}}(v) = v_i
   $$
 
 These effects capture how an actor's covariate value influences their tendency
 to increase or decrease their behavioral score. For example, we might ask: Are
-males more likely to adopt a risky behavior? Do older students tend to reduce
-smoking over time?
+boys or girls more likely to adopt a risky behavior? Do older students tend to
+reduce smoking over time?
+
+
+##### Model 3: Network and Behavioral Co-Evolution
+
+We now estimate a co-evolution model in which the friendship network and smoking
+behavior are both treated as dependent processes. The network evolves through
+changes in ties, while smoking behavior evolves through changes in actors'
+behavioral states.
+
+> Key point: here `smoking_beh` is no longer only a covariate. It is a **behavioral dependent variable**, so the model estimates both **selection** effects and **influence** effects.
+
+
+```{r}
+#| message: false
+
+# Network dependent variable
+siena_net <- sienaDependent(net_array)
+
+# Behavioral dependent variable: smoking over waves
+smoking_beh <- sienaDependent(smoking_array, type = "behavior")
+
+# Time-constant covariate: sex
+sex_cov <- coCovar(sex_num)
+
+# Create RSiena data object
+data_coev <- sienaDataCreate(
+  siena_net,
+  smoking_beh,
+  sex_cov
+)
+```
+
+We now specify both network and behavioral effects.
+
+```{r}
+#| message: false
+
+# Start with default effects
+my_effects <- getEffects(data_coev)
+
+# Network structural effects
+my_effects <- includeEffects(
+  my_effects,
+  outdegree, recip, transTrip,
+  name = "siena_net"
+)
+
+# Sex effects on network evolution
+my_effects <- includeEffects(
+  my_effects,
+  egoX, altX, simX,
+  name = "siena_net",
+  interaction1 = "sex_cov"
+)
+
+# Smoking-based selection effects on network evolution
+my_effects <- includeEffects(
+  my_effects,
+  egoX, altX, simX,
+  name = "siena_net",
+  interaction1 = "smoking_beh"
+)
+
+# Behavioral dynamics: shape effects are typically included by default,
+# but we explicitly include peer influence via average alter behavior
+my_effects <- includeEffects(
+  my_effects,
+  avAlt,
+  name = "smoking_beh",
+  interaction1 = "siena_net"
+)
+
+my_effects
+```
+
+We define the estimation settings using `sienaAlgorithmCreate()`.
+
+```{r}
+#| message: false
+my_algorithm <- sienaAlgorithmCreate(
+  projname = "saom_coev",
+  seed = 123
+)
+```
+
+We now estimate the co-evolution model.
+
+```{r}
+#| message: false
+#| output: false
+#| cache: true
+
+saom_coev <- siena07(
+  my_algorithm,
+  data = data_coev,
+  effects = my_effects,
+  batch = TRUE
+)
+```
+Finally, we display the model results inline.
+
+```{r}
+#| output: false
+#| message: false
+#| eval: !expr knitr::is_html_output()
+#| echo: !expr knitr::is_html_output()
+
+siena.table(saom_coev, type = "html", sig = TRUE)
+```
+
+
+```{r}
+#| output: false
+#| message: false
+#| eval: !expr knitr::is_latex_output()
+#| echo: !expr knitr::is_latex_output()
+
+siena.table(saom_coev, type = "tex", sig = TRUE)
+```
+
+```{r}
+#| echo: false
+#| results: asis
+f <- if (knitr::is_latex_output()) {
+  "saom_coev.tex"
+} else {
+  "saom_coev.html"
+}
+cat(readLines(f), sep = "\n")
+```
+
+
+
+In summary, we note the following:
+
+- **Network structure**  
+  - Strong negative outdegree (density) effect $\implies$ actors are selective; the network is sparse.  
+  - Strong positive reciprocity $\implies$ actors tend to return ties.  
+  - Positive transitive triplets $\implies$ evidence of triadic closure and clustering.  
+
+- **Sex effects (covariates)**  
+  - Significant ego effect $\implies$ sex influences tie-sending activity.  
+  - Significant alter effect $\implies$ sex affects likelihood of receiving ties.  
+  - Strong positive similarity effect $\implies$ clear sex-based homophily.  
+
+- **Smoking and network selection**  
+  - No significant ego, alter, or similarity effects for smoking  
+  - $\implies$ no evidence that friendships are formed based on smoking behavior.  
+
+- **Behavioral dynamics (smoking)**  
+  - High rate parameters $\implies$ many opportunities for behavior change.  
+  - Linear and quadratic shape effects not significant $\implies$ no clear baseline behavioral tendency.  
+  - Average alter effect not significant $\implies$ no evidence of social influence.  
+
+- **Overall conclusion**  
+  - Network evolution is strongly structured (reciprocity, closure, homophily).
+  - $\implies$ no evidence for selection or influence based on smoking behavior in this model.  
+  
+  
+::: {.callout-note}
+**Convergence assessment**
+In this model, although individual convergence t-ratios are all below 3.39,
+the overall maximum convergence ratio is **28.47**, which is far above acceptable
+thresholds. This indicates that the estimation has **not converged properly**.
+
+As a result, the parameter estimates should be interpreted with caution.
+Additional iterations, improved model specification, or adjustments to the
+estimation settings are required before drawing substantive conclusions.
+:::
+
+
+
+
+
+
