@@ -27,7 +27,7 @@ to simulate or estimate it, and its relevance for modeling real network data.
 
 While these basic random graph models can serve as a simple yet informative
 baseline for understanding connectivity patterns, they only allow us to control
-only a single feature (e.g. edge probability and degree sequence) at a time,
+a single feature (e.g. edge probability and degree sequence) at a time,
 limiting its usefulness for modeling richer network patterns. This leads the way
 to out next chapter where we introduce exponential random graph models (ERGMs),
 which is a powerful and flexible framework that allows for the specification of
@@ -49,13 +49,15 @@ library(tidyverse)
 ## The Erdős–Rényi Model: $G(n, p)$
 
 The Erdős--Rényi model [@erdos1959random], commonly denoted as $G(n, p)$, is one
-of the earliest and most fundamental models in the study of random graphs. In
-this model, a graph is constructed by taking a set of $n$ nodes and forming
+of the earliest and most fundamental models in the study of random graphs. 
+In this model, a graph is constructed by taking a set of $n$ nodes and forming
 edges between each pair of nodes independently with fixed probability $p$, where
 $0 < p < 1$. This means that every possible dyad in the network has the same
 chance of being connected, and the existence of one edge has no influence on any
 other. The result is a fully dyad-independent structure with homogeneous tie
-probabilities.
+probabilities. Formally, for each unordered pair of nodes $(i,j)$ with $i < j$, 
+an undirected edge is present independently with probability $p$
+(for directed graphs, edges would instead be defined over all ordered pairs $(i,j)$ with $i \ne j$).
 
 One of the key implications of the $G(n, p)$ model is that it defines a
 probability distribution over the entire space of possible graphs with $n$
@@ -67,11 +69,13 @@ large $n$, this degree distribution approaches a normal distribution due to the
 central limit theorem. The expected degree of a node is approximately
 $(n - 1) \cdot p$, and the overall density of the graph is close to $p$.
 
-If we observe an empirical network and wish to fit a $G(n, p)$ model to it, the
+If we observe an empirical (undirected) network and wish to fit a $G(n, p)$ model to it, the
 most natural estimate for $p$ is the observed edge density. This can be computed
 as the number of edges divided by the total number of possible dyads, giving the
-maximum likelihood estimate $\hat{p} = \frac{m}{\binom{n}{2}}$, where $m$ is the
-number of observed edges.
+maximum likelihood estimate
+$\hat{p} = \frac{m}{\binom{n}{2}}$, where $m = \sum_{i<j} y_{ij}$ is the number of observed edges.
+For directed networks, the corresponding estimate would be
+$\hat{p} = \frac{m}{n(n-1)}$, where $m = \sum_{i \ne j} y_{ij}$.
 
 While the $G(n, p)$ model is mathematically elegant and provides a useful
 baseline for comparison, it fails to capture many features commonly seen in
