@@ -476,7 +476,7 @@ window.Quarto = {
   <ul>
   <li><a href="#interpreting-the-coefficients-2" id="toc-interpreting-the-coefficients-2" class="nav-link" data-scroll-target="#interpreting-the-coefficients-2">Interpreting the Coefficients</a></li>
   </ul></li>
-  <li><a href="#assessing-goodness-of-fit" id="toc-assessing-goodness-of-fit" class="nav-link" data-scroll-target="#assessing-goodness-of-fit"><span class="header-section-number">19.4.4</span> Assessing Goodness of Fit</a>
+  <li><a href="#assessing-goodnes-of-fit" id="toc-assessing-goodnes-of-fit" class="nav-link" data-scroll-target="#assessing-goodnes-of-fit"><span class="header-section-number">19.4.4</span> Assessing Goodnes of Fit</a>
   <ul>
   <li><a href="#actual-vs.-predicted" id="toc-actual-vs.-predicted" class="nav-link" data-scroll-target="#actual-vs.-predicted">Actual vs.&nbsp;Predicted</a></li>
   <li><a href="#residual-diagnostics" id="toc-residual-diagnostics" class="nav-link" data-scroll-target="#residual-diagnostics">Residual Diagnostics</a></li>
@@ -517,7 +517,7 @@ window.Quarto = {
 <p>In contrast, Relational Event Models shift attention to the fine-grained sequence and timing of discrete behavioral events. Rather than treating ties as fixed or slowly evolving entities, REM conceptualizes networks as streams of interaction. Social structure is not simply observed, it is continuously produced and reproduced through temporally ordered actions.</p>
 <p>A key distinction between ERGMs and REM lies in the question each approach seeks to answer. ERGMs ask whether a particular <em>network structure</em> is likely to emerge within a defined time window. REM, by contrast, asks:</p>
 <blockquote class="blockquote">
-<p>Given the history of prior interactions, how likely is it that actor <em>a</em> will direct an event toward actor <em>b</em> at a specific moment?</p>
+<p>Given the history of prior interactions, how likely is it that actor <em>i</em> will direct an event toward actor <em>j</em> at a specific moment?</p>
 </blockquote>
 <p>This represents a conceptual shift from modeling cumulative structures to modeling event rates. In REM, the fundamental unit of analysis is not the tie, but the event. Each event is understood as occurring within a dynamic system shaped by prior interactions. The probability (or rate) of a new event depends on the evolving history of the network.</p>
 <p>Relational Event Models pursue two central analytic objectives:</p>
@@ -563,23 +563,23 @@ window.Quarto = {
 <section id="formal-specification-of-the-relational-event-model" class="level3" data-number="19.2.1">
 <h3 data-number="19.2.1" class="anchored" data-anchor-id="formal-specification-of-the-relational-event-model"><span class="header-section-number">19.2.1</span> Formal Specification of the Relational Event Model</h3>
 <p>Following <span class="citation" data-cites="butts2008">Butts (<a href="#ref-butts2008" role="doc-biblioref">2008</a>)</span>, relational event models are formulated in terms of a <strong>conditional event intensity function</strong>, which represents the instantaneous rate at which a specific interaction occurs given the past event history.</p>
-<p>Let <span class="math inline">\(\lambda_{ab}(t)\)</span> denote the intensity of an event from actor <span class="math inline">\(a\)</span> to actor <span class="math inline">\(b\)</span> at time <span class="math inline">\(t\)</span>, given the history of past events <span class="math inline">\(H_t\)</span>. The model is specified as</p>
+<p>Let <span class="math inline">\(\lambda_{ij}(t)\)</span> denote the intensity of an event from actor <span class="math inline">\(i\)</span> to actor <span class="math inline">\(j\)</span> at time <span class="math inline">\(t\)</span>, given the history of past events <span class="math inline">\(H_t\)</span>. The model is specified as</p>
 <p><span class="math display">\[
-\lambda_{ab}(t \mid H_t) = \lambda_0(t)\exp(\theta^\top s_{ab}(t))
+\lambda_{ij}(t \mid H_t) = \lambda_0(t)\exp(\theta^\top s_{ij}(t))
 \]</span></p>
 <p>where:</p>
 <ul>
-<li><span class="math inline">\(\lambda_{ab}(t)\)</span> is the <strong>event intensity</strong> for interaction <span class="math inline">\(a \rightarrow b\)</span> at time <span class="math inline">\(t\)</span>,</li>
+<li><span class="math inline">\(\lambda_{ij}(t)\)</span> is the <strong>event intensity</strong> for interaction <span class="math inline">\(i \rightarrow j\)</span> at time <span class="math inline">\(t\)</span>,</li>
 <li><span class="math inline">\(\lambda_0(t)\)</span> is the <strong>baseline rate</strong> of events,</li>
-<li><span class="math inline">\(s_{ab}(t)\)</span> is a vector of <strong>statistics</strong> describing the event (e.g., actor attributes, dyadic covariates, or history-based structural effects),</li>
+<li><span class="math inline">\(s_{ij}(t)\)</span> is a vector of <strong>statistics</strong> describing the event (e.g., actor attributes, dyadic covariates, or history-based structural effects),</li>
 <li><span class="math inline">\(\theta\)</span> is a vector of <strong>model parameters</strong>.</li>
 </ul>
-<p>The statistics <span class="math inline">\(s_{ab}(t)\)</span> are typically functions of the event history, meaning they evolve as new interactions occur.</p>
-<p>When only the <em>order</em> of events is observed (rather than exact timestamps), inference can proceed using the partial likelihood, which compares the intensity of the observed event with the intensities of all other possible events in the risk set <span class="math inline">\(R_t\)</span>. The probability that a specific event <span class="math inline">\(a \rightarrow b\)</span> occurs next is therefore</p>
+<p>The statistics <span class="math inline">\(s_{ij}(t)\)</span> are typically functions of the event history, meaning they evolve as new interactions occur.</p>
+<p>When only the <em>order</em> of events is observed (rather than exact timestamps), inference can proceed using the partial likelihood, which compares the intensity of the observed event with the intensities of all other possible events in the risk set <span class="math inline">\(R_t\)</span>. The probability that a specific event <span class="math inline">\(i \rightarrow j\)</span> occurs next is therefore</p>
 <p><span class="math display">\[
-P(a \rightarrow b \text{ occurs next}) =
-\frac{\exp(\theta^\top s_{ab}(t))}
-{\sum_{(i,j)\in R_t}\exp(\theta^\top s_{ij}(t))}
+P(i \rightarrow j \text{ occurs next}) =
+\frac{\exp(\theta^\top s_{ij}(t))}
+{\sum_{(p,q)\in R_t}\exp(\theta^\top s_{pq}(t))}
 \]</span></p>
 <p>where <span class="math inline">\(R_t\)</span> denotes the set of all interactions that could occur at time <span class="math inline">\(t\)</span>.</p>
 <p>This formulation shows that relational event models explain which interaction occurs next by comparing the relative intensities of all competing events in the risk set.</p>
@@ -656,8 +656,7 @@ P(a \rightarrow b \text{ occurs next}) =
 </li>
 <li>Bob replies to Alice<br>
 </li>
-<li>Carol messages Alice<br>
-</li>
+<li>Carol messages Alice</li>
 </ol>
 <p>At step 3, several interactions were possible, including:</p>
 <ul>
@@ -671,8 +670,7 @@ P(a \rightarrow b \text{ occurs next}) =
 </li>
 <li>Carol → Alice<br>
 </li>
-<li>Carol → Bob<br>
-</li>
+<li>Carol → Bob</li>
 </ul>
 <p>This set of possible interactions is called the risk set (which we return to more formally in the next section).</p>
 <p>Cox regression allows us to ask:</p>
@@ -701,7 +699,7 @@ P(a \rightarrow b \text{ occurs next}) =
 <li><strong>Dyadic covariates</strong>, capturing properties of the sender–receiver pair,</li>
 <li><strong>Contextual variables</strong>, describing features of the environment in which interactions occur.</li>
 </ul>
-<p>All statistics are evaluated <strong>dynamically</strong>, meaning they are recalculated at each event step to reflect the evolving interaction history.</p>
+<p>All statistics are evaluated <em>dynamically</em>, meaning they are recalculated at each event step to reflect the evolving interaction history.</p>
 <p>The specific statistics included in our model are described in the following section.</p>
 </section>
 <section id="step-3-estimating-the-model" class="level4 unnumbered">
@@ -712,13 +710,13 @@ P(a \rightarrow b \text{ occurs next}) =
 <section id="endogenous-statistics" class="level3" data-number="19.3.1">
 <h3 data-number="19.3.1" class="anchored" data-anchor-id="endogenous-statistics"><span class="header-section-number">19.3.1</span> Endogenous Statistics</h3>
 <p>Relational event models allow us to incorporate <strong>endogenous statistics</strong>, which capture patterns that arise from the history of interactions itself. These statistics represent mechanisms through which past events influence the likelihood of future events. Some of these endogenous statistics are summarized in the following and in <a href="#tbl-endstats" class="quarto-xref">Table&nbsp;<span>19.1</span></a>.</p>
-<p>Let <span class="math inline">\(V=\{1,\dots,n\}\)</span> denote the set of actors. An event at time <span class="math inline">\(t\)</span> is represented as <span class="math inline">\(e_t=(i,j,t)\)</span>, where actor <span class="math inline">\(i\)</span> sends an interaction to actor <span class="math inline">\(j\)</span>. Let <span class="math inline">\(Y_{ij}(t)\)</span> be an indicator variable that equals 1 if the event <span class="math inline">\(i \rightarrow j\)</span> occurs at time <span class="math inline">\(t\)</span> and 0 otherwise. Further, let <span class="math inline">\(N_{ij}(t)\)</span> denote the total number of interactions from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span> that have occurred up to time <span class="math inline">\(t\)</span>.</p>
+<p>Assume we have <span class="math inline">\(1,\dots,n\)</span> actors. A potential relational event at time <span class="math inline">\(t\)</span> is an ordered pair <span class="math inline">\((i,j)\)</span> with <span class="math inline">\(i \neq j\)</span>, where actor <span class="math inline">\(i\)</span> is the sender and actor <span class="math inline">\(j\)</span> is the receiver.</p>
 <section id="reciprocity" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="reciprocity">Reciprocity</h4>
 <p>Reciprocity captures the tendency for actors to immediately respond to interactions they have received. If the previous event was <span class="math inline">\(i \rightarrow j\)</span>, the statistic equals 1 when the next event is <span class="math inline">\(j \rightarrow i\)</span>.</p>
 <p><span class="math display">\[
 s_{\text{reciprocity}}(i,j,t) = Y_{ij}(t-1) \cdot Y_{ji}(t)
-\]</span></p>
+\]</span> where <span class="math inline">\(Y_{ij}(t) \in \{0,1\}\)</span> is an indicator variable such that <span class="math inline">\(Y_{ij}(t) = 1\)</span> if the event <span class="math inline">\(i \rightarrow j\)</span> occurs at time <span class="math inline">\(t\)</span>, and <span class="math inline">\(Y_{ij}(t) = 0\)</span> otherwise.</p>
 </section>
 <section id="repetition" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="repetition">Repetition</h4>
@@ -743,7 +741,7 @@ s_{\text{past}}(i,j,t) =
 s_{\text{sender activity}}(i,j,t) =
 \frac{\sum_{k=1}^{n} N_{ik}(t-1)}
 {\sum_{p \neq q} N_{pq}(t-1)}
-\]</span></p>
+\]</span> where <span class="math inline">\(N_{ij}(t) = \sum_{\tau \le t} Y_{ij}(\tau)\)</span> is the cumulative count of events from actor <span class="math inline">\(i\)</span> to actor <span class="math inline">\(j\)</span> up to time <span class="math inline">\(t\)</span>. Thus, <span class="math inline">\(N_{ij}(t-1)\)</span> represents the history of interactions from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span> prior to the current event at time <span class="math inline">\(t\)</span>.</p>
 </section>
 <section id="sender-popularity" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="sender-popularity">Sender Popularity</h4>
@@ -779,9 +777,9 @@ Table&nbsp;19.1: Summary of some endogenous statistics used in relational event 
 <div aria-describedby="tbl-endstats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table-striped caption-top table">
 <colgroup>
-<col style="width: 13%">
-<col style="width: 45%">
-<col style="width: 41%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -794,12 +792,12 @@ Table&nbsp;19.1: Summary of some endogenous statistics used in relational event 
 <tr class="odd">
 <td>Reciprocity</td>
 <td>Immediate response to previous interaction</td>
-<td><span class="math inline">\(Y_{ij}(t-1) \cdot Y_{ji}(t)\)</span></td>
+<td><span class="math inline">\(Y_{ij}(t-1)Y_{ji}(t)\)</span></td>
 </tr>
 <tr class="even">
 <td>Repetition</td>
 <td>Same sender repeats interaction</td>
-<td><span class="math inline">\(Y_{ij}(t-1) \cdot Y_{ij}(t)\)</span></td>
+<td><span class="math inline">\(Y_{ij}(t-1)Y_{ij}(t)\)</span></td>
 </tr>
 <tr class="odd">
 <td>Past interaction</td>
@@ -837,11 +835,10 @@ Table&nbsp;19.1: Summary of some endogenous statistics used in relational event 
 <h3 data-number="19.3.2" class="anchored" data-anchor-id="exogenous-covariates"><span class="header-section-number">19.3.2</span> Exogenous Covariates</h3>
 <p>In addition to endogenous statistics derived from the event history, relational event models can also incorporate <strong>exogenous covariates</strong>. These variables capture attributes of actors or dyads that may influence the likelihood of interactions but are not themselves determined by the evolving sequence of events.</p>
 <p>Exogenous covariates may include <strong>actor-level attributes</strong> (e.g., demographic characteristics, roles, or status), <strong>dyadic attributes</strong> (e.g., similarity or shared group membership), or other contextual variables describing the environment in which interactions occur.</p>
-<p>Let <span class="math inline">\(c_k\)</span> denote an attribute associated with actor <span class="math inline">\(k\)</span>. For binary attributes, this can be represented as</p>
-<p><span class="math display">\[
-c_k =
+<p>Let <span class="math inline">\(v_i\)</span> denote an attribute associated with actor <span class="math inline">\(i\)</span>. For binary attributes, this can be represented as <span class="math display">\[
+v_i =
 \begin{cases}
-1 &amp; \text{if actor } k \text{ possesses the attribute} \\
+1 &amp; \text{if actor } i \text{ possesses the attribute} \\
 0 &amp; \text{otherwise}
 \end{cases}
 \]</span></p>
@@ -851,8 +848,7 @@ c_k =
 </li>
 <li><strong>Receiver attribute</strong>: indicates whether the receiver possesses the attribute<br>
 </li>
-<li><strong>Sender–receiver interaction</strong>: indicates whether both sender and receiver possess the attribute<br>
-</li>
+<li><strong>Sender–receiver interaction</strong>: indicates whether both sender and receiver possess the attribute</li>
 </ul>
 <p>These covariates allow the model to test whether actor characteristics influence interaction patterns, such as whether certain actors are more likely to initiate communication, receive interactions, or interact preferentially with others sharing the same attribute.</p>
 <p>The exogenous covariates included in the model are summarized in <a href="#tbl-exstats" class="quarto-xref">Table&nbsp;<span>19.2</span></a>.</p>
@@ -864,9 +860,9 @@ Table&nbsp;19.2: Summary of exogenous covariates used in relational event models
 <div aria-describedby="tbl-exstats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table-striped caption-top table">
 <colgroup>
-<col style="width: 30%">
-<col style="width: 60%">
-<col style="width: 10%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -879,17 +875,17 @@ Table&nbsp;19.2: Summary of exogenous covariates used in relational event models
 <tr class="odd">
 <td>Sender attribute</td>
 <td>Indicates whether the sender possesses the attribute</td>
-<td><span class="math inline">\(c_i\)</span></td>
+<td><span class="math inline">\(v_i\)</span></td>
 </tr>
 <tr class="even">
 <td>Receiver attribute</td>
 <td>Indicates whether the receiver possesses the attribute</td>
-<td><span class="math inline">\(c_j\)</span></td>
+<td><span class="math inline">\(v_j\)</span></td>
 </tr>
 <tr class="odd">
 <td>Sender–receiver interaction</td>
 <td>Indicates whether both actors possess the attribute</td>
-<td><span class="math inline">\(c_i c_j\)</span></td>
+<td><span class="math inline">\(v_i v_j\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -976,7 +972,7 @@ Table&nbsp;19.2: Summary of exogenous covariates used in relational event models
 </table>
 </div>
 </div>
-<p>Note that because the data contain only the ordering of events rather than precise timestamps, we specify <code>ordinal = TRUE</code> when estimating the model. However, before estimating the relational event models, we visualize the aggregated dialogue network. Figure <a href="#fig-frozen" class="quarto-xref">Figure&nbsp;<span>19.1</span></a> shows the <em>Frozen</em> character interaction network, with node color indicating gender and edge width reflects interaction frequency.</p>
+<p>Note that because the data contain only the ordering of events rather than precise timestamps, we specify <code>ordinal = TRUE</code> when estimating the model. Hpwever, before estimating the relational event models, we visualize the aggregated dialogue network. Figure <a href="#fig-frozen" class="quarto-xref">Figure&nbsp;<span>19.1</span></a> shows the <em>Frozen</em> character interaction network, with node color indicating gender and edge width reflects interaction frequency.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-frozen" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1080,8 +1076,8 @@ e^{2.24} \approx 9.4
 \lambda_0(t)\exp\Big(
 \theta_1\,\text{Reciprocity}_{ij}(t) +
 \theta_2\,\text{Repetition}_{ij}(t)   \\ &amp; \qquad \qquad \qquad
-+\theta_3\,\text{SenderFemale}_{ij} +
-\theta_4\,\text{ReceiverFemale}_{ij}
++\theta_3\,\text{SenderFemale}_{ij} \\ &amp; \qquad \qquad \qquad
++ \theta_4\,\text{ReceiverFemale}_{ij}
 \Big)
 \end{split}
 \]</span></p>
@@ -1124,10 +1120,10 @@ Obtaining goodness-of-fit statistics</code></pre>
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
-RRecSnd  3.669319 0.149300 24.5769   &lt;2e-16 ***
-RSndSnd  2.171288 0.132459 16.3922   &lt;2e-16 ***
-CovSnd.1 0.797349 0.082131  9.7083   &lt;2e-16 ***
-CovRec.1 0.106777 0.085729  1.2455   0.2129    
+RRecSnd  3.669318 0.149300 24.5768   &lt;2e-16 ***
+RSndSnd  2.171290 0.132459 16.3922   &lt;2e-16 ***
+CovSnd.1 0.797348 0.082131  9.7083   &lt;2e-16 ***
+CovRec.1 0.106776 0.085729  1.2455   0.2129    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Null deviance: 6879.697 on 661 degrees of freedom
@@ -1187,8 +1183,8 @@ e^{0.80} \approx 2.22
 \theta_1\,\text{Reciprocity}_{ij}(t) +
 \theta_2\,\text{Repetition}_{ij}(t)  \\ &amp; \qquad \qquad \qquad
 + \theta_3\,\text{SenderFemale}_{ij} +
-\theta_4\,\text{ReceiverFemale}_{ij} +
-\theta_5\,\text{FemaleInteraction}_{ij}
+\theta_4\,\text{ReceiverFemale}_{ij} \\ &amp; \qquad \qquad \qquad
++ \theta_5\,\text{FemaleInteraction}_{ij}
 \Big)
 \end{split}
 \]</span></p>
@@ -1229,10 +1225,10 @@ Obtaining goodness-of-fit statistics</code></pre>
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
 RRecSnd   3.66897  0.14930 24.5738   &lt;2e-16 ***
-RSndSnd   2.17217  0.13247 16.3972   &lt;2e-16 ***
-CovSnd.1  0.49541 51.75790  0.0096   0.9924    
-CovRec.1 -0.19540 51.75790 -0.0038   0.9970    
-CovInt.1  0.30158 51.75789  0.0058   0.9954    
+RSndSnd   2.17217  0.13247 16.3971   &lt;2e-16 ***
+CovSnd.1  0.49673 52.58931  0.0094   0.9925    
+CovRec.1 -0.19409 52.58931 -0.0037   0.9971    
+CovInt.1  0.30026 52.58930  0.0057   0.9954    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Null deviance: 6879.697 on 661 degrees of freedom
@@ -1295,8 +1291,8 @@ e^{2.17} \approx 8.8
 </div>
 </section>
 </section>
-<section id="assessing-goodness-of-fit" class="level3" data-number="19.4.4">
-<h3 data-number="19.4.4" class="anchored" data-anchor-id="assessing-goodness-of-fit"><span class="header-section-number">19.4.4</span> Assessing Goodness of Fit</h3>
+<section id="assessing-goodnes-of-fit" class="level3" data-number="19.4.4">
+<h3 data-number="19.4.4" class="anchored" data-anchor-id="assessing-goodnes-of-fit"><span class="header-section-number">19.4.4</span> Assessing Goodnes of Fit</h3>
 <p>After estimating the relational event models, it is useful to evaluate how well they reproduce the observed interaction sequence. Information criteria such as the Bayesian Information Criterion (BIC) can provide evidence about whether one model is preferred to another, but they do not directly indicate how well the model predicts the sequence of interaction events. To better understand model performance, we can examine both the predicted interactions and the residuals.</p>
 <section id="actual-vs.-predicted" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="actual-vs.-predicted">Actual vs.&nbsp;Predicted</h4>
@@ -1353,6 +1349,8 @@ send_col      FALSE       TRUE
   1.678   3.320   4.646   5.904   6.944  17.265 </code></pre>
 </div>
 </div>
+<p>The summary provides an overview of the range and distribution of residuals across the event sequence. While many events will typically have residuals close to zero, larger values may indicate interactions that the model has difficulty explaining.</p>
+<p>To identify potential outliers, we can locate events with particularly large residuals. For illustration, we define outlying cases as those with residuals greater than 10.</p>
 <p>The summary provides an overview of the range and distribution of residuals across the event sequence. While many events will typically have residuals close to zero, larger values may indicate interactions that the model has difficulty explaining.</p>
 <p>To identify potential outliers, we can locate events with particularly large residuals. For illustration, we define outlying cases as those with residuals greater than 12 (<span class="math inline">\(\approx  Q_3 + 1.5 \times IQR)\)</span>.</p>
 <div class="cell">
@@ -1454,7 +1452,7 @@ Figure&nbsp;19.2: Distribution of residuals from Model 3 of the relational event
 </div>
 </div>
 <p>The results show a substantial improvement in model fit when moving from Model 1 to Model 2. The BIC decreases from 4008.73 to 3928.61, indicating that including gender as an actor-level covariate significantly improves the model’s ability to explain the dialogue interactions.</p>
-<p>By contrast, Model 3, which additionally includes the interaction between sender and receiver gender, produces a slightly higher BIC (3935.10) than Model 2. Because the BIC penalizes additional parameters, the small increase suggests that the interaction term does not add enough explanatory power to justify the extra complexity, and Model 2 offers the best balance of fit and parsimony.</p>
+<p>By contrast, Model 3, which additionally includes the interaction between sender and receiver gender, produces a slightly higher BIC (3935.10) than Model 2. Because the BIC penalizes additional parameters,</p>
 <p>Taken together, prediction accuracy, residual diagnostics, and information criteria provide a comprehensive picture of model performance. These tools help identify whether the model adequately captures the dynamics of the dialogue network and highlight potential directions for further model refinement.</p>
 
 
