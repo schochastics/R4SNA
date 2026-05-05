@@ -1019,7 +1019,7 @@ effects directly by calling it:
 
 ```{r}
 #| message: false
-
+#| output: false
 # Define the effects: start with default effect object
 my_effects <- getEffects(data_mod1)
 my_effects
@@ -1045,9 +1045,9 @@ to organize temporary output files and logs related to the estimation.
 
 ```{r}
 #| message: false
-
+#| output: false
 # Define the estimation algorithm
-my_algorithm <- sienaAlgorithmCreate(projname = "saom_1", seed = 123)
+my_algorithm <- sienaAlgorithmCreate(projname = "saom_1", seed = 1108)
 ```
 
 ::: {.callout-note}
@@ -1130,7 +1130,9 @@ f <- if (knitr::is_latex_output()) "saom_1.tex" else "saom_1.html"
 cat(readLines(f), sep = "\n")
 ```
 
-**So, how do we interpret the parameter estimates?**
+We now interpret the results from Model 1, beginning with an assessment of convergence, followed by the interpretation of the estimated parameters.
+
+##### Convergence Assessment {.unnumbered}
 
 Before interpreting parameter estimates, it's essential to assess whether the
 estimation has converged adequately. In RSiena, convergence is assessed using
@@ -1144,10 +1146,8 @@ two main criteria:
 2. Individual convergence t-ratios:\
    For each effect, the t-ratio compares the observed statistic to the average
    from the simulated networks. If the estimation has converged, these t-ratios
-   should be close to zero. Values below 0.10 are ideal, and below 0.20 is
-   generally acceptable.
+   should be close to zero. Values below 0.10 are ideal, and below 0.20 is  generally acceptable.
 
-##### Convergence Assessment {.unnumbered}
 
 All convergence t-ratios in our Model 1 ouput are below 0.03, which suggests
 that the simulated statistics align closely with the observed network statistics
@@ -1196,7 +1196,7 @@ The main effects in this model are:
 
 Both estimates are statistically significant, as their t-ratios exceed 2.
 
-##### Interpretation of Parameters
+> *So, how do we interpret the parameter estimates?*
 
 **Outdegree (density):** $\theta_{\text{out}} = -2.411$\
 A strong negative value indicates that actors prefer *sparser networks*. Forming
@@ -1207,7 +1207,6 @@ other favorable effects.
 A strong positive value reflects a preference for reciprocating existing ties.
 If another actor sends a tie to ego, ego is much more likely to return it.
 
-##### Interpreting Utility Changes
 
 These effects jointly determine how actors evaluate potential tie changes. The
 objective function for actor $i$ can be written as:
@@ -1346,6 +1345,7 @@ alter, and similarity effects for both sex and smoking covariates.
 
 ```{r}
 #| message: false
+#| output: false
 
 # Start with the default effect set
 my_effects <- getEffects(data_mod2)
@@ -1365,8 +1365,8 @@ included to support reproducibility of the results.
 
 ```{r}
 #| message: false
-
-my_algorithm <-  sienaAlgorithmCreate(projname = "saom_2", seed = 123)
+#| output: false
+my_algorithm <-  sienaAlgorithmCreate(projname = "saom_2", seed = 1108)
 ```
 
 We now estimate the model using the `siena07()` function, which runs the
@@ -1413,8 +1413,6 @@ f <- if (knitr::is_latex_output()) "saom_2.tex" else "saom_2.html"
 cat(readLines(f), sep = "\n")
 ```
 
-We now interpret the results from Model 2, beginning with an assessment of
-convergence, followed by the interpretation of the estimated parameters.
 
 ##### Convergence Assessment {.unnumbered}
 
@@ -1624,106 +1622,106 @@ likely to form ties, especially regular-to-regular smokers, indicating a strong
 homophily pattern. The ego and alter terms slightly amplify or reduce this
 tendency depending on individual smoking levels.
 
+
 ### Model 3: Network and Behavioral Co-Evolution
+We now estimate a co-evolution model in which the friendship network and smoking behavior are treated as jointly dependent processes. The network process models
+changes in friendship ties, while the behavioral process models changes in actors' smoking behavior over time.
 
-We now estimate a co-evolution model in which the friendship network and smoking
-behavior are both treated as dependent processes. The network evolves through
-changes in ties, while smoking behavior evolves through changes in actors'
-behavioral states.
+In this specification, smoking enters the model in two ways. First, smoking is used in the network objective function to test **selection** effects: whether actors form or maintain ties based on smoking behavior. Second, smoking is
+modeled as a behavioral dependent variable to test **influence** effects: whether actors adjust their smoking behavior in response to their friends.
 
-> Key point: here `smoking_beh` is no longer only a covariate. It is a
-> **behavioral dependent variable**, so the model estimates both **selection**
-> effects and **influence** effects.
+> *Key point: `smoking_beh` is no longer only a covariate. It is a behavioral dependent variable, while also being used to explain network selection.*
+
 
 ```{r}
+#| label: coev-model
 #| message: false
+#| warning: false
+#| output: false
 
-# Network dependent variable
-siena_net <- sienaDependent(net_array)
-
-# Behavioral dependent variable: smoking over waves
+# --- Dependent variables ---
+siena_net   <- sienaDependent(net_array)
 smoking_beh <- sienaDependent(smoking_array, type = "behavior")
 
-# Time-constant covariate: sex
+# --- Covariate ---
 sex_cov <- coCovar(sex_num)
 
-# Create RSiena data object
+# --- Data object ---
 data_coev <- sienaDataCreate(
   siena_net,
   smoking_beh,
   sex_cov
 )
-```
 
-We now specify both network and behavioral effects.
+# --- Effects ---
+eff <- getEffects(data_coev)
 
-```{r}
-#| message: false
-
-# Start with default effects
-my_effects <- getEffects(data_coev)
-
-# Network structural effects
-my_effects <- includeEffects(
-  my_effects,
+# ---------------------------
+# NETWORK DYNAMICS
+# ---------------------------
+eff <- includeEffects(eff,
   outdegree, recip, transTrip,
   name = "siena_net"
 )
 
-# Sex effects on network evolution
-my_effects <- includeEffects(
-  my_effects,
+# sex effects
+eff <- includeEffects(eff,
   egoX, altX, simX,
   name = "siena_net",
   interaction1 = "sex_cov"
 )
 
-# Smoking-based selection effects on network evolution
-my_effects <- includeEffects(
-  my_effects,
+# smoking selection effects
+eff <- includeEffects(eff,
   egoX, altX, simX,
   name = "siena_net",
   interaction1 = "smoking_beh"
 )
 
-# Behavioral dynamics: shape effects are typically included by default,
-# but we explicitly include peer influence via average alter behavior
-my_effects <- includeEffects(
-  my_effects,
-  avAlt,
+# ---------------------------
+# BEHAVIOR DYNAMICS
+# ---------------------------
+
+# shape effects 
+eff <- includeEffects(eff,
+  linear, quad,
+  name = "smoking_beh"
+)
+
+# network position effects
+eff <- includeEffects(eff,
+  indeg, outdeg,
   name = "smoking_beh",
   interaction1 = "siena_net"
 )
 
-my_effects
-```
-
-We define the estimation settings using `sienaAlgorithmCreate()`.
-
-```{r}
-#| message: false
-
-my_algorithm <- sienaAlgorithmCreate(
-  projname = "saom_coev",
-  seed = 123
+# social influence
+eff <- includeEffects(eff,
+  avAlt,
+  name = "smoking_beh",
+  interaction1 = "siena_net"
 )
 ```
 
-We now estimate the co-evolution model.
+We define the estimation settings using `sienaAlgorithmCreate()` and estimate the co-evolution model.
+
 
 ```{r}
 #| message: false
-#| output: false
 #| cache: true
+#| output: false
+
+alg <- sienaAlgorithmCreate(projname = "saom_coev", seed = 1108)
 
 saom_coev <- siena07(
-  my_algorithm,
+  alg,
   data = data_coev,
-  effects = my_effects,
+  effects = eff,
   batch = TRUE
 )
 ```
-Finally, we display the model results inline.
+
+Finally, we display the model results:
 
 ```{r}
 #| output: false
@@ -1733,6 +1731,7 @@ Finally, we display the model results inline.
 
 siena_table(saom_coev, type = "html", sig = TRUE)
 ```
+
 
 ```{r}
 #| output: false
@@ -1746,25 +1745,48 @@ siena_table(saom_coev, type = "tex", sig = TRUE)
 ```{r}
 #| echo: false
 #| results: asis
-
 f <- if (knitr::is_latex_output()) {
   "saom_coev.tex"
 } else {
   "saom_coev.html"
 }
+
 cat(readLines(f), sep = "\n")
 ```
 
-In this model, although individual convergence t-ratios are all below 3.39, the
-overall maximum convergence ratio is 28.47, which is far above acceptable
-thresholds. This indicates that the estimation has not converged properly.
 
-To improve convergence, one can adjust the estimation settings (e.g., increase
-the number of simulation iterations via `n3`, modify phase lengths, or tune
-other algorithm parameters). Details on these options can be found in the RSiena
-Manual [@ripley2011manual], particularly in the sections on:
+The co-evolution model shows the following key patterns:
+
+- **Network structure**
+  - Strong negative outdegree $\Rightarrow$ sparse network
+  - Strong positive reciprocity $\Rightarrow$ mutual ties are strongly favored
+  - Positive transitivity $\Rightarrow$ evidence of triadic closure
+
+- **Sex effects**
+  - Strong positive similarity $\Rightarrow$ clear same-sex homophily
+  - Ego and alter effects not significant $\Rightarrow$ no strong differences in tie activity by sex
+
+- **Smoking and network selection**
+  - Positive similarity effect $\Rightarrow$ friendships are formed between actors with similar smoking behavior (selection)
+  - Ego and alter effects not significant $\Rightarrow$ smoking does not affect sending/receiving ties overall
+
+- **Behavioral dynamics (smoking)**
+  - Negative linear + positive quadratic shape $\Rightarrow$ tendency toward moderate smoking levels
+  - Average alter effect positive and significant $\Rightarrow$ evidence of social influence (actors adjust smoking toward friends)
+  - Indegree and outdegree effects not significant $\Rightarrow$ network position not strongly related to smoking
+  
+Overall, the results suggest that network evolution is primarily driven by reciprocity, triadic closure, and homophily. In addition, there is evidence for both selection and influence processes in the co-evolution of networks and behavior: actors tend to form ties with others who have similar smoking behavior, and they also adjust their behavior over time to become more similar to their friends.
+
+Given that the overall maximum convergence ratio exceeds the recommended threshold, the model has not fully converged. Therefore, the parameter estimates should be interpreted with caution, as they may not reliably reflect the underlying data-generating process.
+
+To improve convergence, one can adjust the estimation settings (e.g., increase the number of simulation iterations via `n3`, modify phase lengths, or tune
+other algorithm parameters). Details on these options can be found in the RSiena Manual [@ripley2011manual], particularly in the sections on:
 
 - `sienaAlgorithmCreate()` (algorithm settings and iteration control)
 - Convergence diagnostics and troubleshooting guidelines
 
-See also the RSiena help pages in R: `?sienaAlgorithmCreate` and `?siena07`.
+See also the RSiena help pages in R:
+`?sienaAlgorithmCreate` and `?siena07`.
+
+
+
