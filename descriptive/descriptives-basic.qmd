@@ -59,11 +59,11 @@ while the Pucci are disconnected from the rest.
 #| fig-cap: "Marriage ties among 16 leading Florentine families (Padgett). The Pucci family has no marriage ties to the others and is therefore an isolated node."
 
 ggraph(flo_marriage, "stress") +
-    geom_edge_link0(edge_color = "grey66") +
-    geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
-    geom_node_text(aes(label = name), repel = TRUE) +
-    theme_void() +
-    coord_equal(clip = "off")
+  geom_edge_link0(edge_color = "grey66") +
+  geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
+  geom_node_text(aes(label = name), repel = TRUE) +
+  theme_void() +
+  coord_equal(clip = "off")
 ```
 
 ## Network Size
@@ -91,7 +91,9 @@ summary(flo_marriage)
 
 ## Adjacency Matrix and Neighbors
 
-The adjacency matrix of the network can be obtained with the `as_adjacency_matrix()` function. 
+The adjacency matrix of the network can be obtained with the
+`as_adjacency_matrix()` function.
+
 ```{r}
 #| label: adjacency
 
@@ -154,10 +156,10 @@ stand out with six.
 deg_tab <- as.data.frame(table(degree = degree(flo_marriage)))
 deg_tab$degree <- as.integer(as.character(deg_tab$degree))
 ggplot(deg_tab, aes(x = degree, y = Freq)) +
-    geom_col(fill = "#E8813A", width = 0.7) +
-    scale_x_continuous(breaks = 0:max(deg_tab$degree)) +
-    labs(x = "degree", y = "number of families") +
-    theme_minimal(base_size = 13)
+  geom_col(fill = "#E8813A", width = 0.7) +
+  scale_x_continuous(breaks = 0:max(deg_tab$degree)) +
+  labs(x = "degree", y = "number of families") +
+  theme_minimal(base_size = 13)
 ```
 
 ## Density
@@ -171,9 +173,9 @@ graph) and $1$ (complete graph).
 #| label: density
 
 c(
-    empty = edge_density(make_empty_graph(10)),
-    florentine = edge_density(flo_marriage),
-    full = edge_density(make_full_graph(10))
+  empty = edge_density(make_empty_graph(10)),
+  florentine = edge_density(flo_marriage),
+  full = edge_density(make_full_graph(10))
 )
 ```
 
@@ -192,10 +194,10 @@ paths of the same length between a given pair of nodes.
 #| label: shortest-path
 
 shortest_paths(
-    flo_marriage, 
-    from = "Ginori", 
-    to = "Strozzi", 
-    output = "vpath"
+  flo_marriage,
+  from = "Ginori",
+  to = "Strozzi",
+  output = "vpath"
 )$vpath
 ```
 
@@ -211,17 +213,22 @@ One such shortest path between the Ginori and the Strozzi is highlighted in
 
 g <- flo_marriage
 E(g)$on_path <- FALSE
-epath <- as.integer(shortest_paths(g, from = "Ginori", to = "Strozzi", output = "epath")$epath[[1]])
+epath <- as.integer(shortest_paths(
+  g,
+  from = "Ginori",
+  to = "Strozzi",
+  output = "epath"
+)$epath[[1]])
 E(g)$on_path[epath] <- TRUE
 
 ggraph(g, "stress") +
-    geom_edge_link0(aes(color = on_path, width = on_path), show.legend = FALSE) +
-    geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
-    geom_node_text(aes(label = name), repel = TRUE) +
-    scale_edge_color_manual(values = c("grey66", "firebrick3")) +
-    scale_edge_width_manual(values = c(0.5, 1.5)) +
-    theme_void() +
-    coord_equal(clip = "off")
+  geom_edge_link0(aes(color = on_path, width = on_path), show.legend = FALSE) +
+  geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
+  geom_node_text(aes(label = name), repel = TRUE) +
+  scale_edge_color_manual(values = c("grey66", "firebrick3")) +
+  scale_edge_width_manual(values = c(0.5, 1.5)) +
+  theme_void() +
+  coord_equal(clip = "off")
 ```
 
 Computing `distances()` without specifying source and target returns the full
@@ -286,17 +293,22 @@ Bischeri requires traversing five marriage ties.
 
 g <- flo_marriage
 E(g)$on_path <- FALSE
-epath <- as.integer(shortest_paths(g, from = "Bischeri", to = "Pazzi", output = "epath")$epath[[1]])
+epath <- as.integer(shortest_paths(
+  g,
+  from = "Bischeri",
+  to = "Pazzi",
+  output = "epath"
+)$epath[[1]])
 E(g)$on_path[epath] <- TRUE
 
 ggraph(g, "stress") +
-    geom_edge_link0(aes(color = on_path, width = on_path), show.legend = FALSE) +
-    geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
-    geom_node_text(aes(label = name), repel = TRUE) +
-    scale_edge_color_manual(values = c("grey66", "firebrick3")) +
-    scale_edge_width_manual(values = c(0.5, 1.5)) +
-    theme_void() +
-    coord_equal(clip = "off")
+  geom_edge_link0(aes(color = on_path, width = on_path), show.legend = FALSE) +
+  geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
+  geom_node_text(aes(label = name), repel = TRUE) +
+  scale_edge_color_manual(values = c("grey66", "firebrick3")) +
+  scale_edge_width_manual(values = c(0.5, 1.5)) +
+  theme_void() +
+  coord_equal(clip = "off")
 ```
 
 ## Transitivity
@@ -416,18 +428,36 @@ the asymmetric edges in grey.
 
 E(rhesus)$mutual <- which_mutual(rhesus)
 ggraph(rhesus, "stress") +
-    geom_edge_parallel(aes(filter = !mutual), edge_color = "grey66", edge_width = 0.5,
-        arrow = arrow(angle = 15, length = unit(0.15, "inches"),
-            ends = "last", type = "closed"), n = 2, end_cap = circle(8, "pt")
-    ) +
-    geom_edge_parallel(aes(filter = mutual), edge_color = "black", edge_width = 0.5,
-        arrow = arrow(angle = 15, length = unit(0.15, "inches"),
-            ends = "last", type = "closed"), n = 2, end_cap = circle(8, "pt")
-    ) +
-    geom_node_point(shape = 21, size = 8, aes(fill = gender)) +
-    scale_fill_manual(values = c("#E8813A", "#4D189D"), name = "") +
-    theme_void() +
-    theme(legend.position = "bottom")
+  geom_edge_parallel(
+    aes(filter = !mutual),
+    edge_color = "grey66",
+    edge_width = 0.5,
+    arrow = arrow(
+      angle = 15,
+      length = unit(0.15, "inches"),
+      ends = "last",
+      type = "closed"
+    ),
+    n = 2,
+    end_cap = circle(8, "pt")
+  ) +
+  geom_edge_parallel(
+    aes(filter = mutual),
+    edge_color = "black",
+    edge_width = 0.5,
+    arrow = arrow(
+      angle = 15,
+      length = unit(0.15, "inches"),
+      ends = "last",
+      type = "closed"
+    ),
+    n = 2,
+    end_cap = circle(8, "pt")
+  ) +
+  geom_node_point(shape = 21, size = 8, aes(fill = gender)) +
+  scale_fill_manual(values = c("#E8813A", "#4D189D"), name = "") +
+  theme_void() +
+  theme(legend.position = "bottom")
 ```
 
 Reciprocity varies across types of networks. In friendship networks, ties are
@@ -458,8 +488,8 @@ tie is present or it is absent.
 
 More informative than the dyad census is the **triad census**, which counts the
 occurrence of each of the $16$ possible configurations of edges among three
-nodes in a directed network (see @fig-triad-types). Triads are labeled using
-the **MAN notation**, often written as `xyzL`, where `x` is the number of
+nodes in a directed network (see @fig-triad-types). Triads are labeled using the
+**MAN notation**, often written as `xyzL`, where `x` is the number of
 reciprocated (mutual) ties, `y` is the number of asymmetric ties, and `z` is the
 number of null ties; the optional letter `L` (`U`, `C`, `D`, or `T`)
 distinguishes triads that share the same `xyz` counts but differ in structure.
@@ -522,18 +552,38 @@ footy_census <- lapply(football_triad, triad_census)
 footy_census <- matrix(unlist(footy_census), ncol = 16, byrow = TRUE)
 rownames(footy_census) <- sapply(football_triad, function(x) x$name)
 colnames(footy_census) <- c(
-    "003", "012", "102", "021D", "021U", "021C", "111D", "111U",
-    "030T", "030C", "201", "120D", "120U", "120C", "210", "300"
+  "003",
+  "012",
+  "102",
+  "021D",
+  "021U",
+  "021C",
+  "111D",
+  "111U",
+  "030T",
+  "030C",
+  "201",
+  "120D",
+  "120U",
+  "120C",
+  "210",
+  "300"
 )
 
 # normalize to make proportions comparable across leagues
 footy_census_norm <- footy_census / rowSums(footy_census)
 
 # check the Top 5 leagues
-idx <- which(rownames(footy_census) %in% c(
-    "england", "spain", "germany",
-    "italy", "france"
-))
+idx <- which(
+  rownames(footy_census) %in%
+    c(
+      "england",
+      "spain",
+      "germany",
+      "italy",
+      "france"
+    )
+)
 footy_census[idx, ]
 ```
 
@@ -566,17 +616,19 @@ the leagues visually in @fig-footy-svd.
 #| fig-cap: "First two singular vectors of the normalized triad-census profiles for 112 football leagues, scaled by the corresponding singular values. Leagues close to each other have similar triad profiles."
 
 data.frame(
-    u1 = footy_svd$d[1] * footy_svd$u[, 1],
-    u2 = footy_svd$d[2] * footy_svd$u[, 2],
-    league = rownames(footy_census)
+  u1 = footy_svd$d[1] * footy_svd$u[, 1],
+  u2 = footy_svd$d[2] * footy_svd$u[, 2],
+  league = rownames(footy_census)
 ) |>
-    ggplot(aes(x = u1, y = u2)) +
-    geom_point() +
-    ggrepel::geom_text_repel(aes(label = league)) +
-    theme_minimal() +
-    theme(axis.title = element_text(size = 16)) +
-    labs(x = "First singular vector, multiplied by singular value",
-         y = "Second singular vector, multiplied by singular value")
+  ggplot(aes(x = u1, y = u2)) +
+  geom_point() +
+  ggrepel::geom_text_repel(aes(label = league)) +
+  theme_minimal() +
+  theme(axis.title = element_text(size = 16)) +
+  labs(
+    x = "First singular vector, multiplied by singular value",
+    y = "Second singular vector, multiplied by singular value"
+  )
 ```
 
 How should we interpret the two dimensions? To investigate, we compare them to
@@ -595,14 +647,14 @@ collections of networks.
 #| fig-cap: "First singular vector (scaled by its singular value) plotted against network density for each football league."
 
 data.frame(
-    y = footy_svd$d[1] * footy_svd$u[, 1],
-    x = sapply(football_triad, edge_density)
+  y = footy_svd$d[1] * footy_svd$u[, 1],
+  x = sapply(football_triad, edge_density)
 ) |>
-    ggplot(aes(x, y)) +
-    geom_point() +
-    theme_minimal() +
-    theme(axis.title = element_text(size = 16)) +
-    labs(x = "density", y = "First singular vector, multiplied by singular value")
+  ggplot(aes(x, y)) +
+  geom_point() +
+  theme_minimal() +
+  theme(axis.title = element_text(size = 16)) +
+  labs(x = "density", y = "First singular vector, multiplied by singular value")
 ```
 
 @fig-footy-svd-030t shows a much clearer relationship between the second
@@ -618,14 +670,17 @@ among the leagues.
 #| fig-cap: "Second singular vector (scaled by its singular value) plotted against the proportion of transitive 030T triads for each football league."
 
 data.frame(
-    y = footy_svd$d[2] * footy_svd$u[, 2],
-    x = footy_census_norm[, 9]
+  y = footy_svd$d[2] * footy_svd$u[, 2],
+  x = footy_census_norm[, 9]
 ) |>
-    ggplot(aes(x, y)) +
-    geom_point() +
-    theme_minimal() +
-    theme(axis.title = element_text(size = 16)) +
-    labs(x = "fraction of 030T", y = "Second singular vector, multiplied by singular value")
+  ggplot(aes(x, y)) +
+  geom_point() +
+  theme_minimal() +
+  theme(axis.title = element_text(size = 16)) +
+  labs(
+    x = "fraction of 030T",
+    y = "Second singular vector, multiplied by singular value"
+  )
 ```
 
 ### Dyad/Triad Census with Attributes

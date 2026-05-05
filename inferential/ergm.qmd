@@ -346,14 +346,14 @@ tractable.
 
 ##### Example: Teenage Friends and Lifestyle Study data {.unnumbered}
 
-For an example including the homophily statistic, we use the "Teenage
-Friends and Lifestyle Study" data called `s50` in the `networkdata` package. The
-`s50` dataset is a subset of 50 pupils over a three-year panel study of
-adolescent friendship networks and health behaviors conducted in a school in the
-West of Scotland [@west1996s50]. This excerpt was created for illustrative
-purposes and includes dynamic friendship data over three waves, capturing
-changes in social ties alongside attributes like gender, sport participation,
-and substance use. We will focus on the homophily based on smoking behavior.
+For an example including the homophily statistic, we use the "Teenage Friends
+and Lifestyle Study" data called `s50` in the `networkdata` package. The `s50`
+dataset is a subset of 50 pupils over a three-year panel study of adolescent
+friendship networks and health behaviors conducted in a school in the West of
+Scotland [@west1996s50]. This excerpt was created for illustrative purposes and
+includes dynamic friendship data over three waves, capturing changes in social
+ties alongside attributes like gender, sport participation, and substance use.
+We will focus on the homophily based on smoking behavior.
 
 We only consider cross-sectional network data here so we only focus on the third
 wave network (we will in later chapters look at modeling longitudinal network
@@ -466,7 +466,7 @@ reciprocated):
 ```{r}
 #| message: false
 
-# Fit ERGM with reciprocity term 
+# Fit ERGM with reciprocity term
 model_rec <- ergm(coleman_mat ~ edges + mutual)
 summary(model_rec)
 ```
@@ -582,14 +582,18 @@ to obtain it as graph object and to be able to use `ggraph`:
 #| message: false
 
 flob_g <- networkdata::flo_business
-class(flob_g)  # Confirms it's a 'graph' class object
+class(flob_g) # Confirms it's a 'graph' class object
 
-flob_p <- ggraph(flob_g, layout = "stress") + 
-  geom_edge_link0(edge_color = "#666060", 
-                  edge_width = 0.8, edge_alpha = 1) +
-  geom_node_point(fill = "#808080", color = "#808080",  
-                  size = 7, shape = 21, stroke = 0.9) +
-  theme_graph() + 
+flob_p <- ggraph(flob_g, layout = "stress") +
+  geom_edge_link0(edge_color = "#666060", edge_width = 0.8, edge_alpha = 1) +
+  geom_node_point(
+    fill = "#808080",
+    color = "#808080",
+    size = 7,
+    shape = 21,
+    stroke = 0.9
+  ) +
+  theme_graph() +
   theme(legend.position = "none") +
   ggtitle("Florentine business network")
 
@@ -616,7 +620,7 @@ data(florentine)
 
 # The object is a network object representing business ties
 flob_net <- flobusiness
-class(flob_net)  # Confirms it's a 'network' class object
+class(flob_net) # Confirms it's a 'network' class object
 
 
 # Fit ERGM with Markov dependence terms
@@ -845,26 +849,28 @@ data("law_cowork")
 
 # symmetrize the matrix to create and undirected graph
 law_mat_cwdir <- as_adjacency_matrix(law_cowork, sparse = FALSE)
-law_mat_cwdir <- law_mat_cwdir[1:36,1:36] # only partners
-law_mat_cw <- (law_mat_cwdir == t(law_mat_cwdir) & law_mat_cwdir ==1) + 0
+law_mat_cwdir <- law_mat_cwdir[1:36, 1:36] # only partners
+law_mat_cw <- (law_mat_cwdir == t(law_mat_cwdir) & law_mat_cwdir == 1) + 0
 
 # save the binary attribute 'practice' (1 = litigation, 2 = corporate) from the graph object as a vector:
 law_attr.pract <- vertex_attr(law_cowork)$pract[1:36] - 1. # recode attribute from 2/1 to 1/0
 
 # We create a network object and add the binary node attribute 'practice':
-law_net <- as.network(law_mat_cw, directed = FALSE) 
+law_net <- as.network(law_mat_cw, directed = FALSE)
 law_net %v% "practice" <- law_attr.pract
 
 
 # Fit ERGM with attribute and structural terms
 set.seed(1108)
-model_sc <- ergm(law_net ~ edges
-                + nodecov("practice") + nodematch("practice")
-                + gwesp(0.693, fixed = TRUE)
+model_sc <- ergm(
+  law_net ~
+    edges +
+      nodecov("practice") +
+      nodematch("practice") +
+      gwesp(0.693, fixed = TRUE)
 )
 
 summary(model_sc)
-
 ```
 
 Let's interpret the output: The fitted model includes four terms: `edges`,
@@ -1280,7 +1286,7 @@ statistics:
 #| message: false
 #| warning: false
 
-gof_sc <- gof(model_sc, plotlogodds=TRUE) # this will produce 4 plots
+gof_sc <- gof(model_sc, plotlogodds = TRUE) # this will produce 4 plots
 par(mfrow = c(2, 2)) # figure orientation with 2 rows and 2 columns
 plot(gof_sc)
 ```

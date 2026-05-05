@@ -144,11 +144,11 @@ list and can be assigned as follows:
 ```{r}
 #| label: load-data
 
-data(lawdata) 
-adj_advice <- lawdata[[1]]   # adjacency matrix: advice network (directed)
-adj_friend <- lawdata[[2]]   # adjacency matrix: friendship network (directed)
-adj_cowork <- lawdata[[3]]   # adjacency matrix: co-working network (undirected)
-df_att <- lawdata[[4]]       # node attributes for the 71 lawyers
+data(lawdata)
+adj_advice <- lawdata[[1]] # adjacency matrix: advice network (directed)
+adj_friend <- lawdata[[2]] # adjacency matrix: friendship network (directed)
+adj_cowork <- lawdata[[3]] # adjacency matrix: co-working network (undirected)
+df_att <- lawdata[[4]] # node attributes for the 71 lawyers
 ```
 
 In the following analyses we also consider three additional networks created
@@ -162,13 +162,13 @@ the graph assuming it is undirected instead:
 #| label: new-vars
 
 # mutual advice
-adj_mutadv <- adj_advice*t(adj_advice)
+adj_mutadv <- adj_advice * t(adj_advice)
 # mutual friendship
-adj_mutfrn <- adj_friend*t(adj_friend) 
-# likely friendship 
-g_frn <- graph_from_adjacency_matrix(adj_friend, mode="directed") 
+adj_mutfrn <- adj_friend * t(adj_friend)
+# likely friendship
+g_frn <- graph_from_adjacency_matrix(adj_friend, mode = "directed")
 g_likfrn <- as_undirected(g_frn)
-adj_likfrn <-  as_adjacency_matrix(g_likfrn, sparse = FALSE)
+adj_likfrn <- as_adjacency_matrix(g_likfrn, sparse = FALSE)
 ```
 
 ### Data Editing
@@ -200,7 +200,7 @@ compute the corresponding relative and cumulative relative frequencies.
 tab_years <- table(df_att$years)
 frq_years <- data.frame(
   years = as.numeric(names(tab_years)),
-  freq  = as.integer(tab_years)
+  freq = as.integer(tab_years)
 )
 frq_years$rel.freq <- frq_years$freq / sum(frq_years$freq)
 frq_years$cum.rel.freq <- cumsum(frq_years$rel.freq)
@@ -208,10 +208,10 @@ frq_years$cum.rel.freq <- cumsum(frq_years$rel.freq)
 # Age CDF data
 tab_age <- table(df_att$age)
 frq_age <- data.frame(
-  age  = as.numeric(names(tab_age)),
+  age = as.numeric(names(tab_age)),
   freq = as.integer(tab_age)
 )
-frq_age$rel.freq     <- frq_age$freq / sum(frq_age$freq)
+frq_age$rel.freq <- frq_age$freq / sum(frq_age$freq)
 frq_age$cum.rel.freq <- cumsum(frq_age$rel.freq)
 ```
 
@@ -231,7 +231,7 @@ the selected cutpoints are $35$ and $45$.
 pyears <- ggplot(frq_years, aes(x = years, y = cum.rel.freq)) +
   geom_step(linewidth = 1) +
   geom_point() +
-  geom_hline(yintercept = c(1/3, 2/3), linetype = "dashed") +
+  geom_hline(yintercept = c(1 / 3, 2 / 3), linetype = "dashed") +
   geom_vline(xintercept = c(3, 13), linetype = "dotted") +
   labs(
     title = "CDF of Years at Firm",
@@ -243,7 +243,7 @@ pyears <- ggplot(frq_years, aes(x = years, y = cum.rel.freq)) +
 page <- ggplot(frq_age, aes(x = age, y = cum.rel.freq)) +
   geom_step(linewidth = 1) +
   geom_point() +
-  geom_hline(yintercept = c(1/3, 2/3), linetype = "dashed") +
+  geom_hline(yintercept = c(1 / 3, 2 / 3), linetype = "dashed") +
   geom_vline(xintercept = c(35, 45), linetype = "dotted") +
   labs(
     title = "CDF of Age",
@@ -268,14 +268,12 @@ on:
 #| label: categorized-vars
 
 att_var <- data.frame(
-  status    = df_att$status - 1,
-  gender    = df_att$gender,
-  office    = df_att$office - 1,
-  years     = ifelse(df_att$years <= 3, 0,
-                ifelse(df_att$years <= 13, 1, 2)),
-  age       = ifelse(df_att$age <= 35, 0,
-                ifelse(df_att$age <= 45, 1, 2)),
-  practice  = df_att$practice,
+  status = df_att$status - 1,
+  gender = df_att$gender,
+  office = df_att$office - 1,
+  years = ifelse(df_att$years <= 3, 0, ifelse(df_att$years <= 13, 1, 2)),
+  age = ifelse(df_att$age <= 35, 0, ifelse(df_att$age <= 45, 1, 2)),
+  practice = df_att$practice,
   lawschool = df_att$lawschool - 1
 )
 ```
@@ -304,7 +302,7 @@ att_long <- rbind(years_cat, age_cat)
 
 ggplot(att_long, aes(x = factor(category), y = freq)) +
   geom_col(fill = "lightgrey", color = "darkgrey") +
-  facet_wrap(~ variable, scales = "free_y") +
+  facet_wrap(~variable, scales = "free_y") +
   labs(
     x = "Category",
     y = "Frequency"
@@ -330,8 +328,8 @@ likely-friendship graph `g_likfrn` were already created above):
 ```{r}
 #| label: g-objects
 
-g_cwk    <- graph_from_adjacency_matrix(adj_cowork, mode = "undirected")
-g_adv    <- graph_from_adjacency_matrix(adj_advice, mode = "directed")
+g_cwk <- graph_from_adjacency_matrix(adj_cowork, mode = "undirected")
+g_adv <- graph_from_adjacency_matrix(adj_advice, mode = "directed")
 g_mutadv <- graph_from_adjacency_matrix(adj_mutadv, mode = "undirected")
 g_mutfrn <- graph_from_adjacency_matrix(adj_mutfrn, mode = "undirected")
 ```
@@ -341,14 +339,14 @@ Degrees are then computed as
 ```{r}
 #| label: degs
 
-deg_cwk     <- degree(g_cwk)
-indeg_adv   <- degree(g_adv, mode = "in")
-outdeg_adv  <- degree(g_adv, mode = "out")
-deg_mutadv  <- degree(g_mutadv)
-indeg_frn   <- degree(g_frn, mode = "in")
-outdeg_frn  <- degree(g_frn, mode = "out")
-deg_mutfrn  <- degree(g_mutfrn)
-deg_likfrn  <- degree(g_likfrn)
+deg_cwk <- degree(g_cwk)
+indeg_adv <- degree(g_adv, mode = "in")
+outdeg_adv <- degree(g_adv, mode = "out")
+deg_mutadv <- degree(g_mutadv)
+indeg_frn <- degree(g_frn, mode = "in")
+outdeg_frn <- degree(g_frn, mode = "out")
+deg_mutfrn <- degree(g_mutfrn)
+deg_likfrn <- degree(g_likfrn)
 ```
 These variables are then categorized using the same procedure as above for the
 other vertex variables:
@@ -357,14 +355,14 @@ other vertex variables:
 #| label: degs-cats
 
 deg_var <- data.frame(
-  deg_cwk     = ifelse(deg_cwk <= 9, 0, 1),
-  indeg_adv   = ifelse(indeg_adv <= 10, 0, 1),
-  outdeg_adv  = ifelse(outdeg_adv <= 11, 0, 1),
-  deg_mutadv  = ifelse(deg_mutadv <= 3, 0, 1),
-  indeg_frn   = ifelse(indeg_frn <= 7, 0, 1),
-  outdeg_frn  = ifelse(outdeg_frn <= 7, 0, 1),
-  deg_mutfrn  = ifelse(deg_mutfrn <= 4, 0, 1),
-  deg_likfrn  = ifelse(deg_likfrn <= 11, 0, 1)
+  deg_cwk = ifelse(deg_cwk <= 9, 0, 1),
+  indeg_adv = ifelse(indeg_adv <= 10, 0, 1),
+  outdeg_adv = ifelse(outdeg_adv <= 11, 0, 1),
+  deg_mutadv = ifelse(deg_mutadv <= 3, 0, 1),
+  indeg_frn = ifelse(indeg_frn <= 7, 0, 1),
+  outdeg_frn = ifelse(outdeg_frn <= 7, 0, 1),
+  deg_mutfrn = ifelse(deg_mutfrn <= 4, 0, 1),
+  deg_likfrn = ifelse(deg_likfrn <= 11, 0, 1)
 )
 ```
 Merging `deg_var` and `att_var` yields the final data frame `vertex_var`, which
@@ -385,7 +383,7 @@ variables used in the entropy analysis. The first rows are shown in
 #| echo: false
 
 knitr::kable(
- head(vertex_var, 10),
+  head(vertex_var, 10),
 )
 ```
 First 10 rows of the vertex-level dataset.
@@ -412,12 +410,12 @@ attributes. This procedure is applied to all vertex variables in the dataset:
 ```{r}
 #| label: dyad-transf
 
-dyad_status    <- get_dyad_var(att_var$status, type = "att")
-dyad_gender    <- get_dyad_var(att_var$gender, type = "att")
-dyad_office    <- get_dyad_var(att_var$office, type = "att")
-dyad_years     <- get_dyad_var(att_var$years, type = "att")
-dyad_age       <- get_dyad_var(att_var$age, type = "att")
-dyad_practice  <- get_dyad_var(att_var$practice, type = "att")
+dyad_status <- get_dyad_var(att_var$status, type = "att")
+dyad_gender <- get_dyad_var(att_var$gender, type = "att")
+dyad_office <- get_dyad_var(att_var$office, type = "att")
+dyad_years <- get_dyad_var(att_var$years, type = "att")
+dyad_age <- get_dyad_var(att_var$age, type = "att")
+dyad_practice <- get_dyad_var(att_var$practice, type = "att")
 dyad_lawschool <- get_dyad_var(att_var$lawschool, type = "att")
 ```
 
@@ -441,10 +439,10 @@ variable.
 ```{r}
 #| label: dyad-transf2
 
-dyad_cwk    <- get_dyad_var(adj_cowork, type = "tie")
-dyad_adv    <- get_dyad_var(adj_advice, type = "tie")
+dyad_cwk <- get_dyad_var(adj_cowork, type = "tie")
+dyad_adv <- get_dyad_var(adj_advice, type = "tie")
 dyad_mutadv <- get_dyad_var(adj_mutadv, type = "tie")
-dyad_frn    <- get_dyad_var(adj_friend, type = "tie")
+dyad_frn <- get_dyad_var(adj_friend, type = "tie")
 dyad_mutfrn <- get_dyad_var(adj_mutfrn, type = "tie")
 dyad_likfrn <- get_dyad_var(adj_likfrn, type = "tie")
 ```
@@ -456,19 +454,19 @@ entropy analysis:
 #| label: dyad-var
 
 dyad_var <- data.frame(
-  status    = dyad_status$var,
-  gender    = dyad_gender$var,
-  office    = dyad_office$var,
-  years     = dyad_years$var,
-  age       = dyad_age$var,
-  practice  = dyad_practice$var,
+  status = dyad_status$var,
+  gender = dyad_gender$var,
+  office = dyad_office$var,
+  years = dyad_years$var,
+  age = dyad_age$var,
+  practice = dyad_practice$var,
   lawschool = dyad_lawschool$var,
-  cowork    = dyad_cwk$var,
-  advice    = dyad_adv$var,
-  mutadv    = dyad_mutadv$var,
-  friend    = dyad_frn$var,
-  mutfrn    = dyad_mutfrn$var,
-  likfrn    = dyad_likfrn$var
+  cowork = dyad_cwk$var,
+  advice = dyad_adv$var,
+  mutadv = dyad_mutadv$var,
+  friend = dyad_frn$var,
+  mutfrn = dyad_mutfrn$var,
+  likfrn = dyad_likfrn$var
 )
 ```
 The resulting dataset `dyad_var` contains all dyadic variables used in the
@@ -503,12 +501,12 @@ For vertex variables, triad variables are constructed as follows:
 ```{r}
 #| label: triad-var
 
-triad_status    <- get_triad_var(att_var$status, type = "att")
-triad_gender    <- get_triad_var(att_var$gender, type = "att")
-triad_office    <- get_triad_var(att_var$office, type = "att")
-triad_years     <- get_triad_var(att_var$years, type = "att")
-triad_age       <- get_triad_var(att_var$age, type = "att")
-triad_practice  <- get_triad_var(att_var$practice, type = "att")
+triad_status <- get_triad_var(att_var$status, type = "att")
+triad_gender <- get_triad_var(att_var$gender, type = "att")
+triad_office <- get_triad_var(att_var$office, type = "att")
+triad_years <- get_triad_var(att_var$years, type = "att")
+triad_age <- get_triad_var(att_var$age, type = "att")
+triad_practice <- get_triad_var(att_var$practice, type = "att")
 triad_lawschool <- get_triad_var(att_var$lawschool, type = "att")
 ```
 
@@ -530,10 +528,10 @@ The triad variables based on ties are constructed as follows:
 ```{r}
 #| label: triad-var2
 
-triad_cwk    <- get_triad_var(adj_cowork, type = "tie")
-triad_adv    <- get_triad_var(adj_advice, type = "tie")
+triad_cwk <- get_triad_var(adj_cowork, type = "tie")
+triad_adv <- get_triad_var(adj_advice, type = "tie")
 triad_mutadv <- get_triad_var(adj_mutadv, type = "tie")
-triad_frn    <- get_triad_var(adj_friend, type = "tie")
+triad_frn <- get_triad_var(adj_friend, type = "tie")
 triad_mutfrn <- get_triad_var(adj_mutfrn, type = "tie")
 triad_likfrn <- get_triad_var(adj_likfrn, type = "tie")
 ```
@@ -544,19 +542,19 @@ entropy analysis:
 #| label: triad-var-df
 
 triad_var <- data.frame(
-  status    = triad_status$var,
-  gender    = triad_gender$var,
-  office    = triad_office$var,
-  years     = triad_years$var,
-  age       = triad_age$var,
-  practice  = triad_practice$var,
+  status = triad_status$var,
+  gender = triad_gender$var,
+  office = triad_office$var,
+  years = triad_years$var,
+  age = triad_age$var,
+  practice = triad_practice$var,
   lawschool = triad_lawschool$var,
-  cowork    = triad_cwk$var,
-  advice    = triad_adv$var,
-  mutadv    = triad_mutadv$var,
-  friend    = triad_frn$var,
-  mutfrn    = triad_mutfrn$var,
-  likfrn    = triad_likfrn$var
+  cowork = triad_cwk$var,
+  advice = triad_adv$var,
+  mutadv = triad_mutadv$var,
+  friend = triad_frn$var,
+  mutfrn = triad_mutfrn$var,
+  likfrn = triad_likfrn$var
 )
 ```
 
@@ -996,11 +994,11 @@ The corresponding prediction power matrices are obtained as follows:
 ```{r}
 #| label: pred-power-vertex
 
-pred_vertex_cwk    <- prediction_power("deg_cwk", vertex_var)
-pred_vertex_advin  <- prediction_power("indeg_adv", vertex_var)
+pred_vertex_cwk <- prediction_power("deg_cwk", vertex_var)
+pred_vertex_advin <- prediction_power("indeg_adv", vertex_var)
 pred_vertex_advout <- prediction_power("outdeg_adv", vertex_var)
 pred_vertex_advmut <- prediction_power("deg_mutadv", vertex_var)
-pred_vertex_frnin  <- prediction_power("indeg_frn", vertex_var)
+pred_vertex_frnin <- prediction_power("indeg_frn", vertex_var)
 pred_vertex_frnout <- prediction_power("outdeg_frn", vertex_var)
 pred_vertex_frnmut <- prediction_power("deg_mutfrn", vertex_var)
 pred_vertex_frnlik <- prediction_power("deg_likfrn", vertex_var)
@@ -1065,19 +1063,19 @@ to compare the results. We illustrate this for all vertex variables in
 #| fig-width: 10
 #| fig-cap: "Prediction power heatmaps for vertex variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
 
-p1 <- make_pred_plot(pred_vertex_cwk,    "deg_cwk")
-p2 <- make_pred_plot(pred_vertex_advin,  "indeg_adv")
+p1 <- make_pred_plot(pred_vertex_cwk, "deg_cwk")
+p2 <- make_pred_plot(pred_vertex_advin, "indeg_adv")
 p3 <- make_pred_plot(pred_vertex_advout, "outdeg_adv")
 p4 <- make_pred_plot(pred_vertex_advmut, "deg_mutadv")
-p5 <- make_pred_plot(pred_vertex_frnin,  "indeg_frn")
+p5 <- make_pred_plot(pred_vertex_frnin, "indeg_frn")
 p6 <- make_pred_plot(pred_vertex_frnout, "outdeg_frn")
 p7 <- make_pred_plot(pred_vertex_frnmut, "deg_mutfrn")
 p8 <- make_pred_plot(pred_vertex_frnlik, "deg_likfrn")
 
 (p1 | p2) /
-(p3 | p4) /
-(p5 | p6) /
-(p7 | p8)
+  (p3 | p4) /
+  (p5 | p6) /
+  (p7 | p8)
 ```
 
 From @fig-predplot-vertex, we note the following. The vertex variables,
@@ -1108,16 +1106,16 @@ of expected conditional entropies $EH(Z \mid X,Y)$.
 ```{r}
 #| label: predpow-dyad
 
-pred_dyad_status    <- prediction_power("status", dyad_var)
-pred_dyad_gender    <- prediction_power("gender", dyad_var)
-pred_dyad_office    <- prediction_power("office", dyad_var)
-pred_dyad_years     <- prediction_power("years", dyad_var)
-pred_dyad_age       <- prediction_power("age", dyad_var)
-pred_dyad_practice  <- prediction_power("practice", dyad_var)
+pred_dyad_status <- prediction_power("status", dyad_var)
+pred_dyad_gender <- prediction_power("gender", dyad_var)
+pred_dyad_office <- prediction_power("office", dyad_var)
+pred_dyad_years <- prediction_power("years", dyad_var)
+pred_dyad_age <- prediction_power("age", dyad_var)
+pred_dyad_practice <- prediction_power("practice", dyad_var)
 pred_dyad_lawschool <- prediction_power("lawschool", dyad_var)
-pred_dyad_cowork    <- prediction_power("cowork", dyad_var)
-pred_dyad_advice    <- prediction_power("advice", dyad_var)
-pred_dyad_friend    <- prediction_power("friend", dyad_var)
+pred_dyad_cowork <- prediction_power("cowork", dyad_var)
+pred_dyad_advice <- prediction_power("advice", dyad_var)
+pred_dyad_friend <- prediction_power("friend", dyad_var)
 ```
 To visualize these matrices, we again use the function `make_pred_plot()`, shown
 in @fig-predplot-dyad.
@@ -1129,22 +1127,22 @@ in @fig-predplot-dyad.
 #| fig-width: 10
 #| fig-cap: "Prediction power heatmaps for dyad variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
 
-p1  <- make_pred_plot(pred_dyad_status,    "status")
-p2  <- make_pred_plot(pred_dyad_gender,    "gender")
-p3  <- make_pred_plot(pred_dyad_office,    "office")
-p4  <- make_pred_plot(pred_dyad_years,     "years")
-p5  <- make_pred_plot(pred_dyad_age,       "age")
-p6  <- make_pred_plot(pred_dyad_practice,  "practice")
-p7  <- make_pred_plot(pred_dyad_lawschool, "lawschool")
-p8  <- make_pred_plot(pred_dyad_cowork,    "cowork")
-p9  <- make_pred_plot(pred_dyad_advice,    "advice")
-p10 <- make_pred_plot(pred_dyad_friend,    "friend")
+p1 <- make_pred_plot(pred_dyad_status, "status")
+p2 <- make_pred_plot(pred_dyad_gender, "gender")
+p3 <- make_pred_plot(pred_dyad_office, "office")
+p4 <- make_pred_plot(pred_dyad_years, "years")
+p5 <- make_pred_plot(pred_dyad_age, "age")
+p6 <- make_pred_plot(pred_dyad_practice, "practice")
+p7 <- make_pred_plot(pred_dyad_lawschool, "lawschool")
+p8 <- make_pred_plot(pred_dyad_cowork, "cowork")
+p9 <- make_pred_plot(pred_dyad_advice, "advice")
+p10 <- make_pred_plot(pred_dyad_friend, "friend")
 
 (p1 | p2) /
-(p3 | p4) /
-(p5 | p6) /
-(p7 | p8) /
-(p9 | p10)
+  (p3 | p4) /
+  (p5 | p6) /
+  (p7 | p8) /
+  (p9 | p10)
 ```
 
 @fig-predplot-dyad allows us to compare how well different combinations of
@@ -1204,27 +1202,27 @@ combinations of structural variables playing a key role in prediction.
 #| fig-cap: "Prediction power heatmaps for triad variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
 
 # compute prediction power matrices
-pred_triad_status    <- prediction_power("status", triad_var)
-pred_triad_gender    <- prediction_power("gender", triad_var)
-pred_triad_office    <- prediction_power("office", triad_var)
-pred_triad_years     <- prediction_power("years", triad_var)
-pred_triad_age       <- prediction_power("age", triad_var)
-pred_triad_practice  <- prediction_power("practice", triad_var)
+pred_triad_status <- prediction_power("status", triad_var)
+pred_triad_gender <- prediction_power("gender", triad_var)
+pred_triad_office <- prediction_power("office", triad_var)
+pred_triad_years <- prediction_power("years", triad_var)
+pred_triad_age <- prediction_power("age", triad_var)
+pred_triad_practice <- prediction_power("practice", triad_var)
 pred_triad_lawschool <- prediction_power("lawschool", triad_var)
 
 # visualize using built-in function
-p1 <- make_pred_plot(pred_triad_status,    "status")
-p2 <- make_pred_plot(pred_triad_gender,    "gender")
-p3 <- make_pred_plot(pred_triad_office,    "office")
-p4 <- make_pred_plot(pred_triad_years,     "years")
-p5 <- make_pred_plot(pred_triad_age,       "age")
-p6 <- make_pred_plot(pred_triad_practice,  "practice")
+p1 <- make_pred_plot(pred_triad_status, "status")
+p2 <- make_pred_plot(pred_triad_gender, "gender")
+p3 <- make_pred_plot(pred_triad_office, "office")
+p4 <- make_pred_plot(pred_triad_years, "years")
+p5 <- make_pred_plot(pred_triad_age, "age")
+p6 <- make_pred_plot(pred_triad_practice, "practice")
 p7 <- make_pred_plot(pred_triad_lawschool, "lawschool")
 
 (p1 | p2) /
-(p3 | p4) /
-(p5 | p6) /
-(p7 | patchwork::plot_spacer())
+  (p3 | p4) /
+  (p5 | p6) /
+  (p7 | patchwork::plot_spacer())
 ```
 
 ::: {.callout-note}

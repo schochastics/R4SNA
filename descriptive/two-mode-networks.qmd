@@ -192,9 +192,9 @@ networks.
 
 el_women <- as_edgelist(southern_women, names = FALSE)
 
-clustering_tm(el_women)              # global clustering (first mode)
-clustering_local_tm(el_women)        # local clustering (first mode)
-clustering_local_tm(el_women[,2:1])  # local clustering (second mode)
+clustering_tm(el_women) # global clustering (first mode)
+clustering_local_tm(el_women) # local clustering (first mode)
+clustering_local_tm(el_women[, 2:1]) # local clustering (second mode)
 ```
 The `NaN` values indicate that for those nodes the two-mode clustering
 coefficient is undefined, because they do not participate in any valid six-cycle
@@ -278,7 +278,6 @@ ggraph(proj, "stress") +
   scale_edge_width(range = c(1, 4)) +
   theme_graph() +
   coord_cartesian(clip = "off")
-
 ```
 
 As the figure shows, the projected network is typically very dense, since many
@@ -425,7 +424,12 @@ is being analyzed.
 ```{r}
 #| label: fit-sdsm
 
-senators <- backbone_from_projection(cosponsor, model = "sdsm", alpha = 0.05, signed = FALSE)
+senators <- backbone_from_projection(
+  cosponsor,
+  model = "sdsm",
+  alpha = 0.05,
+  signed = FALSE
+)
 senators
 ```
 

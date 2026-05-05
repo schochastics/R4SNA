@@ -141,12 +141,28 @@ df <- data.frame(centralization = null_vals)
 
 hist_plot <- ggplot(df, aes(x = centralization)) +
   geom_histogram(binwidth = 0.02, fill = "skyblue", color = "white") +
-  geom_vline(xintercept = obs_measure, linetype = "dashed", color = "firebrick3") +
-  annotate("text", x = obs_measure, y = max(table(cut(null_vals, breaks = 30))) + 2,
-           label = "observed value", color = "firebrick3", angle = 90, vjust = -0.5,  hjust = 1) +
-  labs(title = "Null distribution of statistic of interest", x = " ", y = "Frequency") +
+  geom_vline(
+    xintercept = obs_measure,
+    linetype = "dashed",
+    color = "firebrick3"
+  ) +
+  annotate(
+    "text",
+    x = obs_measure,
+    y = max(table(cut(null_vals, breaks = 30))) + 2,
+    label = "observed value",
+    color = "firebrick3",
+    angle = 90,
+    vjust = -0.5,
+    hjust = 1
+  ) +
+  labs(
+    title = "Null distribution of statistic of interest",
+    x = " ",
+    y = "Frequency"
+  ) +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5)) 
+  theme(plot.title = element_text(hjust = 0.5))
 
 
 # Create network plot
@@ -159,7 +175,6 @@ net_plot <- ggraph(obs_graph, layout = "fr") +
 
 # Combine using patchwork
 net_plot + hist_plot + plot_layout(ncol = 2)
-
 ```
 Conditional Uniform Graph (CUG) test of a network statistic of interest.
 
@@ -185,18 +200,30 @@ focus on the fall network here, which we load and visualize:
 coleman_g <- networkdata::coleman[[1]]
 
 # plot using gggraph
-ggraph(coleman_g, layout = "stress") + 
-          geom_edge_link(edge_color = "#666060", end_cap = circle(9,"pt"), 
-                         n = 2, edge_width = 0.4, edge_alpha = 0.7, 
-                         arrow = arrow(angle = 15, 
-                         length = unit(0.1, "inches"), 
-                         ends = "last", type = "closed"))  +
-          geom_node_point(fill = "#525240",color = "#FFFFFF", 
-                           size = 5, stroke = 1.1, shape = 21) + 
-          theme_graph() + 
-          ggtitle("fall friendship network") +
-          theme(legend.position = "none")
-
+ggraph(coleman_g, layout = "stress") +
+  geom_edge_link(
+    edge_color = "#666060",
+    end_cap = circle(9, "pt"),
+    n = 2,
+    edge_width = 0.4,
+    edge_alpha = 0.7,
+    arrow = arrow(
+      angle = 15,
+      length = unit(0.1, "inches"),
+      ends = "last",
+      type = "closed"
+    )
+  ) +
+  geom_node_point(
+    fill = "#525240",
+    color = "#FFFFFF",
+    size = 5,
+    stroke = 1.1,
+    shape = 21
+  ) +
+  theme_graph() +
+  ggtitle("fall friendship network") +
+  theme(legend.position = "none")
 ```
 
 ## Uniform Graph Distribution Given Expected Density
@@ -211,7 +238,7 @@ from the dyad census:
 ```{r}
 dyad_census(coleman_g)
 # alternatively one can also use the below
-sum(which_mutual(coleman_g)) / 2 
+sum(which_mutual(coleman_g)) / 2
 ```
 The number of reciprocal ties is equal to `r dyad_census(coleman_g)$mut`. In
 order to compute this density, we can use the `igraph` function
@@ -233,10 +260,13 @@ specified above.
 ```{r}
 # Simulate 1000 random graphs with same density
 set.seed(1108)
-sim_g_dens <- replicate(1000, {
-  sample_gnp(n = n_nodes, p = density_obs, directed = TRUE, loops = FALSE)
-}, simplify = FALSE)
-
+sim_g_dens <- replicate(
+  1000,
+  {
+    sample_gnp(n = n_nodes, p = density_obs, directed = TRUE, loops = FALSE)
+  },
+  simplify = FALSE
+)
 ```
 Note that the output consists of 1000 randomly generated networks as graph
 objects. While each individual simulated network may not contain exactly the
@@ -260,7 +290,7 @@ distribution expected by chance.
 #| warning: false
 #| fig-align: center
 
-# Define mutual tie counter 
+# Define mutual tie counter
 count_mutual <- function(g) {
   sum(which_mutual(g)) / 2
 }
@@ -274,12 +304,22 @@ mutual_df <- data.frame(mutual_ties = mutual_counts)
 # Plot
 ggplot(mutual_df, aes(x = mutual_ties)) +
   geom_histogram(binwidth = 1, fill = "skyblue", color = "white") +
-  geom_vline(xintercept = dyad_census(coleman_g)$mut, color = "firebrick3", linetype = "dashed") +
-  annotate("text", x = dyad_census(coleman_g)$mut, y = Inf, label = "Observed", 
-           vjust = -0.5, hjust = 1.1, color = "firebrick3", angle = 90) +
-  labs(title = " ",
-       x = "Number of Mutual Ties",
-       y = "Frequency") +
+  geom_vline(
+    xintercept = dyad_census(coleman_g)$mut,
+    color = "firebrick3",
+    linetype = "dashed"
+  ) +
+  annotate(
+    "text",
+    x = dyad_census(coleman_g)$mut,
+    y = Inf,
+    label = "Observed",
+    vjust = -0.5,
+    hjust = 1.1,
+    color = "firebrick3",
+    angle = 90
+  ) +
+  labs(title = " ", x = "Number of Mutual Ties", y = "Frequency") +
   theme_minimal()
 ```
 Empirical distribution of reciprocal ties obtained from 1,000 random directed
@@ -355,15 +395,19 @@ random networks using the `sample_gnm()` function from the `igraph` package,
 which samples graphs with a fixed number of edges.
 
 ```{r}
-set.seed(1108)  
+set.seed(1108)
 # Parameters from the observed network
 n_nodes <- vcount(coleman_g)
 n_edges <- ecount(coleman_g)
 
 # Simulate 1000 random directed graphs with fixed number of edges
-sim_g_edges <- replicate(1000, {
-  g <- sample_gnm(n = n_nodes, m = n_edges, directed = TRUE, loops = FALSE)
-}, simplify = FALSE)
+sim_g_edges <- replicate(
+  1000,
+  {
+    g <- sample_gnm(n = n_nodes, m = n_edges, directed = TRUE, loops = FALSE)
+  },
+  simplify = FALSE
+)
 ```
 
 Note that each simulated network has exactly the same number of edges as the
@@ -394,15 +438,23 @@ mutual_df_edges <- data.frame(mutual_ties = mutual_counts_edges)
 
 ggplot(mutual_df_edges, aes(x = mutual_ties)) +
   geom_histogram(binwidth = 1, fill = "skyblue", color = "white") +
-  geom_vline(xintercept = dyad_census(coleman_g)$mut, 
-             color = "firebrick3", linetype = "dashed") +
-  annotate("text", x = dyad_census(coleman_g)$mut, y = Inf, label = "Observed", 
-           vjust = -0.5, hjust = 1.1, color = "firebrick3", angle = 90) +
-  labs(title = " ",
-       x = "Number of Mutual Ties",
-       y = "Frequency") +
+  geom_vline(
+    xintercept = dyad_census(coleman_g)$mut,
+    color = "firebrick3",
+    linetype = "dashed"
+  ) +
+  annotate(
+    "text",
+    x = dyad_census(coleman_g)$mut,
+    y = Inf,
+    label = "Observed",
+    vjust = -0.5,
+    hjust = 1.1,
+    color = "firebrick3",
+    angle = 90
+  ) +
+  labs(title = " ", x = "Number of Mutual Ties", y = "Frequency") +
   theme_minimal()
-
 ```
 Empirical distribution of reciprocal ties obtained from 1000 random directed
 networks generated under the Conditional Uniform Graph (CUG) null model, holding
@@ -472,40 +524,46 @@ In directed networks, there are two triad types corresponding to closed triads,
 030T and 300.
 
 ```{r}
-set.seed(1108) 
+set.seed(1108)
 # Generate 1000 graphs with fixed dyad census using rguman (from sna)
-sim_nets_man <- rguman(n = 1000, nv = n_nodes, 
-                        mut =  dyad_census(coleman_g)$mut, 
-                        asym = dyad_census(coleman_g)$asym, 
-                        null = dyad_census(coleman_g)$null, 
-                        method = "exact")
+sim_nets_man <- rguman(
+  n = 1000,
+  nv = n_nodes,
+  mut = dyad_census(coleman_g)$mut,
+  asym = dyad_census(coleman_g)$asym,
+  null = dyad_census(coleman_g)$null,
+  method = "exact"
+)
 
 # Convert to igraph objects
 sim_g_man <- lapply(1:dim(sim_nets_man)[1], function(i) {
-  graph_from_adjacency_matrix(sim_nets_man[i,,], mode = "directed")
+  graph_from_adjacency_matrix(sim_nets_man[i, , ], mode = "directed")
 })
 
 # Get observed triad counts by index
 obs_triad <- triad_census(coleman_g)
-obs_030T <- obs_triad[9]   # position of 030T
-obs_300  <- obs_triad[16]  # position of 300
+obs_030T <- obs_triad[9] # position of 030T
+obs_300 <- obs_triad[16] # position of 300
 
 # sim_graphs: list of igraph directed networks
 sim_g_tc <- t(sapply(sim_g_man, triad_census))
 sim_g_tc_df <- as.data.frame(sim_g_tc)
 
-# Extract simulated triad counts 
+# Extract simulated triad counts
 triad_df <- sim_g_tc_df |>
   select(9, 16) |>
   rename(`Triad 030T` = 1, `Triad 300` = 2) |>
-  pivot_longer(cols = everything(), names_to = "Triad_Type", values_to = "Count")
+  pivot_longer(
+    cols = everything(),
+    names_to = "Triad_Type",
+    values_to = "Count"
+  )
 
 # Create observed values for vertical lines
 obs_df <- data.frame(
   Triad_Type = c("Triad 030T", "Triad 300"),
   Count = c(obs_030T, obs_300)
 )
-
 ```
 Now we have everything set to plot out the results as before to test out
 hypothesis. The results are shown in @fig-cug-man.
@@ -518,18 +576,26 @@ hypothesis. The results are shown in @fig-cug-man.
 #| message: false
 #| warning: false
 #| fig-align: center
-#| 
+
 ggplot(triad_df, aes(x = Count)) +
   geom_histogram(binwidth = 1, fill = "skyblue", color = "white") +
-  geom_vline(data = obs_df, aes(xintercept = Count), color = "firebrick3", linetype = "dashed") +
-  geom_text(data = obs_df, aes(x = Count, y = Inf, label = "Observed"),
-            angle = 90, vjust = -0.5, hjust = 1.1, color = "firebrick3") +
+  geom_vline(
+    data = obs_df,
+    aes(xintercept = Count),
+    color = "firebrick3",
+    linetype = "dashed"
+  ) +
+  geom_text(
+    data = obs_df,
+    aes(x = Count, y = Inf, label = "Observed"),
+    angle = 90,
+    vjust = -0.5,
+    hjust = 1.1,
+    color = "firebrick3"
+  ) +
   facet_wrap(~Triad_Type, scales = "free") +
-  labs(title = " ",
-       x = "Triad Counts",
-       y = "Frequency") +
+  labs(title = " ", x = "Triad Counts", y = "Frequency") +
   theme_minimal()
-
 ```
 Distributions of two types of closed triads, 030T (one mutual and two asymmetric
 ties) and 300 (three mutual ties), across 1000 randomly generated directed
@@ -563,7 +629,7 @@ results are run and visualized below in @fig-cug-deg.
 #| message: false
 #| warning: false
 #| fig-align: center
-#| 
+
 # Extract in-degree and out-degree from observed network
 in_deg <- igraph::degree(coleman_g, mode = "in")
 out_deg <- igraph::degree(coleman_g, mode = "out")
@@ -573,10 +639,15 @@ obs_dist <- mean_distance(coleman_g, directed = TRUE, unconnected = TRUE)
 
 # Simulate 1000 graphs preserving degree sequence
 set.seed(1108)
-sim_deg_graphs <- replicate(1000, sample_degseq(out.deg = out_deg, 
-                                                in.deg = in_deg,
-                                                method = "fast.heur.simple"), 
-                                                simplify = FALSE)  
+sim_deg_graphs <- replicate(
+  1000,
+  sample_degseq(
+    out.deg = out_deg,
+    in.deg = in_deg,
+    method = "fast.heur.simple"
+  ),
+  simplify = FALSE
+)
 
 # Compute average geodesic distance for each simulation
 sim_geodist <- sapply(sim_deg_graphs, function(g) {
@@ -590,11 +661,17 @@ geodist_df <- data.frame(avg_geodist = sim_geodist)
 ggplot(geodist_df, aes(x = avg_geodist)) +
   geom_histogram(binwidth = 0.05, fill = "skyblue", color = "white") +
   geom_vline(xintercept = obs_dist, color = "firebrick3", linetype = "dashed") +
-  annotate("text", x = obs_dist, y = Inf, label = "Observed",
-           angle = 90, vjust = -0.5, hjust = 1.1, color = "firebrick3") +
-  labs(title = " ",
-       x = "Average Geodesic Distance",
-       y = "Frequency") +
+  annotate(
+    "text",
+    x = obs_dist,
+    y = Inf,
+    label = "Observed",
+    angle = 90,
+    vjust = -0.5,
+    hjust = 1.1,
+    color = "firebrick3"
+  ) +
+  labs(title = " ", x = "Average Geodesic Distance", y = "Frequency") +
   theme_minimal()
 ```
 Distribution of average geodesic distance across 1000 random directed graphs
@@ -659,12 +736,12 @@ data("law_cowork")
 
 # --- Friendship network (full) ---
 law_friends_g <- law_friends
-gender <- as.factor(V(law_friends_g)$gender)  # 1 = male, 2 = female
+gender <- as.factor(V(law_friends_g)$gender) # 1 = male, 2 = female
 
 # --- Coworking network (only 36 partners) ---
 partners <- 1:36
 law_cowork_partners_g <- induced_subgraph(law_cowork, vids = partners)
-practice <- as.factor(V(law_cowork_partners_g)$pract)  # 1 = litigation, 2 = corporate
+practice <- as.factor(V(law_cowork_partners_g)$pract) # 1 = litigation, 2 = corporate
 
 
 # --- Convert to tidygraph objects and add attributes ---
@@ -681,23 +758,37 @@ layout_cowork <- create_layout(tg_cowork, layout = "fr")
 
 # --- Plot 1: Friendship colored by gender ---
 p1 <- ggraph(layout_friends) +
-  geom_edge_link(edge_color = "#666060", end_cap = circle(9,"pt"), 
-                         n = 2, edge_width = 0.4, edge_alpha = 0.7, 
-                         arrow = arrow(angle = 15, 
-                         length = unit(0.1, "inches"), 
-                         ends = "last", type = "closed"))  +
+  geom_edge_link(
+    edge_color = "#666060",
+    end_cap = circle(9, "pt"),
+    n = 2,
+    edge_width = 0.4,
+    edge_alpha = 0.7,
+    arrow = arrow(
+      angle = 15,
+      length = unit(0.1, "inches"),
+      ends = "last",
+      type = "closed"
+    )
+  ) +
   geom_node_point(aes(color = gender), size = 4) +
-  scale_color_manual(values = c("darkturquoise", "tan2"), labels = c("Male", "Female")) +
+  scale_color_manual(
+    values = c("darkturquoise", "tan2"),
+    labels = c("Male", "Female")
+  ) +
   labs(title = "Friendship Network", color = "Gender") +
-  theme_graph() 
+  theme_graph()
 
 # --- Plot 2: Coworking colored by practice ---
 p2 <- ggraph(layout_cowork) +
   geom_edge_link(edge_color = "#666060") +
   geom_node_point(aes(color = practice), size = 4) +
-  scale_color_manual(values = c("forestgreen", "violet"), labels = c("Litigation", "Corporate")) +
+  scale_color_manual(
+    values = c("forestgreen", "violet"),
+    labels = c("Litigation", "Corporate")
+  ) +
   labs(title = "Coworking Network (Partners)", color = "Practice") +
-  theme_graph() 
+  theme_graph()
 
 # --- Combine plots side by side ---
 p1 / p2
@@ -715,7 +806,7 @@ lawyers from the Lazega dataset. We load the data as a graph object from the
 package `networkdata` and vizualize it, with node color representing gender:
 
 ```{r}
-law_friends_g <-  networkdata::law_friends
+law_friends_g <- networkdata::law_friends
 ```
 
 We are here testing the following
@@ -747,7 +838,7 @@ friendships) in the observed network:
 ```{r}
 # 1 = male, 2 = female
 homoph_obs <- sum(law_mat[law_gender == 1, law_gender == 1]) +
-              sum(law_mat[law_gender == 2, law_gender == 2])
+  sum(law_mat[law_gender == 2, law_gender == 2])
 ```
 
 To generate networks from the null world, we simulate 1000 random directed
@@ -757,14 +848,23 @@ same ordering of gender assignments to nodes in each simulated network):
 
 ```{r}
 set.seed(1108)
-law_sim_g <- replicate(1000, {
-  g <- sample_gnm(n = law_nodes, m = law_edges, directed = TRUE, loops = FALSE)
-  as_adjacency_matrix(g, sparse = FALSE)
-}, simplify = FALSE)
+law_sim_g <- replicate(
+  1000,
+  {
+    g <- sample_gnm(
+      n = law_nodes,
+      m = law_edges,
+      directed = TRUE,
+      loops = FALSE
+    )
+    as_adjacency_matrix(g, sparse = FALSE)
+  },
+  simplify = FALSE
+)
 
 homoph_sim <- sapply(law_sim_g, function(mat) {
   sum(mat[law_gender == 1, law_gender == 1]) +
-  sum(mat[law_gender == 2, law_gender == 2])
+    sum(mat[law_gender == 2, law_gender == 2])
 })
 ```
 
@@ -784,12 +884,23 @@ homoph_df <- data.frame(homophilous_ties = homoph_sim)
 
 ggplot(homoph_df, aes(x = homophilous_ties)) +
   geom_histogram(binwidth = 5, fill = "skyblue", color = "white") +
-  geom_vline(xintercept = homoph_obs, color = "firebrick3", linetype = "dashed", size = 1) +
-  annotate("text", x = homoph_obs, y = Inf, label = "Observed",
-           vjust = -0.5, hjust = 1.1, angle = 90, color = "firebrick3") +
-  labs(title = " ",
-       x = "Number of Homophilous Ties",
-       y = "Frequency") +
+  geom_vline(
+    xintercept = homoph_obs,
+    color = "firebrick3",
+    linetype = "dashed",
+    size = 1
+  ) +
+  annotate(
+    "text",
+    x = homoph_obs,
+    y = Inf,
+    label = "Observed",
+    vjust = -0.5,
+    hjust = 1.1,
+    angle = 90,
+    color = "firebrick3"
+  ) +
+  labs(title = " ", x = "Number of Homophilous Ties", y = "Frequency") +
   theme_minimal()
 ```
 Distribution of same-gender friendship ties in 1000 random directed graphs
@@ -821,7 +932,7 @@ We begin by loading the `law_cowork` network from the `networkdata` package:
 #| message: false
 #| warning: false
 #| fig-align: center
-#| 
+
 law_cw_g <- networkdata::law_cowork
 ```
 
@@ -849,7 +960,7 @@ law_mat_cwdir <- law_mat_cwdir[1:36, 1:36]
 law_mat_cw <- (law_mat_cwdir == 1 & t(law_mat_cwdir) == 1) * 1
 
 law_nodes_cw <- nrow(law_mat_cw)
-law_ties_cw <- sum(law_mat_cw) / 2  # undirected: each tie counted twice
+law_ties_cw <- sum(law_mat_cw) / 2 # undirected: each tie counted twice
 ```
 We now extract the binary attribute practice for each partner and store it as a
 vector:
@@ -863,7 +974,9 @@ ties:
 
 ```{r}
 homoph_obs_cw <- sum(
-  law_mat_cw[law_attr_pract == 1, law_attr_pract == 1]) / 2 +
+  law_mat_cw[law_attr_pract == 1, law_attr_pract == 1]
+) /
+  2 +
   sum(law_mat_cw[law_attr_pract == 2, law_attr_pract == 2]) / 2
 ```
 To construct the null model, we generate 1000 random undirected graphs with the
@@ -871,21 +984,29 @@ same number of nodes and total number of ties:
 
 ```{r}
 set.seed(1108)
-law_sim_cw <- replicate(1000, {
-  g <- sample_gnm(n = law_nodes_cw, m = law_ties_cw, directed = FALSE, loops = FALSE)
-  as_adjacency_matrix(g, sparse = FALSE)
-}, simplify = FALSE)
- 
+law_sim_cw <- replicate(
+  1000,
+  {
+    g <- sample_gnm(
+      n = law_nodes_cw,
+      m = law_ties_cw,
+      directed = FALSE,
+      loops = FALSE
+    )
+    as_adjacency_matrix(g, sparse = FALSE)
+  },
+  simplify = FALSE
+)
 ```
 
 We calculate the number of same-practice ties in each simulated graph:
 
 ```{r}
 homoph_sim_cw <- sapply(law_sim_cw, function(mat) {
-  sum(mat[law_attr_pract == 1, law_attr_pract == 1]) / 2 +
-  sum(mat[law_attr_pract == 2, law_attr_pract == 2]) / 2
+  sum(mat[law_attr_pract == 1, law_attr_pract == 1]) /
+    2 +
+    sum(mat[law_attr_pract == 2, law_attr_pract == 2]) / 2
 })
-
 ```
 
 and finally, plot the null distribution and compare with observed value:
@@ -903,12 +1024,22 @@ homoph_sim_df <- data.frame(homophilous_ties = homoph_sim_cw)
 
 ggplot(homoph_sim_df, aes(x = homophilous_ties)) +
   geom_histogram(binwidth = 1, fill = "skyblue", color = "white") +
-  geom_vline(xintercept = homoph_obs_cw, color = "firebrick3", linetype = "dashed") +
-  annotate("text", x = homoph_obs_cw, y = Inf, label = "Observed",
-           vjust = -0.5, hjust = 1.1, angle = 90, color = "firebrick3") +
-  labs(title = "",
-       x = "Number of Homophilous Ties",
-       y = "Frequency") +
+  geom_vline(
+    xintercept = homoph_obs_cw,
+    color = "firebrick3",
+    linetype = "dashed"
+  ) +
+  annotate(
+    "text",
+    x = homoph_obs_cw,
+    y = Inf,
+    label = "Observed",
+    vjust = -0.5,
+    hjust = 1.1,
+    angle = 90,
+    color = "firebrick3"
+  ) +
+  labs(title = "", x = "Number of Homophilous Ties", y = "Frequency") +
   coord_cartesian(ylim = c(0, 100)) +
   theme_minimal()
 ```

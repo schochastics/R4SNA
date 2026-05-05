@@ -136,22 +136,21 @@ t2 <- make_signed_triangle(c(-1, -1, 1))
 t3 <- make_signed_triangle(c(1, 1, -1))
 t4 <- make_signed_triangle(c(-1, -1, -1))
 
-p1 <- plot_triangle(t1, "+++") + 
-  theme(axis.title.x = element_text(face = "bold",size = 12)) +
+p1 <- plot_triangle(t1, "+++") +
+  theme(axis.title.x = element_text(face = "bold", size = 12)) +
   scale_x_continuous(name = "balanced")
-p2 <- plot_triangle(t2, "+\u2013\u2013") + 
-  theme(axis.title.x = element_text(face = "bold",size = 12)) +
+p2 <- plot_triangle(t2, "+\u2013\u2013") +
+  theme(axis.title.x = element_text(face = "bold", size = 12)) +
   scale_x_continuous(name = "balanced")
-p3 <- plot_triangle(t3, "++\u2013") + 
-  theme(axis.title.x = element_text(face = "bold",size = 12)) +
+p3 <- plot_triangle(t3, "++\u2013") +
+  theme(axis.title.x = element_text(face = "bold", size = 12)) +
   scale_x_continuous(name = "unbalanced")
-p4 <- plot_triangle(t4, "\u2013\u2013\u2013") + 
-  theme(axis.title.x = element_text(face = "bold",size = 12)) +
+p4 <- plot_triangle(t4, "\u2013\u2013\u2013") +
+  theme(axis.title.x = element_text(face = "bold", size = 12)) +
   scale_x_continuous(name = "unbalanced")
 
 
 p1 + p2 + p3 + p4 + plot_layout(ncol = 2, axis = "collect_x")
-
 ```
 
 A network is **balanced** if it can be partitioned into two groups such that all
@@ -167,9 +166,9 @@ with the added twist of making inter group edges negative. Setting
 #| label: balanced-example
 
 g_bal <- sample_islands_signed(
-  islands.n = 2, 
-  islands.size = 10, 
-  islands.pin = 0.8, 
+  islands.n = 2,
+  islands.size = 10,
+  islands.pin = 0.8,
   n.inter = 5
 )
 ```
@@ -207,6 +206,7 @@ For our perfectly balanced synthetic network, all three methods agree.
 
 ```{r}
 #| label: balance-perfect
+
 balance_score(g_bal, method = "triangles")
 balance_score(g_bal, method = "walk")
 balance_score(g_bal, method = "frustration")
@@ -336,10 +336,11 @@ reflects this.
 
 set.seed(1108)
 blockmat <- matrix(
-  c(1, -1, -1,
-   -1, 1, 1,
-   -1, 1, -1),
-    3, 3, byrow = TRUE)
+  c(1, -1, -1, -1, 1, 1, -1, 1, -1),
+  3,
+  3,
+  byrow = TRUE
+)
 
 blockmat
 
@@ -480,8 +481,12 @@ cow_post <- cowList[["93-96"]]
 ```{r}
 #| label: cow-sizes
 
-c(nodes_cold = vcount(cow_cold), edges_cold = ecount(cow_cold),
-  nodes_post = vcount(cow_post), edges_post = ecount(cow_post))
+c(
+  nodes_cold = vcount(cow_cold),
+  edges_cold = ecount(cow_cold),
+  nodes_post = vcount(cow_post),
+  edges_post = ecount(cow_post)
+)
 ```
 
 We can assess how balanced the international system was in each period:

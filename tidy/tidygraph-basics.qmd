@@ -66,7 +66,7 @@ island models).
 
 create_ring(5)
 play_gnp(10, 0.3)
-play_barabasi_albert(10,2)
+play_barabasi_albert(10, 2)
 ```
 
 ## Standard Verbs
@@ -96,8 +96,8 @@ endpoints is the Medici family.
 #| label: tag-medici-edges
 
 flo_medi <- flo_tidy |>
-    activate("edges") |>
-    mutate(to_medici = (.N()$name[from] == "Medici" | .N()$name[to] == "Medici"))
+  activate("edges") |>
+  mutate(to_medici = (.N()$name[from] == "Medici" | .N()$name[to] == "Medici"))
 ```
 
 The new attribute is immediately available for visualization, as shown in
@@ -108,10 +108,10 @@ The new attribute is immediately available for visualization, as shown in
 #| fig-cap: "Florentine marriage network with edges colored by whether they touch the Medici family."
 
 ggraph(flo_medi, "stress") +
-    geom_edge_link0(aes(edge_color = to_medici)) +
-    geom_node_point(shape = 21, size = 10, fill = "grey66") +
-    geom_node_text(aes(label = name)) +
-    theme_graph()
+  geom_edge_link0(aes(edge_color = to_medici)) +
+  geom_node_point(shape = 21, size = 10, fill = "grey66") +
+  geom_node_text(aes(label = name)) +
+  theme_graph()
 ```
 
 `filter()` behaves the way the table-based intuition suggests, with one
@@ -125,13 +125,13 @@ now-isolated families remain in the plot.
 #| fig-cap: "Result of filtering the edge table to ties incident to the Medici. Nodes untouched by any surviving edge remain in the graph as isolates."
 
 flo_medi |>
-    activate("edges") |>
-    filter(to_medici) |>
-    ggraph("stress", bbox = 10) +
-    geom_edge_link0(edge_color = "black") +
-    geom_node_point(shape = 21, size = 10, fill = "grey66") +
-    geom_node_text(aes(label = name)) +
-    theme_graph()
+  activate("edges") |>
+  filter(to_medici) |>
+  ggraph("stress", bbox = 10) +
+  geom_edge_link0(edge_color = "black") +
+  geom_node_point(shape = 21, size = 10, fill = "grey66") +
+  geom_node_text(aes(label = name)) +
+  theme_graph()
 ```
 
 ## Joins
@@ -163,20 +163,20 @@ the combined plot in @fig-graph-join can color edges by their source network.
 #| fig-cap: "Marriage and business ties among the Florentine families merged with `graph_join()`. Edges are colored by the relation they originated from."
 
 marriage_rel <- flo_tidy |>
-    activate("edges") |>
-    mutate(relation = "marriage")
+  activate("edges") |>
+  mutate(relation = "marriage")
 
 business_rel <- flo_business_tidy |>
-    activate("edges") |>
-    mutate(relation = "business")
+  activate("edges") |>
+  mutate(relation = "business")
 
 marriage_rel |>
-    graph_join(business_rel, by = "name") |>
-    ggraph("stress") +
-    geom_edge_parallel0(aes(edge_color = relation)) +
-    geom_node_point(shape = 21, size = 10, fill = "grey66") +
-    geom_node_text(aes(label = name)) +
-    theme_graph()
+  graph_join(business_rel, by = "name") |>
+  ggraph("stress") +
+  geom_edge_parallel0(aes(edge_color = relation)) +
+  geom_node_point(shape = 21, size = 10, fill = "grey66") +
+  geom_node_text(aes(label = name)) +
+  theme_graph()
 ```
 
 When the goal is instead to keep two networks side by side, for example to lay
@@ -189,15 +189,14 @@ disjoint union. Stress layout then places each component independently, as
 #| fig-cap: "Disjoint union of the Florentine marriage and business networks produced by `bind_graphs()`. Each family appears twice and the two components are laid out independently."
 
 bind_graphs(
-    flo_tidy |> activate("nodes") |> mutate(source = "marriage"),
-    flo_business_tidy |> activate("nodes") |> mutate(source = "business")
+  flo_tidy |> activate("nodes") |> mutate(source = "marriage"),
+  flo_business_tidy |> activate("nodes") |> mutate(source = "business")
 ) |>
-    ggraph("kk") +
-    geom_edge_link0() +
-    geom_node_point(aes(fill = source), shape = 21, size = 8) +
-    geom_node_text(aes(label = name), size = 3) +
-    theme_graph()
-
+  ggraph("kk") +
+  geom_edge_link0() +
+  geom_node_point(aes(fill = source), shape = 21, size = 8) +
+  geom_node_text(aes(label = name), size = 3) +
+  theme_graph()
 ```
 
 Two more verbs, `bind_nodes()` and `bind_edges()`, append rows to the active
@@ -212,13 +211,13 @@ resistance for attaching an external attribute table keyed on the node name:
 #| label: dplyr-join
 
 family_estate <- data.frame(
-    name   = c("Medici", "Strozzi", "Peruzzi", "Guadagni"),
-    estate = c(15, 14, 2, 2)
+  name = c("Medici", "Strozzi", "Peruzzi", "Guadagni"),
+  estate = c(15, 14, 2, 2)
 )
 
 flo_tidy |>
-    activate("nodes") |>
-    left_join(family_estate, by = "name")
+  activate("nodes") |>
+  left_join(family_estate, by = "name")
 ```
 
 Nodes without a match simply get `NA` for the new column, exactly as with an
@@ -243,10 +242,10 @@ sub-graph per component, so `graph_order()` evaluates separately for each.
 #| label: morph-components
 
 flo_tidy |>
-    activate("nodes") |>
-    morph(to_components) |>
-    mutate(component_size = graph_order()) |>
-    unmorph()
+  activate("nodes") |>
+  morph(to_components) |>
+  mutate(component_size = graph_order()) |>
+  unmorph()
 ```
 
 The Pucci family, the lone isolate, now carries `component_size = 1`; every
@@ -261,10 +260,10 @@ only that path as the new graph.
 #| label: convert-shortest-path
 
 medici_id <- which(igraph::V(flo_tidy)$name == "Medici")
-pazzi_id  <- which(igraph::V(flo_tidy)$name == "Pazzi")
+pazzi_id <- which(igraph::V(flo_tidy)$name == "Pazzi")
 
 flo_tidy |>
-    convert(to_shortest_path, medici_id, pazzi_id)
+  convert(to_shortest_path, medici_id, pazzi_id)
 ```
 
 A related verb, `crystallise()`, is worth knowing for morphs that naturally

@@ -112,7 +112,6 @@ ggraph(clique_graph, "stress") +
     )
   ) +
   theme_void()
-
 ```
 
 Related to cliques is the **k-core decomposition** of a network. A k-core is a
@@ -155,7 +154,6 @@ ggraph(clique_graph, "stress") +
   ) +
   scale_fill_manual(values = c("red", "blue", "green")) +
   theme_void()
-
 ```
 
 Cliques are the prototypical and most strict definition of a cohesive subgroup
@@ -217,7 +215,6 @@ ggraph(g, "stress") +
   geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
   geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
   theme_void()
-
 ```
 
 The `igraph` package includes a number of different clustering algorithms as
@@ -383,7 +380,6 @@ for (i in 1:(n2 - 1)) {
 }
 AA[1, n1 * n2] <- AA[n1 * n2, 1] <- 1
 K50 <- graph_from_adjacency_matrix(AA, "undirected", diag = FALSE)
-
 ```
 
 @fig-K50-blank shows such a graph, consisting of 50 cliques of size 5.
@@ -410,7 +406,6 @@ we would expect to find 50 clusters of size 5.
 
 clu_louvain <- cluster_louvain(K50)
 table(membership(clu_louvain))
-
 ```
 
 However, the Louvain method merges multiple cliques together to form a rather
@@ -433,7 +428,6 @@ clu_leiden <- cluster_leiden(
   resolution = 0.5
 )
 table(membership(clu_leiden))
-
 ```
 
 Choosing the right `resolution` parameter can, however, be tricky in practical
@@ -526,7 +520,6 @@ ggraph(g, "stress") +
   geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
   geom_node_point(shape = 21, size = 5, fill = "grey66", show.legend = FALSE) +
   theme_void()
-
 ```
 
 Compared to community detection, blockmodeling requires us to specify more about
@@ -548,21 +541,27 @@ A <- as_adjacency_matrix(g)
 # define expected block structure: complete on diagonal, null off-diagonal
 blk <- matrix(
   c(
-    "com", "nul", "nul",
-    "nul", "com", "nul",
-    "nul", "nul", "com"
+    "com",
+    "nul",
+    "nul",
+    "nul",
+    "com",
+    "nul",
+    "nul",
+    "nul",
+    "com"
   ),
   nrow = 3
 )
 blk
 res <- optRandomParC(
   M = A,
-  k = 3,               ## number of blocks
-  approaches = "bin",   ## binary blockmodel
-  blocks = blk,         ## expected block structure
-  rep = 5,              ## random starting partitions
-  mingr = 20,           ## min block size
-  maxgr = 20            ## max block size
+  k = 3, ## number of blocks
+  approaches = "bin", ## binary blockmodel
+  blocks = blk, ## expected block structure
+  rep = 5, ## random starting partitions
+  mingr = 20, ## min block size
+  maxgr = 20 ## max block size
 )
 ```
 
@@ -580,9 +579,13 @@ clu(res)
 V(g)$clu <- clu(res)
 ggraph(g, "stress") +
   geom_edge_link0(edge_linewidth = 0.2, edge_color = "grey66") +
-  geom_node_point(shape = 21, size = 5, aes(fill = as.factor(clu)), show.legend = FALSE) +
+  geom_node_point(
+    shape = 21,
+    size = 5,
+    aes(fill = as.factor(clu)),
+    show.legend = FALSE
+  ) +
   theme_void()
-
 ```
 
 Note that blockmodeling is computationally expensive and best suited for small
@@ -619,7 +622,8 @@ g_clu <- permute(g_clu, order(V(g_clu)$clu))
 V(g_clu)$clu <- rep(1:3, each = 8)
 E(g_clu)$type <- apply(
   matrix(V(g_clu)$clu[as_edgelist(g_clu, names = FALSE)], ncol = 2),
-  1, function(x) if (x[1] == x[2]) paste("community", x[1]) else "between"
+  1,
+  function(x) if (x[1] == x[2]) paste("community", x[1]) else "between"
 )
 
 p1 <- ggraph(g_clu, "matrix") +
@@ -635,7 +639,8 @@ g_cp <- netUtils::split_graph(n = 24, p = 0.3, core = 0.3)
 V(g_cp)$type <- c("periphery", "core")[V(g_cp)$core + 1]
 E(g_cp)$type <- apply(
   matrix(V(g_cp)$core[as_edgelist(g_cp, names = FALSE)], ncol = 2),
-  1, function(x) if (all(x == 1)) "core - core" else "core - periphery"
+  1,
+  function(x) if (all(x == 1)) "core - core" else "core - periphery"
 )
 
 p2 <- ggraph(g_cp, "matrix") +
@@ -689,21 +694,23 @@ p1 <- ggraph(core_graph, "stress") +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
   geom_node_point(shape = 21, size = 3, aes(fill = type)) +
   theme_graph() +
-  theme(legend.position = "bottom",legend.title = element_blank())
+  theme(legend.position = "bottom", legend.title = element_blank())
 
 E(core_graph)$col <- apply(
   matrix(as.logical(cp$vec[as_edgelist(core_graph, names = FALSE)]), ncol = 2),
   1,
   all
 )
-E(core_graph)$type <- c("core - periphery", "core - core")[E(core_graph)$col + 1]
+E(core_graph)$type <- c("core - periphery", "core - core")[
+  E(core_graph)$col + 1
+]
 p2 <- ggraph(core_graph, "matrix") +
-  geom_edge_point(mirror = TRUE, aes(edge_color = type),edge_size = 0.2) +
+  geom_edge_point(mirror = TRUE, aes(edge_color = type), edge_size = 0.2) +
   coord_fixed() +
   scale_y_reverse() +
   guides(edge_color = guide_legend(override.aes = list(edge_size = 3))) +
   theme_graph() +
-  theme(legend.position = "bottom",legend.title = element_blank())
+  theme(legend.position = "bottom", legend.title = element_blank())
 
 p1 + p2
 ```
@@ -779,17 +786,23 @@ p1 <- ggraph(us_flights, "stress") +
   theme(legend.position = "bottom", legend.title = element_blank())
 el_cp <- matrix(cp_dc$vec[as_edgelist(us_flights, names = FALSE)], ncol = 2)
 E(us_flights)$type <- ifelse(
-  el_cp[, 1] == 1 & el_cp[, 2] == 1, "core - core",
-  ifelse(el_cp[, 1] == 0 & el_cp[, 2] == 0, "periphery - periphery",
-    "core - periphery")
+  el_cp[, 1] == 1 & el_cp[, 2] == 1,
+  "core - core",
+  ifelse(
+    el_cp[, 1] == 0 & el_cp[, 2] == 0,
+    "periphery - periphery",
+    "core - periphery"
+  )
 )
 p2 <- ggraph(us_flights, "matrix", sort.by = type) +
   geom_edge_point(mirror = TRUE, aes(edge_color = type), edge_size = 0.2) +
-  scale_edge_color_manual(values = c(
-    "core - core" = "#F8766D",
-    "core - periphery" = "#00BA38",
-    "periphery - periphery" = "grey70"
-  )) +
+  scale_edge_color_manual(
+    values = c(
+      "core - core" = "#F8766D",
+      "core - periphery" = "#00BA38",
+      "periphery - periphery" = "grey70"
+    )
+  ) +
   coord_fixed() +
   scale_y_reverse() +
   guides(edge_color = guide_legend(override.aes = list(edge_size = 3))) +

@@ -142,9 +142,15 @@ egow1 <- get(ego_obj)
 
 # Alter-alter pair variables in the alter file
 pair_vars <- c(
-  "N1_N2", "N1_N3", "N1_N4", "N1_N5",
-  "N2_N3", "N2_N4", "N2_N5",
-  "N3_N4", "N3_N5",
+  "N1_N2",
+  "N1_N3",
+  "N1_N4",
+  "N1_N5",
+  "N2_N3",
+  "N2_N4",
+  "N2_N5",
+  "N3_N4",
+  "N3_N5",
   "N4_N5"
 )
 
@@ -154,8 +160,26 @@ pair_vars <- c(
 
 egos <- egow1 |>
   dplyr::select(
-    PRIM_KEY, GENDER, YEAR_PRELOAD, AGE_EX, A2A, A13A, A19A, B3B,
-    G1, H3, H4A, H5A, H6A, J1A, J1B, K1, RACECATS1, K9A, K15, K22A
+    PRIM_KEY,
+    GENDER,
+    YEAR_PRELOAD,
+    AGE_EX,
+    A2A,
+    A13A,
+    A19A,
+    B3B,
+    G1,
+    H3,
+    H4A,
+    H5A,
+    H6A,
+    J1A,
+    J1B,
+    K1,
+    RACECATS1,
+    K9A,
+    K15,
+    K22A
   ) |>
   transmute(
     .egoID = as.character(PRIM_KEY),
@@ -246,10 +270,20 @@ egos <- egow1 |>
       as.numeric(K9A),
       levels = c(1, 2, 4, 6, 11, 3, 7, 8, 9, 10, 12, 14, 5, 13, 15),
       labels = c(
-        "north_america", "north_america", "north_america",
-        "north_america", "north_america",
-        "asia", "asia", "asia", "asia", "asia", "asia", "asia",
-        "europe", "europe",
+        "north_america",
+        "north_america",
+        "north_america",
+        "north_america",
+        "north_america",
+        "asia",
+        "asia",
+        "asia",
+        "asia",
+        "asia",
+        "asia",
+        "asia",
+        "europe",
+        "europe",
         "other"
       )
     ),
@@ -308,11 +342,12 @@ alters <- altw1 |>
     # family indicator
     family = ifelse(
       C1A_1 == "(1) yes" |
-      C1A_3 == "(1) yes" |
-      C1A_4 == "(1) yes" |
-      C1A_5 == "(1) yes" |
-      C1A_6 == "(1) yes",
-      1, 0
+        C1A_3 == "(1) yes" |
+        C1A_4 == "(1) yes" |
+        C1A_5 == "(1) yes" |
+        C1A_6 == "(1) yes",
+      1,
+      0
     ),
 
     # race homophily indicator
@@ -366,17 +401,16 @@ aaties <- aaties |>
 # =========================
 
 ego_net_w1 <- egor(
-  egos   = egos,
+  egos = egos,
   alters = alters,
   aaties = aaties,
   ID.vars = list(
-    ego    = ".egoID",
-    alter  = ".altID",
+    ego = ".egoID",
+    alter = ".altID",
     source = ".srcID",
     target = ".tgtID"
   )
 )
-
 ```
 
 We begin by exploring each of the three components of the `egor` object (ego
@@ -467,8 +501,7 @@ structural variation in many visualizations or structural measures. In later
 sections, we will examine statistics that explicitly incorporate both ego and
 alter information.
 
-@fig-egos shows a subset of the first 9 ego networks in
-the list.
+@fig-egos shows a subset of the first 9 ego networks in the list.
 
 ```{r}
 #| label: fig-egos
@@ -479,7 +512,6 @@ the list.
 #| fig-cap: "The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego's personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks."
 
 plots <- lapply(g[1:9], function(g) {
-
   # rebuild a clean graph using only structure + names
   el <- as_edgelist(g, names = TRUE)
   vn <- V(g)$name
@@ -720,8 +752,8 @@ which alters are evenly split between men and women have higher entropy values,
 whereas networks composed mostly of alters of the same gender have lower values.
 
 We can combine the diversity measure with the compositional measures above and
-visualize their distributions in @fig-comp-summary to better understand how
-ego networks vary across respondents.
+visualize their distributions in @fig-comp-summary to better understand how ego
+networks vary across respondents.
 
 ```{r}
 #| label: fig-comp-summary
@@ -742,7 +774,7 @@ comp_long <- comp_summary |>
 # plot
 ggplot(comp_long, aes(x = value)) +
   geom_histogram(bins = 20, fill = "steelblue", color = "white") +
-  facet_wrap(~ measure, ncol = 2, scales = "free") +
+  facet_wrap(~measure, ncol = 2, scales = "free") +
   labs(
     x = "Value",
     y = "Frequency"
@@ -750,8 +782,8 @@ ggplot(comp_long, aes(x = value)) +
   theme_minimal()
 ```
 
-@fig-comp-summary reveals several interesting patterns in the composition of
-ego networks. The proportion of family members varies widely across respondents,
+@fig-comp-summary reveals several interesting patterns in the composition of ego
+networks. The proportion of family members varies widely across respondents,
 indicating substantial heterogeneity in the extent to which personal networks
 are centered around kin. The gender composition measure is broadly distributed
 around intermediate values, suggesting that many respondents' networks contain a
@@ -898,13 +930,13 @@ from the MASS package.
 
 ```{r}
 #| label: fit-health-model
-#| 
+
 # treat education as categorical
 analysis_dat$education <- factor(analysis_dat$education)
 
 health_model <- polr(
-  health_ord ~ ego_size + prop_family + gender_entropy +
-    age + gender + education,
+  health_ord ~
+    ego_size + prop_family + gender_entropy + age + gender + education,
   data = analysis_dat,
   Hess = TRUE,
   na.action = na.omit
@@ -1050,10 +1082,10 @@ ggplot(pred_long, aes(x = ego_size, y = probability, color = health_category)) +
 
 @fig-health-pred-probs displays the predicted probabilities of reporting each
 health category as ego network size increases, while holding the other
-predictors constant at typical values. Overall, the results show a clear pattern: as the
-number of alters in a respondent's personal network increases, the probability
-of reporting better health categories increases, while the probability of
-reporting poorer health categories declines.
+predictors constant at typical values. Overall, the results show a clear
+pattern: as the number of alters in a respondent's personal network increases,
+the probability of reporting better health categories increases, while the
+probability of reporting poorer health categories declines.
 
 In particular, the predicted probability of reporting excellent health rises
 steadily with ego network size, and the probability of reporting very good
@@ -1144,8 +1176,7 @@ binomial link.
 #| label: fit-smoking-model
 
 smoke_model <- glm(
-  smoker ~ ego_size + prop_family + gender_entropy +
-    age + gender + education,
+  smoker ~ ego_size + prop_family + gender_entropy + age + gender + education,
   data = analysis_dat,
   family = binomial,
   na.action = na.omit
@@ -1262,8 +1293,9 @@ ggplot(pred_dat, aes(x = ego_size, y = prob_smoke)) +
 
 @fig-smoking-pred-probs shows how the predicted probability of smoking changes
 as ego network size increases, while holding the other predictors in the model
-constant at typical values. The relationship is clearly negative: respondents with larger
-personal networks are predicted to have a lower probability of smoking.
+constant at typical values. The relationship is clearly negative: respondents
+with larger personal networks are predicted to have a lower probability of
+smoking.
 
 For individuals with very small ego networks, the predicted probability of
 smoking is relatively high, at roughly 20 percent. As network size increases,
@@ -1366,8 +1398,8 @@ link.
 #| label: fit-drinking-model
 
 drink_model <- glm(
-  drinking_days_rec ~ ego_size + prop_family + gender_entropy +
-    age + gender + education,
+  drinking_days_rec ~
+    ego_size + prop_family + gender_entropy + age + gender + education,
   data = analysis_dat,
   family = poisson,
   na.action = na.omit
@@ -1473,9 +1505,11 @@ that showed the clearest associations with drinking frequency in the model:
 #| fig-width: 7
 
 # sequences for predictors
-size_seq <- seq(min(analysis_dat$ego_size, na.rm = TRUE),
-                max(analysis_dat$ego_size, na.rm = TRUE),
-                length.out = 50)
+size_seq <- seq(
+  min(analysis_dat$ego_size, na.rm = TRUE),
+  max(analysis_dat$ego_size, na.rm = TRUE),
+  length.out = 50
+)
 
 family_seq <- seq(0, 1, length.out = 50)
 
@@ -1503,7 +1537,11 @@ pred_family <- data.frame(
   education = levels(analysis_dat$education)[1]
 )
 
-pred_family$pred <- predict(drink_model, newdata = pred_family, type = "response")
+pred_family$pred <- predict(
+  drink_model,
+  newdata = pred_family,
+  type = "response"
+)
 pred_family$variable <- "prop_family"
 pred_family$x <- pred_family$prop_family
 
@@ -1513,11 +1551,15 @@ pred_gender <- data.frame(
   prop_family = mean(analysis_dat$prop_family, na.rm = TRUE),
   gender_entropy = mean(analysis_dat$gender_entropy, na.rm = TRUE),
   age = mean(analysis_dat$age, na.rm = TRUE),
-  gender = c(0,1),
+  gender = c(0, 1),
   education = levels(analysis_dat$education)[1]
 )
 
-pred_gender$pred <- predict(drink_model, newdata = pred_gender, type = "response")
+pred_gender$pred <- predict(
+  drink_model,
+  newdata = pred_gender,
+  type = "response"
+)
 pred_gender$variable <- "gender"
 pred_gender$x <- pred_gender$gender
 
@@ -1535,13 +1577,13 @@ ggplot(pred_all, aes(x = x, y = pred)) +
   theme_minimal()
 ```
 
-@fig-drinking-pred summarizes how the expected number of drinking days per
-week changes across the three predictors. The left panel shows a clear
-positive relationship
-between `ego_size` and expected drinking frequency. Holding the other variables
-constant, respondents with larger ego networks are predicted to drink on more
-days per week. Although the absolute increase is modest, the pattern is
-consistent with the positive coefficient for network size in the Poisson model.
+@fig-drinking-pred summarizes how the expected number of drinking days per week
+changes across the three predictors. The left panel shows a clear positive
+relationship between `ego_size` and expected drinking frequency. Holding the
+other variables constant, respondents with larger ego networks are predicted to
+drink on more days per week. Although the absolute increase is modest, the
+pattern is consistent with the positive coefficient for network size in the
+Poisson model.
 
 The middle panel shows the predicted effect of `gender`. Because `gender` is
 coded `0 = male` and `1 = female`, the downward slope indicates that respondents

@@ -27,10 +27,10 @@ to simulate or estimate it, and its relevance for modeling real network data.
 
 While these basic random graph models can serve as a simple yet informative
 baseline for understanding connectivity patterns, they only allow us to control
-a single feature (e.g., edge probability and degree sequence) at a time, limiting
-its usefulness for modeling richer network patterns. This leads the way to out
-next chapter where we introduce exponential random graph models (ERGMs), which
-is a powerful and flexible framework that allows for the specification of
+a single feature (e.g., edge probability and degree sequence) at a time,
+limiting its usefulness for modeling richer network patterns. This leads the way
+to out next chapter where we introduce exponential random graph models (ERGMs),
+which is a powerful and flexible framework that allows for the specification of
 multiple dependencies between ties simultaneously; such as reciprocity, triadic
 closure, and attribute-based mixing.
 
@@ -138,7 +138,7 @@ ggraph(g_obs, layout = "stress") +
     color = "black"
   ) +
   scale_size_continuous(range = c(1, 10)) +
-  theme_graph(base_family = "sans")  +
+  theme_graph(base_family = "sans") +
   theme(legend.position = "none")
 ```
 Visualization of the *Les Misérables* co-appearance network. Nodes represent
@@ -207,9 +207,7 @@ comparison <- data.frame(
 #| echo: false
 
 library(knitr)
-kable(comparison,
-      digits = 3, align = "c")
-
+kable(comparison, digits = 3, align = "c")
 ```
 Comparison of structural features: Observed vs G(n, p)
 :::
@@ -243,18 +241,24 @@ random model captures the heterogeneity present in the empirical network.
 # Plot the degree distributions
 df_deg <- data.frame(
   Degree = c(deg_obs, deg_gnp),
-  Type = rep(c("Observed", "G(n, p)"), times = c(length(deg_obs), length(deg_gnp)))
+  Type = rep(
+    c("Observed", "G(n, p)"),
+    times = c(length(deg_obs), length(deg_gnp))
+  )
 )
 
 ggplot(df_deg, aes(x = Degree, fill = Type)) +
-  geom_histogram(position = "identity", bins = 20, alpha = 0.6, color = "white") +
+  geom_histogram(
+    position = "identity",
+    bins = 20,
+    alpha = 0.6,
+    color = "white"
+  ) +
   facet_wrap(~Type, scales = "free_y") +
   labs(x = "Node Degree", y = "Frequency") +
   theme_minimal() +
   scale_fill_manual(values = c("skyblue", "tomato")) +
   theme(legend.title = element_blank())
-  
-  
 ```
 Comparison of node degree distributions in the observed *Les Misérables* network
 and a random graph generated using the $G(n, p)$ model with matching density.
@@ -358,7 +362,10 @@ dist_conf <- mean_distance(g_conf, directed = FALSE, unconnected = TRUE)
 deg_conf <- degree(g_conf)
 deg_df <- data.frame(
   Degree = c(deg_seq, deg_conf),
-  Type = rep(c("Observed", "Configuration Model"), times = c(length(deg_seq), length(deg_conf)))
+  Type = rep(
+    c("Observed", "Configuration Model"),
+    times = c(length(deg_seq), length(deg_conf))
+  )
 )
 
 # Summary table
@@ -368,15 +375,13 @@ conf_comparison <- data.frame(
   AvgPathLength = c(dist_obs, dist_conf),
   MaxDegree = c(max(deg_seq), max(deg_conf))
 )
-
 ```
 
 ::: {#tbl-confmod}
 ```{r}
 #| echo: false
 
-kable(conf_comparison,
-      digits = 3, align = "c")
+kable(conf_comparison, digits = 3, align = "c")
 ```
 Comparison of structural features: Observed vs Configuration Model
 :::
@@ -389,7 +394,12 @@ Comparison of structural features: Observed vs Configuration Model
 #| label: example-confmod-deg
 
 ggplot(deg_df, aes(x = Degree, fill = Type)) +
-  geom_histogram(position = "identity", bins = 20, alpha = 0.6, color = "white") +
+  geom_histogram(
+    position = "identity",
+    bins = 20,
+    alpha = 0.6,
+    color = "white"
+  ) +
   facet_wrap(~Type, scales = "free_y") +
   labs(x = "Node Degree", y = "Frequency") +
   scale_fill_manual(values = c("skyblue", "tomato")) +
@@ -500,7 +510,7 @@ choice of $p$ in more detail below).
 
 ```{r}
 avg_deg_obs <- mean(deg_obs)
-k <- round(avg_deg_obs / 2)  # average degree per side for ring lattice
+k <- round(avg_deg_obs / 2) # average degree per side for ring lattice
 
 # Simulate small-world graph
 set.seed(1108)
@@ -528,8 +538,7 @@ sw_comparison <- data.frame(
 ```{r}
 #| echo: false
 
-kable(sw_comparison,
-      digits = 3, align = "c")
+kable(sw_comparison, digits = 3, align = "c")
 ```
 Comparison of structural features: Observed vs Small-World Model
 :::
@@ -544,16 +553,24 @@ Comparison of structural features: Observed vs Small-World Model
 # Degree distribution
 deg_df <- data.frame(
   Degree = c(deg_sw, deg_obs),
-  Type = rep(c("Small-World","Observed"), times = c(length(deg_obs), length(deg_sw)))
+  Type = rep(
+    c("Small-World", "Observed"),
+    times = c(length(deg_obs), length(deg_sw))
+  )
 )
- # Reverse the factor levels
+# Reverse the factor levels
 deg_df$Type <- factor(deg_df$Type, levels = c("Small-World", "Observed"))
 
 ggplot(deg_df, aes(x = Degree, fill = Type)) +
-  geom_histogram(position = "identity", bins = 20, alpha = 0.6, color = "white") +
+  geom_histogram(
+    position = "identity",
+    bins = 20,
+    alpha = 0.6,
+    color = "white"
+  ) +
   facet_wrap(~Type, scales = "free_y") +
   labs(x = "Node Degree", y = "Frequency") +
-  scale_fill_manual(values = c("skyblue","tomato")) +
+  scale_fill_manual(values = c("skyblue", "tomato")) +
   theme_minimal() +
   theme(legend.title = element_blank())
 ```
@@ -605,8 +622,8 @@ The results are shown in @fig-rewire.
 #| echo: false
 
 # Parameters
-n <- 77  # same as miserables
-k <- 4   # number of nearest neighbors on each side
+n <- 77 # same as miserables
+k <- 4 # number of nearest neighbors on each side
 p_values <- seq(0, 1, by = 0.05)
 
 # Simulate small-world networks over different p
@@ -618,12 +635,16 @@ sw_stats <- lapply(p_values, function(p) {
     Clustering = transitivity(g, type = "global"),
     AvgPathLength = mean_distance(g, directed = FALSE, unconnected = TRUE)
   )
-}) |> bind_rows()
+}) |>
+  bind_rows()
 
 # Reshape for plotting
 sw_long <- sw_stats |>
-  pivot_longer(cols = c(Clustering, AvgPathLength),
-               names_to = "Metric", values_to = "Value")
+  pivot_longer(
+    cols = c(Clustering, AvgPathLength),
+    names_to = "Metric",
+    values_to = "Value"
+  )
 
 # Compute observed values
 data("miserables", package = "networkdata")
@@ -636,20 +657,42 @@ ggplot(sw_long, aes(x = p, y = Value, color = Metric)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
   # Add horizontal dashed lines for observed values
-  geom_hline(yintercept = clustering_obs, linetype = "dashed", color = "tomato", linewidth = 1) +
-  geom_hline(yintercept = dist_obs, linetype = "dashed", color = "tomato", linewidth = 1) +
+  geom_hline(
+    yintercept = clustering_obs,
+    linetype = "dashed",
+    color = "tomato",
+    linewidth = 1
+  ) +
+  geom_hline(
+    yintercept = dist_obs,
+    linetype = "dashed",
+    color = "tomato",
+    linewidth = 1
+  ) +
   # Add labels for observed lines
-  annotate("text", x = 0.9, y = clustering_obs, label = "Observed Clustering", 
-           hjust = 1, vjust = -0.5, color = "tomato", size = 3) +
-  annotate("text", x = 0.9, y = dist_obs, label = "Observed Path Length", 
-           hjust = 1, vjust = -1, color = "tomato", size = 3) +
+  annotate(
+    "text",
+    x = 0.9,
+    y = clustering_obs,
+    label = "Observed Clustering",
+    hjust = 1,
+    vjust = -0.5,
+    color = "tomato",
+    size = 3
+  ) +
+  annotate(
+    "text",
+    x = 0.9,
+    y = dist_obs,
+    label = "Observed Path Length",
+    hjust = 1,
+    vjust = -1,
+    color = "tomato",
+    size = 3
+  ) +
   scale_color_manual(values = c("purple", "forestgreen")) +
-  labs(x = "Rewiring Probability (p)",
-       y = "Value",
-       color = " " 
-       ) +
+  labs(x = "Rewiring Probability (p)", y = "Value", color = " ") +
   theme_minimal()
-
 ```
 Clustering coefficient and average path length as functions of the rewiring
 probability $p$ in the Watts--Strogatz small-world model. Solid lines show

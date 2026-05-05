@@ -91,11 +91,10 @@ library(relevent)
 ```
 
 ::: {.callout-note}
-
-**Alternative software for relational event models.** In this chapter we use the `relevent` package to estimate relational event
-models. The package implements the framework introduced by @butts2008 and
-provides a straightforward and widely used approach for estimating REMs from
-sequences of dyadic interactions.
+**Alternative software for relational event models.** In this chapter we use the
+`relevent` package to estimate relational event models. The package implements
+the framework introduced by @butts2008 and provides a straightforward and widely
+used approach for estimating REMs from sequences of dyadic interactions.
 
 Several alternative implementations are also available. The `goldfish` package
 provides a more modern and flexible framework for relational event modeling. In
@@ -448,7 +447,8 @@ $$
   | Receiver activity   | Proportion of past events sent by the receiver                    | $\frac{\sum_k N_{jk}(t-1)}{\sum_{p\ne q}N_{pq}(t-1)}$       |
   | Receiver popularity | Proportion of past events received by the receiver                | $\frac{\sum_k N_{kj}(t-1)}{\sum_{p\ne q}N_{pq}(t-1)}$       |
 
-Summary of some endogenous statistics used in relational event models. {.striped}
+Summary of some endogenous statistics used in relational event models.
+{.striped}
 :::
 
 ### Exogenous Covariates
@@ -547,16 +547,14 @@ edges <- list()
 k <- 1
 
 for (i in 1:nrow(frozenlines)) {
-  
   sender <- frozenlines$speakerID[i]
-  event  <- frozenlines$eventID[i]
-  
+  event <- frozenlines$eventID[i]
+
   # find receivers with value 1
   receivers <- receiver_cols[frozenlines[i, receiver_cols] == 1]
-  
-  if(length(receivers) > 0){
-    
-    for(r in receivers){
+
+  if (length(receivers) > 0) {
+    for (r in receivers) {
       edges[[k]] <- data.frame(
         time = event,
         sender = sender,
@@ -564,7 +562,6 @@ for (i in 1:nrow(frozenlines)) {
       )
       k <- k + 1
     }
-    
   }
 }
 
@@ -587,7 +584,10 @@ n_actors <- nrow(frozenchars)
 #| label: preview-data
 #| echo: false
 
-knitr::kable(head(edgelist, 10), caption = "Preview of the relational event data created from the *Frozen* character network as described in @sec-apx-remfrozen")
+knitr::kable(
+  head(edgelist, 10),
+  caption = "Preview of the relational event data created from the *Frozen* character network as described in @sec-apx-remfrozen"
+)
 ```
 
 Note that because the data contain only the ordering of events rather than
@@ -611,10 +611,10 @@ library(ggraph)
 library(dplyr)
 
 # Aggregate interactions
-agg_edges <- as.data.frame(table(edgelist[,2], edgelist[,3]))
+agg_edges <- as.data.frame(table(edgelist[, 2], edgelist[, 3]))
 colnames(agg_edges) <- c("sender", "receiver", "weight")
 
-agg_edges <- agg_edges |> 
+agg_edges <- agg_edges |>
   filter(weight > 0)
 
 # Node data
@@ -654,12 +654,11 @@ ggraph(g, layout = "stress") +
     range = c(10, 25),
     transform = "sqrt"
   ) +
-   guides(
+  guides(
     color = "none",
     size = "none"
   ) +
   theme_graph()
-
 ```
 
 ### Model 1: Reciprocity and Repetition
