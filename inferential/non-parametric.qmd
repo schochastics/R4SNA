@@ -195,9 +195,9 @@ focus on the fall network here, which we load and visualize:
 ```{r}
 #| fig-height: 7
 #| fig-width: 12
-
-# Load data as graph object from networkdata and extract the fall network
-coleman_g <- networkdata::coleman[[1]]
+data("coleman")
+# Load data as igraph object from networkdata and extract the fall network
+coleman_g <- coleman[[1]]
 
 # plot using gggraph
 ggraph(coleman_g, layout = "stress") +
@@ -377,7 +377,7 @@ simulations", so a more correct statement would be that
 The `rgraph()` function from the `sna` (or `statnet`) package can also be used
 to simulate random networks with a specified expected density. However, note
 that its output consists of adjacency matrices (as a 3D array or list), rather
-than `igraph` graph objects. This requires additional conversion before applying
+than `igraph` objects. This requires additional conversion before applying
 `igraph`-based analyses.
 :::
 
@@ -802,11 +802,12 @@ by practice area.
 ### Test 1: Friendship based on gender {.unnumbered}
 
 First, we examine gender-based homophily in a friendship network among corporate
-lawyers from the Lazega dataset. We load the data as a graph object from the
+lawyers from the Lazega dataset. We load the data as an `igraph` object from the
 package `networkdata` and vizualize it, with node color representing gender:
 
 ```{r}
-law_friends_g <- networkdata::law_friends
+data("law_friends")
+law_friends_g <- law_friends
 ```
 
 We are here testing the following
@@ -927,13 +928,10 @@ We begin by loading the `law_cowork` network from the `networkdata` package:
 
 ```{r}
 #| label: lawyer-plot2
-#| fig-width: 8
-#| fig-height: 5
 #| message: false
 #| warning: false
-#| fig-align: center
-
-law_cw_g <- networkdata::law_cowork
+data("law_cowork")
+law_cw_g <- law_cowork
 ```
 
 We restrict the analysis to the first 36 lawyers, corresponding to the partners

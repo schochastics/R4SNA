@@ -259,9 +259,9 @@ network object or a matrix that can be coerced to a network object.
 ```{r}
 #| label: ergm-bernoulli
 #| message: false
+data("coleman")
 
-# Load data as graph object from networkdata and extract the fall network
-coleman_g <- networkdata::coleman[[1]]
+coleman_g <- coleman[[1]]
 
 # Convert to adjacency matrix
 coleman_mat <- as_adjacency_matrix(coleman_g, sparse = FALSE)
@@ -363,9 +363,9 @@ instead convert the graph object inot a network one using the package
 
 ```{r}
 #| message: false
-
-# Load data as graph object from networkdata and extract the third wave network
-s50_g <- networkdata::s50[[3]]
+data("s50")
+# Load data as igraph object from networkdata and extract the third wave network
+s50_g <- s50[[3]]
 
 # Convert to network object using intergraph
 s50_net <- asNetwork(s50_g)
@@ -574,15 +574,14 @@ The goal of this example is to assess how these network structures contribute to
 the overall topology of the network using an ERGM based on Markov dependence.
 
 First we visualize the using by loading the data from the `networkdata` package
-to obtain it as graph object and to be able to use `ggraph`:
+to obtain it as `igraph` object and to be able to use `ggraph`:
 
 ```{r}
 #| fig-height: 5
 #| fig-width: 15
 #| message: false
-
-flob_g <- networkdata::flo_business
-class(flob_g) # Confirms it's a 'graph' class object
+data("flo_business")
+flob_g <- flo_business
 
 flob_p <- ggraph(flob_g, layout = "stress") +
   geom_edge_link0(edge_color = "#666060", edge_width = 0.8, edge_alpha = 1) +
@@ -798,7 +797,7 @@ To demonstrate how ERGMs capture social circuit dependence, we will use the same
 subset of this network as earlier: we want to check whether or not the partners
 of the firm more frequently work together with other partners having the same
 practice, whilst also including a statistic related to triadic clustering. We
-import the data as a graph object from the `networkdata` package:
+import the data as an `igraph` object from the `networkdata` package:
 
 ```{r}
 data("law_cowork")
