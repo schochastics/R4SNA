@@ -190,16 +190,15 @@ depending on the function and package used for our analysis. The data consists
 of self-reported friendship ties among 73 boys in a small high school in
 Illinois over the 1957-1958 academic year. Networks of reported ties for all 73
 informants are provided for two time points (fall and spring). We will only
-focus on the fall network here, which we load and visualize:
+focus on the fall network here, which we load and visualize.
 
 ```{r}
 #| fig-height: 7
 #| fig-width: 12
 data("coleman")
-# Load data as igraph object from networkdata and extract the fall network
+
 coleman_g <- coleman[[1]]
 
-# plot using gggraph
 ggraph(coleman_g, layout = "stress") +
   geom_edge_link(
     edge_color = "#666060",
@@ -233,13 +232,13 @@ the observed network fixed. We aim to answer the following question: *do we
 observe significantly more reciprocal ties in our observed network than what is
 expected by pure chance given random networks of the same expected density?* So
 the statistic of interest here is the number of reciprocal ties, which we obtain
-from the dyad census:
+from the dyad census.
 
 ```{r}
 dyad_census(coleman_g)
-# alternatively one can also use the below
 sum(which_mutual(coleman_g)) / 2
 ```
+
 The number of reciprocal ties is equal to `r dyad_census(coleman_g)$mut`. In
 order to compute this density, we can use the `igraph` function
 `edge_density()`.
@@ -247,7 +246,7 @@ order to compute this density, we can use the `igraph` function
 ```{r}
 density_obs <- edge_density(coleman_g)
 ```
-Further we save number of nodes and edges of the observed network:
+Further we save number of nodes and edges of the observed network.
 
 ```{r}
 n_nodes <- vcount(coleman_g)
@@ -356,7 +355,7 @@ chance alone. This indicates a strong tendency for mutual connections in the
 network that is not explained by density alone.
 
 In order to compute the $p$-value, we compare the observed value to the
-distribution from the simulated null model:
+distribution from the simulated null model.
 
 ```{r}
 # Empirical p-value (proportion of simulated mutual counts >= observed)
@@ -414,7 +413,7 @@ Note that each simulated network has exactly the same number of edges as the
 observed network, ensuring that any difference in mutual ties arises from the
 pattern of connections, not their quantity. We then compute the number of mutual
 ties in each simulated network and visualize the distribution, shown in
-@fig-cug-edges:
+@fig-cug-edges.
 
 ::: {#fig-cug-edges .center}
 ```{r}
@@ -686,7 +685,7 @@ network's structure enables actors to reach one another more quickly than random
 networks with the same node-level connectivity.
 
 What's the $p$-value? We compare the observed value to the distribution from the
-simulated null model:
+simulated null model.
 
 ```{r}
 # Empirical p-value (proportion of simulated mutual counts >= observed)
@@ -803,7 +802,7 @@ by practice area.
 
 First, we examine gender-based homophily in a friendship network among corporate
 lawyers from the Lazega dataset. We load the data as an `igraph` object from the
-package `networkdata` and vizualize it, with node color representing gender:
+package `networkdata` and vizualize it, with node color representing gender.
 
 ```{r}
 data("law_friends")
@@ -824,17 +823,17 @@ effectively a CUG test under the null model **𝒰 \|L**, where ties are randoml
 distributed.
 
 We start by converting the friendship network to an adjacency matrix and
-extracting the gender attribute from the nodes:
+extracting the gender attribute from the nodes.
 
 ```{r}
 law_mat <- as.matrix(as_adjacency_matrix(law_friends_g, sparse = FALSE))
 law_nodes <- vcount(law_friends_g)
 law_edges <- sum(law_mat)
-law_gender <- V(law_friends_g)$gender # gender extracted
+law_gender <- V(law_friends_g)$gender
 ```
 
 Then, we compute the number of observed homophilous ties (same-gender
-friendships) in the observed network:
+friendships) in the observed network.
 
 ```{r}
 # 1 = male, 2 = female
@@ -845,7 +844,7 @@ homoph_obs <- sum(law_mat[law_gender == 1, law_gender == 1]) +
 To generate networks from the null world, we simulate 1000 random directed
 graphs with the same number of nodes and edges as the observed network and then
 compute the number of homophilous ties in each simulated network (assuming the
-same ordering of gender assignments to nodes in each simulated network):
+same ordering of gender assignments to nodes in each simulated network).
 
 ```{r}
 set.seed(1108)
@@ -924,7 +923,7 @@ collaborate (cowork) with others who share the same practice area (litigation or
 corporate) than we would expect by chance. This is a test of homophily based on
 professional specialization.
 
-We begin by loading the `law_cowork` network from the `networkdata` package:
+We begin by loading the `law_cowork` network from the `networkdata` package.
 
 ```{r}
 #| label: lawyer-plot2
@@ -947,7 +946,7 @@ The following hypotheses can be stated:
 > specialization.
 
 Since coworking is a reciprocal relationship, we treat the network as undirected
-by symmetrizing the adjacency matrix:
+by symmetrizing the adjacency matrix.
 
 ```{r}
 # Create an adjacency matrix
@@ -961,14 +960,14 @@ law_nodes_cw <- nrow(law_mat_cw)
 law_ties_cw <- sum(law_mat_cw) / 2 # undirected: each tie counted twice
 ```
 We now extract the binary attribute practice for each partner and store it as a
-vector:
+vector.
 
 ```{r}
 law_attr_pract <- V(law_cw_g)$practice[1:36]
 ```
 We define homophilous ties as coworking ties between two lawyers of the same
 practice area. We count both litigation--litigation and corporate--corporate
-ties:
+ties.
 
 ```{r}
 homoph_obs_cw <- sum(
@@ -978,7 +977,7 @@ homoph_obs_cw <- sum(
   sum(law_mat_cw[law_attr_pract == 2, law_attr_pract == 2]) / 2
 ```
 To construct the null model, we generate 1000 random undirected graphs with the
-same number of nodes and total number of ties:
+same number of nodes and total number of ties.
 
 ```{r}
 set.seed(1108)
@@ -997,7 +996,7 @@ law_sim_cw <- replicate(
 )
 ```
 
-We calculate the number of same-practice ties in each simulated graph:
+We calculate the number of same-practice ties in each simulated graph.
 
 ```{r}
 homoph_sim_cw <- sapply(law_sim_cw, function(mat) {
@@ -1050,7 +1049,7 @@ different than what is expected under random tie allocation.
 
 As seen in @fig-cug-hom2, we are in the right tail, indicating we are observing
 more homophilous ties than expected by chance. To formally test the hypothesis
-above we can compute the $p$-value:
+above we can compute the $p$-value.
 
 ```{r}
 mean(homoph_sim_cw >= homoph_obs_cw)

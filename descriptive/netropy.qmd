@@ -156,7 +156,7 @@ from the observed ones above. We create new dyad variables for mutual friendship
 and mutual advice, and likely friendships which is an undirected network and
 does not require reciprocal reporting of friendships. The latter is done by
 creating the directed graph object and then extracting the adjacency matrix from
-the graph assuming it is undirected instead:
+the graph assuming it is undirected instead.
 
 ```{r}
 #| label: new-vars
@@ -176,7 +176,7 @@ adj_likfrn <- as_adjacency_matrix(g_likfrn, sparse = FALSE)
 #### Vertex Variables
 
 Observed node variables are the attributes in the data frame `df_att`. The first
-5 lines of this data frame are:
+5 lines of this data frame are
 
 ```{r}
 head(df_att, 5)
@@ -262,7 +262,7 @@ original form, apart from simple recoding to start at $0$ where needed. The
 variables years and age are recoded into three ordinal categories.
 
 By looking at these cdf's we can find values with which we base the categories
-on:
+on.
 
 ```{r}
 #| label: categorized-vars
@@ -323,7 +323,7 @@ and likely friendship networks.
 
 To compute these measures, we first construct graph objects from each adjacency
 matrix (note that the directed friendship graph `g_frn` and the undirected
-likely-friendship graph `g_likfrn` were already created above):
+likely-friendship graph `g_likfrn` were already created above).
 
 ```{r}
 #| label: g-objects
@@ -349,7 +349,7 @@ deg_mutfrn <- degree(g_mutfrn)
 deg_likfrn <- degree(g_likfrn)
 ```
 These variables are then categorized using the same procedure as above for the
-other vertex variables:
+other vertex variables.
 
 ```{r}
 #| label: degs-cats
@@ -367,7 +367,7 @@ deg_var <- data.frame(
 ```
 Merging `deg_var` and `att_var` yields the final data frame `vertex_var`, which
 contains all 15 observed and derived vertex variables used in the subsequent
-entropy analysis:
+entropy analysis.
 
 ```{r}
 #| label: vertex-vars
@@ -405,7 +405,7 @@ $(2,2)$.
 
 These transformations can be carried out using the function `get_dyad_var()`,
 where the argument `type = "att"` specifies that the input consists of vertex
-attributes. This procedure is applied to all vertex variables in the dataset:
+attributes. This procedure is applied to all vertex variables in the dataset.
 
 ```{r}
 #| label: dyad-transf
@@ -448,7 +448,7 @@ dyad_likfrn <- get_dyad_var(adj_likfrn, type = "tie")
 ```
 
 Next, all dyad variables are merged into a single data frame for subsequent
-entropy analysis:
+entropy analysis.
 
 ```{r}
 #| label: dyad-var
@@ -536,7 +536,7 @@ triad_mutfrn <- get_triad_var(adj_mutfrn, type = "tie")
 triad_likfrn <- get_triad_var(adj_likfrn, type = "tie")
 ```
 All triad variables are then merged into a single data frame for subsequent
-entropy analysis:
+entropy analysis.
 
 ```{r}
 #| label: triad-var-df
@@ -645,7 +645,7 @@ with respect to another. A value of `1` means that the corresponding column
 variable does not provide additional information beyond the row variable, while
 `0` indicates that the variables contain distinct information.
 
-For the vertex variables in this dataset, no redundancy is detected:
+For the vertex variables in this dataset, no redundancy is detected.
 
 ```{r}
 #| label: ver-red
@@ -659,7 +659,7 @@ entropy values and thus be flagged as redundant.
 
 For illustration, we apply the `redundancy()` function to the original attribute
 data frame `df_att`. Recall that the variable `senior` consists entirely of
-unique values and is therefore identified as redundant, as shown below:
+unique values and is therefore identified as redundant.
 
 ```{r}
 #| label: ver-red2
@@ -681,7 +681,7 @@ zeros, indicating no redundancy among them.
 
 The data frame `dyad_var` contains 13 observed and transformed dyad-level
 variables. To compute the univariate and bivariate entropies, we apply the
-function `entropy_bivar()`:
+function `entropy_bivar()`.
 
 ```{r}
 #| label: dyad-ent
@@ -708,7 +708,7 @@ respectively, and should therefore be excluded from subsequent analyses.
 
 The redundancy can also be confirmed using the `redundancy()` function. Based on
 this analysis, we remove the redundant variables mutadv, mutfrn, and likfrn
-(columns 10, 12, and 13) from the data frame:
+(columns 10, 12, and 13) from the data frame.
 
 ```{r}
 dyad_var <- dyad_var[-c(10, 12:13)]
@@ -721,7 +721,7 @@ subsequent entropy analysis.
 
 The data frame `triad_var` contains the observed and transformed triad-level
 variables. To compute the univariate and bivariate entropies, we apply the
-function `entropy_bivar()`:
+function `entropy_bivar()`.
 
 ```{r}
 #| label: triad-ent
@@ -810,7 +810,7 @@ is 3.
 #### Vertex Variables
 
 We apply the function to the data frame containing the observed and transformed
-vertex variables:
+vertex variables.
 
 ```{r}
 #| label: vert-joint
@@ -977,7 +977,7 @@ prediction power for vertex, dyad, and triad variables.
 #### Vertex Variables
 
 Trivariate entropies for all combinations of vertex variables can be computed
-using the function `entropy_trivar()`:
+using the function `entropy_trivar()`.
 
 ```{r}
 #| label: trivent_vert
@@ -989,7 +989,7 @@ We next assess prediction power for the different degree-based variables derived
 from the three relation types: co-work, advice, and friendship. Specifically, we
 evaluate how well pairs of variables predict each of these target variables.
 
-The corresponding prediction power matrices are obtained as follows:
+The corresponding prediction power matrices are obtained as follows.
 
 ```{r}
 #| label: pred-power-vertex
@@ -1393,7 +1393,7 @@ co-working may be explained by the advice relation. In other words, once
 between `friend` and `cowork`.
 
 To test this hypothesis, we use `div_gof()` and explicitly specify the
-conditioning variable:
+conditioning variable.
 
 ```{r}
 #| label: dyad-gof-cond-friend-cowork
@@ -1425,7 +1425,7 @@ div_gof(
 
 For comparison, we can also test pairwise independence without conditioning. By
 default, if no conditioning variable is specified, `div_gof()` tests whether the
-two variables are independent:
+two variables are independent.
 
 ```{r}
 #| label: dyad-gof-pairwise
@@ -1451,7 +1451,7 @@ div_gof(
 Finally, reduced models can be compared to the saturated empirical model. The
 saturated model corresponds to the unrestricted empirical distribution and has
 divergence equal to zero. For example, we can compare the pairwise independence
-model for `friend` and `cowork` to the saturated model:
+model for `friend` and `cowork` to the saturated model.
 
 ```{r}
 #| label: dyad-gof-nested
@@ -1487,7 +1487,7 @@ $$
 which provides a fast and convenient rule for hypothesis testing.
 
 Alternatively, exact critical values from the chi-square distribution can be
-used by setting:
+used by setting.
 
 ```{r}
 #| eval: false
@@ -1497,7 +1497,7 @@ use_approx_cv = FALSE
 
 In this case, the significance level can be controlled explicitly via the
 argument `alpha` (default is 0.05), allowing for more precise hypothesis
-testing:
+testing.
 
 ```{r}
 #| eval: false
