@@ -1,0 +1,187 @@
+# Example: A Continuous-Time Markov Chain (Cat Behavior Model) {#sec-apx-cat .appendix}
+
+To bring the concept of a continuous-time Markov chain (CTMC) to life (or to all
+nine lives of our cat), consider a model of a house cat's daily activities. At
+any given moment, the cat is in one of the following behavioral states:
+
+- $0$: Sleeping
+- $1$: Eating
+- $2$: Playing
+- $3$: Plotting chaos (e.g., knocking things off shelves)
+
+We define $X(t)$ as the cat's current activity at time $t$. The process
+$\{X(t), t \in [0, \infty)\}$ satisfies:
+
+- A finite state space $S = \{0, 1, 2, 3\}$\
+- Continuous transitions over time\
+- The Markov property: next state depends only on the current state\
+
+The cat transitions between states at random times. Each stay in a state lasts
+for a random holding time, and transitions to the next state occur
+probabilistically based on a transition (jump) matrix.
+
+The holding time $T_r$ in state $r$ is modeled using an exponential
+distribution:
+$$
+f_{T_r}(t) = \lambda_r e^{-\lambda_r t}, \quad t > 0
+$$
+
+- $\lambda_r$ is the rate of leaving state $r$.
+- $\mathbb{E}[T_r] = \frac{1}{\lambda_r}$ is the expected duration in state $r$.
+
+The exponential distribution's **memoryless property** means that the
+probability of remaining in a state is independent of how long the cat has
+already been in it:
+$$
+P(T_r > s + t \mid T_r > t) = P(T_r > s)
+$$
+So, even after two hours of napping, the chance that the cat naps another 30
+minutes is the same as if it had just started.
+
+Once the holding time ends, the cat jumps to a new state. The **transition
+(jump) matrix** $P = (p_{rs})$ governs this:
+$$
+p_{rs} = P(X(t^+) = s \mid X(t) = r)
+$$
+For each state $r$, the row of probabilities $p_{rs}$ must sum to 1:
+$$
+\sum_{s \in S} p_{rs} = 1
+$$
+
+@fig-catex illustrates a single realization of such a process. This visual shows
+how a process starting in state 0 might stay there for some time, then jump to
+state 2, then state 3, and so on, with irregular intervals between jumps.
+
+::: {#fig-catex}
+```{r}
+#| fig-height: 4
+#| fig-width: 7
+#| message: false
+#| echo: false
+
+library(ggplot2)
+jump_times <- c(0, 2, 5, 8, 14)
+states <- c(0, 2, 3, 0, 1)  # Sleep → Play → Chaos → Sleep → Eat
+
+segment_data <- data.frame(
+  x = jump_times[-length(jump_times)],
+  xend = jump_times[-1],
+  y = states[-length(states)]
+)
+
+jump_points <- data.frame(
+  x = jump_times[-1],
+  y = states[-1]
+)
+
+ggplot() +
+  geom_segment(data = segment_data, aes(x = x, xend = xend, y = y, yend = y),
+               linewidth = 1.2, color = "black") +
+  geom_point(data = jump_points, aes(x = x, y = y), shape = 21, fill = "black", size = 3) +
+  annotate("segment", x = 0, xend = 2, y = -0.3, yend = -0.3,
+           arrow = arrow(type = "closed", length = unit(0.2, "cm")),
+           color = "#1c9099", linewidth = 1.5) +
+  annotate("text", x = 1, y = -0.5, label = "Holding time", color = "#1c9099", size = 4) +
+  annotate("segment", x = 8, xend = 8, y = 3, yend = 0.09,
+           arrow = arrow(type = "closed", length = unit(0.2, "cm")),
+           color = "darkorange", linewidth = 1.5) +
+  annotate("text", x = 8.2, y = 1.5, label = "Jump", color = "darkorange", size = 4, angle = 90) +
+  labs(x = "Time", y = "State") +
+  scale_y_continuous(breaks = 0:3,
+                     labels = c("Sleep", "Eat", "Play", "Chaos")) +
+  theme_minimal(base_size = 10) +
+  theme(panel.grid.minor = element_blank(),
+        axis.title.y = element_text(angle = 0, vjust = 1.2))
+```
+A realization of a continuous-time Markov chain (CTMC) showing the cat
+transitioning through behavioral states (Sleep → Play → Chaos → Sleep → Eat).
+Horizontal segments show how long each activity lasts (holding time), while
+vertical arrows show transitions (jumps) between states.
+
+:::
+
+Below is a hypothetical transition matrix $P$ for the cat's behavioral states.
+Each row corresponds to the current state, and each column to the next state:
+
+  |           | Sleep | Eat  | Play | Chaos |
+  | --------- | :---: | :--: | :--: | :---: |
+  | **Sleep** | 0.00  | 0.70 | 0.83 | 0.56  |
+  | **Eat**   | 0.71  | 0.00 | 0.81 | 0.20  |
+  | **Play**  | 0.05  | 0.82 | 0.00 | 0.45  |
+  | **Chaos** | 0.91  | 0.46 | 0.61 | 0.00  |
+
+> *Note: Diagonal entries (e.g., Sleep → Sleep) are set to zero for
+> interpretability. They can be included to model the probability of no state
+> change.*
+
+Next, we can combine the states and transitions into a directed graph showing
+which states can be reached from one another, and with what likelihood. This is
+shown in @fig-catex2.
+
+::: {#fig-catex2}
+```{r}
+#| fig-height: 4
+#| fig-width: 4
+#| message: false
+#| echo: false
+
+library(igraph)
+library(ggraph)
+library(tidygraph)
+library(ggplot2)
+
+# Define all 4 states
+state_names <- c("Sleep", "Eat", "Play", "Chaos")
+
+# Create all combinations of from → to (including self-loops)
+transitions <- expand.grid(from = state_names, to = state_names, stringsAsFactors = FALSE)
+
+# Assign random-ish transition probabilities (you can edit or normalize)
+set.seed(77)
+transitions$prob <- round(runif(nrow(transitions), min = 0.05, max = 0.95), 2)
+# Create graph
+g <- tbl_graph(nodes = data.frame(name = state_names), edges = transitions, directed = TRUE)
+
+# Plot using geom_edge_arc to support curvature
+ggraph(g, layout = "circle") +
+  geom_edge_arc(aes(label = prob),
+                arrow = arrow(length = unit(3, "mm"), type = "closed"),
+                end_cap = circle(8, "mm"),
+                start_cap = circle(8, "mm"),
+                label_colour = "black",
+                label_size = 3,
+                alpha = 0.8,
+                strength = 0.15,
+                angle_calc = "along",
+                label_dodge = unit(2.5, "mm"),
+                show.legend = FALSE) +
+  geom_node_circle(aes(r = 0.1), fill = "lightgrey", color = "black") +
+  geom_node_text(aes(label = name), size = 3, fontface = "bold") +
+  theme_void() 
+
+
+```
+Directed graph representation of the CTMC jump chain. Each node is a state
+(e.g., Sleep, Eat), and arrows represent possible transitions with associated
+probabilities.
+:::
+
+@fig-catex2 is a visual representation of this matrix. Each arrow in the graph
+corresponds to a non-zero entry $p_{rs}$ in the matrix. The curved edges
+indicate transitions between pairs of states, and the labels on the arrows match
+the values in the matrix. Together, the matrix and the graph describe a **jump
+chain** over the set of behavioral states. These transitions are stochastic
+(i.e., random), and their dynamics unfold in continuous time, which is what
+differentiates CTMCs from discrete-time Markov models.
+
+In summary, a Continuous-Time Markov Chain (CTMC):
+
+- Determines how long the system remains in a state using the holding time,
+  typically modeled as exponentially distributed.
+- Uses a transition (jump) matrix to govern which state is entered next.
+- Is memoryless and evolves in continuous time, meaning the future depends only
+  on the present state and not the past.
+
+These principles underpin Stochastic Actor-Oriented Models (SAOMs), where actors
+make sequential and probabilistic changes to their network ties or attributes,
+driven solely by the current network state.
