@@ -1126,8 +1126,14 @@ siena_table(saom_1, type = "tex", sig = TRUE)
 #| echo: false
 #| results: asis
 
-f <- if (knitr::is_latex_output()) "saom_1.tex" else "saom_1.html"
-cat(readLines(f), sep = "\n")
+if (knitr::is_latex_output()) {
+  cat(readLines("saom_1.tex"), sep = "\n")
+} else {
+  lines <- readLines("saom_1.html")
+  lines <- sub("^[[:space:]]+", "", lines)
+  lines <- gsub("&#134;?", "&dagger;", lines)
+  cat(":::{=html}", lines, ":::", sep = "\n")
+}
 ```
 
 We now interpret the results from Model 1, beginning with an assessment of convergence, followed by the interpretation of the estimated parameters.
@@ -1409,8 +1415,14 @@ siena_table(saom_2, type = "tex", sig = TRUE)
 #| echo: false
 #| results: asis
 
-f <- if (knitr::is_latex_output()) "saom_2.tex" else "saom_2.html"
-cat(readLines(f), sep = "\n")
+if (knitr::is_latex_output()) {
+  cat(readLines("saom_2.tex"), sep = "\n")
+} else {
+  lines <- readLines("saom_2.html")
+  lines <- sub("^[[:space:]]+", "", lines)
+  lines <- gsub("&#134;?", "&dagger;", lines)
+  cat(":::{=html}", lines, ":::", sep = "\n")
+}
 ```
 
 
@@ -1745,13 +1757,15 @@ siena_table(saom_coev, type = "tex", sig = TRUE)
 ```{r}
 #| echo: false
 #| results: asis
-f <- if (knitr::is_latex_output()) {
-  "saom_coev.tex"
-} else {
-  "saom_coev.html"
-}
 
-cat(readLines(f), sep = "\n")
+if (knitr::is_latex_output()) {
+  cat(readLines("saom_coev.tex"), sep = "\n")
+} else {
+  lines <- readLines("saom_coev.html")
+  lines <- sub("^[[:space:]]+", "", lines)
+  lines <- gsub("&#134;?", "&dagger;", lines)
+  cat(":::{=html}", lines, ":::", sep = "\n")
+}
 ```
 
 
