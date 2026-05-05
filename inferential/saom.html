@@ -986,8 +986,8 @@ s^\text{beh}_{i,\text{quadratic}}(z) = z_i^2
 This effect captures how similar an actor’s behavior is to their alters’ behaviors, averaged across all outgoing ties. It reflects per-peer influence. The statistic is defined as:</p>
 <p><span class="math display">\[
 s^\text{beh}_{i,\text{avsim}}(Y, z) =
-\frac{1}{y_{i+}} \sum_{j=1}^n y_{ij}
-\left( \text{sim}_z(i,j) - \overline{\text{sim}_z} \right)
+  \frac{1}{y_{i+}} \sum_{j=1}^n y_{ij}
+  \left( \text{sim}_z(i,j) - \overline{\text{sim}_z} \right)
 \]</span></p>
 <p>where:</p>
 <ul>
@@ -1002,8 +1002,8 @@ s^\text{beh}_{i,\text{avsim}}(Y, z) =
 This variant captures the total amount of similarity, not normalized by the number of ties. It gives more weight to actors with more alters:</p>
 <p><span class="math display">\[
 s^\text{beh}_{i,\text{totsim}}(Y, z) =
-\sum_{j=1}^n y_{ij}
-\left( \text{sim}_z(i,j) - \overline{\text{sim}_z} \right)
+  \sum_{j=1}^n y_{ij}
+  \left( \text{sim}_z(i,j) - \overline{\text{sim}_z} \right)
 \]</span></p></li>
 </ul>
 <p>Both versions reflect social influence. A positive parameter estimate means that actors are more likely to adjust their behavior to become more similar to those they are connected to. In other words, the model captures conformity or peer influence. The higher the similarity between ego and alters, the higher the objective function, making such changes more likely. A negative parameter estimate would indicate that actors tend to diverge from their peers, becoming less similar over time. This could suggest differentiation or opposition in behavior, although negative influence parameters are rare and often theoretically unexpected.</p>
@@ -1017,13 +1017,13 @@ s^\text{beh}_{i,\text{totsim}}(Y, z) =
 This effect investigates whether actors with more outgoing ties tend to have different behavioral values:</p>
 <p><span class="math display">\[
 s^\text{beh}_{i,\text{out}}(Y, z) =
-z_i \sum_{j=1}^n y_{ij}
+  z_i \sum_{j=1}^n y_{ij}
 \]</span></p></li>
 <li><p><strong>Indegree effect</strong><br>
 This effect models whether being popular (having many incoming ties) is related to behavior:</p>
 <p><span class="math display">\[
 s^\text{beh}_{i,\text{ind}}(Y, z) =
-z_i \sum_{j=1}^n y_{ji}
+  z_i \sum_{j=1}^n y_{ji}
 \]</span></p></li>
 </ul>
 <p>A positive parameter estimate for a position effect means that higher behavioral values are associated with the corresponding network position. For instance, if the behavior is smoking, a positive outdegree effect suggests that actors who smoke more tend to send more ties, while a positive indegree effect suggests that actors who smoke more tend to receive more ties.</p>
@@ -1100,7 +1100,7 @@ Analyze the estimated parameters to understand the underlying social processes. 
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the estimation algorithm</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span> <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_1"</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>If you use this algorithm object, siena07 will create/use an output file saom_1.txt .</code></pre>
+<pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -1164,7 +1164,7 @@ Total of 2412 iteration steps.</code></pre>
 </div>
 <p>A nicer summary of the model is obtained by running the following, which renders the table of results inline (including significance stars for easy interpretation):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena.table</span>(saom_1, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_1, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <pre><code>                &lt;TD&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; (s.e.) &lt;/TD&gt;  &lt;/TR&gt;</code></pre><table border="1" rules="none" frame="hsides">
 <tbody><tr>
@@ -1205,7 +1205,7 @@ Rate 2
 </tr>
 <tr>
 <td>
-outdegree (density)
+outdegree-(density)
 </td>
 <td align="right">
 &nbsp;–2.411
@@ -1383,32 +1383,43 @@ If <span class="math inline">\(y_{ji}(t) = 0\)</span>, the tie is not reciprocat
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add structural effects</span></span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, outdegree, recip, transTrip)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectName          include fix   test  initialValue parm
-1 reciprocity         TRUE    FALSE FALSE          0   0   
-2 transitive triplets TRUE    FALSE FALSE          0   0   </code></pre>
+<pre><code>  effectNumber effectName          shortName include fix   test  initialValue
+1 17           reciprocity         recip     TRUE    FALSE FALSE          0  
+2 23           transitive triplets transTrip TRUE    FALSE FALSE          0  
+  parm
+1 0   
+2 0   </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for sex</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectName         include fix   test  initialValue parm
-1 sex_cov alter      TRUE    FALSE FALSE          0   0   
-2 sex_cov ego        TRUE    FALSE FALSE          0   0   
-3 sex_cov similarity TRUE    FALSE FALSE          0   0   </code></pre>
+<pre><code>  effectNumber effectName         shortName include fix   test  initialValue
+1 264          sex_cov alter      altX      TRUE    FALSE FALSE          0  
+2 279          sex_cov ego        egoX      TRUE    FALSE FALSE          0  
+3 325          sex_cov similarity simX      TRUE    FALSE FALSE          0  
+  parm
+1 0   
+2 0   
+3 0   </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for smoking</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"smoking_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectName             include fix   test  initialValue parm
-1 smoking_cov alter      TRUE    FALSE FALSE          0   0   
-2 smoking_cov ego        TRUE    FALSE FALSE          0   0   
-3 smoking_cov similarity TRUE    FALSE FALSE          0   0   </code></pre>
+<pre><code>  effectNumber effectName             shortName include fix   test 
+1 448          smoking_cov alter      altX      TRUE    FALSE FALSE
+2 463          smoking_cov ego        egoX      TRUE    FALSE FALSE
+3 509          smoking_cov similarity simX      TRUE    FALSE FALSE
+  initialValue parm
+1          0   0   
+2          0   0   
+3          0   0   </code></pre>
 </div>
 </div>
 <p>We define the estimation settings using <code>sienaAlgorithmCreate()</code>. A seed is included to support reproducibility of the results.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span>  <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_2"</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>If you use this algorithm object, siena07 will create/use an output file saom_2.txt .</code></pre>
+<pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
 </div>
 </div>
 <p>We now estimate the model using the <code>siena07()</code> function, which runs the simulation-based estimation procedure.</p>
@@ -1422,7 +1433,7 @@ If <span class="math inline">\(y_{ji}(t) = 0\)</span>, the tie is not reciprocat
 </div>
 <p>Finally, as before, we display the model results inline:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena.table</span>(saom_2, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_2, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <pre><code>                &lt;TD&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; (s.e.) &lt;/TD&gt;  &lt;/TR&gt;</code></pre><table border="1" rules="none" frame="hsides">
 <tbody><tr>
@@ -1463,7 +1474,7 @@ Rate 2
 </tr>
 <tr>
 <td>
-outdegree (density)
+outdegree-(density)
 </td>
 <td align="right">
 &nbsp;–2.862
@@ -1491,7 +1502,7 @@ reciprocity
 </tr>
 <tr>
 <td>
-transitive triplets
+transitive-triplets
 </td>
 <td align="right">
 0.447
@@ -1505,7 +1516,7 @@ transitive triplets
 </tr>
 <tr>
 <td>
-sex-cov alter
+sex-cov-alter
 </td>
 <td align="right">
 &nbsp;–0.158
@@ -1518,7 +1529,7 @@ sex-cov alter
 </tr>
 <tr>
 <td>
-sex-cov ego
+sex-cov-ego
 </td>
 <td align="right">
 0.160
@@ -1531,7 +1542,7 @@ sex-cov ego
 </tr>
 <tr>
 <td>
-sex-cov similarity
+sex-cov-similarity
 </td>
 <td align="right">
 0.918
@@ -1545,7 +1556,7 @@ sex-cov similarity
 </tr>
 <tr>
 <td>
-smoking-cov alter
+smoking-cov-alter
 </td>
 <td align="right">
 0.110
@@ -1559,7 +1570,7 @@ smoking-cov alter
 </tr>
 <tr>
 <td>
-smoking-cov ego
+smoking-cov-ego
 </td>
 <td align="right">
 0.072
@@ -1572,7 +1583,7 @@ smoking-cov ego
 </tr>
 <tr>
 <td>
-smoking-cov similarity
+smoking-cov-similarity
 </td>
 <td align="right">
 0.380
@@ -1928,9 +1939,12 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 <span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"siena_net"</span></span>
 <span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectName          include fix   test  initialValue parm
-1 reciprocity         TRUE    FALSE FALSE          0   0   
-2 transitive triplets TRUE    FALSE FALSE          0   0   </code></pre>
+<pre><code>  effectNumber effectName          shortName include fix   test  initialValue
+1 17           reciprocity         recip     TRUE    FALSE FALSE          0  
+2 23           transitive triplets transTrip TRUE    FALSE FALSE          0  
+  parm
+1 0   
+2 0   </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sex effects on network evolution</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(</span>
@@ -1940,10 +1954,14 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 <span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span></span>
 <span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectName         include fix   test  initialValue parm
-1 sex_cov alter      TRUE    FALSE FALSE          0   0   
-2 sex_cov ego        TRUE    FALSE FALSE          0   0   
-3 sex_cov similarity TRUE    FALSE FALSE          0   0   </code></pre>
+<pre><code>  effectNumber effectName         shortName include fix   test  initialValue
+1 264          sex_cov alter      altX      TRUE    FALSE FALSE          0  
+2 279          sex_cov ego        egoX      TRUE    FALSE FALSE          0  
+3 325          sex_cov similarity simX      TRUE    FALSE FALSE          0  
+  parm
+1 0   
+2 0   
+3 0   </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Smoking-based selection effects on network evolution</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(</span>
@@ -1953,10 +1971,14 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"smoking_beh"</span></span>
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectName             include fix   test  initialValue parm
-1 smoking_beh alter      TRUE    FALSE FALSE          0   0   
-2 smoking_beh ego        TRUE    FALSE FALSE          0   0   
-3 smoking_beh similarity TRUE    FALSE FALSE          0   0   </code></pre>
+<pre><code>  effectNumber effectName             shortName include fix   test 
+1 448          smoking_beh alter      altX      TRUE    FALSE FALSE
+2 463          smoking_beh ego        egoX      TRUE    FALSE FALSE
+3 509          smoking_beh similarity simX      TRUE    FALSE FALSE
+  initialValue parm
+1          0   0   
+2          0   0   
+3          0   0   </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Behavioral dynamics: shape effects are typically included by default,</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="co"># but we explicitly include peer influence via average alter behavior</span></span>
@@ -1967,8 +1989,10 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 <span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"siena_net"</span></span>
 <span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  effectName                include fix   test  initialValue parm
-1 smoking_beh average alter TRUE    FALSE FALSE          0   0   </code></pre>
+<pre><code>  effectNumber effectName                shortName include fix   test 
+1 778          smoking_beh average alter avAlt     TRUE    FALSE FALSE
+  initialValue parm
+1          0   0   </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>my_effects</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -2015,7 +2039,7 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 <span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span></span>
 <span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>If you use this algorithm object, siena07 will create/use an output file saom_coev.txt .</code></pre>
+<pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
 </div>
 </div>
 <p>We now estimate the co-evolution model.</p>
@@ -2029,7 +2053,7 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 </div>
 <p>Finally, we display the model results inline.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena.table</span>(saom_coev, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_coev, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <pre><code>                &lt;TD&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; (s.e.) &lt;/TD&gt;  &lt;/TR&gt;</code></pre><table border="1" rules="none" frame="hsides">
 <tbody><tr>
@@ -2051,7 +2075,7 @@ Network Dynamics
 </tr>
 <tr>
 <td>
-constant siena-net rate (period 1)
+constant-siena-net-rate-(period-1)
 </td>
 <td align="right">
 9.577
@@ -2064,7 +2088,7 @@ constant siena-net rate (period 1)
 </tr>
 <tr>
 <td>
-constant siena-net rate (period 2)
+constant-siena-net-rate-(period-2)
 </td>
 <td align="right">
 8.259
@@ -2077,7 +2101,7 @@ constant siena-net rate (period 2)
 </tr>
 <tr>
 <td>
-outdegree (density)
+outdegree-(density)
 </td>
 <td align="right">
 &nbsp;–2.975
@@ -2105,7 +2129,7 @@ reciprocity
 </tr>
 <tr>
 <td>
-transitive triplets
+transitive-triplets
 </td>
 <td align="right">
 0.457
@@ -2119,7 +2143,7 @@ transitive triplets
 </tr>
 <tr>
 <td>
-sex-cov alter
+sex-cov-alter
 </td>
 <td align="right">
 &nbsp;–0.321
@@ -2133,7 +2157,7 @@ sex-cov alter
 </tr>
 <tr>
 <td>
-sex-cov ego
+sex-cov-ego
 </td>
 <td align="right">
 0.364
@@ -2147,7 +2171,7 @@ sex-cov ego
 </tr>
 <tr>
 <td>
-sex-cov similarity
+sex-cov-similarity
 </td>
 <td align="right">
 1.063
@@ -2161,7 +2185,7 @@ sex-cov similarity
 </tr>
 <tr>
 <td>
-smoking-beh alter
+smoking-beh-alter
 </td>
 <td align="right">
 0.055
@@ -2174,7 +2198,7 @@ smoking-beh alter
 </tr>
 <tr>
 <td>
-smoking-beh ego
+smoking-beh-ego
 </td>
 <td align="right">
 0.023
@@ -2187,7 +2211,7 @@ smoking-beh ego
 </tr>
 <tr>
 <td>
-smoking-beh similarity
+smoking-beh-similarity
 </td>
 <td align="right">
 0.302
@@ -2212,7 +2236,7 @@ Behaviour Dynamics
 </tr>
 <tr>
 <td>
-rate smoking-beh (period 1)
+rate-smoking-beh-(period-1)
 </td>
 <td align="right">
 36.351
@@ -2225,7 +2249,7 @@ rate smoking-beh (period 1)
 </tr>
 <tr>
 <td>
-rate smoking-beh (period 2)
+rate-smoking-beh-(period-2)
 </td>
 <td align="right">
 37.029
@@ -2238,7 +2262,7 @@ rate smoking-beh (period 2)
 </tr>
 <tr>
 <td>
-smoking-beh linear shape
+smoking-beh-linear-shape
 </td>
 <td align="right">
 &nbsp;–18.003
@@ -2251,7 +2275,7 @@ smoking-beh linear shape
 </tr>
 <tr>
 <td>
-smoking-beh quadratic shape
+smoking-beh-quadratic-shape
 </td>
 <td align="right">
 16.650
@@ -2264,7 +2288,7 @@ smoking-beh quadratic shape
 </tr>
 <tr>
 <td>
-smoking-beh average alter
+smoking-beh-average-alter
 </td>
 <td align="right">
 7.399
