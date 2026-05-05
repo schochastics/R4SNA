@@ -485,7 +485,7 @@ window.Quarto = {
 <p>A random graph model is a probability distribution over a set of possible networks, defined by a set of parameters that control how likely different graph structures are to occur. Instead of producing a single deterministic network, the model generates an ensemble of networks, each drawn according to specific rules or constraints. These models allow us to explore what kinds of network structures arise by chance and to test whether observed features, such as clustering or degree patterns, are more or less likely than expected under a given set of assumptions.</p>
 <p>This chapter introduces a range of models used to represent and understand the structure of social and relational networks. We begin with the classic <span class="math inline">\(G(n,p)\)</span> random graph model, in which each pair of nodes is connected independently with a fixed probability. While analytically tractable and conceptually simple, <span class="math inline">\(G(n,p)\)</span> falls short in capturing the structural complexity of real-world networks; it fails to account for common features such as clustering, skewed degree distributions, or short average path lengths.</p>
 <p>To address these shortcomings, we explore several alternative models that incorporate more realistic structural constraints. The small-world model captures the coexistence of high local clustering and global reachability observed in many social systems. The configuration model enables the generation of random graphs with a fixed degree sequence, offering more control over node-level connectivity patterns. For each model, we discuss its definition, how to simulate or estimate it, and its relevance for modeling real network data.</p>
-<p>While these basic random graph models can serve as a simple yet informative baseline for understanding connectivity patterns, they only allow us to control a single feature (e.g.&nbsp;edge probability and degree sequence) at a time, limiting its usefulness for modeling richer network patterns. This leads the way to out next chapter where we introduce exponential random graph models (ERGMs), which is a powerful and flexible framework that allows for the specification of multiple dependencies between ties simultaneously; such as reciprocity, triadic closure, and attribute-based mixing.</p>
+<p>While these basic random graph models can serve as a simple yet informative baseline for understanding connectivity patterns, they only allow us to control a single feature (e.g., edge probability and degree sequence) at a time, limiting its usefulness for modeling richer network patterns. This leads the way to out next chapter where we introduce exponential random graph models (ERGMs), which is a powerful and flexible framework that allows for the specification of multiple dependencies between ties simultaneously; such as reciprocity, triadic closure, and attribute-based mixing.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="16.1">
 <h2 data-number="16.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">16.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
@@ -543,7 +543,7 @@ Figure&nbsp;16.1: Visualization of the <em>Les Misérables</em> co-appearance ne
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dist_obs <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a G(n, p) graph with the same density</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>g_gnp <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="at">n =</span> n, <span class="at">p =</span> density_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>deg_gnp <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_gnp)</span>
@@ -584,9 +584,9 @@ Table&nbsp;16.1: Comparison of structural features: Observed vs G(n, p)
 </tr>
 <tr class="even">
 <td style="text-align: center;">G(n, p)</td>
-<td style="text-align: center;">0.086</td>
-<td style="text-align: center;">2.636</td>
-<td style="text-align: center;">12</td>
+<td style="text-align: center;">0.071</td>
+<td style="text-align: center;">2.658</td>
+<td style="text-align: center;">11</td>
 </tr>
 </tbody>
 </table>
@@ -669,7 +669,7 @@ Figure&nbsp;16.2: Comparison of node degree distributions in the observed <em>Le
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>dist_obs <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate configuration model with the same degree sequence</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>g_conf <span class="ot">&lt;-</span> <span class="fu">sample_degseq</span>(deg_seq, <span class="at">method =</span> <span class="st">"fast.heur.simple"</span>)</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute simulated properties</span></span>
@@ -717,8 +717,8 @@ Table&nbsp;16.2: Comparison of structural features: Observed vs Configuration Mo
 </tr>
 <tr class="even">
 <td style="text-align: center;">Configuration Model</td>
-<td style="text-align: center;">0.239</td>
-<td style="text-align: center;">2.503</td>
+<td style="text-align: center;">0.218</td>
+<td style="text-align: center;">2.538</td>
 <td style="text-align: center;">36</td>
 </tr>
 </tbody>
@@ -789,7 +789,7 @@ Figure&nbsp;16.3: Comparison of degree distributions for the observed <em>Les Mi
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">round</span>(avg_deg_obs <span class="sc">/</span> <span class="dv">2</span>)  <span class="co"># average degree per side for ring lattice</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate small-world graph</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>g_sw <span class="ot">&lt;-</span> <span class="fu">sample_smallworld</span>(<span class="at">dim =</span> <span class="dv">1</span>, <span class="at">size =</span> n, <span class="at">nei =</span> k, <span class="at">p =</span> <span class="fl">0.05</span>)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute properties</span></span>
@@ -835,9 +835,9 @@ Table&nbsp;16.3: Comparison of structural features: Observed vs Small-World Mode
 </tr>
 <tr class="even">
 <td style="text-align: center;">Small-World</td>
-<td style="text-align: center;">0.498</td>
-<td style="text-align: center;">3.778</td>
-<td style="text-align: center;">7</td>
+<td style="text-align: center;">0.412</td>
+<td style="text-align: center;">3.263</td>
+<td style="text-align: center;">8</td>
 </tr>
 </tbody>
 </table>

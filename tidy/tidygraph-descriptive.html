@@ -469,7 +469,7 @@ Figure&nbsp;22.1: Florentine marriage network with node size scaled to degree ce
 </section>
 <section id="clustering" class="level2" data-number="22.3">
 <h2 data-number="22.3" class="anchored" data-anchor-id="clustering"><span class="header-section-number">22.3</span> Clustering</h2>
-<p>Community detection algorithms are exposed through the parallel <code>group_*()</code> family: <code>group_louvain</code>, <code>group_infomap</code>, <code>group_edge_betweenness</code>, <code>group_walktrap</code>, <code>group_leading_eigen</code>, <code>group_fast_greedy</code>, <code>group_label_prop</code>, <code>group_spinglass</code>, <code>group_components</code>, <code>group_biconnected_component</code>, and a few more. Each returns an integer membership vector the length of the node table, which means the idiomatic usage is <code>mutate(community = as.factor(group_*()))</code> — coerce to factor so the result becomes a natural input to a <code>fill</code> or <code>colour</code> aesthetic.</p>
+<p>Community detection algorithms are exposed through the parallel <code>group_*()</code> family: <code>group_louvain</code>, <code>group_infomap</code>, <code>group_edge_betweenness</code>, <code>group_walktrap</code>, <code>group_leading_eigen</code>, <code>group_fast_greedy</code>, <code>group_label_prop</code>, <code>group_spinglass</code>, <code>group_components</code>, <code>group_biconnected_component</code>, and a few more. Each returns an integer membership vector the length of the node table, which means the idiomatic usage is <code>mutate(community = as.factor(group_*()))</code> — coerce to factor so the result becomes a natural input to a <code>fill</code> or <code>color</code> aesthetic.</p>
 <p>We illustrate the pattern on a random graph with planted community structure, generated with <code>play_islands()</code> (the tidygraph equivalent of <code>igraph::sample_islands()</code>). The Louvain partition recovered on that graph is shown in <a href="#fig-clustering-louvain" class="quarto-xref">Figure&nbsp;<span>22.2</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">play_islands</span>(<span class="dv">4</span>, <span class="dv">12</span>, <span class="fl">0.8</span>, <span class="dv">4</span>) <span class="sc">|&gt;</span></span>
@@ -491,7 +491,7 @@ Figure&nbsp;22.2: Louvain community detection applied to a graph with planted co
 </div>
 </div>
 </div>
-<p>A frequent follow-up is to colour edges by community — one colour when an edge stays inside a cluster, another when it bridges two clusters. The way to do this is to propagate the node-level community attribute into the edge table using <code>.N()[from]</code> and <code>.N()[to]</code>, which look up the community of each edge’s endpoints. If they match, the edge is intra-community; otherwise, we mark it as a bridge. <a href="#fig-clustering-bridges" class="quarto-xref">Figure&nbsp;<span>22.3</span></a> shows the resulting picture.</p>
+<p>A frequent follow-up is to color edges by community — one color when an edge stays inside a cluster, another when it bridges two clusters. The way to do this is to propagate the node-level community attribute into the edge table using <code>.N()[from]</code> and <code>.N()[to]</code>, which look up the community of each edge’s endpoints. If they match, the edge is intra-community; otherwise, we mark it as a bridge. <a href="#fig-clustering-bridges" class="quarto-xref">Figure&nbsp;<span>22.3</span></a> shows the resulting picture.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">play_islands</span>(<span class="dv">4</span>, <span class="dv">12</span>, <span class="fl">0.8</span>, <span class="dv">4</span>) <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_louvain</span>())) <span class="sc">|&gt;</span></span>
@@ -502,7 +502,7 @@ Figure&nbsp;22.2: Louvain community detection applied to a graph with planted co
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="dv">5</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    ))) <span class="sc">|&gt;</span></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_colour =</span> community), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_color =</span> community), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> community), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set3"</span>) <span class="sc">+</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Set3"</span>) <span class="sc">+</span></span>
@@ -514,7 +514,7 @@ Figure&nbsp;22.2: Louvain community detection applied to a graph with planted co
 <img src="tidygraph-descriptive_files/figure-html/fig-clustering-bridges-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clustering-bridges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;22.3: Same graph as in <a href="#fig-clustering-louvain" class="quarto-xref">Figure&nbsp;<span>22.2</span></a>, with edges additionally coloured to distinguish intra-community ties from bridges between communities.
+Figure&nbsp;22.3: Same graph as in <a href="#fig-clustering-louvain" class="quarto-xref">Figure&nbsp;<span>22.2</span></a>, with edges additionally colored to distinguish intra-community ties from bridges between communities.
 </figcaption>
 </figure>
 </div>
@@ -542,7 +542,7 @@ Figure&nbsp;22.3: Same graph as in <a href="#fig-clustering-louvain" class="quar
 <img src="tidygraph-descriptive_files/figure-html/fig-distance-medici-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-distance-medici-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;22.4: Florentine marriage network with node fill encoding the geodesic distance to the Medici family and edge colour flagging ties incident to the Medici.
+Figure&nbsp;22.4: Florentine marriage network with node fill encoding the geodesic distance to the Medici family and edge color flagging ties incident to the Medici.
 </figcaption>
 </figure>
 </div>

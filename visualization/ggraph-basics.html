@@ -476,10 +476,10 @@ div.csl-indent {
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#9ACD32"</span></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="do">## compute a clustering for node colors</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># compute a clustering for node colors</span></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(gotS1)<span class="sc">$</span>clu <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">membership</span>(<span class="fu">cluster_louvain</span>(gotS1)))</span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="do">## compute degree as node size</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># compute degree as node size</span></span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(gotS1)<span class="sc">$</span>size <span class="ot">&lt;-</span> <span class="fu">degree</span>(gotS1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
@@ -489,7 +489,7 @@ div.csl-indent {
 <p><a href="#fig-got-plot" class="quarto-xref">Figure&nbsp;<span>10.1</span></a> shows a standard network plot created with <code>ggraph</code>. We will go through the code step-by-step in the following sections to understand how to use each component effectively.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(gotS1, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_colour =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_color =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> clu, <span class="at">size =</span> size), <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">filter =</span> size <span class="sc">&gt;=</span> <span class="dv">26</span>, <span class="at">label =</span> name), <span class="at">family =</span> <span class="st">"serif"</span>) <span class="sc">+</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> got_palette) <span class="sc">+</span></span>
@@ -548,7 +548,7 @@ Figure&nbsp;10.2: Game of Thrones network rendered with four different layout al
 </section>
 <section id="edges" class="level2" data-number="10.5">
 <h2 data-number="10.5" class="anchored" data-anchor-id="edges"><span class="header-section-number">10.5</span> Edges</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_colour =</span> <span class="st">"grey66"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_color =</span> <span class="st">"grey66"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The second layer specifies how edges are drawn. To do so, we use one of the many edge geoms available in <code>ggraph</code>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"geom_edge_arc"</span>, <span class="st">"geom_edge_arc0"</span>, <span class="st">"geom_edge_arc2"</span>,</span>
@@ -564,7 +564,7 @@ Figure&nbsp;10.2: Game of Thrones network rendered with four different layout al
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">make_graph</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(g, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_parallel</span>(<span class="at">edge_colour =</span> <span class="st">"grey66"</span>, <span class="at">edge_linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_parallel</span>(<span class="at">edge_color =</span> <span class="st">"grey66"</span>, <span class="at">edge_linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
@@ -588,7 +588,7 @@ Figure&nbsp;10.3: Multi-edge network drawn with <code>geom_edge_parallel()</code
 <p>The curved equivalent of <code>geom_edge_parallel()</code> is <code>geom_edge_fan()</code>. <a href="#fig-fan" class="quarto-xref">Figure&nbsp;<span>10.4</span></a> shows the difference between the two.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(g, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_fan</span>(<span class="at">edge_colour =</span> <span class="st">"grey66"</span>, <span class="at">edge_linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_fan</span>(<span class="at">edge_color =</span> <span class="st">"grey66"</span>, <span class="at">edge_linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
@@ -612,7 +612,7 @@ Figure&nbsp;10.4: Multi-edge network drawn with <code>geom_edge_fan()</code>.
 <p>Most edge geoms come in three flavors. The standard <code>geom_edge_link()</code> draws 100 dots on each edge compared to only two dots (the endpoints) in <code>geom_edge_link0()</code>. This is done to allow gradients along the edge as shown in <a href="#fig-got-plot-grad" class="quarto-xref">Figure&nbsp;<span>10.5</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(gotS1, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">alpha =</span> <span class="fu">after_stat</span>(index)), <span class="at">edge_colour =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">alpha =</span> <span class="fu">after_stat</span>(index)), <span class="at">edge_color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> clu, <span class="at">size =</span> size), <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> got_palette) <span class="sc">+</span></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_edge_width_continuous</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
@@ -633,10 +633,10 @@ Figure&nbsp;10.5: Edge gradient showing directionality using <code>geom_edge_lin
 </div>
 </div>
 <p>The drawback of using <code>geom_edge_link()</code> is that the time to render the plot increases and so does the size of the file if you export the plot. Typically, you do not need gradients along an edge. Hence, <code>geom_edge_link0()</code> should be the default choice to draw edges.</p>
-<p>Within <code>geom_edge_link0</code>, you can specify the appearance of the edge, either by mapping edge attributes to aesthetics or setting them globally for the graph. Mapping attributes to aesthetics is done within <code>aes()</code>. In the example, we map the edge width to the edge attribute “weight”. <code>ggraph</code> then automatically scales the edge width according to the attribute. The colour of all edges is globally set to “grey66”.</p>
+<p>Within <code>geom_edge_link0</code>, you can specify the appearance of the edge, either by mapping edge attributes to aesthetics or setting them globally for the graph. Mapping attributes to aesthetics is done within <code>aes()</code>. In the example, we map the edge width to the edge attribute “weight”. <code>ggraph</code> then automatically scales the edge width according to the attribute. The color of all edges is globally set to “grey66”.</p>
 <p>The following aesthetics can be used within <code>geom_edge_link0</code> either within <code>aes()</code> or globally:</p>
 <ul>
-<li>edge_colour (colour of the edge)</li>
+<li>edge_color (color of the edge)</li>
 <li>edge_linewidth (width of the edge)</li>
 <li>edge_linetype (linetype of the edge, defaults to “solid”)</li>
 <li>edge_alpha (opacity; a value between 0 and 1)</li>
@@ -654,7 +654,7 @@ Figure&nbsp;10.5: Edge gradient showing directionality using <code>geom_edge_lin
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(g, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_colour =</span> <span class="st">"grey66"</span>, <span class="at">edge_linewidth =</span> <span class="fl">0.5</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_color =</span> <span class="st">"grey66"</span>, <span class="at">edge_linewidth =</span> <span class="fl">0.5</span>,</span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">angle =</span> <span class="dv">30</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.15</span>, <span class="st">"inches"</span>),</span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
@@ -694,16 +694,16 @@ Figure&nbsp;10.6: Directed network with closed arrowheads.
 <img src="img/points-symbols.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-points-symbols-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10.7: Available point shapes in R. Shapes 0-20 only have a border (set via <code>colour</code>), while shapes 21-25 have both a border (<code>colour</code>) and a fill (<code>fill</code>).
+Figure&nbsp;10.7: Available point shapes in R. Shapes 0-20 only have a border (set via <code>color</code>), while shapes 21-25 have both a border (<code>color</code>) and a fill (<code>fill</code>).
 </figcaption>
 </figure>
 </div>
-<p>For networks, “21” is a solid choice since it draws a border around the nodes. If other shapes are used, say “19”, several things need to be considered. To change the color of shapes 1-20, the colour parameter needs to be set. For shapes 21-25 the fill parameter. The colour parameter only controls the border for these cases.</p>
+<p>For networks, “21” is a solid choice since it draws a border around the nodes. If other shapes are used, say “19”, several things need to be considered. To change the color of shapes 1-20, the color parameter needs to be set. For shapes 21-25 the fill parameter. The color parameter only controls the border for these cases.</p>
 <p>The following aesthetics can be used within <code>geom_node_point()</code> either within <code>aes()</code> or globally:</p>
 <ul>
 <li>alpha (opacity; a value between 0 and 1)</li>
-<li>colour (colour of shapes 0-20 and border colour for 21-25)</li>
-<li>fill (fill colour for shape 21-25)</li>
+<li>color (color of shapes 0-20 and border color for 21-25)</li>
+<li>fill (fill color for shape 21-25)</li>
 <li>shape (node shape; a value between 0 and 25)</li>
 <li>size (size of node)</li>
 <li>stroke (size of node border)</li>
@@ -711,7 +711,7 @@ Figure&nbsp;10.7: Available point shapes in R. Shapes 0-20 only have a border (s
 <p>For <code>geom_node_text()</code>, there are a lot more options available, but the most important ones are:</p>
 <ul>
 <li>label (attribute to be displayed as node label)</li>
-<li>colour (text colour)</li>
+<li>color (text color)</li>
 <li>family (font to be used)</li>
 <li>size (font size)</li>
 </ul>
@@ -726,7 +726,7 @@ Figure&nbsp;10.7: Available point shapes in R. Shapes 0-20 only have a border (s
 <p>The <code>scale_*</code> functions are used to control aesthetics that are mapped within <code>aes()</code>. Setting those are optional, since <code>ggraph</code> can take care of it automatically as shown in <a href="#fig-no-scales" class="quarto-xref">Figure&nbsp;<span>10.8</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(gotS1, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_colour =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_color =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> clu, <span class="at">size =</span> size), <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">filter =</span> size <span class="sc">&gt;=</span> <span class="dv">26</span>, <span class="at">label =</span> name), <span class="at">family =</span> <span class="st">"serif"</span>) <span class="sc">+</span></span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_graph</span>() <span class="sc">+</span></span>
@@ -752,7 +752,7 @@ Figure&nbsp;10.8: GoT network without explicit scale adjustments.
 <p>What kind of <code>scale_*</code> function is needed depends on the aesthetic and on the type of attribute. Generally, scale functions are structured as<br>
 <code>scale_&lt;aes&gt;_&lt;variable type&gt;()</code>.<br>
 </p>
-<p>The “aes” part is easy. It is just the type specified within <code>aes()</code>. For edges, however, <code>edge_</code> needs to be prepended to the aesthetic name. The “variable type” depends on which scale the attribute is on. The following table gives an overview of which aesthetics can be used for which variable type and some notes on when to use which aesthetic.</p>
+<p>The “aes” part is easy. It is the type specified within <code>aes()</code>. For edges, however, <code>edge_</code> needs to be prepended to the aesthetic name. The “variable type” depends on which scale the attribute is on. The following table gives an overview of which aesthetics can be used for which variable type and some notes on when to use which aesthetic.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 13%">
@@ -778,24 +778,24 @@ Figure&nbsp;10.8: GoT network without explicit scale adjustments.
 <td></td>
 </tr>
 <tr class="odd">
-<td>node colour/fill</td>
+<td>node color/fill</td>
 <td>categorical/continuous</td>
 <td>use a gradient for continuous variables</td>
 </tr>
 <tr class="even">
-<td>edge colour</td>
+<td>edge color</td>
 <td>continuous</td>
 <td>categorical only if there are different types of edges</td>
 </tr>
 <tr class="odd">
 <td>node shape</td>
 <td>categorical</td>
-<td>only if there are a few categories (1-5). Colour should be the preferred choice</td>
+<td>only if there are a few categories (1-5). Color should be the preferred choice</td>
 </tr>
 <tr class="even">
 <td>edge linetype</td>
 <td>categorical</td>
-<td>only if there are a few categories (1-5). Colour should be the preferred choice</td>
+<td>only if there are a few categories (1-5). Color should be the preferred choice</td>
 </tr>
 <tr class="odd">
 <td>node/edge alpha</td>
@@ -805,8 +805,8 @@ Figure&nbsp;10.8: GoT network without explicit scale adjustments.
 </tbody>
 </table>
 <p>The easiest to use scales are those for continuous variables mapped to edge width and node size (also the alpha value, which is not used here). While there are several parameters within <code>scale_edge_width_continuous()</code> and <code>scale_size_continuous()</code>, the most important one is “range” which fixes the minimum and maximum width and size respectively. In most cases it suffices to only adjust this parameter.</p>
-<p>For continuous variables which are mapped to node/edge colour, one can use <code>scale_colour_gradient()</code> <code>scale_colour_gradient2()</code> or <code>scale_colour_gradientn()</code> (add edge_ before colour for edge colours). The difference between these functions is in how the gradient is constructed. <code>gradient</code> creates a two colour gradient (low-high). So just two colours need to be specified (e.g.&nbsp;<code>low = "blue"</code>, <code>high = "red"</code>). <code>gradient2</code> creates a diverging colour gradient (low-mid-high) (e.g.&nbsp;<code>low = "blue"</code>, <code>mid = "white"</code>, <code>high = "red"</code>) and <code>gradientn</code> a gradient consisting of more than three colours (specified with the colours parameter).</p>
-<p>For categorical variables that are mapped to node colours (or fill in our example), one can use <code>scale_fill_manual()</code> to choose a color for each category manually. To do so, simply create a vector of colors (like the <code>got_palette</code>) and pass it to the function with the parameter values.</p>
+<p>For continuous variables which are mapped to node/edge color, one can use <code>scale_color_gradient()</code> <code>scale_color_gradient2()</code> or <code>scale_color_gradientn()</code> (add edge_ before color for edge colors). The difference between these functions is in how the gradient is constructed. <code>gradient</code> creates a two color gradient (low-high). So just two colors need to be specified (e.g.&nbsp;<code>low = "blue"</code>, <code>high = "red"</code>). <code>gradient2</code> creates a diverging color gradient (low-mid-high) (e.g.&nbsp;<code>low = "blue"</code>, <code>mid = "white"</code>, <code>high = "red"</code>) and <code>gradientn</code> a gradient consisting of more than three colors (specified with the colors parameter).</p>
+<p>For categorical variables that are mapped to node colors (or fill in our example), one can use <code>scale_fill_manual()</code> to choose a color for each category manually. To do so, create a vector of colors (like the <code>got_palette</code>) and pass it to the function with the parameter values.</p>
 <p><code>ggraph</code> then assigns the colors in the order of the unique values of the categorical variable. This are either the factor levels (if the variable is a factor) or the result of sorting the unique values (if the variable is a character).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">V</span>(gotS1)<span class="sc">$</span>clu))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -814,7 +814,7 @@ Figure&nbsp;10.8: GoT network without explicit scale adjustments.
 <pre><code>[1] "1" "2" "3" "4" "5" "6" "7"</code></pre>
 </div>
 </div>
-<p>To avoid automatic assignment of colors, one can pass the vector of colours as a named vector. The difference between unnamed and named palettes is shown in <a href="#fig-got-plot-pal2" class="quarto-xref">Figure&nbsp;<span>10.9</span></a>.</p>
+<p>To avoid automatic assignment of colors, one can pass the vector of colors as a named vector. The difference between unnamed and named palettes is shown in <a href="#fig-got-plot-pal2" class="quarto-xref">Figure&nbsp;<span>10.9</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>got_palette2 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"5"</span> <span class="ot">=</span> <span class="st">"#1A5878"</span>, <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"#C44237"</span>, <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"#AD8941"</span>,</span>
@@ -829,17 +829,17 @@ Figure&nbsp;10.8: GoT network without explicit scale adjustments.
 <img src="ggraph-basics_files/figure-html/fig-got-plot-pal2-1.png" class="img-fluid figure-img" width="1248">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-got-plot-pal2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10.9: Comparison of unnamed and named colour palettes.
+Figure&nbsp;10.9: Comparison of unnamed and named color palettes.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Using a manual colour palette gives the network a unique touch but <code>scale_fill_brewer()</code> and <code>scale_colour_brewer()</code> can also be used to apply predefined color palettes.</p>
+<p>Using a manual color palette gives the network a unique touch but <code>scale_fill_brewer()</code> and <code>scale_color_brewer()</code> can also be used to apply predefined color palettes.</p>
 <p>The function offers all palettes available at <a href="http://colorbrewer2.org/">colorbrewer2.org</a>. An example is shown in <a href="#fig-got-plot-brewer" class="quarto-xref">Figure&nbsp;<span>10.10</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(gotS1, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_colour =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_color =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> clu, <span class="at">size =</span> size), <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">filter =</span> size <span class="sc">&gt;=</span> <span class="dv">26</span>, <span class="at">label =</span> name), <span class="at">family =</span> <span class="st">"serif"</span>) <span class="sc">+</span></span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Dark2"</span>) <span class="sc">+</span></span>
@@ -854,7 +854,7 @@ Figure&nbsp;10.9: Comparison of unnamed and named colour palettes.
 <img src="ggraph-basics_files/figure-html/fig-got-plot-brewer-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-got-plot-brewer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10.10: GoT network coloured with a ColorBrewer palette.
+Figure&nbsp;10.10: GoT network colored with a ColorBrewer palette.
 </figcaption>
 </figure>
 </div>
@@ -865,11 +865,11 @@ Figure&nbsp;10.10: GoT network coloured with a ColorBrewer palette.
 <h2 data-number="10.8" class="anchored" data-anchor-id="themes"><span class="header-section-number">10.8</span> Themes</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_graph</span>() <span class="sc">+</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Themes control the overall look of the plot. There are a lot of options within the <code>theme()</code> function of <code>ggplot2</code>. However, there is really no need to use any of those. <code>theme_graph()</code> is used to erase all of the default ggplot theme (e.g. axis, background, grids, etc.) since they are irrelevant for networks. The only option worthwhile in <code>theme()</code> is <code>legend.position</code>, which we set to <code>"none"</code>, i.e.&nbsp;do not show the legend.</p>
+<p>Themes control the overall look of the plot. There are a lot of options within the <code>theme()</code> function of <code>ggplot2</code>. However, there is really no need to use any of those. <code>theme_graph()</code> is used to erase all of the default ggplot theme (e.g., axis, background, grids, etc.) since they are irrelevant for networks. The only option worthwhile in <code>theme()</code> is <code>legend.position</code>, which we set to <code>"none"</code>, i.e., do not show the legend.</p>
 <p><a href="#fig-got-plot-legend" class="quarto-xref">Figure&nbsp;<span>10.11</span></a> gives an example for a plot with a legend.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(gotS1, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_colour =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="fu">aes</span>(<span class="at">edge_linewidth =</span> weight), <span class="at">edge_color =</span> <span class="st">"grey66"</span>) <span class="sc">+</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> clu, <span class="at">size =</span> size), <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">filter =</span> size <span class="sc">&gt;=</span> <span class="dv">26</span>, <span class="at">label =</span> name), <span class="at">family =</span> <span class="st">"serif"</span>) <span class="sc">+</span></span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> got_palette) <span class="sc">+</span></span>
@@ -900,7 +900,7 @@ Figure&nbsp;10.11: GoT network with legend displayed at the bottom.
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"polblogs"</span>)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="do">## add a vertex attribute for the indegree</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># add a vertex attribute for the indegree</span></span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(polblogs)<span class="sc">$</span>deg <span class="ot">&lt;-</span> <span class="fu">degree</span>(polblogs, <span class="at">mode =</span> <span class="st">"in"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We start with a simple plot without any styling as shown in <a href="#fig-polblogs1" class="quarto-xref">Figure&nbsp;<span>10.12</span></a>.</p>
@@ -909,7 +909,7 @@ Figure&nbsp;10.11: GoT network with legend displayed at the bottom.
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(lay) <span class="sc">+</span></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="at">edge_colour =</span> <span class="st">"grey66"</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="at">edge_color =</span> <span class="st">"grey66"</span>,</span>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">angle =</span> <span class="dv">15</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.15</span>, <span class="st">"inches"</span>),</span>
 <span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
@@ -941,7 +941,7 @@ Figure&nbsp;10.12: Initial plot of the political blogs network without styling.
 <span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(lay) <span class="sc">+</span></span>
 <span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="at">edge_colour =</span> <span class="st">"grey66"</span>,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="at">edge_color =</span> <span class="st">"grey66"</span>,</span>
 <span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">angle =</span> <span class="dv">15</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"inches"</span>),</span>
 <span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
@@ -961,11 +961,11 @@ Figure&nbsp;10.13: Political blogs network after removing isolates and a small d
 </div>
 </div>
 </div>
-<p><a href="#fig-polblogs3" class="quarto-xref">Figure&nbsp;<span>10.14</span></a> shows the network with styling applied to the nodes. Political orientation is mapped to node colour and indegree to node size. The colors are manually set to match the original visualization and the size range is adjusted to make the differences in node size more visible.</p>
+<p><a href="#fig-polblogs3" class="quarto-xref">Figure&nbsp;<span>10.14</span></a> shows the network with styling applied to the nodes. Political orientation is mapped to node color and indegree to node size. The colors are manually set to match the original visualization and the size range is adjusted to make the differences in node size more visible.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(lay) <span class="sc">+</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="at">edge_colour =</span> <span class="st">"grey66"</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="at">edge_color =</span> <span class="st">"grey66"</span>,</span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">angle =</span> <span class="dv">15</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.15</span>, <span class="st">"inches"</span>),</span>
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
@@ -981,7 +981,7 @@ Figure&nbsp;10.13: Political blogs network after removing isolates and a small d
 <img src="ggraph-basics_files/figure-html/fig-polblogs3-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-polblogs3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10.14: Political blogs network with node colour mapped to political orientation.
+Figure&nbsp;10.14: Political blogs network with node color mapped to political orientation.
 </figcaption>
 </figure>
 </div>
@@ -997,7 +997,7 @@ Figure&nbsp;10.14: Political blogs network with node colour mapped to political 
 <span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>lay <span class="ot">&lt;-</span> <span class="fu">create_layout</span>(polblogs, <span class="st">"stress"</span>)</span>
 <span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(lay) <span class="sc">+</span></span>
 <span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">edge_colour =</span> col),</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">edge_color =</span> col),</span>
 <span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">angle =</span> <span class="dv">10</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"inches"</span>),</span>
 <span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
@@ -1005,7 +1005,7 @@ Figure&nbsp;10.14: Political blogs network with node colour mapped to political 
 <span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="fu">aes</span>(<span class="at">fill =</span> pol, <span class="at">size =</span> deg), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"mixed"</span> <span class="ot">=</span> <span class="st">"goldenrod"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"mixed"</span> <span class="ot">=</span> <span class="st">"goldenrod"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
 <span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_size</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">7</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-polblogs4" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1014,7 +1014,7 @@ Figure&nbsp;10.14: Political blogs network with node colour mapped to political 
 <img src="ggraph-basics_files/figure-html/fig-polblogs4-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-polblogs4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10.15: Political blogs network with edge colour mapped to within/between political orientation.
+Figure&nbsp;10.15: Political blogs network with edge color mapped to within/between political orientation.
 </figcaption>
 </figure>
 </div>
@@ -1024,14 +1024,14 @@ Figure&nbsp;10.15: Political blogs network with edge colour mapped to within/bet
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(lay) <span class="sc">+</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">filter =</span> (col <span class="sc">==</span> <span class="st">"mixed"</span>), <span class="at">edge_colour =</span> col),</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">filter =</span> (col <span class="sc">==</span> <span class="st">"mixed"</span>), <span class="at">edge_color =</span> col),</span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">angle =</span> <span class="dv">10</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"inches"</span>),</span>
 <span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
 <span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>        ), <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
 <span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">filter =</span> (col <span class="sc">!=</span> <span class="st">"mixed"</span>), <span class="at">edge_colour =</span> col),</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">filter =</span> (col <span class="sc">!=</span> <span class="st">"mixed"</span>), <span class="at">edge_color =</span> col),</span>
 <span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">angle =</span> <span class="dv">10</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"inches"</span>),</span>
 <span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
@@ -1039,7 +1039,7 @@ Figure&nbsp;10.15: Political blogs network with edge colour mapped to within/bet
 <span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="fu">aes</span>(<span class="at">fill =</span> pol, <span class="at">size =</span> deg), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
-<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"mixed"</span> <span class="ot">=</span> <span class="st">"goldenrod"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"mixed"</span> <span class="ot">=</span> <span class="st">"goldenrod"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
 <span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_size</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">7</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-polblogs5" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1058,14 +1058,14 @@ Figure&nbsp;10.16: Political blogs network with mixed edges drawn below same-ori
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(lay) <span class="sc">+</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">filter =</span> (col <span class="sc">==</span> <span class="st">"mixed"</span>), <span class="at">edge_colour =</span> col),</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">filter =</span> (col <span class="sc">==</span> <span class="st">"mixed"</span>), <span class="at">edge_color =</span> col),</span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">angle =</span> <span class="dv">10</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"inches"</span>),</span>
 <span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
 <span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>        ), <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_edge_link0</span>(</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">filter =</span> (col <span class="sc">!=</span> <span class="st">"mixed"</span>), <span class="at">edge_colour =</span> col),</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">edge_linewidth =</span> <span class="fl">0.2</span>, <span class="fu">aes</span>(<span class="at">filter =</span> (col <span class="sc">!=</span> <span class="st">"mixed"</span>), <span class="at">edge_color =</span> col),</span>
 <span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(</span>
 <span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">angle =</span> <span class="dv">10</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"inches"</span>),</span>
 <span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">ends =</span> <span class="st">"last"</span>, <span class="at">type =</span> <span class="st">"closed"</span></span>
@@ -1073,7 +1073,7 @@ Figure&nbsp;10.16: Political blogs network with mixed edges drawn below same-ori
 <span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_node_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="fu">aes</span>(<span class="at">fill =</span> pol, <span class="at">size =</span> deg), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"mixed"</span> <span class="ot">=</span> <span class="st">"goldenrod"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_edge_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"left"</span> <span class="ot">=</span> <span class="st">"#104E8B"</span>, <span class="st">"mixed"</span> <span class="ot">=</span> <span class="st">"goldenrod"</span>, <span class="st">"right"</span> <span class="ot">=</span> <span class="st">"firebrick3"</span>)) <span class="sc">+</span></span>
 <span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_size</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">7</span>)) <span class="sc">+</span></span>
 <span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_graph</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">

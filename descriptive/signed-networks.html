@@ -476,7 +476,7 @@ window.Quarto = {
 
 
 <p>Most of social network analysis deals with relations that are inherently positive: friendship, collaboration, advice seeking, trade. The tools we use to study networks, from centrality indices to community detection, were largely developed with these positive ties in mind. But social life is not only about who we like. People form rivalries, nations go to war, and online communities like <em>and</em> dislike content. When we want to study networks that contain both positive and negative ties, we enter the topic of signed networks.</p>
-<p>Signed networks require their own analytical toolkit. Standard centrality measures do not account for the difference between a node connected to five friends versus one connected to five enemies. Community detection algorithms that look for dense subgroups miss the point when the structure is defined by who is <em>against</em> whom, not just who is <em>with</em> whom. In this chapter, we introduce the key concepts and methods for analysing signed networks: structural balance, blockmodeling, and centrality.</p>
+<p>Signed networks require their own analytical toolkit. Standard centrality measures do not account for the difference between a node connected to five friends versus one connected to five enemies. Community detection algorithms that look for dense subgroups miss the point when the structure is defined by who is <em>against</em> whom, not just who is <em>with</em> whom. In this chapter, we introduce the key concepts and methods for analyzing signed networks: structural balance, blockmodeling, and centrality.</p>
 <section id="packages-needed-for-this-chapter" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="packages-needed-for-this-chapter"><span class="header-section-number">6.1</span> Packages Needed for this Chapter</h2>
 <div class="cell">
@@ -487,12 +487,12 @@ window.Quarto = {
 </section>
 <section id="basic-tools-for-signed-networks" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="basic-tools-for-signed-networks"><span class="header-section-number">6.2</span> Basic Tools for Signed Networks</h2>
-<p>The <code>signnet</code> package provides dedicated tools for analysing signed networks in R. The package builds on <code>igraph</code> and assumes that a signed network is an igraph object with an edge attribute <code>sign</code>, containing values 1 (positive) or -1 (negative). All functions in the package check for this attribute and will throw an error if it is missing or contains other values.</p>
+<p>The <code>signnet</code> package provides dedicated tools for analyzing signed networks in R. The package builds on <code>igraph</code> and assumes that a signed network is an igraph object with an edge attribute <code>sign</code>, containing values 1 (positive) or -1 (negative). All functions in the package check for this attribute and will throw an error if it is missing or contains other values.</p>
 <p>We will use the <code>tribes</code> dataset to illustrate some basic functionality of the package. This dataset is a signed social network of sixteen tribes from the Gahuku-Gama alliance structure of the Eastern Central Highlands of New Guinea. Tribes are connected by friendship ties (“rova”) and enmity ties (“hina”).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"tribes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The function <code>ggsigned()</code> provides a convenient way to visualise signed networks. <a href="#fig-tribes" class="quarto-xref">Figure&nbsp;<span>6.1</span></a> shows the <code>tribes</code> network visualised with <code>ggsigned()</code>, where blue edges represent positive ties and red edges represent negative ties.<br>
+<p>The function <code>ggsigned()</code> provides a convenient way to visualize signed networks. <a href="#fig-tribes" class="quarto-xref">Figure&nbsp;<span>6.1</span></a> shows the <code>tribes</code> network visualized with <code>ggsigned()</code>, where blue edges represent positive ties and red edges represent negative ties.<br>
 </p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsigned</span>(tribes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -503,7 +503,7 @@ window.Quarto = {
 <img src="signed-networks_files/figure-html/fig-tribes-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tribes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6.1: The <code>tribes</code> network visualised with <code>ggsigned()</code>.
+Figure&nbsp;6.1: The <code>tribes</code> network visualized with <code>ggsigned()</code>.
 </figcaption>
 </figure>
 </div>
@@ -520,7 +520,7 @@ Figure&nbsp;6.1: The <code>tribes</code> network visualised with <code>ggsigned(
 <img src="signed-networks_files/figure-html/fig-tribes-weighted-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tribes-weighted-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6.2: The <code>tribes</code> network visualised with <code>ggsigned()</code> using weights to separate negative ties.
+Figure&nbsp;6.2: The <code>tribes</code> network visualized with <code>ggsigned()</code> using weights to separate negative ties.
 </figcaption>
 </figure>
 </div>
@@ -616,12 +616,12 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count_signed_triangles</span>(g_bal)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+++ ++- +-- --- 
-100   0   4   0 </code></pre>
+ 80   0   4   0 </code></pre>
 </div>
 </div>
 <p>Increasing the <code>islands.n</code> parameter to more than two creates networks that are not balanced in the strict two-group sense but are “clusterable” as defined by <span class="citation" data-cites="davis1967clustering">Davis (<a href="#ref-davis1967clustering" role="doc-biblioref">1967</a>)</span> – they can be partitioned into more than two groups with the same within-positive, between-negative pattern.</p>
 <p>Real-world networks are rarely perfectly balanced. The question then becomes: how balanced a given network is. The <code>signnet</code> package offers three methods for measuring the degree of balancedness via <code>balance_score()</code>. All return a value between zero (perfectly unbalanced) and one (perfectly balanced).</p>
-<p>For our perfectly balanced synthetic network, all three methods obviously agree.</p>
+<p>For our perfectly balanced synthetic network, all three methods agree.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g_bal, <span class="at">method =</span> <span class="st">"triangles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -633,7 +633,7 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g_bal, <span class="at">method =</span> <span class="st">"frustration"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.7894737</code></pre>
+<pre><code>[1] 1</code></pre>
 </div>
 </div>
 <p>The <strong>triangles</strong> method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.</p>
@@ -658,7 +658,7 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 <section id="blockmodeling" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="blockmodeling"><span class="header-section-number">6.4</span> Blockmodeling</h2>
 <p>Structural balance theory dictates that a balanced network can be partitioned into groups with positive intra-group ties and negative inter-group ties. Blockmodeling is a computational approach to finding such partitions <span class="citation" data-cites="doreian1996partitioning">(<a href="#ref-doreian1996partitioning" role="doc-biblioref">Doreian and Mrvar 1996</a>)</span>.</p>
-<p>The function <code>signed_blockmodel()</code> partitions a network into <code>k</code> predefined blocks, optimising for positive ties within blocks and negative ties between blocks. The objective function to be optimized is <span class="math inline">\(P(C) = \alpha N + (1-\alpha)P\)</span>, where <span class="math inline">\(N\)</span> is the total number of negative ties within blocks and <span class="math inline">\(P\)</span> is the total number of positive ties between blocks. The parameter <code>alpha</code> controls the trade-off between these two values. The closer <code>alpha</code> is to 1, the more the algorithm prioritises negative ties within blocks. The closer to 0, the more it prioritises positive ties between blocks. Setting <code>alpha = 0.5</code> gives equal weight to both types of errors.</p>
+<p>The function <code>signed_blockmodel()</code> partitions a network into <code>k</code> predefined blocks, optimizing for positive ties within blocks and negative ties between blocks. The objective function to be optimized is <span class="math inline">\(P(C) = \alpha N + (1-\alpha)P\)</span>, where <span class="math inline">\(N\)</span> is the total number of negative ties within blocks and <span class="math inline">\(P\)</span> is the total number of positive ties between blocks. The parameter <code>alpha</code> controls the trade-off between these two values. The closer <code>alpha</code> is to 1, the more the algorithm prioritises negative ties within blocks. The closer to 0, the more it prioritises positive ties between blocks. Setting <code>alpha = 0.5</code> gives equal weight to both types of errors.</p>
 <p>For the <code>tribes</code> network, we try to find a partition into three blocks, which is the known structure of the Gahuku-Gama alliance system.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
@@ -672,7 +672,7 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 <pre><code>[1] 2</code></pre>
 </div>
 </div>
-<p>The function returns a list with two entries: the block membership of each node and the value of <span class="math inline">\(P(C)\)</span>, where lower values indicate a better fit. Setting <code>annealing = TRUE</code> uses simulated annealing in the optimisation, which generally produces better results at the cost of longer running time. The result shows that only 2 edges are either positive intergroup ties or negative intragroup ties.</p>
+<p>The function returns a list with two entries: the block membership of each node and the value of <span class="math inline">\(P(C)\)</span>, where lower values indicate a better fit. Setting <code>annealing = TRUE</code> uses simulated annealing in the optimization, which generally produces better results at the cost of longer running time. The result shows that only 2 edges are either positive intergroup ties or negative intragroup ties.</p>
 <p>The obtained block structure can be visualized with <code>ggblock()</code> as shown in <a href="#fig-blockmodel-tribes" class="quarto-xref">Figure&nbsp;<span>6.5</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggblock</span>(tribes, clu<span class="sc">$</span>membership, <span class="at">show_blocks =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -694,7 +694,7 @@ Figure&nbsp;6.5: Block structure of the <code>tribes</code> network.
 <p>The function <code>signed_blockmodel_general()</code> allows us to specify arbitrary block structures via the <code>blockmat</code> parameter. Each entry in the matrix indicates whether we expect the corresponding block to be positive (1) or negative (-1).</p>
 <p>In the following we construct a synthetic network with three groups, with a structure which cannot be captured by the traditional blockmodel but can be specified in the general blockmodel.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## construct a network with a non-standard block structure</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># construct a network with a non-standard block structure</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> g2 <span class="ot">&lt;-</span> g3 <span class="ot">&lt;-</span> <span class="fu">make_full_graph</span>(<span class="dv">5</span>)</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g1)<span class="sc">$</span>name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g2)<span class="sc">$</span>name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>)</span>

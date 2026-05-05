@@ -659,16 +659,16 @@ Figure&nbsp;4.6: Zachary’s karate club network.
 </div>
 <p>For the cluster analysis, we first pick an algorithm and run it on the network. Here, we use the Louvain method <span class="citation" data-cites="blondel2008louvain">(<a href="#ref-blondel2008louvain" role="doc-biblioref">Blondel et al. 2008</a>)</span> for modularity maximization via <code>cluster_louvain()</code>. The result is a community object from which we can extract a membership vector (which community each node belongs to) and a list of communities (which nodes belong to each community).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">## compute clustering</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute clustering</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>clu <span class="ot">&lt;-</span> <span class="fu">cluster_louvain</span>(karate)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="do">## cluster membership vector</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># cluster membership vector</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>mem <span class="ot">&lt;-</span> <span class="fu">membership</span>(clu)</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>mem</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 1 1 1 1 2 2 2 1 3 1 2 1 1 1 3 3 2 1 3 1 3 1 3 4 4 4 3 4 4 3 3 4 3 3</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">## clusters as list</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clusters as list</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>com <span class="ot">&lt;-</span> <span class="fu">communities</span>(clu)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>com</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -722,7 +722,7 @@ $`4`
 <img src="clustering_files/figure-html/fig-karate-clu-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-karate-clu-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.7: Karate club network coloured by community membership (optimal partition).
+Figure&nbsp;4.7: Karate club network colored by community membership (optimal partition).
 </figcaption>
 </figure>
 </div>
@@ -796,18 +796,18 @@ Figure&nbsp;4.8: A ring of 50 cliques of size 5, used to illustrate the resoluti
 <img src="clustering_files/figure-html/fig-karate-leiden-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-karate-leiden-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.9: Karate club network coloured by community membership (Leiden algorithm with CPM objective function).
+Figure&nbsp;4.9: Karate club network colored by community membership (Leiden algorithm with CPM objective function).
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Comparing <a href="#fig-karate-clu" class="quarto-xref">Figure&nbsp;<span>4.7</span></a> and <a href="#fig-karate-leiden" class="quarto-xref">Figure&nbsp;<span>4.9</span></a>, we can see that the Leiden algorithm with this resolution parameter produces a different partition than the optimal modularity solution. Neither result is inherently more “correct” than the other. As discussed at the start of this section, there is no universal definition of what a community is, and different methods (and different parameter settings) operationalise the concept differently. The optimal modularity partition maximises one particular quality function; the Leiden CPM partition optimises another. By tuning the <code>resolution</code> parameter in <code>cluster_leiden()</code>, we could obtain a partition that matches the modularity-optimal one, but that would just mean we have chosen parameters to agree with a specific criterion, not that we have found the “true” communities.</p>
+<p>Comparing <a href="#fig-karate-clu" class="quarto-xref">Figure&nbsp;<span>4.7</span></a> and <a href="#fig-karate-leiden" class="quarto-xref">Figure&nbsp;<span>4.9</span></a>, we can see that the Leiden algorithm with this resolution parameter produces a different partition than the optimal modularity solution. Neither result is inherently more “correct” than the other. As discussed at the start of this section, there is no universal definition of what a community is, and different methods (and different parameter settings) operationalise the concept differently. The optimal modularity partition maximises one particular quality function; the Leiden CPM partition optimizes another. By tuning the <code>resolution</code> parameter in <code>cluster_leiden()</code>, we could obtain a partition that matches the modularity-optimal one, but that would just mean we have chosen parameters to agree with a specific criterion, not that we have found the “true” communities.</p>
 <p>In practice, this means that community detection results should always be interpreted with care. It is good practice to try multiple algorithms and parameter settings, and to evaluate the results against substantive knowledge about the network. If different methods consistently identify the same groups, we can be more confident that the structure is real. If they disagree, the differences themselves can be informative about the ambiguity of group boundaries in the network.</p>
 </section>
 <section id="blockmodeling" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="blockmodeling"><span class="header-section-number">4.4</span> Blockmodeling</h2>
-<p>Community detection focuses on finding groups of nodes that are densely connected internally. Blockmodeling takes a slightly different perspective: it groups nodes based on <em>patterns</em> of connections, not just density. Two nodes belong to the same block if they relate to other blocks in similar ways, regardless of whether they are connected to each other. This makes blockmodeling particularly useful for role analysis in sociology and organisational context.</p>
+<p>Community detection focuses on finding groups of nodes that are densely connected internally. Blockmodeling takes a slightly different perspective: it groups nodes based on <em>patterns</em> of connections, not just density. Two nodes belong to the same block if they relate to other blocks in similar ways, regardless of whether they are connected to each other. This makes blockmodeling particularly useful for role analysis in sociology and organizational context.</p>
 <p>Several packages implement different kinds of blockmodels but the most basic deterministic and commonly used approaches can be found in the package <code>blockmodeling</code> <span class="citation" data-cites="ziberna2007blockmodeling ziberna2008blockmodeling ziberna2014blockmodeling">(<a href="#ref-ziberna2007blockmodeling" role="doc-biblioref">Žiberna 2007</a>, <a href="#ref-ziberna2008blockmodeling" role="doc-biblioref">2008</a>, <a href="#ref-ziberna2014blockmodeling" role="doc-biblioref">2014</a>)</span>.</p>
 <p>We illustrate blockmodeling on a random network with 3 dense blocks of size 20.</p>
 <div class="cell">
@@ -824,10 +824,10 @@ Figure&nbsp;4.10: A random network with three dense blocks of 20 nodes each.
 </div>
 </div>
 </div>
-<p>Compared to community detection, blockmodeling requires us to specify more about the structure we expect to find. The main function <code>optRandomParC()</code> from the <code>blockmodeling</code> package takes the adjacency matrix as input. We then define a block structure matrix (<code>blk</code>) that describes our expectation for each pair of blocks. Each cell specifies a block type: <code>"com"</code> (complete) means we expect all possible ties to be present, while <code>"nul"</code> (null) means we expect no ties. In the example below, we place <code>"com"</code> on the diagonal and <code>"nul"</code> on the off-diagonal, which corresponds to the familiar clustering scenario where nodes are densely connected within groups and sparsely connected between them. The function then tries multiple random starting partitions (<code>rep</code>) and optimises each one, returning the best assignment of nodes to blocks.</p>
+<p>Compared to community detection, blockmodeling requires us to specify more about the structure we expect to find. The main function <code>optRandomParC()</code> from the <code>blockmodeling</code> package takes the adjacency matrix as input. We then define a block structure matrix (<code>blk</code>) that describes our expectation for each pair of blocks. Each cell specifies a block type: <code>"com"</code> (complete) means we expect all possible ties to be present, while <code>"nul"</code> (null) means we expect no ties. In the example below, we place <code>"com"</code> on the diagonal and <code>"nul"</code> on the off-diagonal, which corresponds to the familiar clustering scenario where nodes are densely connected within groups and sparsely connected between them. The function then tries multiple random starting partitions (<code>rep</code>) and optimizes each one, returning the best assignment of nodes to blocks.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">as_adjacency_matrix</span>(g)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="do">## define expected block structure: complete on diagonal, null off-diagonal</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># define expected block structure: complete on diagonal, null off-diagonal</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>blk <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"com"</span>, <span class="st">"nul"</span>, <span class="st">"nul"</span>,</span>
