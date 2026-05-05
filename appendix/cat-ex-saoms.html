@@ -8,7 +8,7 @@
 
 <meta name="author" content="Termeh Shafie and David Schoch">
 
-<title>R for Social Network Analysis</title>
+<title>Appendix B — Example: A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -27,24 +27,25 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./intro.html" rel="next">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../appendix/rem-frozen-data.html" rel="next">
+<link href="../appendix/ucnets-egor.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -73,13 +74,48 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<meta property="og:title" content="R for Social Network Analysis">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Appendix B — Example: A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis">
 <meta property="og:description" content="">
+<meta property="og:image" content="https://schochastics.io/R4SNA/appendix/cat-ex-saoms_files/figure-html/unnamed-chunk-1-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
-<meta name="twitter:title" content="R for Social Network Analysis">
+<meta property="og:image:height" content="768">
+<meta property="og:image:width" content="1344">
+<meta name="twitter:title" content="Appendix B — Example: A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://schochastics.io/R4SNA/appendix/cat-ex-saoms_files/figure-html/unnamed-chunk-1-1.png">
+<meta name="twitter:image-height" content="768">
+<meta name="twitter:image-width" content="1344">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -91,7 +127,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Welcome</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendix/ucnets-egor.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendix/cat-ex-saoms.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Example: A Continuous-Time Markov Chain (Cat Behavior Model)</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -106,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">R for Social Network Analysis</a> 
+      <a href="../">R for Social Network Analysis</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/schochastics/R4SNA" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
@@ -121,19 +157,19 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Welcome</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+  <a href="../intro.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./network-data.html" class="sidebar-item-text sidebar-link">
+  <a href="../network-data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Network Data and Analysis</span></a>
   </div>
 </li>
@@ -148,49 +184,49 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/introduction.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/descriptives-basic.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/descriptives-basic.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Basic Network Statistics</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/centrality-basic.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/centrality-basic.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Centrality</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/clustering.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/clustering.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cohesive Subgroups</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/two-mode-networks.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/two-mode-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Two-Mode Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/signed-networks.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/signed-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Signed Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/ego-networks.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/ego-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Ego Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./descriptive/netropy.html" class="sidebar-item-text sidebar-link">
+  <a href="../descriptive/netropy.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Entropy Analysis</span></span></a>
   </div>
 </li>
@@ -207,31 +243,31 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/introduction.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/ggraph-basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/ggraph-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Basics of ggraph</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/ggraph-advanced.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/ggraph-advanced.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Advanced Layouts</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/enhance-viz.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/enhance-viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Enhancing Visualizations</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization/interactive-viz.html" class="sidebar-item-text sidebar-link">
+  <a href="../visualization/interactive-viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactive Visualization</span></span></a>
   </div>
 </li>
@@ -248,37 +284,37 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./inferential/introduction.html" class="sidebar-item-text sidebar-link">
+  <a href="../inferential/introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./inferential/non-parametric.html" class="sidebar-item-text sidebar-link">
+  <a href="../inferential/non-parametric.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Non-Parametric Methods</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./inferential/rgm.html" class="sidebar-item-text sidebar-link">
+  <a href="../inferential/rgm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Random Graph Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./inferential/ergm.html" class="sidebar-item-text sidebar-link">
+  <a href="../inferential/ergm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exponential Random Graph Models (ERGMs)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./inferential/saom.html" class="sidebar-item-text sidebar-link">
+  <a href="../inferential/saom.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Stochastic Actor Oriented Models (SAOMs)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./inferential/rem.html" class="sidebar-item-text sidebar-link">
+  <a href="../inferential/rem.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Relational Event Models (REMs)</span></span></a>
   </div>
 </li>
@@ -295,19 +331,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tidy/introduction.html" class="sidebar-item-text sidebar-link">
+  <a href="../tidy/introduction.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tidy/tidygraph-basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../tidy/tidygraph-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Basics of tidygraph</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tidy/tidygraph-descriptive.html" class="sidebar-item-text sidebar-link">
+  <a href="../tidy/tidygraph-descriptive.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Descriptive Network Analysis</span></span></a>
   </div>
 </li>
@@ -324,19 +360,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendix/ucnets-egor.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendix/ucnets-egor.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Creating the UCNets Ego Network Dataset</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendix/cat-ex-saoms.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendix/cat-ex-saoms.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Example: A Continuous-Time Markov Chain (Cat Behavior Model)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendix/rem-frozen-data.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendix/rem-frozen-data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Creating Relational Event Data for the Frozen Character Network</span></span></a>
   </div>
 </li>
@@ -347,24 +383,15 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#welcome" id="toc-welcome" class="nav-link active" data-scroll-target="#welcome">Welcome</a>
-  <ul>
-  <li><a href="#about-the-authors" id="toc-about-the-authors" class="nav-link" data-scroll-target="#about-the-authors">About the authors</a></li>
-  </ul></li>
-  </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendix/ucnets-egor.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendix/cat-ex-saoms.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Example: A Continuous-Time Markov Chain (Cat Behavior Model)</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">R for Social Network Analysis</h1>
+<h1 class="title"><span id="sec-apx-cat" class="quarto-section-identifier">Appendix B — Example: A Continuous-Time Markov Chain (Cat Behavior Model)</span></h1>
 </div>
 
 
@@ -381,30 +408,131 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="welcome" class="level1 unnumbered">
-<h1 class="unnumbered">Welcome</h1>
-<p>This is the website for <strong>“R for Social Network Analysis”</strong>, a practical guide to analyzing, visualizing, and modeling networks in R. The book walks through the standard descriptive toolkit, builds up <code>ggraph</code>-based visualizations, and covers the main families of inferential models (ERGMs, stochastic actor-oriented models, and relational event models), before closing with a tidyverse-style take on network analysis via <code>tidygraph</code>.</p>
-<p>The book is aimed at researchers, students, and practitioners who already know a little R and want a guided tour of the network-analysis ecosystem without having to stitch together a dozen package vignettes themselves.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<p>To bring the concept of a continuous-time Markov chain (CTMC) to life (or to all nine lives of our cat), consider a model of a house cat’s daily activities. At any given moment, the cat is in one of the following behavioral states:</p>
+<ul>
+<li><span class="math inline">\(0\)</span>: Sleeping</li>
+<li><span class="math inline">\(1\)</span>: Eating</li>
+<li><span class="math inline">\(2\)</span>: Playing</li>
+<li><span class="math inline">\(3\)</span>: Plotting chaos (e.g., knocking things off shelves)</li>
+</ul>
+<p>We define <span class="math inline">\(X(t)\)</span> as the cat’s current activity at time <span class="math inline">\(t\)</span>. The process <span class="math inline">\(\{X(t), t \in [0, \infty)\}\)</span> satisfies:</p>
+<ul>
+<li>A finite state space <span class="math inline">\(S = \{0, 1, 2, 3\}\)</span><br>
+</li>
+<li>Continuous transitions over time<br>
+</li>
+<li>The Markov property: next state depends only on the current state<br>
+</li>
+</ul>
+<p>The cat transitions between states at random times. Each stay in a state lasts for a random holding time, and transitions to the next state occur probabilistically based on a transition (jump) matrix.</p>
+<p>The holding time <span class="math inline">\(T_r\)</span> in state <span class="math inline">\(r\)</span> is modeled using an exponential distribution: <span class="math display">\[
+f_{T_r}(t) = \lambda_r e^{-\lambda_r t}, \quad t &gt; 0
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\lambda_r\)</span> is the rate of leaving state <span class="math inline">\(r\)</span>.</li>
+<li><span class="math inline">\(\mathbb{E}[T_r] = \frac{1}{\lambda_r}\)</span> is the expected duration in state <span class="math inline">\(r\)</span>.</li>
+</ul>
+<p>The exponential distribution’s <strong>memoryless property</strong> means that the probability of remaining in a state is independent of how long the cat has already been in it: <span class="math display">\[
+P(T_r &gt; s + t \mid T_r &gt; t) = P(T_r &gt; s)
+\]</span> So, even after two hours of napping, the chance that the cat naps another 30 minutes is the same as if it had just started.</p>
+<p>Once the holding time ends, the cat jumps to a new state. The <strong>transition (jump) matrix</strong> <span class="math inline">\(P = (p_{rs})\)</span> governs this: <span class="math display">\[
+p_{rs} = P(X(t^+) = s \mid X(t) = r)
+\]</span> For each state <span class="math inline">\(r\)</span>, the row of probabilities <span class="math inline">\(p_{rs}\)</span> must sum to 1: <span class="math display">\[
+\sum_{s \in S} p_{rs} = 1
+\]</span></p>
+<p><a href="#fig-catex" class="quarto-xref">Figure&nbsp;<span>B.1</span></a> illustrates a single realization of such a process. This visual shows how a process starting in state 0 might stay there for some time, then jump to state 2, then state 3, and so on, with irregular intervals between jumps.</p>
+<div id="fig-catex" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-catex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cat-ex-saoms_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Work in progress
 </div>
 </div>
-<div class="callout-body-container callout-body">
-<p>This book is under active development and chapters may change, move, or expand. See the <a href="https://blog.schochastics.net/posts/2024-04-04_announcing-r4sna/">announcement post</a> for background on the project. Feedback and corrections are very welcome. Please open an issue on <a href="https://github.com/schochastics/R4SNA/issues">GitHub</a>.</p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-catex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;B.1: A realization of a continuous-time Markov chain (CTMC) showing the cat transitioning through behavioral states (Sleep → Play → Chaos → Sleep → Eat). Horizontal segments show how long each activity lasts (holding time), while vertical arrows show transitions (jumps) between states.
+</figcaption>
+</figure>
+</div>
+<p>Below is a hypothetical transition matrix <span class="math inline">\(P\)</span> for the cat’s behavioral states. Each row corresponds to the current state, and each column to the next state:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">Sleep</th>
+<th style="text-align: center;">Eat</th>
+<th style="text-align: center;">Play</th>
+<th style="text-align: center;">Chaos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Sleep</strong></td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.70</td>
+<td style="text-align: center;">0.83</td>
+<td style="text-align: center;">0.56</td>
+</tr>
+<tr class="even">
+<td><strong>Eat</strong></td>
+<td style="text-align: center;">0.71</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.81</td>
+<td style="text-align: center;">0.20</td>
+</tr>
+<tr class="odd">
+<td><strong>Play</strong></td>
+<td style="text-align: center;">0.05</td>
+<td style="text-align: center;">0.82</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.45</td>
+</tr>
+<tr class="even">
+<td><strong>Chaos</strong></td>
+<td style="text-align: center;">0.91</td>
+<td style="text-align: center;">0.46</td>
+<td style="text-align: center;">0.61</td>
+<td style="text-align: center;">0.00</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><em>Note: Diagonal entries (e.g., Sleep → Sleep) are set to zero for interpretability. They can be included to model the probability of no state change.</em></p>
+</blockquote>
+<p>Next, we can combine the states and transitions into a directed graph showing which states can be reached from one another, and with what likelihood. This is shown in <a href="#fig-catex2" class="quarto-xref">Figure&nbsp;<span>B.2</span></a>.</p>
+<div id="fig-catex2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-catex2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cat-ex-saoms_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
 </div>
 </div>
-<section id="about-the-authors" class="level2">
-<h2 class="anchored" data-anchor-id="about-the-authors">About the authors</h2>
-<p><strong>Termeh Shafie</strong> and <strong>David Schoch</strong> are both social network researchers and contributors to the R network-analysis ecosystem. The book draws on material developed for courses, workshops, and our own work on the packages it covers.</p>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-catex2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;B.2: Directed graph representation of the CTMC jump chain. Each node is a state (e.g., Sleep, Eat), and arrows represent possible transitions with associated probabilities.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-catex2" class="quarto-xref">Figure&nbsp;<span>B.2</span></a> is a visual representation of this matrix. Each arrow in the graph corresponds to a non-zero entry <span class="math inline">\(p_{rs}\)</span> in the matrix. The curved edges indicate transitions between pairs of states, and the labels on the arrows match the values in the matrix. Together, the matrix and the graph describe a <strong>jump chain</strong> over the set of behavioral states. These transitions are stochastic (i.e., random), and their dynamics unfold in continuous time, which is what differentiates CTMCs from discrete-time Markov models.</p>
+<p>In summary, a Continuous-Time Markov Chain (CTMC):</p>
+<ul>
+<li>Determines how long the system remains in a state using the holding time, typically modeled as exponentially distributed.</li>
+<li>Uses a transition (jump) matrix to govern which state is entered next.</li>
+<li>Is memoryless and evolves in continuous time, meaning the future depends only on the present state and not the past.</li>
+</ul>
+<p>These principles underpin Stochastic Actor-Oriented Models (SAOMs), where actors make sequential and probabilistic changes to their network ties or attributes, driven solely by the current network state.</p>
 
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -809,10 +937,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="../appendix/ucnets-egor.html" class="pagination-link" aria-label="Creating the UCNets Ego Network Dataset">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Creating the UCNets Ego Network Dataset</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./intro.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text">Introduction</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../appendix/rem-frozen-data.html" class="pagination-link" aria-label="Creating Relational Event Data for the Frozen Character Network">
+        <span class="nav-page-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Creating Relational Event Data for the Frozen Character Network</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -824,7 +955,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/schochastics/R4SNA/edit/main/appendix/cat-ex-saoms.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>
