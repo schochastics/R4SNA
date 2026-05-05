@@ -197,21 +197,21 @@ compute the corresponding relative and cumulative relative frequencies.
 #| label: cdf
 
 # Years CDF data
-frq_years <- table(df_att$years) |>
-  as.data.frame()
-
-names(frq_years) <- c("years", "freq")
-frq_years$years <- as.numeric(as.character(frq_years$years))
+tab_years <- table(df_att$years)
+frq_years <- data.frame(
+  years = as.numeric(names(tab_years)),
+  freq  = as.integer(tab_years)
+)
 frq_years$rel.freq <- frq_years$freq / sum(frq_years$freq)
 frq_years$cum.rel.freq <- cumsum(frq_years$rel.freq)
 
 # Age CDF data
-frq_age <- table(df_att$age) |>
-  as.data.frame()
-
-names(frq_age) <- c("age", "freq")
-frq_age$age <- as.numeric(as.character(frq_age$age))
-frq_age$rel.freq <- frq_age$freq / sum(frq_age$freq)
+tab_age <- table(df_att$age)
+frq_age <- data.frame(
+  age  = as.numeric(names(tab_age)),
+  freq = as.integer(tab_age)
+)
+frq_age$rel.freq     <- frq_age$freq / sum(frq_age$freq)
 frq_age$cum.rel.freq <- cumsum(frq_age$rel.freq)
 ```
 
@@ -863,8 +863,8 @@ These relationships can be conveniently visualized using the function
 `assoc_graph()`, which returns a `ggraph` object where nodes represent variables
 and edges represent the strength of association (with thicker edges indicating
 stronger dependence). To focus on the most relevant structure, we set a
-threshold of $0.25$, so that only the strongest associations are displayed
-in @fig-vert-assoc.
+threshold of $0.25$, so that only the strongest associations are displayed in
+@fig-vert-assoc.
 
 ```{r}
 #| label: fig-vert-assoc
@@ -905,8 +905,8 @@ between `cowork` and `friend` can be explained through their association with
 
 Similarly, joint entropies for the triad variables are computed for the reduced
 data frame (with redundant variables removed). The dependence structure is again
-visualized using an association graph in @fig-triad-assoc. We set a threshold
-of 0.25 to focus on the strongest associations.
+visualized using an association graph in @fig-triad-assoc. We set a threshold of
+0.25 to focus on the strongest associations.
 
 ```{r}
 #| label: fig-triad-assoc
@@ -918,12 +918,12 @@ assoc_graph(triad_var, 0.25)
 ```
 
 @fig-triad-assoc shows that the triad variables exhibit similar dependence
-patterns as the dyad variables, but with generally stronger associations. In particular, joint entropy values
-are higher for all pairs of `cowork`, `friend`, and `advice`, indicating
-stronger interactions among these variables. This further supports the
-conditional independence observed earlier, suggesting that the relationship
-between `cowork` and `friend` is increasingly explained by `advice` at the
-triadic level.
+patterns as the dyad variables, but with generally stronger associations. In
+particular, joint entropy values are higher for all pairs of `cowork`, `friend`,
+and `advice`, indicating stronger interactions among these variables. This
+further supports the conditional independence observed earlier, suggesting that
+the relationship between `cowork` and `friend` is increasingly explained by
+`advice` at the triadic level.
 
 ### Trivariate Entropies and Prediction Power
 
