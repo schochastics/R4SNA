@@ -863,10 +863,12 @@ These relationships can be conveniently visualized using the function
 `assoc_graph()`, which returns a `ggraph` object where nodes represent variables
 and edges represent the strength of association (with thicker edges indicating
 stronger dependence). To focus on the most relevant structure, we set a
-threshold of $0.25$, so that only the strongest associations are displayed:
+threshold of $0.25$, so that only the strongest associations are displayed
+in @fig-vert-assoc.
 
 ```{r}
-#| label: vert-assoc
+#| label: fig-vert-assoc
+#| fig-cap: "Association graph for vertex variables (threshold $J > 0.25$). Nodes represent variables and edges connect pairs whose joint-entropy-based association exceeds the threshold; thicker edges indicate stronger dependence."
 #| fig-height: 8
 #| fig-width: 10
 
@@ -878,19 +880,21 @@ assoc_graph(vertex_var, 0.25)
 Joint entropies for the dyad variables are computed in the same way as for the
 vertex variables. Rather than presenting the full output, we focus on
 visualizing the dependence structure using an association graph. We set a
-threshold of 0.10 to display the strongest associations:
+threshold of 0.10 to display the strongest associations in @fig-dyad-assoc.
 
 ```{r}
-#| label: dyad-assoc
+#| label: fig-dyad-assoc
+#| fig-cap: "Association graph for dyad variables (threshold $J > 0.10$). Edges connect pairs of dyad variables whose pairwise joint entropy exceeds the threshold."
 #| fig-height: 8
 #| fig-width: 10
 
 assoc_graph(dyad_var, 0.10)
 ```
 
-From the graph, several patterns can be observed. There is a strong dependence
-among the variables (`status`, `years`, `age`), as well as notable associations
-among (`lawschool`, `years`, `age`) and (`status`, `years`, `gender`).
+From @fig-dyad-assoc, several patterns can be observed. There is a strong
+dependence among the variables (`status`, `years`, `age`), as well as notable
+associations among (`lawschool`, `years`, `age`) and (`status`, `years`,
+`gender`).
 
 In addition, the graph suggests that the relations `cowork` and `friend` are
 conditionally independent given `advice`. That is, any observed dependence
@@ -901,18 +905,20 @@ between `cowork` and `friend` can be explained through their association with
 
 Similarly, joint entropies for the triad variables are computed for the reduced
 data frame (with redundant variables removed). The dependence structure is again
-visualized using an association graph. We set a threshold of 0.25 to focus on
-the strongest associations:
+visualized using an association graph in @fig-triad-assoc. We set a threshold
+of 0.25 to focus on the strongest associations.
 
 ```{r}
-#| label: triad-assoc
+#| label: fig-triad-assoc
+#| fig-cap: "Association graph for triad variables (threshold $J > 0.25$). Edges connect pairs of triad variables whose pairwise joint entropy exceeds the threshold."
 #| fig-height: 8
 #| fig-width: 10
 
 assoc_graph(triad_var, 0.25)
 ```
-The triad variables exhibit similar dependence patterns as the dyad variables,
-but with generally stronger associations. In particular, joint entropy values
+
+@fig-triad-assoc shows that the triad variables exhibit similar dependence
+patterns as the dyad variables, but with generally stronger associations. In particular, joint entropy values
 are higher for all pairs of `cowork`, `friend`, and `advice`, indicating
 stronger interactions among these variables. This further supports the
 conditional independence observed earlier, suggesting that the relationship
@@ -1141,7 +1147,7 @@ p10 <- make_pred_plot(pred_dyad_friend,    "friend")
 (p9 | p10)
 ```
 
-@fig-predplot-vertex allow us to compare how well different combinations of
+@fig-predplot-dyad allows us to compare how well different combinations of
 dyadic attributes and relations predict a given target relation. In particular,
 they highlight which combinations of structural ties (such as advice or
 co-working) and attribute-based similarities are most informative for explaining

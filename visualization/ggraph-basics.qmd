@@ -81,7 +81,7 @@ each component effectively.
 ```{r}
 #| label: fig-got-plot
 #| fig-cap: "Game of Thrones season 1 character network."
-#| fig-width: 10
+#| fig-width: 9
 #| fig-height: 6
 
 ggraph(gotS1, layout = "stress") +
@@ -236,15 +236,16 @@ between two nodes, one can switch to `geom_edge_parallel()` (see @fig-parallel).
 
 ```{r}
 #| label: fig-parallel
+#| warning: false
 #| fig-cap: "Multi-edge network drawn with `geom_edge_parallel()`."
-#| fig-width: 10
-#| fig-height: 6
+#| fig-width: 6
+#| fig-height: 3
 
 g <- make_graph(c(1, 2, 1, 2, 1, 2))
 
 ggraph(g, layout = "stress") +
   geom_edge_parallel(edge_color = "grey66", edge_linewidth = 0.5) +
-  geom_node_point(size = 5) +
+  geom_node_point(size = 10) +
   theme_graph()
 ```
 
@@ -253,13 +254,14 @@ shows the difference between the two.
 
 ```{r}
 #| label: fig-fan
+#| warning: false
 #| fig-cap: "Multi-edge network drawn with `geom_edge_fan()`."
-#| fig-width: 10
-#| fig-height: 6
+#| fig-width: 6
+#| fig-height: 3
 
 ggraph(g, layout = "stress") +
   geom_edge_fan(edge_color = "grey66", edge_linewidth = 0.5) +
-  geom_node_point(size = 5) +
+  geom_node_point(size = 10) +
   theme_graph()
 ```
 
@@ -271,7 +273,7 @@ dots on each edge compared to only two dots (the endpoints) in
 ```{r}
 #| label: fig-got-plot-grad
 #| fig-cap: "Edge gradient showing directionality using `geom_edge_link()`."
-#| fig-width: 10
+#| fig-width: 9
 #| fig-height: 6
 
 ggraph(gotS1, layout = "stress") +
@@ -327,17 +329,26 @@ appearance (see @fig-arrow).
 
 g <- make_graph(c(1, 2, 2, 3), directed = TRUE)
 
-ggraph(g, layout = "stress") +
-  geom_edge_link0(
-    edge_color = "grey66", edge_linewidth = 0.5,
+xy <- matrix(c(0, 0, 1, 0, 2, 0), ncol = 2, byrow = TRUE)
+
+ggraph(g, layout = "manual", x = xy[,1], y = xy[,2]) +
+  geom_edge_link(
+    edge_color = "grey66",
+    edge_linewidth = 0.5,
     arrow = arrow(
-      angle = 30, length = unit(0.15, "inches"),
-      ends = "last", type = "closed"
-    )
+      angle = 30,
+      length = unit(0.15, "inches"),
+      ends = "last",
+      type = "closed"
+    ),
+    end_cap = circle(5, 'pt')
   ) +
   geom_node_point(size = 5) +
   theme_graph()
+
 ```
+
+Note the use of `end_cap` in the code above. This is needed to avoid that the arrowhead overlaps with the node. The parameter specifies how the edge should end. In this case, we specify a circular cap with a radius of 5 points. This creates a gap between the end of the edge and the node, which allows the arrowhead to be fully visible.
 
 ## Nodes
 
@@ -421,8 +432,9 @@ automatically as shown in @fig-no-scales.
 
 ```{r}
 #| label: fig-no-scales
+#| warning: false
 #| fig-cap: "GoT network without explicit scale adjustments."
-#| fig-width: 10
+#| fig-width: 9
 #| fig-height: 6
 
 ggraph(gotS1, layout = "stress") +
@@ -599,9 +611,10 @@ using `ggraph` to see how the different components work together in practice.
 
 ## Use case: Political Blogs
 
-In this section, we recreate the figure shown below.
+In this section, we recreate the figure shown in @fig-polblogs-orig.
 
 ![Original visualization of the political blogs network by @adamic2005political.](img/polblogs_orig.png){#fig-polblogs-orig}
+
 The network shows the linking between political blogs during the 2004 election
 in the US. Red nodes are conservative leaning blogs and blue ones liberal.
 

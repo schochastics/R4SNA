@@ -344,6 +344,150 @@ round(hits$hub, 3)
 round(hits$authority, 3)
 ```
 
+### Use Case: Ranking Tennis Players
+
+PageRank was originally designed to rank web pages, but the same logic applies
+to any directed network in which an incoming edge can be read as an
+endorsement. Professional tennis is a natural fit. Every match produces a
+directed tie from the losing player to the winner, so a season of matches
+induces a directed network in which a node accumulates incoming edges from the
+opponents it has beaten. Counting wins gives a first approximation of player
+strength (the in-degree), but PageRank refines this by weighting each win by
+the standing of the defeated opponent. A player who beats other strong players
+is rewarded more than a player who accumulates wins against weaker opponents,
+which is closer to how strength is judged informally in the sport.
+
+The `networkdata` package provides season-level networks for the men's (`atp`)
+and women's (`wta`) tours from 1968 to 2021, with each list element
+representing one season. Edges point from loser to winner, and the edge weight
+records how many times that match-up occurred on a given surface. To rank
+players across the entire history of each tour, we collapse all 54 seasonal
+networks into a single weighted directed network: the weight of an edge from
+player `i` to player `j` is the total number of matches `i` lost to `j` over
+the period 1968-2021.
+
+```{r}
+#| label: tennis-data
+
+data(atp)
+data(wta)
+```
+
+```{r}
+#| label: tennis-combine
+
+combine_seasons <- function(net_list) {
+  edges <- do.call(rbind, lapply(net_list, function(g) {
+    igraph::as_data_frame(g, what = "edges")[, c("from", "to", "weight")]
+  }))
+  edges <- aggregate(weight ~ from + to, data = edges, FUN = sum)
+  graph_from_data_frame(edges, directed = TRUE)
+}
+
+atp_all <- combine_seasons(atp)
+wta_all <- combine_seasons(wta)
+
+atp_all
+wta_all
+```
+
+The combined networks are large, with several thousand players and over a
+hundred thousand directed match outcomes between them. We compute PageRank on
+each network and inspect the ten highest-scoring players.
+
+```{r}
+#| label: tennis-pagerank-all
+
+atp_pr <- page_rank(atp_all)$vector
+wta_pr <- page_rank(wta_all)$vector
+
+round(head(sort(atp_pr, decreasing = TRUE), 10), 4)
+round(head(sort(wta_pr, decreasing = TRUE), 10), 4)
+```
+
+@fig-atp-all-time and @fig-wta-all-time visualize the subnetworks induced by
+the 50 highest-ranked players on each tour, with node size proportional to
+PageRank and labels for the top twelve. The dense pattern of edges among these
+nodes reflects how often elite players meet one another, and this concentration
+is what makes PageRank meaningful: the score of a top player is determined
+almost entirely by results within this small clique.
+
+```{r}
+#| label: fig-atp-all-time
+#| echo: false
+#| fig-cap: "Subnetwork induced by the 50 highest-ranked ATP players by PageRank across all seasons (1968-2021). Node size is proportional to PageRank; the top twelve players are labelled."
+#| fig-width: 8
+#| fig-height: 8
+#| message: false
+#| warning: false
+
+top_atp <- names(sort(atp_pr, decreasing = TRUE))[1:50]
+atp_top <- subgraph(atp_all, top_atp)
+V(atp_top)$pr <- atp_pr[V(atp_top)$name]
+V(atp_top)$lab <- ifelse(rank(-V(atp_top)$pr) <= 12, V(atp_top)$name, "")
+
+ggraph(atp_top, "stress") +
+  geom_edge_link0(edge_alpha = 0.1, edge_color = "grey30") +
+  geom_node_point(
+    aes(size = pr),
+    shape = 21,
+    fill = "steelblue",
+    show.legend = FALSE
+  ) +
+  geom_node_text(aes(label = lab), repel = TRUE, size = 3) +
+  scale_size(range = c(2, 8)) +
+  theme_void() +
+  coord_equal(clip = "off")
+```
+
+```{r}
+#| label: fig-wta-all-time
+#| echo: false
+#| fig-cap: "Subnetwork induced by the 50 highest-ranked WTA players by PageRank across all seasons (1968-2021). Node size is proportional to PageRank; the top twelve players are labelled."
+#| fig-width: 8
+#| fig-height: 8
+#| message: false
+#| warning: false
+
+top_wta <- names(sort(wta_pr, decreasing = TRUE))[1:50]
+wta_top <- subgraph(wta_all, top_wta)
+V(wta_top)$pr <- wta_pr[V(wta_top)$name]
+V(wta_top)$lab <- ifelse(rank(-V(wta_top)$pr) <= 12, V(wta_top)$name, "")
+
+ggraph(wta_top, "stress") +
+  geom_edge_link0(edge_alpha = 0.1, edge_color = "grey30") +
+  geom_node_point(
+    aes(size = pr),
+    shape = 21,
+    fill = "tomato",
+    show.legend = FALSE
+  ) +
+  geom_node_text(aes(label = lab), repel = TRUE, size = 3) +
+  scale_size(range = c(2, 8)) +
+  theme_void() +
+  coord_equal(clip = "off")
+```
+
+On the men's tour, Roger Federer leads, followed closely by Jimmy Connors,
+Novak Djokovic, Rafael Nadal, and Ivan Lendl. The top of the list spans every
+era from the 1970s onwards, which reflects two properties of PageRank as
+applied here. Career length matters: Connors and Lendl played long careers
+with hundreds of high-quality wins. Quality of opposition matters too: the
+"big three" of Federer, Nadal, and Djokovic each accumulated wins against the
+dominant players of their respective generations, which is the kind of
+endorsement PageRank rewards most strongly.
+
+On the women's tour, Martina Navratilova holds a clear lead, with Chris Evert
+and Steffi Graf nearly tied for second, followed by Serena and Venus Williams.
+The same two effects are visible: Navratilova and Evert played remarkably long
+careers with overlapping peaks, while the Williams sisters earned top-tier
+endorsements throughout the 2000s and 2010s. PageRank does not separate peak
+dominance from longevity, since a player who beat strong opponents over fifteen
+years scores similarly to one who dominated a shorter period. This is not a
+flaw of the index but a consequence of how endorsement-based ranking works,
+and it is worth keeping in mind when interpreting the figures as an "all-time"
+ranking.
+
 ## Normalization
 
 Many centrality indices can be **normalized** to produce values that are
