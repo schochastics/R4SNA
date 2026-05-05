@@ -1,4 +1,4 @@
-# Example: A Continuous-Time Markov Chain (Cat Behavior Model) {#sec-apx-cat .appendix}
+# A Continuous-Time Markov Chain (Cat Behavior Model) {#sec-apx-cat .appendix}
 
 To bring the concept of a continuous-time Markov chain (CTMC) to life (or to all
 nine lives of our cat), consider a model of a house cat's daily activities. At
@@ -17,35 +17,36 @@ $\{X(t), t \in [0, \infty)\}$ satisfies:
 - The Markov property: next state depends only on the current state\
 
 The cat transitions between states at random times. Each stay in a state lasts
-for a random holding time, and transitions to the next state occur
-probabilistically based on a transition (jump) matrix.
+for a random holding time, and transitions to the next state occur after a random holding time, and the next
+state is chosen probabilistically according to a transition (jump) matrix.
 
-The holding time $T_r$ in state $r$ is modeled using an exponential
+The holding time $T_i$ in state $i$ is modeled using an exponential
 distribution:
 $$
-f_{T_r}(t) = \lambda_r e^{-\lambda_r t}, \quad t > 0
+f_{T_i}(t) = \lambda_i e^{-\lambda_i t}, \quad t > 0
 $$
 
-- $\lambda_r$ is the rate of leaving state $r$.
-- $\mathbb{E}[T_r] = \frac{1}{\lambda_r}$ is the expected duration in state $r$.
+- $\lambda_i$ is the rate of leaving state $i$.
+- $\mathbb{E}[T_i] = \frac{1}{\lambda_i}$ is the expected duration in state $i$.
 
 The exponential distribution's **memoryless property** means that the
 probability of remaining in a state is independent of how long the cat has
 already been in it:
 $$
-P(T_r > s + t \mid T_r > t) = P(T_r > s)
+P(T_i > s + t \mid T_i > t) = P(T_i > s)
 $$
 So, even after two hours of napping, the chance that the cat naps another 30
 minutes is the same as if it had just started.
 
 Once the holding time ends, the cat jumps to a new state. The **transition
-(jump) matrix** $P = (p_{rs})$ governs this:
+(jump) matrix** $P = (p_{ij})$ governs this:
 $$
-p_{rs} = P(X(t^+) = s \mid X(t) = r)
+p_{ij} = P(X(t^+) = j \mid X(t) = i)
 $$
-For each state $r$, the row of probabilities $p_{rs}$ must sum to 1:
+
+For each state $i$, the row of probabilities $p_{ij}$ must sum to 1:
 $$
-\sum_{s \in S} p_{rs} = 1
+\sum_{j \in S} p_{ij} = 1
 $$
 
 @fig-catex illustrates a single realization of such a process. This visual shows
@@ -167,12 +168,15 @@ probabilities.
 :::
 
 @fig-catex2 is a visual representation of this matrix. Each arrow in the graph
-corresponds to a non-zero entry $p_{rs}$ in the matrix. The curved edges
+corresponds to a non-zero entry $p_{ij}$ in the matrix. The curved edges
 indicate transitions between pairs of states, and the labels on the arrows match
 the values in the matrix. Together, the matrix and the graph describe a **jump
 chain** over the set of behavioral states. These transitions are stochastic
 (i.e., random), and their dynamics unfold in continuous time, which is what
 differentiates CTMCs from discrete-time Markov models.
+
+Together, the holding time distribution and the transition (jump) matrix fully
+characterize the dynamics of the CTMC.
 
 In summary, a Continuous-Time Markov Chain (CTMC):
 
