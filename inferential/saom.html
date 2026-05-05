@@ -480,8 +480,6 @@ window.Quarto = {
   <li><a href="#convergence-assessment" id="toc-convergence-assessment" class="nav-link" data-scroll-target="#convergence-assessment">Convergence Assessment</a></li>
   <li><a href="#rate-parameters" id="toc-rate-parameters" class="nav-link" data-scroll-target="#rate-parameters">Rate Parameters</a></li>
   <li><a href="#network-dynamics" id="toc-network-dynamics" class="nav-link" data-scroll-target="#network-dynamics">Network Dynamics</a></li>
-  <li><a href="#interpretation-of-parameters" id="toc-interpretation-of-parameters" class="nav-link" data-scroll-target="#interpretation-of-parameters"><span class="header-section-number">18.5.1.0.1</span> Interpretation of Parameters</a></li>
-  <li><a href="#interpreting-utility-changes" id="toc-interpreting-utility-changes" class="nav-link" data-scroll-target="#interpreting-utility-changes"><span class="header-section-number">18.5.1.0.2</span> Interpreting Utility Changes</a></li>
   </ul></li>
   <li><a href="#model-2-structural-and-covariate-effects" id="toc-model-2-structural-and-covariate-effects" class="nav-link" data-scroll-target="#model-2-structural-and-covariate-effects"><span class="header-section-number">18.5.2</span> Model 2: Structural and Covariate Effects</a>
   <ul>
@@ -1079,13 +1077,6 @@ Analyze the estimated parameters to understand the underlying social processes. 
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the effects: start with default effect object</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">getEffects</span>(data_mod1)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>my_effects</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  effectName                         include fix   test  initialValue parm
-1 constant siena_net rate (period 1) TRUE    FALSE FALSE    7.45424   0   
-2 constant siena_net rate (period 2) TRUE    FALSE FALSE    6.82927   0   
-3 outdegree (density)                TRUE    FALSE FALSE   -1.61299   0   
-4 reciprocity                        TRUE    FALSE FALSE    0.00000   0   </code></pre>
-</div>
 </div>
 <p>These are the exact effects included by default:</p>
 <ul>
@@ -1097,11 +1088,8 @@ Analyze the estimated parameters to understand the underlying social processes. 
 <p>Before running the estimation, we need to define the estimation algorithm that RSiena will use. This is done with the function <code>sienaAlgorithmCreate()</code>, which sets up the computational parameters for the simulation-based estimation process.</p>
 <p>In the example below, we assign the algorithm to the object <code>my_algorithm</code>. The <code>projname</code> argument specifies a name for the project; RSiena will use this name to organize temporary output files and logs related to the estimation.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the estimation algorithm</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span> <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_1"</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the estimation algorithm</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span> <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_1"</span>, <span class="at">seed =</span> <span class="dv">1108</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1130,18 +1118,18 @@ Note
 <li><code>batch = TRUE</code>: suppresses user prompts during the estimation, making it suitable for scripted or automated runs.</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the SAOM</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>saom_1 <span class="ot">&lt;-</span> <span class="fu">siena07</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  my_algorithm,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_mod1,</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> my_effects,</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the SAOM</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>saom_1 <span class="ot">&lt;-</span> <span class="fu">siena07</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  my_algorithm,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_mod1,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> my_effects,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>To print a summary of the estimation results:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View results</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>saom_1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View results</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>saom_1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Estimates, standard errors and convergence t-ratios
 
@@ -1164,7 +1152,7 @@ Total of 2412 iteration steps.</code></pre>
 </div>
 <p>A nicer summary of the model is obtained by running the following, which renders the table of results inline (including significance stars for easy interpretation):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_1, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_1, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <pre><code>                &lt;TD&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; (s.e.) &lt;/TD&gt;  &lt;/TR&gt;</code></pre><table border="1" rules="none" frame="hsides">
 <tbody><tr>
@@ -1260,15 +1248,15 @@ Overall maximum convergence ratio 0.04.
 <tr>
 </tr>
 </tbody></table>
-<p><strong>So, how do we interpret the parameter estimates?</strong></p>
+<p>We now interpret the results from Model 1, beginning with an assessment of convergence, followed by the interpretation of the estimated parameters.</p>
+<section id="convergence-assessment" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="convergence-assessment">Convergence Assessment</h5>
 <p>Before interpreting parameter estimates, it’s essential to assess whether the estimation has converged adequately. In RSiena, convergence is assessed using two main criteria:</p>
 <ol type="1">
 <li><p>Overall maximum convergence ratio:&nbsp; This value summarizes how far the simulated statistics deviate from the observed ones. A value below 0.25 is generally considered acceptable, with values below 0.15 indicating very good convergence.</p></li>
 <li><p>Individual convergence t-ratios:<br>
 For each effect, the t-ratio compares the observed statistic to the average from the simulated networks. If the estimation has converged, these t-ratios should be close to zero. Values below 0.10 are ideal, and below 0.20 is generally acceptable.</p></li>
 </ol>
-<section id="convergence-assessment" class="level5 unnumbered">
-<h5 class="unnumbered anchored" data-anchor-id="convergence-assessment">Convergence Assessment</h5>
 <p>All convergence t-ratios in our Model 1 ouput are below 0.03, which suggests that the simulated statistics align closely with the observed network statistics for each parameter. This implies that the estimated model reproduces the key structural features of the observed data with high precision. Additionally, the overall maximum convergence ratio is 0.04, which is well below the commonly used threshold of 0.10, and even under the more conservative cutoff of 0.05. This means that none of the parameters are associated with poor convergence behavior. Taken together, these diagnostics confirm that the SAOM estimation process has stabilized, and the parameter estimates can be interpreted with confidence.</p>
 </section>
 <section id="rate-parameters" class="level5 unnumbered">
@@ -1294,16 +1282,13 @@ Strong negative effect: actors are generally reluctant to form many ties.</p></l
 Strong positive effect: actors strongly prefer to reciprocate existing ties.</p></li>
 </ul>
 <p>Both estimates are statistically significant, as their t-ratios exceed 2.</p>
-</section>
-<section id="interpretation-of-parameters" class="level5" data-number="18.5.1.0.1">
-<h5 data-number="18.5.1.0.1" class="anchored" data-anchor-id="interpretation-of-parameters"><span class="header-section-number">18.5.1.0.1</span> Interpretation of Parameters</h5>
+<blockquote class="blockquote">
+<p><em>So, how do we interpret the parameter estimates?</em></p>
+</blockquote>
 <p><strong>Outdegree (density):</strong> <span class="math inline">\(\theta_{\text{out}} = -2.411\)</span><br>
 A strong negative value indicates that actors prefer <em>sparser networks</em>. Forming new ties carries a cost, so additional ties are less likely unless offset by other favorable effects.</p>
 <p><strong>Reciprocity:</strong> <span class="math inline">\(\theta_{\text{rec}} = 2.705\)</span><br>
 A strong positive value reflects a preference for reciprocating existing ties. If another actor sends a tie to ego, ego is much more likely to return it.</p>
-</section>
-<section id="interpreting-utility-changes" class="level5" data-number="18.5.1.0.2">
-<h5 data-number="18.5.1.0.2" class="anchored" data-anchor-id="interpreting-utility-changes"><span class="header-section-number">18.5.1.0.2</span> Interpreting Utility Changes</h5>
 <p>These effects jointly determine how actors evaluate potential tie changes. The objective function for actor <span class="math inline">\(i\)</span> can be written as:</p>
 <p><span class="math display">\[
 f_i(\theta, Y^{(a)}) =
@@ -1351,89 +1336,60 @@ If <span class="math inline">\(y_{ji}(t) = 0\)</span>, the tie is not reciprocat
 <p>In sum, Model 2 captures not only structural tendencies in friendship formation but also how individual traits shape social dynamics, resulting in a more realistic and theoretically grounded model of network evolution.</p>
 <p>We begin by converting the 3D network array into a <code>sienaDependent</code> object:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert array into RSiena dependent object</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>siena_net <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(net_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert array into RSiena dependent object</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>siena_net <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(net_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Like before, this object represents the longitudinal network that serves as the dependent variable in the SAOM. Different from before, we extract covariate values from the network’s node attributes. Sex (<code>sex.F</code>) is treated as a time-invariant covariate, while smoking behavior (<code>familysmoking</code>) is treated as time-varying across the three network waves.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sex_char <span class="ot">&lt;-</span> <span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>sex.F</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>sex_num <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"F"</span>, <span class="dv">1</span>,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"M"</span>, <span class="dv">0</span>, <span class="cn">NA</span>))</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to fixed covariate object                  </span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>sex_cov <span class="ot">&lt;-</span> <span class="fu">coCovar</span>(sex_num)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract smoking behavior (assumed changing)</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>smoke1 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g1)<span class="sc">$</span>tobacco)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>smoke2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>tobacco)</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>smoke3 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g3)<span class="sc">$</span>tobacco)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>smoking_array <span class="ot">&lt;-</span> <span class="fu">cbind</span>(smoke1, smoke2, smoke3)</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to changing covariate object</span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>smoking_cov <span class="ot">&lt;-</span> <span class="fu">varCovar</span>(smoking_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>sex_char <span class="ot">&lt;-</span> <span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>sex.F</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>sex_num <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"F"</span>, <span class="dv">1</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">ifelse</span>(sex_char <span class="sc">==</span> <span class="st">"M"</span>, <span class="dv">0</span>, <span class="cn">NA</span>))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to fixed covariate object                  </span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>sex_cov <span class="ot">&lt;-</span> <span class="fu">coCovar</span>(sex_num)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract smoking behavior (assumed changing)</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>smoke1 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g1)<span class="sc">$</span>tobacco)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>smoke2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g2)<span class="sc">$</span>tobacco)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>smoke3 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">V</span>(glasgow_g3)<span class="sc">$</span>tobacco)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>smoking_array <span class="ot">&lt;-</span> <span class="fu">cbind</span>(smoke1, smoke2, smoke3)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to changing covariate object</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>smoking_cov <span class="ot">&lt;-</span> <span class="fu">varCovar</span>(smoking_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Next we combine the network and covariates into a single Siena data object that will be used for estimation.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>data_mod2 <span class="ot">&lt;-</span> <span class="fu">sienaDataCreate</span>(siena_net, sex_cov, smoking_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data_mod2 <span class="ot">&lt;-</span> <span class="fu">sienaDataCreate</span>(siena_net, sex_cov, smoking_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We define the effects to be included in the model. This includes structural effects (like outdegree, reciprocity, and transitive triplets) as well as ego, alter, and similarity effects for both sex and smoking covariates.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with the default effect set</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">getEffects</span>(data_mod2)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add structural effects</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, outdegree, recip, transTrip)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName          shortName include fix   test  initialValue
-1 17           reciprocity         recip     TRUE    FALSE FALSE          0  
-2 23           transitive triplets transTrip TRUE    FALSE FALSE          0  
-  parm
-1 0   
-2 0   </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for sex</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName         shortName include fix   test  initialValue
-1 264          sex_cov alter      altX      TRUE    FALSE FALSE          0  
-2 279          sex_cov ego        egoX      TRUE    FALSE FALSE          0  
-3 325          sex_cov similarity simX      TRUE    FALSE FALSE          0  
-  parm
-1 0   
-2 0   
-3 0   </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for smoking</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"smoking_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName             shortName include fix   test 
-1 448          smoking_cov alter      altX      TRUE    FALSE FALSE
-2 463          smoking_cov ego        egoX      TRUE    FALSE FALSE
-3 509          smoking_cov similarity simX      TRUE    FALSE FALSE
-  initialValue parm
-1          0   0   
-2          0   0   
-3          0   0   </code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with the default effect set</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">getEffects</span>(data_mod2)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add structural effects</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, outdegree, recip, transTrip)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for sex</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Add effects for smoking</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(my_effects, egoX, altX, simX, <span class="at">interaction1 =</span> <span class="st">"smoking_cov"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We define the estimation settings using <code>sienaAlgorithmCreate()</code>. A seed is included to support reproducibility of the results.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span>  <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_2"</span>, <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span>  <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_2"</span>, <span class="at">seed =</span> <span class="dv">1108</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We now estimate the model using the <code>siena07()</code> function, which runs the simulation-based estimation procedure.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>saom_2 <span class="ot">&lt;-</span> <span class="fu">siena07</span>(</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  my_algorithm,</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_mod2,</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> my_effects,</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>saom_2 <span class="ot">&lt;-</span> <span class="fu">siena07</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  my_algorithm,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_mod2,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> my_effects,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Finally, as before, we display the model results inline:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_2, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_2, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <pre><code>                &lt;TD&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; (s.e.) &lt;/TD&gt;  &lt;/TR&gt;</code></pre><table border="1" rules="none" frame="hsides">
 <tbody><tr>
@@ -1624,7 +1580,6 @@ Overall maximum convergence ratio 0.18.
 <tr>
 </tr>
 </tbody></table>
-<p>We now interpret the results from Model 2, beginning with an assessment of convergence, followed by the interpretation of the estimated parameters.</p>
 <section id="convergence-assessment-1" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="convergence-assessment-1">Convergence Assessment</h5>
 <p>In Model 2, all convergence t-ratios are below 0.07, and the overall maximum convergence ratio is 0.11. This indicates good convergence, and the parameter estimates can be interpreted with confidence.</p>
@@ -1660,7 +1615,7 @@ This strong and statistically significant effect indicates a clear tendency towa
 </ul>
 <p>The SAOM specification includes three effects based on the covariate <code>sex</code>, which is coded as <code>0</code> for boys and <code>1</code> for girls and is centered around its mean value.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(sex_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(sex_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.4341085</code></pre>
 </div>
@@ -1765,7 +1720,7 @@ This positive and significant parameter indicates a clear tendency toward homoph
 </ul>
 <p>Based on the model output and the centered smoking covariate, we interpret the smoking-related effects in the SAOM model. The smoking variable is ordinal with three categories: 1 = no smoking, 2 = occasional smoking, and 3 = regular smoking. The covariate is centered by subtracting its mean. In this case, the mean value is computed in R as:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(smoking_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(smoking_cov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.377261</code></pre>
 </div>
@@ -1906,154 +1861,89 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 </section>
 <section id="model-3-network-and-behavioral-co-evolution" class="level3" data-number="18.5.3">
 <h3 data-number="18.5.3" class="anchored" data-anchor-id="model-3-network-and-behavioral-co-evolution"><span class="header-section-number">18.5.3</span> Model 3: Network and Behavioral Co-Evolution</h3>
-<p>We now estimate a co-evolution model in which the friendship network and smoking behavior are both treated as dependent processes. The network evolves through changes in ties, while smoking behavior evolves through changes in actors’ behavioral states.</p>
+<p>We now estimate a co-evolution model in which the friendship network and smoking behavior are treated as jointly dependent processes. The network process models changes in friendship ties, while the behavioral process models changes in actors’ smoking behavior over time.</p>
+<p>In this specification, smoking enters the model in two ways. First, smoking is used in the network objective function to test <strong>selection</strong> effects: whether actors form or maintain ties based on smoking behavior. Second, smoking is modeled as a behavioral dependent variable to test <strong>influence</strong> effects: whether actors adjust their smoking behavior in response to their friends.</p>
 <blockquote class="blockquote">
-<p>Key point: here <code>smoking_beh</code> is no longer only a covariate. It is a <strong>behavioral dependent variable</strong>, so the model estimates both <strong>selection</strong> effects and <strong>influence</strong> effects.</p>
+<p><em>Key point: <code>smoking_beh</code> is no longer only a covariate. It is a behavioral dependent variable, while also being used to explain network selection.</em></p>
 </blockquote>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Network dependent variable</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>siena_net <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(net_array)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Behavioral dependent variable: smoking over waves</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>smoking_beh <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(smoking_array, <span class="at">type =</span> <span class="st">"behavior"</span>)</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Time-constant covariate: sex</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>sex_cov <span class="ot">&lt;-</span> <span class="fu">coCovar</span>(sex_num)</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create RSiena data object</span></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>data_coev <span class="ot">&lt;-</span> <span class="fu">sienaDataCreate</span>(</span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  siena_net,</span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  smoking_beh,</span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  sex_cov</span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Dependent variables ---</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>siena_net   <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(net_array)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>smoking_beh <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(smoking_array, <span class="at">type =</span> <span class="st">"behavior"</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Covariate ---</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>sex_cov <span class="ot">&lt;-</span> <span class="fu">coCovar</span>(sex_num)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Data object ---</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>data_coev <span class="ot">&lt;-</span> <span class="fu">sienaDataCreate</span>(</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  siena_net,</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  smoking_beh,</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  sex_cov</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Effects ---</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>eff <span class="ot">&lt;-</span> <span class="fu">getEffects</span>(data_coev)</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="co"># NETWORK DYNAMICS</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------</span></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>eff <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(eff,</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  outdegree, recip, transTrip,</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"siena_net"</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a><span class="co"># sex effects</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>eff <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(eff,</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  egoX, altX, simX,</span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"siena_net"</span>,</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span></span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a><span class="co"># smoking selection effects</span></span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>eff <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(eff,</span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>  egoX, altX, simX,</span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"siena_net"</span>,</span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"smoking_beh"</span></span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------</span></span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a><span class="co"># BEHAVIOR DYNAMICS</span></span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------</span></span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a><span class="co"># shape effects </span></span>
+<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>eff <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(eff,</span>
+<span id="cb26-46"><a href="#cb26-46" aria-hidden="true" tabindex="-1"></a>  linear, quad,</span>
+<span id="cb26-47"><a href="#cb26-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"smoking_beh"</span></span>
+<span id="cb26-48"><a href="#cb26-48" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-49"><a href="#cb26-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-50"><a href="#cb26-50" aria-hidden="true" tabindex="-1"></a><span class="co"># network position effects</span></span>
+<span id="cb26-51"><a href="#cb26-51" aria-hidden="true" tabindex="-1"></a>eff <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(eff,</span>
+<span id="cb26-52"><a href="#cb26-52" aria-hidden="true" tabindex="-1"></a>  indeg, outdeg,</span>
+<span id="cb26-53"><a href="#cb26-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"smoking_beh"</span>,</span>
+<span id="cb26-54"><a href="#cb26-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"siena_net"</span></span>
+<span id="cb26-55"><a href="#cb26-55" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-56"><a href="#cb26-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-57"><a href="#cb26-57" aria-hidden="true" tabindex="-1"></a><span class="co"># social influence</span></span>
+<span id="cb26-58"><a href="#cb26-58" aria-hidden="true" tabindex="-1"></a>eff <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(eff,</span>
+<span id="cb26-59"><a href="#cb26-59" aria-hidden="true" tabindex="-1"></a>  avAlt,</span>
+<span id="cb26-60"><a href="#cb26-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"smoking_beh"</span>,</span>
+<span id="cb26-61"><a href="#cb26-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"siena_net"</span></span>
+<span id="cb26-62"><a href="#cb26-62" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>We now specify both network and behavioral effects.</p>
+<p>We define the estimation settings using <code>sienaAlgorithmCreate()</code> and estimate the co-evolution model.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with default effects</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">getEffects</span>(data_coev)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Network structural effects</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  my_effects,</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  outdegree, recip, transTrip,</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"siena_net"</span></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName          shortName include fix   test  initialValue
-1 17           reciprocity         recip     TRUE    FALSE FALSE          0  
-2 23           transitive triplets transTrip TRUE    FALSE FALSE          0  
-  parm
-1 0   
-2 0   </code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>alg <span class="ot">&lt;-</span> <span class="fu">sienaAlgorithmCreate</span>(<span class="at">projname =</span> <span class="st">"saom_coev"</span>, <span class="at">seed =</span> <span class="dv">1108</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>saom_coev <span class="ot">&lt;-</span> <span class="fu">siena07</span>(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  alg,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_coev,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> eff,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sex effects on network evolution</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  my_effects,</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  egoX, altX, simX,</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"siena_net"</span>,</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"sex_cov"</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName         shortName include fix   test  initialValue
-1 264          sex_cov alter      altX      TRUE    FALSE FALSE          0  
-2 279          sex_cov ego        egoX      TRUE    FALSE FALSE          0  
-3 325          sex_cov similarity simX      TRUE    FALSE FALSE          0  
-  parm
-1 0   
-2 0   
-3 0   </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Smoking-based selection effects on network evolution</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  my_effects,</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  egoX, altX, simX,</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"siena_net"</span>,</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"smoking_beh"</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName             shortName include fix   test 
-1 448          smoking_beh alter      altX      TRUE    FALSE FALSE
-2 463          smoking_beh ego        egoX      TRUE    FALSE FALSE
-3 509          smoking_beh similarity simX      TRUE    FALSE FALSE
-  initialValue parm
-1          0   0   
-2          0   0   
-3          0   0   </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Behavioral dynamics: shape effects are typically included by default,</span></span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="co"># but we explicitly include peer influence via average alter behavior</span></span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">includeEffects</span>(</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  my_effects,</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  avAlt,</span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"smoking_beh"</span>,</span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">interaction1 =</span> <span class="st">"siena_net"</span></span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  effectNumber effectName                shortName include fix   test 
-1 778          smoking_beh average alter avAlt     TRUE    FALSE FALSE
-  initialValue parm
-1          0   0   </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>my_effects</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   name        effectName                         include fix   test 
-1  siena_net   constant siena_net rate (period 1) TRUE    FALSE FALSE
-2  siena_net   constant siena_net rate (period 2) TRUE    FALSE FALSE
-3  siena_net   outdegree (density)                TRUE    FALSE FALSE
-4  siena_net   reciprocity                        TRUE    FALSE FALSE
-5  siena_net   transitive triplets                TRUE    FALSE FALSE
-6  siena_net   sex_cov alter                      TRUE    FALSE FALSE
-7  siena_net   sex_cov ego                        TRUE    FALSE FALSE
-8  siena_net   sex_cov similarity                 TRUE    FALSE FALSE
-9  siena_net   smoking_beh alter                  TRUE    FALSE FALSE
-10 siena_net   smoking_beh ego                    TRUE    FALSE FALSE
-11 siena_net   smoking_beh similarity             TRUE    FALSE FALSE
-12 smoking_beh rate smoking_beh (period 1)        TRUE    FALSE FALSE
-13 smoking_beh rate smoking_beh (period 2)        TRUE    FALSE FALSE
-14 smoking_beh smoking_beh linear shape           TRUE    FALSE FALSE
-15 smoking_beh smoking_beh quadratic shape        TRUE    FALSE FALSE
-16 smoking_beh smoking_beh average alter          TRUE    FALSE FALSE
-   initialValue parm
-1     7.45424   0   
-2     6.82927   0   
-3    -1.61299   0   
-4     0.00000   0   
-5     0.00000   0   
-6     0.00000   0   
-7     0.00000   0   
-8     0.00000   0   
-9     0.00000   0   
-10    0.00000   0   
-11    0.00000   0   
-12    0.47181   0   
-13    0.42288   0   
-14   -0.58955   0   
-15    0.00000   0   
-16    0.00000   0   </code></pre>
-</div>
-</div>
-<p>We define the estimation settings using <code>sienaAlgorithmCreate()</code>.</p>
+<p>Finally, we display the model results:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>my_algorithm <span class="ot">&lt;-</span> <span class="fu">sienaAlgorithmCreate</span>(</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">projname =</span> <span class="st">"saom_coev"</span>,</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span></span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>If you use this algorithm object, siena07 will create/use an output file Siena.txt .</code></pre>
-</div>
-</div>
-<p>We now estimate the co-evolution model.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>saom_coev <span class="ot">&lt;-</span> <span class="fu">siena07</span>(</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  my_algorithm,</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_coev,</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> my_effects,</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Finally, we display the model results inline.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_coev, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_coev, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <pre><code>                &lt;TD&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; (s.e.) &lt;/TD&gt;  &lt;/TR&gt;</code></pre><table border="1" rules="none" frame="hsides">
 <tbody><tr>
@@ -2078,12 +1968,12 @@ Network Dynamics
 constant-siena-net-rate-(period-1)
 </td>
 <td align="right">
-9.577
+10.639
 </td>
 <td align="left">
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 1.169)
+&nbsp;&nbsp;&nbsp;(1.084)
 </td>
 </tr>
 <tr>
@@ -2091,12 +1981,12 @@ constant-siena-net-rate-(period-1)
 constant-siena-net-rate-(period-2)
 </td>
 <td align="right">
-8.259
+8.916
 </td>
 <td align="left">
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 1.835)
+&nbsp;&nbsp;&nbsp;(0.921)
 </td>
 </tr>
 <tr>
@@ -2104,13 +1994,13 @@ constant-siena-net-rate-(period-2)
 outdegree-(density)
 </td>
 <td align="right">
-&nbsp;–2.975
+&nbsp;–2.870
 </td>
 <td align="left">
 ***
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.087)
+&nbsp;&nbsp;&nbsp;(0.068)
 </td>
 </tr>
 <tr>
@@ -2118,13 +2008,13 @@ outdegree-(density)
 reciprocity
 </td>
 <td align="right">
-2.073
+1.987
 </td>
 <td align="left">
 ***
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.195)
+&nbsp;&nbsp;&nbsp;(0.092)
 </td>
 </tr>
 <tr>
@@ -2132,13 +2022,13 @@ reciprocity
 transitive-triplets
 </td>
 <td align="right">
-0.457
+0.446
 </td>
 <td align="left">
 ***
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.035)
+&nbsp;&nbsp;&nbsp;(0.030)
 </td>
 </tr>
 <tr>
@@ -2146,13 +2036,12 @@ transitive-triplets
 sex-cov-alter
 </td>
 <td align="right">
-&nbsp;–0.321
+&nbsp;–0.179
 </td>
 <td align="left">
-**
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.123)
+&nbsp;&nbsp;&nbsp;(0.116)
 </td>
 </tr>
 <tr>
@@ -2160,13 +2049,13 @@ sex-cov-alter
 sex-cov-ego
 </td>
 <td align="right">
-0.364
+0.196
 </td>
 <td align="left">
-**
+&amp;#134
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.129)
+&nbsp;&nbsp;&nbsp;(0.117)
 </td>
 </tr>
 <tr>
@@ -2174,13 +2063,13 @@ sex-cov-ego
 sex-cov-similarity
 </td>
 <td align="right">
-1.063
+0.942
 </td>
 <td align="left">
 ***
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.152)
+&nbsp;&nbsp;&nbsp;(0.111)
 </td>
 </tr>
 <tr>
@@ -2188,12 +2077,13 @@ sex-cov-similarity
 smoking-beh-alter
 </td>
 <td align="right">
-0.055
+0.125
 </td>
 <td align="left">
+&amp;#134
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.130)
+&nbsp;&nbsp;&nbsp;(0.070)
 </td>
 </tr>
 <tr>
@@ -2201,12 +2091,12 @@ smoking-beh-alter
 smoking-beh-ego
 </td>
 <td align="right">
-0.023
+0.051
 </td>
 <td align="left">
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.095)
+&nbsp;&nbsp;&nbsp;(0.070)
 </td>
 </tr>
 <tr>
@@ -2214,12 +2104,13 @@ smoking-beh-ego
 smoking-beh-similarity
 </td>
 <td align="right">
-0.302
+0.513
 </td>
 <td align="left">
+**
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;( 0.205)
+&nbsp;&nbsp;&nbsp;(0.174)
 </td>
 </tr>
 <tr>
@@ -2239,12 +2130,12 @@ Behaviour Dynamics
 rate-smoking-beh-(period-1)
 </td>
 <td align="right">
-36.351
+4.664
 </td>
 <td align="left">
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;(11.732)
+&nbsp;&nbsp;&nbsp;(3.202)
 </td>
 </tr>
 <tr>
@@ -2252,12 +2143,12 @@ rate-smoking-beh-(period-1)
 rate-smoking-beh-(period-2)
 </td>
 <td align="right">
-37.029
+4.441
 </td>
 <td align="left">
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;(24.368)
+&nbsp;&nbsp;&nbsp;(1.539)
 </td>
 </tr>
 <tr>
@@ -2265,12 +2156,13 @@ rate-smoking-beh-(period-2)
 smoking-beh-linear-shape
 </td>
 <td align="right">
-&nbsp;–18.003
+&nbsp;–4.529
 </td>
 <td align="left">
+***
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;(59.048)
+&nbsp;&nbsp;&nbsp;(0.791)
 </td>
 </tr>
 <tr>
@@ -2278,12 +2170,39 @@ smoking-beh-linear-shape
 smoking-beh-quadratic-shape
 </td>
 <td align="right">
-16.650
+3.142
+</td>
+<td align="left">
+***
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.431)
+</td>
+</tr>
+<tr>
+<td>
+smoking-beh-indegree
+</td>
+<td align="right">
+0.196
 </td>
 <td align="left">
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;(55.703)
+&nbsp;&nbsp;&nbsp;(0.205)
+</td>
+</tr>
+<tr>
+<td>
+smoking-beh-outdegree
+</td>
+<td align="right">
+&nbsp;–0.045
+</td>
+<td align="left">
+</td>
+<td align="right">
+&nbsp;&nbsp;&nbsp;(0.233)
 </td>
 </tr>
 <tr>
@@ -2291,12 +2210,13 @@ smoking-beh-quadratic-shape
 smoking-beh-average-alter
 </td>
 <td align="right">
-7.399
+1.908
 </td>
 <td align="left">
+*
 </td>
 <td align="right">
-&nbsp;&nbsp;&nbsp;(28.541)
+&nbsp;&nbsp;&nbsp;(0.798)
 </td>
 </tr>
 <tr>
@@ -2315,20 +2235,46 @@ smoking-beh-average-alter
 </tr>
 <tr>
 <td colspan="9" align="left">
-all convergence t ratios &lt; 3.39.
+all convergence t ratios &lt; 0.43.
 </td>
 </tr>
 <tr>
 </tr>
 <tr>
 <td colspan="9" align="left">
-Overall maximum convergence ratio 28.47.
+Overall maximum convergence ratio 1.53.
 </td>
 </tr>
 <tr>
 </tr>
 </tbody></table>
-<p>In this model, although individual convergence t-ratios are all below 3.39, the overall maximum convergence ratio is 28.47, which is far above acceptable thresholds. This indicates that the estimation has not converged properly.</p>
+<p>The co-evolution model shows the following key patterns:</p>
+<ul>
+<li><strong>Network structure</strong>
+<ul>
+<li>Strong negative outdegree <span class="math inline">\(\Rightarrow\)</span> sparse network</li>
+<li>Strong positive reciprocity <span class="math inline">\(\Rightarrow\)</span> mutual ties are strongly favored</li>
+<li>Positive transitivity <span class="math inline">\(\Rightarrow\)</span> evidence of triadic closure</li>
+</ul></li>
+<li><strong>Sex effects</strong>
+<ul>
+<li>Strong positive similarity <span class="math inline">\(\Rightarrow\)</span> clear same-sex homophily</li>
+<li>Ego and alter effects not significant <span class="math inline">\(\Rightarrow\)</span> no strong differences in tie activity by sex</li>
+</ul></li>
+<li><strong>Smoking and network selection</strong>
+<ul>
+<li>Positive similarity effect <span class="math inline">\(\Rightarrow\)</span> friendships are formed between actors with similar smoking behavior (selection)</li>
+<li>Ego and alter effects not significant <span class="math inline">\(\Rightarrow\)</span> smoking does not affect sending/receiving ties overall</li>
+</ul></li>
+<li><strong>Behavioral dynamics (smoking)</strong>
+<ul>
+<li>Negative linear + positive quadratic shape <span class="math inline">\(\Rightarrow\)</span> tendency toward moderate smoking levels</li>
+<li>Average alter effect positive and significant <span class="math inline">\(\Rightarrow\)</span> evidence of social influence (actors adjust smoking toward friends)</li>
+<li>Indegree and outdegree effects not significant <span class="math inline">\(\Rightarrow\)</span> network position not strongly related to smoking</li>
+</ul></li>
+</ul>
+<p>Overall, the results suggest that network evolution is primarily driven by reciprocity, triadic closure, and homophily. In addition, there is evidence for both selection and influence processes in the co-evolution of networks and behavior: actors tend to form ties with others who have similar smoking behavior, and they also adjust their behavior over time to become more similar to their friends.</p>
+<p>Given that the overall maximum convergence ratio exceeds the recommended threshold, the model has not fully converged. Therefore, the parameter estimates should be interpreted with caution, as they may not reliably reflect the underlying data-generating process.</p>
 <p>To improve convergence, one can adjust the estimation settings (e.g., increase the number of simulation iterations via <code>n3</code>, modify phase lengths, or tune other algorithm parameters). Details on these options can be found in the RSiena Manual <span class="citation" data-cites="ripley2011manual">(<a href="#ref-ripley2011manual" role="doc-biblioref">Ripley et al. 2011</a>)</span>, particularly in the sections on:</p>
 <ul>
 <li><code>sienaAlgorithmCreate()</code> (algorithm settings and iteration control)</li>
