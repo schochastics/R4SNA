@@ -566,7 +566,10 @@ C_D(v) = \sum_{u \neq v} a_{vu}.
 <p>For weighted networks, <strong>strength</strong> (also called weighted degree) sums the edge weights instead of counting ties. This is useful when ties carry different intensities, such as frequency of communication or volume of trade. As an illustration we use the <code>miserables</code> network, which records co-occurrences of characters in Victor Hugo’s <em>Les Misérables</em>, with edge weights counting how often two characters appear in the same chapter.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"miserables"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">sort</span>(<span class="fu">strength</span>(miserables, <span class="at">weights =</span> <span class="fu">E</span>(miserables)<span class="sc">$</span>weight), <span class="at">decreasing =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">sort</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">strength</span>(miserables, <span class="at">weights =</span> <span class="fu">E</span>(miserables)<span class="sc">$</span>weight),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">decreasing =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Valjean     Marius   Enjolras Courfeyrac    Cosette Combeferre 
        158        104         91         84         68         68 </code></pre>
@@ -766,21 +769,24 @@ Figure&nbsp;3.3: Pairwise scatter plots of four centrality indices computed on t
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>combine_seasons <span class="ot">&lt;-</span> <span class="cf">function</span>(net_list) {</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  edges <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(net_list, <span class="cf">function</span>(g) {</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    igraph<span class="sc">::</span><span class="fu">as_data_frame</span>(g, <span class="at">what =</span> <span class="st">"edges"</span>)[, <span class="fu">c</span>(<span class="st">"from"</span>, <span class="st">"to"</span>, <span class="st">"weight"</span>)]</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  }))</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  edges <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(weight <span class="sc">~</span> from <span class="sc">+</span> to, <span class="at">data =</span> edges, <span class="at">FUN =</span> sum)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">graph_from_data_frame</span>(edges, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>atp_all <span class="ot">&lt;-</span> <span class="fu">combine_seasons</span>(atp)</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>wta_all <span class="ot">&lt;-</span> <span class="fu">combine_seasons</span>(wta)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  edges <span class="ot">&lt;-</span> <span class="fu">do.call</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    rbind,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lapply</span>(net_list, <span class="cf">function</span>(g) {</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>      igraph<span class="sc">::</span><span class="fu">as_data_frame</span>(g, <span class="at">what =</span> <span class="st">"edges"</span>)[, <span class="fu">c</span>(<span class="st">"from"</span>, <span class="st">"to"</span>, <span class="st">"weight"</span>)]</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  edges <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(weight <span class="sc">~</span> from <span class="sc">+</span> to, <span class="at">data =</span> edges, <span class="at">FUN =</span> sum)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">graph_from_data_frame</span>(edges, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>atp_all</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>atp_all <span class="ot">&lt;-</span> <span class="fu">combine_seasons</span>(atp)</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>wta_all <span class="ot">&lt;-</span> <span class="fu">combine_seasons</span>(wta)</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>atp_all</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH 7352275 DNW- 5965 118906 -- 
+<pre><code>IGRAPH 836a609 DNW- 5965 118906 -- 
 + attr: name (v/c), weight (e/n)
-+ edges from 7352275 (vertex names):
++ edges from 836a609 (vertex names):
  [1] Jan Kukal         -&gt;A Macdonald      Alberto Tous      -&gt;Aaron Krickstein
  [3] Alejandro Ganzabal-&gt;Aaron Krickstein Alex Antonitsch   -&gt;Aaron Krickstein
  [5] Alex Obrien       -&gt;Aaron Krickstein Alexander Mronz   -&gt;Aaron Krickstein
@@ -793,9 +799,9 @@ Figure&nbsp;3.3: Pairwise scatter plots of four centrality indices computed on t
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>wta_all</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH b06eb44 DNW- 5946 88958 -- 
+<pre><code>IGRAPH bff5199 DNW- 5946 88958 -- 
 + attr: name (v/c), weight (e/n)
-+ edges from b06eb44 (vertex names):
++ edges from bff5199 (vertex names):
  [1] Urszula Nebelska   -&gt;Aaliya Ebrahim Alexandra Damaschin-&gt;Abbie Myers   
  [3] Alison Bai         -&gt;Abbie Myers    Ayano Shimizu      -&gt;Abbie Myers   
  [5] Claire Liu         -&gt;Abbie Myers    Erina Hayashi      -&gt;Abbie Myers   
@@ -1001,8 +1007,9 @@ Note
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>flo_marriage <span class="ot">&lt;-</span> <span class="fu">subgraph</span>(</span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  flo_marriage,</span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">components</span>(flo_marriage)<span class="sc">$</span>membership <span class="sc">==</span> <span class="fu">which.max</span>(<span class="fu">components</span>(flo_marriage)<span class="sc">$</span>csize)</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">components</span>(flo_marriage)<span class="sc">$</span>membership <span class="sc">==</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">which.max</span>(<span class="fu">components</span>(flo_marriage)<span class="sc">$</span>csize)</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">

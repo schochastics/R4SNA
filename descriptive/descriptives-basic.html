@@ -629,9 +629,9 @@ Figure&nbsp;2.2: Degree distribution of the Florentine marriage network. Most fa
 <p>The <strong>density</strong> of a network is the fraction of possible edges that are actually present. For an undirected network on <span class="math inline">\(n\)</span> nodes, the maximum number of edges is <span class="math inline">\(\binom{n}{2}\)</span>, so the density is <span class="math inline">\(2m / (n(n-1))\)</span>. It lies between <span class="math inline">\(0\)</span> (empty graph) and <span class="math inline">\(1\)</span> (complete graph).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">empty =</span> <span class="fu">edge_density</span>(<span class="fu">make_empty_graph</span>(<span class="dv">10</span>)),</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">florentine =</span> <span class="fu">edge_density</span>(flo_marriage),</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">full =</span> <span class="fu">edge_density</span>(<span class="fu">make_full_graph</span>(<span class="dv">10</span>))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">empty =</span> <span class="fu">edge_density</span>(<span class="fu">make_empty_graph</span>(<span class="dv">10</span>)),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">florentine =</span> <span class="fu">edge_density</span>(flo_marriage),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">full =</span> <span class="fu">edge_density</span>(<span class="fu">make_full_graph</span>(<span class="dv">10</span>))</span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     empty florentine       full 
@@ -645,10 +645,10 @@ Figure&nbsp;2.2: Degree distribution of the Florentine marriage network. Most fa
 <p>A <strong>path</strong> is a sequence of edges connecting two nodes without revisiting any node. A <strong>shortest path</strong> is a path with the minimum number of edges, and its length is the <strong>distance</strong> between the two nodes. There may be several shortest paths of the same length between a given pair of nodes.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shortest_paths</span>(</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    flo_marriage, </span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">from =</span> <span class="st">"Ginori"</span>, </span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">to =</span> <span class="st">"Strozzi"</span>, </span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> <span class="st">"vpath"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  flo_marriage,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">from =</span> <span class="st">"Ginori"</span>,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">to =</span> <span class="st">"Strozzi"</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"vpath"</span></span>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>)<span class="sc">$</span>vpath</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
@@ -890,19 +890,39 @@ Figure&nbsp;2.6: The 16 possible triads in a directed network, labeled using the
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>footy_census <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">unlist</span>(footy_census), <span class="at">ncol =</span> <span class="dv">16</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">sapply</span>(football_triad, <span class="cf">function</span>(x) x<span class="sc">$</span>name)</span>
 <span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(footy_census) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"003"</span>, <span class="st">"012"</span>, <span class="st">"102"</span>, <span class="st">"021D"</span>, <span class="st">"021U"</span>, <span class="st">"021C"</span>, <span class="st">"111D"</span>, <span class="st">"111U"</span>,</span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"030T"</span>, <span class="st">"030C"</span>, <span class="st">"201"</span>, <span class="st">"120D"</span>, <span class="st">"120U"</span>, <span class="st">"120C"</span>, <span class="st">"210"</span>, <span class="st">"300"</span></span>
-<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize to make proportions comparable across leagues</span></span>
-<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>footy_census_norm <span class="ot">&lt;-</span> footy_census <span class="sc">/</span> <span class="fu">rowSums</span>(footy_census)</span>
-<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="co"># check the Top 5 leagues</span></span>
-<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">rownames</span>(footy_census) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"england"</span>, <span class="st">"spain"</span>, <span class="st">"germany"</span>,</span>
-<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"italy"</span>, <span class="st">"france"</span></span>
-<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>footy_census[idx, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"003"</span>,</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"012"</span>,</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"102"</span>,</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"021D"</span>,</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"021U"</span>,</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"021C"</span>,</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"111D"</span>,</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"111U"</span>,</span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"030T"</span>,</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"030C"</span>,</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"201"</span>,</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"120D"</span>,</span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"120U"</span>,</span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"120C"</span>,</span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"210"</span>,</span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"300"</span></span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a><span class="co"># normalize to make proportions comparable across leagues</span></span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a>footy_census_norm <span class="ot">&lt;-</span> footy_census <span class="sc">/</span> <span class="fu">rowSums</span>(footy_census)</span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a><span class="co"># check the Top 5 leagues</span></span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(</span>
+<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(footy_census) <span class="sc">%in%</span></span>
+<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">"england"</span>,</span>
+<span id="cb51-31"><a href="#cb51-31" aria-hidden="true" tabindex="-1"></a>      <span class="st">"spain"</span>,</span>
+<span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a>      <span class="st">"germany"</span>,</span>
+<span id="cb51-33"><a href="#cb51-33" aria-hidden="true" tabindex="-1"></a>      <span class="st">"italy"</span>,</span>
+<span id="cb51-34"><a href="#cb51-34" aria-hidden="true" tabindex="-1"></a>      <span class="st">"france"</span></span>
+<span id="cb51-35"><a href="#cb51-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a>footy_census[idx, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        003 012 102 021D 021U 021C 111D 111U 030T 030C 201 120D 120U 120C 210
 england   2  10   0   58   31   40   34   44  338   29  19  118  129  143 131
