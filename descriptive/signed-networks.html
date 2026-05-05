@@ -616,7 +616,7 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count_signed_triangles</span>(g_bal)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+++ ++- +-- --- 
- 80   0   4   0 </code></pre>
+155   0   7   0 </code></pre>
 </div>
 </div>
 <p>Increasing the <code>islands.n</code> parameter to more than two creates networks that are not balanced in the strict two-group sense but are “clusterable” as defined by <span class="citation" data-cites="davis1967clustering">Davis (<a href="#ref-davis1967clustering" role="doc-biblioref">1967</a>)</span> – they can be partitioned into more than two groups with the same within-positive, between-negative pattern.</p>
@@ -633,7 +633,7 @@ Figure&nbsp;6.4: A synthetic perfectly balanced network with two groups.
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance_score</span>(g_bal, <span class="at">method =</span> <span class="st">"frustration"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
+<pre><code>[1] 0.8409091</code></pre>
 </div>
 </div>
 <p>The <strong>triangles</strong> method returns the fraction of balanced triangles. It is the most intuitive but only considers local structure.</p>
@@ -821,30 +821,30 @@ Gama   Gama   3   6  0.33  -3</code></pre>
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>cent_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      tribe degree_net eigen    pn
-Gavev Gavev         -2 1.000 0.753
-Kotun Kotun         -2 0.889 0.764
-Ove     Ove          2 0.716 1.042
-Alika Alika          1 0.368 1.023
-Nagam Nagam         -1 0.743 0.903
-Gahuk Gahuk          0 0.955 0.905
-Masil Masil          7 0.760 1.224
-Ukudz Ukudz          5 0.671 1.141
-Notoh Notoh         -1 0.211 0.874
-Kohik Kohik         -1 0.239 0.903
-Geham Geham         -1 0.696 0.865
-Asaro Asaro          0 0.914 0.934
-Uheto Uheto          0 0.234 0.916
-Seuve Seuve         -1 0.059 0.875
-Nagad Nagad         -3 0.912 0.715
-Gama   Gama         -3 0.987 0.715</code></pre>
+<pre><code>      tribe degree_net  eigen    pn
+Gavev Gavev         -2 -1.000 0.753
+Kotun Kotun         -2 -0.889 0.764
+Ove     Ove          2  0.716 1.042
+Alika Alika          1  0.368 1.023
+Nagam Nagam         -1  0.743 0.903
+Gahuk Gahuk          0  0.955 0.905
+Masil Masil          7  0.760 1.224
+Ukudz Ukudz          5  0.671 1.141
+Notoh Notoh         -1  0.211 0.874
+Kohik Kohik         -1  0.239 0.903
+Geham Geham         -1  0.696 0.865
+Asaro Asaro          0  0.914 0.934
+Uheto Uheto          0  0.234 0.916
+Seuve Seuve         -1  0.059 0.875
+Nagad Nagad         -3 -0.912 0.715
+Gama   Gama         -3 -0.987 0.715</code></pre>
 </div>
 </div>
 <p>The correlation between eigenvector centrality and the PN index tells us how much these two measures agree.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">eigen_centrality_signed</span>(tribes), <span class="fu">pn_index</span>(tribes), <span class="at">method =</span> <span class="st">"kendall"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.2</code></pre>
+<pre><code>[1] 0.5666667</code></pre>
 </div>
 </div>
 <p>Note that the adjacency matrix of a signed network may not have a dominant eigenvalue. When this occurs, eigenvector centrality is not well-defined and <code>eigen_centrality_signed()</code> will return an error. In such cases, the PN index provides a more robust alternative.</p>

@@ -920,10 +920,6 @@ spain    20</code></pre>
 </div>
 <p>SVDs reduce the dimensionality of the data while retaining most of the information. The triad census is 16-dimensional, which is impossible to visualize directly. With an SVD, we can project it to two dimensions and compare the leagues visually in <a href="#fig-footy-svd" class="quarto-xref">Figure&nbsp;<span>2.7</span></a>.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: ggrepel: 35 unlabeled data points (too many overlaps). Consider
-increasing max.overlaps</code></pre>
-</div>
 <div class="cell-output-display">
 <div id="fig-footy-svd" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -973,24 +969,24 @@ Figure&nbsp;2.9: Second singular vector (scaled by its singular value) plotted a
 <h3 data-number="2.13.2" class="anchored" data-anchor-id="dyadtriad-census-with-attributes"><span class="header-section-number">2.13.2</span> Dyad/Triad Census with Attributes</h3>
 <p>The R package <code>netUtils</code> implements a version of the dyad and triad census that can account for node attributes.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netUtils)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netUtils)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The node attribute should be coded as integers from <code>1</code> to <code>max(attr)</code>. The output of <code>dyad_census_attr()</code> is a <code>data.frame</code> in which each row corresponds to a pair of attribute values, together with the count of asymmetric, symmetric, and null dyads of that combination.</p>
 <p>The output of <code>triad_census_attr()</code> is a named vector whose names have the form <code>Txxx-abc</code>, where <code>xxx</code> is the standard triad census code and <code>abc</code> are the attributes of the three nodes involved.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="dv">20</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="co"># add a vertex attribute</span></span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">10</span>)</span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="dv">20</span>, <span class="at">p =</span> <span class="fl">0.3</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="co"># add a vertex attribute</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">10</span>)</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  from_attr to_attr asym_ab asym_ba sym null
 1         1       1       0       0   2   43
 2         1       2      15      29   6   50
 3         2       2       0       0   2   43</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> T003-111  T003-112  T003-122  T003-222  T012-111  T012-121  T012-112  T012-122 
        10        46        67        27        44        63        38        34 
