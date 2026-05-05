@@ -8,7 +8,7 @@
 
 <meta name="author" content="Termeh Shafie and David Schoch">
 
-<title>Appendix B — Example: A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis</title>
+<title>Appendix B — A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -104,13 +104,13 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Appendix B — Example: A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis">
+<meta property="og:title" content="Appendix B — A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis">
 <meta property="og:description" content="">
 <meta property="og:image" content="https://schochastics.io/R4SNA/appendix/cat-ex-saoms_files/figure-html/unnamed-chunk-1-1.png">
 <meta property="og:site_name" content="R for Social Network Analysis">
 <meta property="og:image:height" content="768">
 <meta property="og:image:width" content="1344">
-<meta name="twitter:title" content="Appendix B — Example: A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis">
+<meta name="twitter:title" content="Appendix B — A Continuous-Time Markov Chain (Cat Behavior Model) – R for Social Network Analysis">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://schochastics.io/R4SNA/appendix/cat-ex-saoms_files/figure-html/unnamed-chunk-1-1.png">
 <meta name="twitter:image-height" content="768">
@@ -127,7 +127,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendix/ucnets-egor.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendix/cat-ex-saoms.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Example: A Continuous-Time Markov Chain (Cat Behavior Model)</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendix/ucnets-egor.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendix/cat-ex-saoms.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">A Continuous-Time Markov Chain (Cat Behavior Model)</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -367,7 +367,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../appendix/cat-ex-saoms.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Example: A Continuous-Time Markov Chain (Cat Behavior Model)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">A Continuous-Time Markov Chain (Cat Behavior Model)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -389,9 +389,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendix/ucnets-egor.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendix/cat-ex-saoms.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Example: A Continuous-Time Markov Chain (Cat Behavior Model)</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendix/ucnets-egor.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendix/cat-ex-saoms.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">A Continuous-Time Markov Chain (Cat Behavior Model)</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-apx-cat" class="quarto-section-identifier">Appendix B — Example: A Continuous-Time Markov Chain (Cat Behavior Model)</span></h1>
+<h1 class="title"><span id="sec-apx-cat" class="quarto-section-identifier">Appendix B — A Continuous-Time Markov Chain (Cat Behavior Model)</span></h1>
 </div>
 
 
@@ -424,21 +424,22 @@ window.Quarto = {
 <li>The Markov property: next state depends only on the current state<br>
 </li>
 </ul>
-<p>The cat transitions between states at random times. Each stay in a state lasts for a random holding time, and transitions to the next state occur probabilistically based on a transition (jump) matrix.</p>
-<p>The holding time <span class="math inline">\(T_r\)</span> in state <span class="math inline">\(r\)</span> is modeled using an exponential distribution: <span class="math display">\[
-f_{T_r}(t) = \lambda_r e^{-\lambda_r t}, \quad t &gt; 0
+<p>The cat transitions between states at random times. Each stay in a state lasts for a random holding time, and transitions to the next state occur after a random holding time, and the next state is chosen probabilistically according to a transition (jump) matrix.</p>
+<p>The holding time <span class="math inline">\(T_i\)</span> in state <span class="math inline">\(i\)</span> is modeled using an exponential distribution: <span class="math display">\[
+f_{T_i}(t) = \lambda_i e^{-\lambda_i t}, \quad t &gt; 0
 \]</span></p>
 <ul>
-<li><span class="math inline">\(\lambda_r\)</span> is the rate of leaving state <span class="math inline">\(r\)</span>.</li>
-<li><span class="math inline">\(\mathbb{E}[T_r] = \frac{1}{\lambda_r}\)</span> is the expected duration in state <span class="math inline">\(r\)</span>.</li>
+<li><span class="math inline">\(\lambda_i\)</span> is the rate of leaving state <span class="math inline">\(i\)</span>.</li>
+<li><span class="math inline">\(\mathbb{E}[T_i] = \frac{1}{\lambda_i}\)</span> is the expected duration in state <span class="math inline">\(i\)</span>.</li>
 </ul>
 <p>The exponential distribution’s <strong>memoryless property</strong> means that the probability of remaining in a state is independent of how long the cat has already been in it: <span class="math display">\[
-P(T_r &gt; s + t \mid T_r &gt; t) = P(T_r &gt; s)
+P(T_i &gt; s + t \mid T_i &gt; t) = P(T_i &gt; s)
 \]</span> So, even after two hours of napping, the chance that the cat naps another 30 minutes is the same as if it had just started.</p>
-<p>Once the holding time ends, the cat jumps to a new state. The <strong>transition (jump) matrix</strong> <span class="math inline">\(P = (p_{rs})\)</span> governs this: <span class="math display">\[
-p_{rs} = P(X(t^+) = s \mid X(t) = r)
-\]</span> For each state <span class="math inline">\(r\)</span>, the row of probabilities <span class="math inline">\(p_{rs}\)</span> must sum to 1: <span class="math display">\[
-\sum_{s \in S} p_{rs} = 1
+<p>Once the holding time ends, the cat jumps to a new state. The <strong>transition (jump) matrix</strong> <span class="math inline">\(P = (p_{ij})\)</span> governs this: <span class="math display">\[
+p_{ij} = P(X(t^+) = j \mid X(t) = i)
+\]</span></p>
+<p>For each state <span class="math inline">\(i\)</span>, the row of probabilities <span class="math inline">\(p_{ij}\)</span> must sum to 1: <span class="math display">\[
+\sum_{j \in S} p_{ij} = 1
 \]</span></p>
 <p><a href="#fig-catex" class="quarto-xref">Figure&nbsp;<span>B.1</span></a> illustrates a single realization of such a process. This visual shows how a process starting in state 0 might stay there for some time, then jump to state 2, then state 3, and so on, with irregular intervals between jumps.</p>
 <div id="fig-catex" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -523,7 +524,8 @@ Figure&nbsp;B.2: Directed graph representation of the CTMC jump chain. Each node
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-catex2" class="quarto-xref">Figure&nbsp;<span>B.2</span></a> is a visual representation of this matrix. Each arrow in the graph corresponds to a non-zero entry <span class="math inline">\(p_{rs}\)</span> in the matrix. The curved edges indicate transitions between pairs of states, and the labels on the arrows match the values in the matrix. Together, the matrix and the graph describe a <strong>jump chain</strong> over the set of behavioral states. These transitions are stochastic (i.e., random), and their dynamics unfold in continuous time, which is what differentiates CTMCs from discrete-time Markov models.</p>
+<p><a href="#fig-catex2" class="quarto-xref">Figure&nbsp;<span>B.2</span></a> is a visual representation of this matrix. Each arrow in the graph corresponds to a non-zero entry <span class="math inline">\(p_{ij}\)</span> in the matrix. The curved edges indicate transitions between pairs of states, and the labels on the arrows match the values in the matrix. Together, the matrix and the graph describe a <strong>jump chain</strong> over the set of behavioral states. These transitions are stochastic (i.e., random), and their dynamics unfold in continuous time, which is what differentiates CTMCs from discrete-time Markov models.</p>
+<p>Together, the holding time distribution and the transition (jump) matrix fully characterize the dynamics of the CTMC.</p>
 <p>In summary, a Continuous-Time Markov Chain (CTMC):</p>
 <ul>
 <li>Determines how long the system remains in a state using the holding time, typically modeled as exponentially distributed.</li>
