@@ -79,8 +79,8 @@ where
 - $\kappa$ is a normalizing constant ensuring that all possible graphs sum to a
   probability of 1:
   $$
-\kappa = \sum_{G'} \exp\left( \sum_{k=1}^{K} \theta_k \cdot s_k(G') \right)
-$$
+  \kappa = \sum_{G'} \exp\left( \sum_{k=1}^{K} \theta_k \cdot s_k(G') \right)
+  $$
 
 This formulation makes clear that networks with more of the structures
 positively weighted by $\theta_k$ are more probable. For instance, a large
@@ -477,7 +477,9 @@ any reciprocation or other structural tendencies.
 
 In contrast, the mutual term has a strong positive estimate
 ($\hat{\theta}_{\text{mutual}} = 3.77$, $p < 0.0001$), which suggests a highly
-significant tendency for reciprocated ties. In other words, when a tie exists from node $i$ to node $j$, the likelihood that node $j$ also ties back to node $i$is much greater than would be expected by chance, controlling for overall
+significant tendency for reciprocated ties. In other words, when a tie exists
+from node $i$ to node $j$, the likelihood that node $j$ also ties back to node
+$i$is much greater than would be expected by chance, controlling for overall
 network sparsity.
 
 This combination of results suggests that while directed ties are rare in
@@ -489,12 +491,13 @@ form of reciprocity is a defining feature of the Coleman data network.
 
 **Markov random graphs** are a foundational class of models in network
 statistics, based on the idea that the presence or absence of a tie between two
-nodes $i$ and $j$ depends only on ties that are "locally adjacent", specifically,
-those that share a node. This assumption, known as **Markov dependence**, implies
-that edges are conditionally independent unless they share a common node. In
-other words, the presence or absence of a tie may influence other ties in the
-network, but only if those ties are adjacent. This locality of dependence makes
-the model tractable while capturing meaningful structural effects.
+nodes $i$ and $j$ depends only on ties that are "locally adjacent",
+specifically, those that share a node. This assumption, known as **Markov
+dependence**, implies that edges are conditionally independent unless they share
+a common node. In other words, the presence or absence of a tie may influence
+other ties in the network, but only if those ties are adjacent. This locality of
+dependence makes the model tractable while capturing meaningful structural
+effects.
 
 Formally introduced by @frank1986markov, Markov random graphs were inspired by
 analogous models in spatial statistics, e.g., Besag's auto-logistic models which
@@ -545,10 +548,10 @@ S_k = \sum_{i} \sum_{\substack{j_1 < \dots < j_k \\ j_m \neq i}}
 y_{i j_1} \cdot \dots \cdot y_{i j_k}
 $$
 
-where all $j_1,\dots,j_k$ are distinct and different from $i$.
-Including star terms allows the model to capture degree heterogeneity,
-reflecting whether some individuals tend to form many more ties than others.
-Note that in directed networks, we can specify:
+where all $j_1,\dots,j_k$ are distinct and different from $i$. Including star
+terms allows the model to capture degree heterogeneity, reflecting whether some
+individuals tend to form many more ties than others. Note that in directed
+networks, we can specify:
 
 - **Out-stars** (activity): a node sending many ties
 - **In-stars** (popularity): a node receiving many ties
@@ -755,10 +758,10 @@ When $\alpha$ is close to zero, the statistic approaches a simple count of edges
 with at least one shared partner. When $\alpha$ is larger, the contribution of
 each additional shared partner is increasingly discounted.
 
-GWESP provides a smooth and more stable way to model triadic closure in networks. It is
-often used in place of triangle counts to reduce the risk of model degeneracy;
-where the model produces unrealistic networks concentrated on extremes (e.g.,
-empty or complete graphs).
+GWESP provides a smooth and more stable way to model triadic closure in
+networks. It is often used in place of triangle counts to reduce the risk of
+model degeneracy; where the model produces unrealistic networks concentrated on
+extremes (e.g., empty or complete graphs).
 
 In practice, GWESP is typically included in ERGMs with a fixed decay value using
 the `gwesp()` term in `ergm::ergm()`.
@@ -766,8 +769,8 @@ the `gwesp()` term in `ergm::ergm()`.
 A commonly used value for $\alpha$ is **0.693**, which is approximately
 $\log(2)$. This choice has a convenient and interpretable consequence: With
 $\alpha = \log(2)$, each additional shared partner contributes about half as
-much as the one before. For example, the first shared partner contributes ~50%
-of the max possible increment, the second adds ~25%, the third adds ~12.5%,
+much as the one before. For example, the first shared partner contributes \~50%
+of the max possible increment, the second adds \~25%, the third adds \~12.5%,
 and so on. This exponential discounting reflects a realistic assumption: *having
 one or two mutual friends greatly increases the chance of tie formation, but the
 influence of additional mutual friends diminishes quickly*.
@@ -881,9 +884,9 @@ the others. What do these estimates tell us?
   those with shared partners consistent with social circuit dependence.
 
 Taken together, the results indicate that processes of attribute-related
-activity, assortative mixing by attribute (homophily), and structural
-closure (via triadic dependence) operate concurrently in shaping tie formation
-within the Lazega co-working network.
+activity, assortative mixing by attribute (homophily), and structural closure
+(via triadic dependence) operate concurrently in shaping tie formation within
+the Lazega co-working network.
 
 ### Model Estimation {#sec-ergmest}
 
@@ -904,8 +907,8 @@ $$
 
 Here, $\mathbf{s}(G) = (s_1(G), \dots, s_K(G))^\top$ is a vector of network
 statistics (e.g., number of edges, mutual ties, triangles), and
-$\kappa(\boldsymbol{\theta})$ is a normalizing constant that sums the exponential
-terms over all possible networks with the same number of nodes:
+$\kappa(\boldsymbol{\theta})$ is a normalizing constant that sums the
+exponential terms over all possible networks with the same number of nodes:
 
 $$
 \kappa(\boldsymbol{\theta}) = \sum_{G'} \exp\left( \boldsymbol{\theta}^\top \mathbf{s}(G') \right)
