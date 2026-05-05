@@ -27,7 +27,7 @@ to simulate or estimate it, and its relevance for modeling real network data.
 
 While these basic random graph models can serve as a simple yet informative
 baseline for understanding connectivity patterns, they only allow us to control
-a single feature (e.g. edge probability and degree sequence) at a time, limiting
+a single feature (e.g., edge probability and degree sequence) at a time, limiting
 its usefulness for modeling richer network patterns. This leads the way to out
 next chapter where we introduce exponential random graph models (ERGMs), which
 is a powerful and flexible framework that allows for the specification of
@@ -187,7 +187,7 @@ clustering_obs <- transitivity(g_obs, type = "global")
 dist_obs <- mean_distance(g_obs, directed = FALSE, unconnected = TRUE)
 
 # Generate a G(n, p) graph with the same density
-set.seed(123)
+set.seed(1108)
 g_gnp <- sample_gnp(n = n, p = density_obs, directed = FALSE)
 
 deg_gnp <- degree(g_gnp)
@@ -347,7 +347,7 @@ clustering_obs <- transitivity(g_obs, type = "global")
 dist_obs <- mean_distance(g_obs, directed = FALSE, unconnected = TRUE)
 
 # Simulate configuration model with the same degree sequence
-set.seed(123)
+set.seed(1108)
 g_conf <- sample_degseq(deg_seq, method = "fast.heur.simple")
 
 # Compute simulated properties
@@ -503,7 +503,7 @@ avg_deg_obs <- mean(deg_obs)
 k <- round(avg_deg_obs / 2)  # average degree per side for ring lattice
 
 # Simulate small-world graph
-set.seed(123)
+set.seed(1108)
 g_sw <- sample_smallworld(dim = 1, size = n, nei = k, p = 0.05)
 
 # Compute properties
@@ -610,7 +610,7 @@ k <- 4   # number of nearest neighbors on each side
 p_values <- seq(0, 1, by = 0.05)
 
 # Simulate small-world networks over different p
-set.seed(42)
+set.seed(1108)
 sw_stats <- lapply(p_values, function(p) {
   g <- sample_smallworld(dim = 1, size = n, nei = k, p = p)
   tibble(
@@ -618,10 +618,10 @@ sw_stats <- lapply(p_values, function(p) {
     Clustering = transitivity(g, type = "global"),
     AvgPathLength = mean_distance(g, directed = FALSE, unconnected = TRUE)
   )
-}) %>% bind_rows()
+}) |> bind_rows()
 
 # Reshape for plotting
-sw_long <- sw_stats %>%
+sw_long <- sw_stats |>
   pivot_longer(cols = c(Clustering, AvgPathLength),
                names_to = "Metric", values_to = "Value")
 

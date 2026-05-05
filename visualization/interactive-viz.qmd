@@ -61,7 +61,7 @@ flo <- subgraph(
     which.max(components(flo_marriage)$csize)
 )
 
-## Wealth tiers: grouping used for colour, legend, hulls, bubble sets
+# Wealth tiers: grouping used for color, legend, hulls, bubble sets
 V(flo)$wealth_tier <- as.character(cut(
   V(flo)$wealth,
   breaks = quantile(V(flo)$wealth, probs = c(0, 1 / 3, 2 / 3, 1)),
@@ -69,7 +69,7 @@ V(flo)$wealth_tier <- as.character(cut(
   include.lowest = TRUE
 ))
 
-## Degree for node sizes
+# Degree for node sizes
 V(flo)$degree <- degree(flo)
 
 palette3 <- c(low = "#1A5878", mid = "#AD8941", high = "#C44237")
@@ -187,7 +187,7 @@ quickly run into these rough edges.
 For this reason, the rest of the chapter builds the inputs to `g6()` explicitly.
 We construct a list of nodes and a list of edges with `g6_node()` / `g6_edge()`,
 and pass those to `g6()`. It is slightly more verbose than `g6_igraph(flo)`, but
-in return every plugin, behaviour, and style property we demonstrate receives
+in return every plugin, behavior, and style property we demonstrate receives
 exactly the data structure it expects.
 
 ### Building nodes and edges
@@ -242,14 +242,14 @@ With `nodes` and `edges` in hand, the shortest viable `g6R` pipeline is a single
 `g6()` call piped into a layout. @fig-g6r-first shows the result: the force
 simulation animates as the graph loads, but no user interactions are wired up
 yet. So after the layout settles, no further interactions are possible. These
-are added through behaviours, which are covered in their own section later.
+are added through behaviors, which are covered in their own section later.
 `g6_options()` is used here to make the canvas fill the available space
 (`autoFit = "view"`) and resize responsively (`autoResize = TRUE`).
 
 ```{r}
 #| label: fig-g6r-first
 #| eval: !expr is_html
-#| fig-cap: "Florentine marriage network with `g6R` using just a layout and no behaviours."
+#| fig-cap: "Florentine marriage network with `g6R` using just a layout and no behaviors."
 
 g6(nodes, edges) |>
   g6_layout() |> 
@@ -258,7 +258,7 @@ g6(nodes, edges) |>
 ```
 
 ::: {.content-visible when-format="pdf"}
-![Florentine marriage network with `g6R` using just a layout and no behaviours.](img/screenshots/fig-g6r-first.png){#fig-g6r-first}
+![Florentine marriage network with `g6R` using just a layout and no behaviors.](img/screenshots/fig-g6r-first.png){#fig-g6r-first}
 :::
 
 ### The g6R workflow
@@ -319,7 +319,7 @@ tree graphs.
 
 There are two complementary ways to control the appearance of nodes and edges.
 Per-element styles, set in the `style` slot of each node or edge, give every
-element its own colour, size, and label as we did in the data preparation above.
+element its own color, size, and label as we did in the data preparation above.
 Global defaults, set with `g6_options()`, apply to all elements and can be
 overridden by per-element styles.
 
@@ -510,7 +510,7 @@ of nodes and redraws as the nodes move. The `members` argument is a character
 vector of node ids, which is where the explicit list-based construction pays
 off. We can simply split the family names by wealth tier.
 
-@fig-g6r-hull uses the `"drag-element"` behaviour (which updates node positions
+@fig-g6r-hull uses the `"drag-element"` behavior (which updates node positions
 directly) rather than `drag_element_force()`, and sets `animation = FALSE`.
 Under this combination the hull reliably redraws.
 
@@ -554,7 +554,7 @@ convex hulls, it wraps groups in smooth, rounded contours that can overlap
 organically, as shown in @fig-g6r-bubble. This is often more legible than hulls
 when groups share members or sit close to each other on the canvas. As with the
 hull plugin, the bubble outline redraws cleanly under the `"drag-element"`
-behaviour with `animation = FALSE`.
+behavior with `animation = FALSE`.
 
 ```{r}
 #| label: fig-g6r-bubble
@@ -626,7 +626,7 @@ g6(nodes, edges) |>
 
 The `legend` plugin reads a field name from node data and draws a legend for it
 directly on the canvas. In @fig-g6r-legend we point it at `wealth_tier`, which
-matches the colour split used by the hulls and bubbles above.
+matches the color split used by the hulls and bubbles above.
 
 ```{r}
 #| label: fig-g6r-legend

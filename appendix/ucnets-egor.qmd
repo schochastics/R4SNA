@@ -27,7 +27,7 @@ The ego table contains one row per respondent and includes the following variabl
 -   **`health`** – self-rated health retained as an ordered factor (`excellent`, `very_good`, `good`, `fair`, `poor`), from `G1`.
 -   **`lose_weight_advice`** – whether a health professional advised the respondent to lose weight (`1 = yes`, `0 = no`), from `H3`.
 -   **`smoker`** – cigarette smoking indicator (`1 = yes`, `0 = no`), from `H4A`.
--   **`drinking_days`** – number of days per week the respondent drinks alcohol, from `H5A`. Value 9 means doesn't drink and value 8 is leass than once a week.
+-   **`drinking_days`** – number of days per week the respondent drinks alcohol, from `H5A`. Value 9 means doesn't drink and value 8 is less than once a week.
 -   **`marijuana_use`** – marijuana use during the last year (`1 = yes`, `0 = no`), from `H6A`.
 -   **`extraversion`** – personality measure combining two items: the item measuring being reserved (`J1A`) is reverse-coded and averaged with the sociability item (`J1B`), producing a continuous indicator where higher values indicate a more outgoing disposition.
 -   **`education`** – highest completed level of education retained as an ordered factor, from `K1`.
@@ -98,11 +98,11 @@ pair_vars <- c(
 # 2. EGO-LEVEL DATA
 # =========================
 
-egos <- egow1 %>%
+egos <- egow1 |>
   select(
     PRIM_KEY, GENDER, YEAR_PRELOAD, AGE_EX, A2A, A13A, A19A, B3B,
     G1, H3, H4A, H5A, H6A, J1A, J1B, K1, RACECATS1, K9A, K15, K22A
-  ) %>%
+  ) |>
   transmute(
     .egoID = as.character(PRIM_KEY),
 
@@ -235,15 +235,15 @@ egos <- egow1 %>%
         "500k_plus"
       )
     )
-  ) %>%
+  ) |>
   distinct()
 
 # =========================
 # 3. ALTER-LEVEL DATA
 # =========================
 
-alters <- altw1 %>%
-  filter(!is.na(PRIM_KEY), !is.na(NAME_NMBR2)) %>%
+alters <- altw1 |>
+  filter(!is.na(PRIM_KEY), !is.na(NAME_NMBR2)) |>
   transmute(
     .egoID = as.character(PRIM_KEY),
     .altID = as.integer(NAME_NMBR2),
@@ -270,22 +270,22 @@ alters <- altw1 %>%
       as.numeric(C1C_NSAMEAGE) == 0 ~ 0,
       TRUE ~ NA_real_
     )
-  ) %>%
+  ) |>
   distinct()
 
 # =========================
 # 4. ALTER-ALTER TIES
 # =========================
 
-aaties <- altw1 %>%
-  select(PRIM_KEY, all_of(pair_vars)) %>%
-  distinct() %>%
+aaties <- altw1 |>
+  select(PRIM_KEY, all_of(pair_vars)) |>
+  distinct() |>
   pivot_longer(
     cols = all_of(pair_vars),
     names_to = "pair",
     values_to = "relation"
-  ) %>%
-  filter(!is.na(relation)) %>%
+  ) |>
+  filter(!is.na(relation)) |>
   mutate(
     relation = as.character(relation),
 
@@ -295,16 +295,16 @@ aaties <- altw1 %>%
     .egoID = as.character(PRIM_KEY),
     .srcID = as.integer(sub("^N([1-5])_N([1-5])$", "\\1", pair)),
     .tgtID = as.integer(sub("^N([1-5])_N([1-5])$", "\\2", pair))
-  ) %>%
-  filter(weight == 1) %>%
+  ) |>
+  filter(weight == 1) |>
   select(.egoID, .srcID, .tgtID, weight)
 
 # Keep only alter-alter ties for alters that exist in the alter table
-valid_alters <- alters %>%
+valid_alters <- alters |>
   select(.egoID, .altID)
 
-aaties <- aaties %>%
-  inner_join(valid_alters, by = c(".egoID", ".srcID" = ".altID")) %>%
+aaties <- aaties |>
+  inner_join(valid_alters, by = c(".egoID", ".srcID" = ".altID")) |>
   inner_join(valid_alters, by = c(".egoID", ".tgtID" = ".altID"))
 
 # =========================

@@ -20,7 +20,7 @@ allows for:
 - Direct specification of tie dependencies
 - Testing of competing social mechanisms
 
-This leads us to models that are built around network configurations, i.e.
+This leads us to models that are built around network configurations, i.e.,
 small, interpretable patterns of ties (such as mutual ties, stars, and
 triangles) that collectively describe the structure of the network. These
 configurations are often nested, meaning they build on one another
@@ -43,6 +43,7 @@ processes that shape real-world networks.
 ## Packages Needed for this Chapter
 
 ```{r}
+#| label: libraries
 #| message: false
 
 library(statnet)
@@ -345,7 +346,7 @@ tractable.
 
 ##### Example: Teenage Friends and Lifestyle Study data {.unnumbered}
 
-For an example including the homophily statistic, we use the the "Teenage
+For an example including the homophily statistic, we use the "Teenage
 Friends and Lifestyle Study" data called `s50` in the `networkdata` package. The
 `s50` dataset is a subset of 50 pupils over a three-year panel study of
 adolescent friendship networks and health behaviors conducted in a school in the
@@ -584,9 +585,9 @@ flob_g <- networkdata::flo_business
 class(flob_g)  # Confirms it's a 'graph' class object
 
 flob_p <- ggraph(flob_g, layout = "stress") + 
-  geom_edge_link0(edge_colour = "#666060", 
+  geom_edge_link0(edge_color = "#666060", 
                   edge_width = 0.8, edge_alpha = 1) +
-  geom_node_point(fill = "#808080", colour = "#808080",  
+  geom_node_point(fill = "#808080", color = "#808080",  
                   size = 7, shape = 21, stroke = 0.9) +
   theme_graph() + 
   theme(legend.position = "none") +
@@ -619,7 +620,7 @@ class(flob_net)  # Confirms it's a 'network' class object
 
 
 # Fit ERGM with Markov dependence terms
-set.seed(77)
+set.seed(1108)
 model_markov <- ergm(flob_net ~ edges + kstar(2) + kstar(3) + triangle)
 
 
@@ -856,7 +857,7 @@ law_net %v% "practice" <- law_attr.pract
 
 
 # Fit ERGM with attribute and structural terms
-set.seed(7)
+set.seed(1108)
 model_sc <- ergm(law_net ~ edges
                 + nodecov("practice") + nodematch("practice")
                 + gwesp(0.693, fixed = TRUE)

@@ -22,6 +22,13 @@ library(graphlayouts)
 library(networkdata)
 ```
 
+```{r}
+#| label: libraries-silent
+#| include: false
+
+library(patchwork)
+```
+
 ## Data Preparation
 
 As a running example in this chapter, we use the network of character
@@ -46,10 +53,10 @@ got_palette <- c(
   "#9ACD32"
 )
 
-## compute a clustering for node colors
+# compute a clustering for node colors
 V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 
-## compute degree as node size
+# compute degree as node size
 V(gotS1)$size <- degree(gotS1)
 ```
 
@@ -78,7 +85,7 @@ each component effectively.
 #| fig-height: 6
 
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_manual(values = got_palette) +
@@ -134,10 +141,8 @@ ggraph(gotS1, layout = "dh") +
 #| fig-height: 10
 #| echo: false
 
-library(patchwork)
-
 p1 <- ggraph(gotS1, layout = "dh") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_manual(values = got_palette) +
@@ -148,7 +153,7 @@ p1 <- ggraph(gotS1, layout = "dh") +
   labs(title = "layout = 'dh'")
 
 p2 <- ggraph(gotS1, layout = "kk") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_manual(values = got_palette) +
@@ -159,7 +164,7 @@ p2 <- ggraph(gotS1, layout = "kk") +
   labs(title = "layout = 'kk'")
 
 p3 <- ggraph(gotS1, layout = "fr") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_manual(values = got_palette) +
@@ -170,7 +175,7 @@ p3 <- ggraph(gotS1, layout = "fr") +
   labs(title = "layout = 'fr'")
 
 p4 <- ggraph(gotS1, layout = "mds") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_manual(values = got_palette) +
@@ -205,7 +210,7 @@ ggraph(gotS1_layout) +
 ## Edges
 
 ```r
-geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66")
+geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66")
 ```
 
 The second layer specifies how edges are drawn. To do so, we use one of the many
@@ -238,7 +243,7 @@ between two nodes, one can switch to `geom_edge_parallel()` (see @fig-parallel).
 g <- make_graph(c(1, 2, 1, 2, 1, 2))
 
 ggraph(g, layout = "stress") +
-  geom_edge_parallel(edge_colour = "grey66", edge_linewidth = 0.5) +
+  geom_edge_parallel(edge_color = "grey66", edge_linewidth = 0.5) +
   geom_node_point(size = 5) +
   theme_graph()
 ```
@@ -253,7 +258,7 @@ shows the difference between the two.
 #| fig-height: 6
 
 ggraph(g, layout = "stress") +
-  geom_edge_fan(edge_colour = "grey66", edge_linewidth = 0.5) +
+  geom_edge_fan(edge_color = "grey66", edge_linewidth = 0.5) +
   geom_node_point(size = 5) +
   theme_graph()
 ```
@@ -270,7 +275,7 @@ dots on each edge compared to only two dots (the endpoints) in
 #| fig-height: 6
 
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link(aes(alpha = after_stat(index)), edge_colour = "black") +
+  geom_edge_link(aes(alpha = after_stat(index)), edge_color = "black") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width_continuous(range = c(0.2, 3)) +
@@ -288,13 +293,13 @@ Within `geom_edge_link0`, you can specify the appearance of the edge, either by
 mapping edge attributes to aesthetics or setting them globally for the graph.
 Mapping attributes to aesthetics is done within `aes()`. In the example, we map
 the edge width to the edge attribute "weight". `ggraph` then automatically
-scales the edge width according to the attribute. The colour of all edges is
+scales the edge width according to the attribute. The color of all edges is
 globally set to "grey66".
 
 The following aesthetics can be used within `geom_edge_link0` either within
 `aes()` or globally:
 
-- edge_colour (colour of the edge)
+- edge_color (color of the edge)
 - edge_linewidth (width of the edge)
 - edge_linetype (linetype of the edge, defaults to "solid")
 - edge_alpha (opacity; a value between 0 and 1)
@@ -324,7 +329,7 @@ g <- make_graph(c(1, 2, 2, 3), directed = TRUE)
 
 ggraph(g, layout = "stress") +
   geom_edge_link0(
-    edge_colour = "grey66", edge_linewidth = 0.5,
+    edge_color = "grey66", edge_linewidth = 0.5,
     arrow = arrow(
       angle = 30, length = unit(0.15, "inches"),
       ends = "last", type = "closed"
@@ -364,20 +369,20 @@ the attribute "size". The shape of the node is globally set to 21.
 
 @fig-points-symbols shows all possible shapes that can be used for the nodes.
 
-![Available point shapes in R. Shapes 0-20 only have a border (set via `colour`), while shapes 21-25 have both a border (`colour`) and a fill (`fill`).](img/points-symbols.png){#fig-points-symbols}
+![Available point shapes in R. Shapes 0-20 only have a border (set via `color`), while shapes 21-25 have both a border (`color`) and a fill (`fill`).](img/points-symbols.png){#fig-points-symbols}
 
 For networks, "21" is a solid choice since it draws a border around the nodes.
 If other shapes are used, say "19", several things need to be considered. To
-change the color of shapes 1-20, the colour parameter needs to be set. For
-shapes 21-25 the fill parameter. The colour parameter only controls the border
+change the color of shapes 1-20, the color parameter needs to be set. For
+shapes 21-25 the fill parameter. The color parameter only controls the border
 for these cases.
 
 The following aesthetics can be used within `geom_node_point()` either within
 `aes()` or globally:
 
 - alpha (opacity; a value between 0 and 1)
-- colour (colour of shapes 0-20 and border colour for 21-25)
-- fill (fill colour for shape 21-25)
+- color (color of shapes 0-20 and border color for 21-25)
+- fill (fill color for shape 21-25)
 - shape (node shape; a value between 0 and 25)
 - size (size of node)
 - stroke (size of node border)
@@ -386,7 +391,7 @@ For `geom_node_text()`, there are a lot more options available, but the most
 important ones are:
 
 - label (attribute to be displayed as node label)
-- colour (text colour)
+- color (text color)
 - family (font to be used)
 - size (font size)
 
@@ -421,7 +426,7 @@ automatically as shown in @fig-no-scales.
 #| fig-height: 6
 
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   theme_graph() +
@@ -436,7 +441,7 @@ What kind of `scale_*` function is needed depends on the aesthetic and on the
 type of attribute. Generally, scale functions are structured as\
 `scale_<aes>_<variable type>()`.\
 
-The "aes" part is easy. It is just the type specified within `aes()`. For edges,
+The "aes" part is easy. It is the type specified within `aes()`. For edges,
 however, `edge_` needs to be prepended to the aesthetic name. The "variable
 type" depends on which scale the attribute is on. The following table gives an
 overview of which aesthetics can be used for which variable type and some notes
@@ -446,10 +451,10 @@ on when to use which aesthetic.
   | ---------------- | ---------------------- | ------------------------------------------------------------------------------- |
   | node size        | continuous             |                                                                                 |
   | edge width       | continuous             |                                                                                 |
-  | node colour/fill | categorical/continuous | use a gradient for continuous variables                                         |
-  | edge colour      | continuous             | categorical only if there are different types of edges                          |
-  | node shape       | categorical            | only if there are a few categories (1-5). Colour should be the preferred choice |
-  | edge linetype    | categorical            | only if there are a few categories (1-5). Colour should be the preferred choice |
+  | node color/fill | categorical/continuous | use a gradient for continuous variables                                         |
+  | edge color      | continuous             | categorical only if there are different types of edges                          |
+  | node shape       | categorical            | only if there are a few categories (1-5). Color should be the preferred choice |
+  | edge linetype    | categorical            | only if there are a few categories (1-5). Color should be the preferred choice |
   | node/edge alpha  | continuous             |                                                                                 |
 
 The easiest to use scales are those for continuous variables mapped to edge
@@ -459,19 +464,19 @@ are several parameters within `scale_edge_width_continuous()` and
 minimum and maximum width and size respectively. In most cases it suffices to
 only adjust this parameter.
 
-For continuous variables which are mapped to node/edge colour, one can use
-`scale_colour_gradient()` `scale_colour_gradient2()` or
-`scale_colour_gradientn()` (add edge\_ before colour for edge colours). The
+For continuous variables which are mapped to node/edge color, one can use
+`scale_color_gradient()` `scale_color_gradient2()` or
+`scale_color_gradientn()` (add edge\_ before color for edge colors). The
 difference between these functions is in how the gradient is constructed.
-`gradient` creates a two colour gradient (low-high). So just two colours need to
+`gradient` creates a two color gradient (low-high). So just two colors need to
 be specified (e.g. `low = "blue"`, `high = "red"`). `gradient2` creates a
-diverging colour gradient (low-mid-high) (e.g. `low = "blue"`, `mid = "white"`,
-`high = "red"`) and `gradientn` a gradient consisting of more than three colours
-(specified with the colours parameter).
+diverging color gradient (low-mid-high) (e.g. `low = "blue"`, `mid = "white"`,
+`high = "red"`) and `gradientn` a gradient consisting of more than three colors
+(specified with the colors parameter).
 
-For categorical variables that are mapped to node colours (or fill in our
+For categorical variables that are mapped to node colors (or fill in our
 example), one can use `scale_fill_manual()` to choose a color for each category
-manually. To do so, simply create a vector of colors (like the `got_palette`)
+manually. To do so, create a vector of colors (like the `got_palette`)
 and pass it to the function with the parameter values.
 
 `ggraph` then assigns the colors in the order of the unique values of the
@@ -484,7 +489,7 @@ character).
 
 sort(unique(V(gotS1)$clu))
 ```
-To avoid automatic assignment of colors, one can pass the vector of colours as a
+To avoid automatic assignment of colors, one can pass the vector of colors as a
 named vector. The difference between unnamed and named palettes is shown in
 @fig-got-plot-pal2.
 
@@ -499,15 +504,13 @@ got_palette2 <- c(
 
 ```{r}
 #| label: fig-got-plot-pal2
-#| fig-cap: "Comparison of unnamed and named colour palettes."
+#| fig-cap: "Comparison of unnamed and named color palettes."
 #| fig-width: 13
 #| fig-height: 5
 #| echo: false
 
-library(patchwork)
-
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_manual(values = got_palette2) +
@@ -518,7 +521,7 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "none") -> p2
 
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_manual(values = got_palette) +
@@ -531,8 +534,8 @@ ggraph(gotS1, layout = "stress") +
 p1 + p2
 ```
 
-Using a manual colour palette gives the network a unique touch but
-`scale_fill_brewer()` and `scale_colour_brewer()` can also be used to apply
+Using a manual color palette gives the network a unique touch but
+`scale_fill_brewer()` and `scale_color_brewer()` can also be used to apply
 predefined color palettes.
 
 The function offers all palettes available at
@@ -541,12 +544,12 @@ The function offers all palettes available at
 
 ```{r}
 #| label: fig-got-plot-brewer
-#| fig-cap: "GoT network coloured with a ColorBrewer palette."
+#| fig-cap: "GoT network colored with a ColorBrewer palette."
 #| fig-width: 10
 #| fig-height: 6
 
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_brewer(palette = "Dark2") +
@@ -565,10 +568,10 @@ theme_graph() +
 
 Themes control the overall look of the plot. There are a lot of options within
 the `theme()` function of `ggplot2`. However, there is really no need to use any
-of those. `theme_graph()` is used to erase all of the default ggplot theme (e.g.
+of those. `theme_graph()` is used to erase all of the default ggplot theme (e.g.,
 axis, background, grids, etc.) since they are irrelevant for networks. The only
 option worthwhile in `theme()` is `legend.position`, which we set to `"none"`,
-i.e. do not show the legend.
+i.e., do not show the legend.
 
 @fig-got-plot-legend gives an example for a plot with a legend.
 
@@ -579,7 +582,7 @@ i.e. do not show the legend.
 #| fig-height: 6
 
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
   scale_fill_manual(values = got_palette) +
@@ -609,7 +612,7 @@ The dataset is included in the `networkdata` package.
 
 data("polblogs")
 
-## add a vertex attribute for the indegree
+# add a vertex attribute for the indegree
 V(polblogs)$deg <- degree(polblogs, mode = "in")
 ```
 
@@ -625,7 +628,7 @@ lay <- create_layout(polblogs, "stress")
 
 ggraph(lay) +
     geom_edge_link0(
-        edge_linewidth = 0.2, edge_colour = "grey66",
+        edge_linewidth = 0.2, edge_color = "grey66",
         arrow = arrow(
             angle = 15, length = unit(0.15, "inches"),
             ends = "last", type = "closed"
@@ -653,7 +656,7 @@ lay <- create_layout(polblogs, "stress")
 
 ggraph(lay) +
     geom_edge_link0(
-        edge_linewidth = 0.2, edge_colour = "grey66",
+        edge_linewidth = 0.2, edge_color = "grey66",
         arrow = arrow(
             angle = 15, length = unit(0.1, "inches"),
             ends = "last", type = "closed"
@@ -663,19 +666,19 @@ ggraph(lay) +
 ```
 
 @fig-polblogs3 shows the network with styling applied to the nodes. Political
-orientation is mapped to node colour and indegree to node size. The colors are
+orientation is mapped to node color and indegree to node size. The colors are
 manually set to match the original visualization and the size range is adjusted
 to make the differences in node size more visible.
 
 ```{r}
 #| label: fig-polblogs3
-#| fig-cap: "Political blogs network with node colour mapped to political orientation."
+#| fig-cap: "Political blogs network with node color mapped to political orientation."
 #| fig-width: 10
 #| fig-height: 8
 
 ggraph(lay) +
     geom_edge_link0(
-        edge_linewidth = 0.2, edge_colour = "grey66",
+        edge_linewidth = 0.2, edge_color = "grey66",
         arrow = arrow(
             angle = 15, length = unit(0.15, "inches"),
             ends = "last", type = "closed"
@@ -693,7 +696,7 @@ political orientations. This new variable is mapped to the edge color
 
 ```{r}
 #| label: fig-polblogs4
-#| fig-cap: "Political blogs network with edge colour mapped to within/between political orientation."
+#| fig-cap: "Political blogs network with edge color mapped to within/between political orientation."
 #| fig-width: 10
 #| fig-height: 8
 
@@ -705,7 +708,7 @@ E(polblogs)$col <- ifelse(pol_from == pol_to, pol_from, "mixed")
 lay <- create_layout(polblogs, "stress")
 ggraph(lay) +
     geom_edge_link0(
-        edge_linewidth = 0.2, aes(edge_colour = col),
+        edge_linewidth = 0.2, aes(edge_color = col),
         arrow = arrow(
             angle = 10, length = unit(0.1, "inches"),
             ends = "last", type = "closed"
@@ -713,7 +716,7 @@ ggraph(lay) +
     ) +
     geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
     scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
-    scale_edge_colour_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
+    scale_edge_color_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
     scale_size(range = c(0.5, 7))
 ```
 
@@ -732,14 +735,14 @@ the intra group edges as seen in @fig-polblogs5.
 
 ggraph(lay) +
     geom_edge_link0(
-        edge_linewidth = 0.2, aes(filter = (col == "mixed"), edge_colour = col),
+        edge_linewidth = 0.2, aes(filter = (col == "mixed"), edge_color = col),
         arrow = arrow(
             angle = 10, length = unit(0.1, "inches"),
             ends = "last", type = "closed"
         ), show.legend = FALSE
     ) +
     geom_edge_link0(
-        edge_linewidth = 0.2, aes(filter = (col != "mixed"), edge_colour = col),
+        edge_linewidth = 0.2, aes(filter = (col != "mixed"), edge_color = col),
         arrow = arrow(
             angle = 10, length = unit(0.1, "inches"),
             ends = "last", type = "closed"
@@ -747,7 +750,7 @@ ggraph(lay) +
     ) +
     geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
     scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
-    scale_edge_colour_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
+    scale_edge_color_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
     scale_size(range = c(0.5, 7))
 ```
 
@@ -761,14 +764,14 @@ Finally, we add the `theme_graph()` in @fig-polblogs6 to finalize the plot.
 
 ggraph(lay) +
     geom_edge_link0(
-        edge_linewidth = 0.2, aes(filter = (col == "mixed"), edge_colour = col),
+        edge_linewidth = 0.2, aes(filter = (col == "mixed"), edge_color = col),
         arrow = arrow(
             angle = 10, length = unit(0.1, "inches"),
             ends = "last", type = "closed"
         ), show.legend = FALSE
     ) +
     geom_edge_link0(
-        edge_linewidth = 0.2, aes(filter = (col != "mixed"), edge_colour = col),
+        edge_linewidth = 0.2, aes(filter = (col != "mixed"), edge_color = col),
         arrow = arrow(
             angle = 10, length = unit(0.1, "inches"),
             ends = "last", type = "closed"
@@ -776,7 +779,7 @@ ggraph(lay) +
     ) +
     geom_node_point(shape = 21, aes(fill = pol, size = deg), show.legend = FALSE) +
     scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
-    scale_edge_colour_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
+    scale_edge_color_manual(values = c("left" = "#104E8B", "mixed" = "goldenrod", "right" = "firebrick3")) +
     scale_size(range = c(0.5, 7)) +
     theme_graph()
 ```

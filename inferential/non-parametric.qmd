@@ -123,7 +123,7 @@ to have arisen by chance under the null model.
 #| label: nullmodel-ex
 
 # Create an observed graph
-set.seed(77)
+set.seed(1108)
 obs_graph <- sample_smallworld(1, 50, nei = 5, p = 0.15)
 
 # Compute observed centralization
@@ -186,7 +186,7 @@ coleman_g <- networkdata::coleman[[1]]
 
 # plot using gggraph
 ggraph(coleman_g, layout = "stress") + 
-          geom_edge_link(edge_colour = "#666060", end_cap = circle(9,"pt"), 
+          geom_edge_link(edge_color = "#666060", end_cap = circle(9,"pt"), 
                          n = 2, edge_width = 0.4, edge_alpha = 0.7, 
                          arrow = arrow(angle = 15, 
                          length = unit(0.1, "inches"), 
@@ -232,7 +232,7 @@ specified above.
 
 ```{r}
 # Simulate 1000 random graphs with same density
-set.seed(123)
+set.seed(1108)
 sim_g_dens <- replicate(1000, {
   sample_gnp(n = n_nodes, p = density_obs, directed = TRUE, loops = FALSE)
 }, simplify = FALSE)
@@ -355,7 +355,7 @@ random networks using the `sample_gnm()` function from the `igraph` package,
 which samples graphs with a fixed number of edges.
 
 ```{r}
-set.seed(123)  
+set.seed(1108)  
 # Parameters from the observed network
 n_nodes <- vcount(coleman_g)
 n_edges <- ecount(coleman_g)
@@ -472,7 +472,7 @@ In directed networks, there are two triad types corresponding to closed triads,
 030T and 300.
 
 ```{r}
-set.seed(123) 
+set.seed(1108) 
 # Generate 1000 graphs with fixed dyad census using rguman (from sna)
 sim_nets_man <- rguman(n = 1000, nv = n_nodes, 
                         mut =  dyad_census(coleman_g)$mut, 
@@ -495,9 +495,9 @@ sim_g_tc <- t(sapply(sim_g_man, triad_census))
 sim_g_tc_df <- as.data.frame(sim_g_tc)
 
 # Extract simulated triad counts 
-triad_df <- sim_g_tc_df %>%
-  select(9, 16) %>%
-  rename(`Triad 030T` = 1, `Triad 300` = 2) %>%
+triad_df <- sim_g_tc_df |>
+  select(9, 16) |>
+  rename(`Triad 030T` = 1, `Triad 300` = 2) |>
   pivot_longer(cols = everything(), names_to = "Triad_Type", values_to = "Count")
 
 # Create observed values for vertical lines
@@ -572,7 +572,7 @@ out_deg <- igraph::degree(coleman_g, mode = "out")
 obs_dist <- mean_distance(coleman_g, directed = TRUE, unconnected = TRUE)
 
 # Simulate 1000 graphs preserving degree sequence
-set.seed(123)
+set.seed(1108)
 sim_deg_graphs <- replicate(1000, sample_degseq(out.deg = out_deg, 
                                                 in.deg = in_deg,
                                                 method = "fast.heur.simple"), 
@@ -628,7 +628,7 @@ turn to another data set with available node attributes, namely the one by
 partnership that was carried out in a Northeastern US corporate law firm,
 referred to as SG&R, 1988-1991 in New England. It includes (among others)
 measurements of networks among the 71 attorneys (partners and associates) of
-this firm, i.e. their coworker network, advice network, friendship network, and
+this firm, i.e., their coworker network, advice network, friendship network, and
 indirect control networks. Various members' attributes are also part of the
 dataset, including seniority, formal status, office in which they work, gender,
 lawschool attended.
@@ -668,20 +668,20 @@ practice <- as.factor(V(law_cowork_partners_g)$pract)  # 1 = litigation, 2 = cor
 
 
 # --- Convert to tidygraph objects and add attributes ---
-tg_friends <- as_tbl_graph(law_friends_g) %>%
+tg_friends <- as_tbl_graph(law_friends_g) |>
   mutate(gender = as.factor(gender), network = "Friendship (71 Lawyers)")
 
-tg_cowork <- as_tbl_graph(law_cowork_partners_g) %>%
+tg_cowork <- as_tbl_graph(law_cowork_partners_g) |>
   mutate(practice = as.factor(practice), network = "Coworking (36 Partners)")
 
 # --- Create layouts ---
-set.seed(123)
+set.seed(1108)
 layout_friends <- create_layout(tg_friends, layout = "fr")
 layout_cowork <- create_layout(tg_cowork, layout = "fr")
 
 # --- Plot 1: Friendship colored by gender ---
 p1 <- ggraph(layout_friends) +
-  geom_edge_link(edge_colour = "#666060", end_cap = circle(9,"pt"), 
+  geom_edge_link(edge_color = "#666060", end_cap = circle(9,"pt"), 
                          n = 2, edge_width = 0.4, edge_alpha = 0.7, 
                          arrow = arrow(angle = 15, 
                          length = unit(0.1, "inches"), 
@@ -693,7 +693,7 @@ p1 <- ggraph(layout_friends) +
 
 # --- Plot 2: Coworking colored by practice ---
 p2 <- ggraph(layout_cowork) +
-  geom_edge_link(edge_colour = "#666060") +
+  geom_edge_link(edge_color = "#666060") +
   geom_node_point(aes(color = practice), size = 4) +
   scale_color_manual(values = c("forestgreen", "violet"), labels = c("Litigation", "Corporate")) +
   labs(title = "Coworking Network (Partners)", color = "Practice") +
@@ -756,7 +756,7 @@ compute the number of homophilous ties in each simulated network (assuming the
 same ordering of gender assignments to nodes in each simulated network):
 
 ```{r}
-set.seed(123)
+set.seed(1108)
 law_sim_g <- replicate(1000, {
   g <- sample_gnm(n = law_nodes, m = law_edges, directed = TRUE, loops = FALSE)
   as_adjacency_matrix(g, sparse = FALSE)
@@ -870,7 +870,7 @@ To construct the null model, we generate 1000 random undirected graphs with the
 same number of nodes and total number of ties:
 
 ```{r}
-set.seed(77)
+set.seed(1108)
 law_sim_cw <- replicate(1000, {
   g <- sample_gnm(n = law_nodes_cw, m = law_ties_cw, directed = FALSE, loops = FALSE)
   as_adjacency_matrix(g, sparse = FALSE)

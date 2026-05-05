@@ -21,7 +21,7 @@ library(netUtils)
 ```
 
 ```{r}
-#| label: libraries_silent
+#| label: libraries-silent
 #| include: false
 
 library(ggraph)
@@ -286,14 +286,14 @@ and a list of communities (which nodes belong to each community).
 ```{r}
 #| label: cluster_ex
 
-## compute clustering
+# compute clustering
 clu <- cluster_louvain(karate)
 
-## cluster membership vector
+# cluster membership vector
 mem <- membership(clu)
 mem
 
-## clusters as list
+# clusters as list
 com <- communities(clu)
 com
 ```
@@ -346,7 +346,7 @@ solution is shown in @fig-karate-clu.
 ```{r}
 #| label: fig-karate-clu
 #| echo: false
-#| fig-cap: "Karate club network coloured by community membership (optimal partition)."
+#| fig-cap: "Karate club network colored by community membership (optimal partition)."
 
 V(karate)$clu <- membership(optc)
 ggraph(karate, "stress") +
@@ -459,7 +459,7 @@ The resulting clustering is shown in @fig-karate-leiden.
 ```{r}
 #| label: fig-karate-leiden
 #| echo: false
-#| fig-cap: "Karate club network coloured by community membership (Leiden algorithm with CPM objective function)."
+#| fig-cap: "Karate club network colored by community membership (Leiden algorithm with CPM objective function)."
 
 V(karate)$clu <- membership(leidenc)
 ggraph(karate, "stress") +
@@ -481,7 +481,7 @@ the other. As discussed at the start of this section, there is no universal
 definition of what a community is, and different methods (and different
 parameter settings) operationalise the concept differently. The optimal
 modularity partition maximises one particular quality function; the Leiden CPM
-partition optimises another. By tuning the `resolution` parameter in
+partition optimizes another. By tuning the `resolution` parameter in
 `cluster_leiden()`, we could obtain a partition that matches the
 modularity-optimal one, but that would just mean we have chosen parameters to
 agree with a specific criterion, not that we have found the "true" communities.
@@ -501,7 +501,7 @@ connected internally. Blockmodeling takes a slightly different perspective: it
 groups nodes based on *patterns* of connections, not just density. Two nodes
 belong to the same block if they relate to other blocks in similar ways,
 regardless of whether they are connected to each other. This makes blockmodeling
-particularly useful for role analysis in sociology and organisational context.
+particularly useful for role analysis in sociology and organizational context.
 
 Several packages implement different kinds of blockmodels but the most basic
 deterministic and commonly used approaches can be found in the package
@@ -538,14 +538,14 @@ possible ties to be present, while `"nul"` (null) means we expect no ties. In
 the example below, we place `"com"` on the diagonal and `"nul"` on the
 off-diagonal, which corresponds to the familiar clustering scenario where nodes
 are densely connected within groups and sparsely connected between them. The
-function then tries multiple random starting partitions (`rep`) and optimises
+function then tries multiple random starting partitions (`rep`) and optimizes
 each one, returning the best assignment of nodes to blocks.
 
 ```{r}
 #| label: calc-rnd-block
 
 A <- as_adjacency_matrix(g)
-## define expected block structure: complete on diagonal, null off-diagonal
+# define expected block structure: complete on diagonal, null off-diagonal
 blk <- matrix(
   c(
     "com", "nul", "nul",

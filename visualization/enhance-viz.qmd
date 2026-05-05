@@ -10,7 +10,7 @@ effective tricks that address common visualization challenges.
 ## Packages Needed for this Chapter
 
 ```{r}
-#| label: libraries1
+#| label: libraries
 #| message: false
 
 library(igraph)
@@ -39,10 +39,10 @@ got_palette <- c(
   "#9ACD32"
 )
 
-## compute a clustering for node colors
+# compute a clustering for node colors
 V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 
-## compute degree as node size
+# compute degree as node size
 V(gotS1)$size <- degree(gotS1)
 ```
 
@@ -55,9 +55,9 @@ can use the `geom_mark_*()` functions to highlight clusters.
 ```{r}
 #| label: network-grps
 
-set.seed(665)
+set.seed(1108)
 
-## create network with a group structure
+# create network with a group structure
 g <- sample_islands(9, 40, 0.4, 15)
 g <- igraph::simplify(g)
 V(g)$grp <- as.character(rep(1:9, each = 40))
@@ -89,7 +89,7 @@ It is also possible to add labels to the clusters as shown in
 
 ```{r}
 #| label: fig-network-grps-label-sol
-#| fig-cap: "Network with labelled group hulls."
+#| fig-cap: "Network with labeled group hulls."
 
 ggraph(g, layout = "backbone", keep = 0.4) +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.2) +
@@ -128,14 +128,14 @@ passed to `end_cap`.
 #| label: fig-arrow-size
 #| fig-cap: "Directed network where arrows overlap with nodes of varying size."
 
-set.seed(1071)
+set.seed(1108)
 g <- sample_pa(30, 1)
 V(g)$degree <- degree(g, mode = "in")
 
 ggraph(g, "stress") +
   geom_edge_link(
     aes(end_cap = circle(node2.degree + 2, "pt")),
-    edge_colour = "black",
+    edge_color = "black",
     arrow = arrow(
       angle = 10,
       length = unit(0.15, "inches"),
@@ -169,13 +169,13 @@ normalise <- function(x, from = range(x), to = c(0, 1)) {
   x
 }
 
-## map degree to the desired point-size range
+# map degree to the desired point-size range
 V(g)$degree <- normalise(V(g)$degree, to = c(3, 11))
 
 ggraph(g, "stress") +
   geom_edge_link(
     aes(end_cap = circle(node2.degree + 2, "pt")),
-    edge_colour = "grey25",
+    edge_color = "grey25",
     arrow = arrow(
       angle = 10,
       length = unit(0.15, "inches"),
@@ -198,11 +198,12 @@ visible through the semi-transparent nodes again, as shown in @fig-alpha-nodes.
 #| label: fig-alpha-nodes
 #| fig-cap: "Network with transparent nodes where edges are visible underneath."
 
+set.seed(1108)
 g <- sample_gnp(20, 0.5)
 V(g)$degree <- degree(g)
 
 ggraph(g, "stress") +
-  geom_edge_link(edge_colour = "grey66") +
+  geom_edge_link(edge_color = "grey66") +
   geom_node_point(
     size = 8,
     aes(alpha = degree),
@@ -213,8 +214,8 @@ ggraph(g, "stress") +
 ```
 
 The fix is to add an extra node layer between the edges and the transparent
-nodes: a set of fully opaque points in the background colour. These act as masks
-that hide the edges underneath, while the coloured layer on top still shows the
+nodes: a set of fully opaque points in the background color. These act as masks
+that hide the edges underneath, while the colored layer on top still shows the
 intended transparency effect. @fig-alpha-nodes-sol shows the result.
 
 ```{r}
@@ -222,7 +223,7 @@ intended transparency effect. @fig-alpha-nodes-sol shows the result.
 #| fig-cap: "Network with opaque white background layer to hide edges beneath transparent nodes."
 
 ggraph(g, "stress") +
-  geom_edge_link(edge_colour = "grey66") +
+  geom_edge_link(edge_color = "grey66") +
   geom_node_point(size = 8, col = "white") +
   geom_node_point(
     aes(alpha = degree),
@@ -233,7 +234,7 @@ ggraph(g, "stress") +
   theme_graph()
 ```
 
-Note that the background colour of the masking layer needs to match the plot
+Note that the background color of the masking layer needs to match the plot
 background --- in this case white, since `theme_graph()` uses a white background
 by default.
 
@@ -249,6 +250,7 @@ even bold labels are difficult to parse.
 #| fig-width: 8
 #| fig-height: 8
 
+set.seed(1108)
 g <- sample_gnp(50, 0.7)
 V(g)$name <- sapply(1:50, function(x) paste0(sample(LETTERS, 4), collapse = ""))
 E(g)$weight <- runif(ecount(g))
@@ -269,7 +271,7 @@ ggraph(g, "stress") +
 As noted in the basics chapter, the node layout is accessible to every layer, so
 we can reach for geoms from other packages that operate on standard `x` and `y`
 aesthetics. The `shadowtext` package provides `geom_shadowtext()`, which draws a
-coloured halo behind each label, making it stand out against both edges and
+colored halo behind each label, making it stand out against both edges and
 nodes, shown in @fig-shadowtext-labels.
 
 ```{r}
@@ -288,7 +290,7 @@ ggraph(g, "stress") +
     aes(x, y, label = name),
     color = "black",
     size = 4,
-    bg.colour = "white"
+    bg.color = "white"
   ) +
   scale_edge_color_continuous(low = "grey66", high = "black") +
   scale_edge_width(range = c(0.1, 0.5)) +

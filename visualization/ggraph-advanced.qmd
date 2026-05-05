@@ -6,7 +6,7 @@ techniques that can be used to visualize specific types of networks or to
 emphasize certain structural features. In this part, we will show some examples
 of such more advanced layouts and learn how to use them with `ggraph`.
 
-## Packages needed for this chapter
+## Packages Needed for this Chapter
 
 ```{r}
 #| label: libraries
@@ -17,6 +17,13 @@ library(ggraph)
 library(graphlayouts)
 library(networkdata)
 library(ggforce)
+```
+
+```{r}
+#| label: libraries-silent
+#| include: false
+
+library(patchwork)
 ```
 
 ## Data Preparation
@@ -43,10 +50,10 @@ got_palette <- c(
   "#9ACD32"
 )
 
-## compute a clustering for node colors
+# compute a clustering for node colors
 V(gotS1)$clu <- as.character(membership(cluster_louvain(gotS1)))
 
-## compute degree as node size
+# compute degree as node size
 V(gotS1)$size <- degree(gotS1)
 ```
 
@@ -78,7 +85,7 @@ from `igraph`, are generally not advisable.
 #| fig-height: 8
 
 ggraph(gotS1, layout = "circle") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(size = size, label = name), family = "serif") +
   scale_edge_width_continuous(range = c(0.2, 1.2)) +
@@ -104,7 +111,7 @@ other nodes in concentric circles (depending on the geodesic distance). In
 #| fig-height: 8
 
 ggraph(gotS1, layout = "focus", focus = 1) +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(
     aes(filter = (name == "Ned"), size = size, label = name),
@@ -133,7 +140,7 @@ explicitly as shown in @fig-concentric-ned1.
 
 ggraph(gotS1, layout = "focus", focus = 1) +
   draw_circle(col = "#00BFFF", use = "focus", max.circle = 3) +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(
     aes(filter = (name == "Ned"), size = size, label = name),
@@ -161,7 +168,7 @@ the layout is specified with the `cent` parameter. In
 #| fig-height: 8
 
 ggraph(gotS1, layout = "centrality", cent = graph.strength(gotS1)) +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_colour = "grey66") +
+  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(size = size, label = name), family = "serif") +
   scale_edge_width_continuous(range = c(0.2, 0.9)) +
@@ -176,7 +183,7 @@ ggraph(gotS1, layout = "centrality", cent = graph.strength(gotS1)) +
 
 Real-world networks, and social networks in particular, often have a small-world
 structure, meaning that most nodes are only a few steps apart. When we try to
-visualise such networks with standard layout algorithms, the result often looks
+visualize such networks with standard layout algorithms, the result often looks
 like a tangled "hairball". Highly connected nodes and dense clusters pull
 everything toward the center, making it hard to see any underlying structure. To
 deal with this, we can use algorithms that first simplify the network and
@@ -191,6 +198,7 @@ structure using `sample_islands()` from `igraph`.
 ```{r}
 #| label: island-network
 
+set.seed(1108)
 g <- sample_islands(9, 40, 0.4, 15)
 
 # remove potential multiple edges
@@ -200,7 +208,7 @@ g <- simplify(g)
 V(g)$grp <- as.character(rep(1:9, each = 40))
 ```
 
-The network consists of 9 groups with 40 vertices each. The density within each
+The network consists of nine groups with 40 vertices each. The density within each
 group is 0.4 and there are 15 edges running between each pair of groups.
 @fig-island-stress shows the network using techniques we have learned so far.
 
@@ -212,7 +220,7 @@ group is 0.4 and there are 15 edges running between each pair of groups.
 
 ggraph(g, layout = "stress") +
   geom_edge_link0(
-    edge_colour = "black",
+    edge_color = "black",
     edge_linewidth = 0.1,
     edge_alpha = 0.5
   ) +
@@ -224,7 +232,7 @@ ggraph(g, layout = "stress") +
 
 Evidently, the graph seems to be a proper "hairball" without any special
 structural features standing out. In this case, however, we know that there
-should be 9 groups of vertices that are internally more densely connected than
+should be nine groups of vertices that are internally more densely connected than
 externally. To uncover this group structure, we turn to the "backbone layout".
 
 The idea of the algorithm is as follows. For each edge, an embeddedness score is
@@ -245,7 +253,7 @@ visible, even though the same number of edges are shown as in the previous plot.
 #| fig-height: 6
 
 ggraph(g, layout = "backbone", keep = 0.4) +
-  geom_edge_link0(edge_colour = "grey66", edge_linewidth = 0.1) +
+  geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
   geom_node_point(aes(fill = grp), shape = 21) +
   scale_fill_brewer(palette = "Set1") +
   scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
@@ -261,7 +269,7 @@ can *only* emphasize a hidden group structure *if it exists*.
 
 @fig-facebook-backbone shows an empirical example where the algorithm was able
 to uncover a hidden group structure. The network shows facebook friendships of a
-university in the US. Node colour corresponds to dormitory of students.
+university in the US. Node color corresponds to dormitory of students.
 
 ![Facebook friendship network colored by dormitory. Stress layout (left) vs. backbone layout (right).](img/facebook.png){#fig-facebook-backbone}
 
@@ -271,14 +279,6 @@ Longitudinal network data usually comes in the form of panel data, gathered at
 different points in time. We thus have a series of snapshots that need to be
 visualized in a way that individual nodes are easy to trace without the layout
 becoming too awkward.
-
-For this part of the tutorial, you will need one additional packages.
-
-```{r}
-#| label: additional-libraries
-
-library(patchwork)
-```
 
 We will be using the *50 actor excerpt from the Teenage Friends and Lifestyle
 Study* as an example. The data is part of the `networkdata` package.
@@ -325,7 +325,7 @@ for (i in 1:length(s50)) {
     x = xy[[i]][, 1],
     y = xy[[i]][, 2]
   ) +
-    geom_edge_link0(edge_linewidth = 0.6, edge_colour = "grey66") +
+    geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
     geom_node_point(shape = 21, aes(fill = as.factor(smoke)), size = 6) +
     geom_node_text(label = 1:50, repel = FALSE, color = "white", size = 4) +
     scale_fill_manual(
@@ -403,7 +403,7 @@ flexibility to control aesthetics and can easily be achieved with a filter
 ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
   geom_edge_link0(
     aes(filter = (node1.lvl == 1 & node2.lvl == 1)),
-    edge_colour = "firebrick3",
+    edge_color = "firebrick3",
     alpha = 0.5,
     edge_linewidth = 0.3
   ) +
@@ -411,14 +411,14 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
     aes(filter = (node1.lvl != node2.lvl)),
     alpha = 0.3,
     edge_linewidth = 0.1,
-    edge_colour = "black"
+    edge_color = "black"
   ) +
   geom_edge_link0(
     aes(
       filter = (node1.lvl == 2 &
         node2.lvl == 2)
     ),
-    edge_colour = "goldenrod3",
+    edge_color = "goldenrod3",
     edge_linewidth = 0.3,
     alpha = 0.5
   ) +
@@ -478,7 +478,7 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
   geom_edge_link0(
     aes(
       filter = (node1.lvl == 1 & node2.lvl == 1),
-      edge_colour = col
+      edge_color = col
     ),
     alpha = 0.5,
     edge_linewidth = 0.3
@@ -487,12 +487,12 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
     aes(filter = (node1.lvl != node2.lvl)),
     alpha = 0.3,
     edge_linewidth = 0.1,
-    edge_colour = "black"
+    edge_color = "black"
   ) +
   geom_edge_link0(
     aes(
       filter = (node1.lvl == 2 & node2.lvl == 2),
-      edge_colour = col
+      edge_color = col
     ),
     edge_linewidth = 0.3,
     alpha = 0.5
@@ -537,7 +537,7 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
   geom_edge_link0(
     aes(
       filter = (node1.lvl == 1 & node2.lvl == 1),
-      edge_colour = col
+      edge_color = col
     ),
     alpha = 0.5,
     edge_linewidth = 0.3
@@ -546,12 +546,12 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
     aes(filter = (node1.lvl != node2.lvl)),
     alpha = 0.3,
     edge_linewidth = 0.1,
-    edge_colour = "black"
+    edge_color = "black"
   ) +
   geom_edge_link0(
     aes(
       filter = (node1.lvl == 2 & node2.lvl == 2),
-      edge_colour = col
+      edge_color = col
     ),
     edge_linewidth = 0.3,
     alpha = 0.5

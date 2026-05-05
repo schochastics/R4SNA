@@ -1,5 +1,15 @@
 # A Continuous-Time Markov Chain (Cat Behavior Model) {#sec-apx-cat .appendix}
 
+```{r}
+#| label: libraries-silent
+#| include: false
+
+library(igraph)
+library(ggraph)
+library(tidygraph)
+library(ggplot2)
+```
+
 To bring the concept of a continuous-time Markov chain (CTMC) to life (or to all
 nine lives of our cat), consider a model of a house cat's daily activities. At
 any given moment, the cat is in one of the following behavioral states:
@@ -55,12 +65,12 @@ state 2, then state 3, and so on, with irregular intervals between jumps.
 
 ::: {#fig-catex}
 ```{r}
+#| label: catex-plot
 #| fig-height: 4
 #| fig-width: 7
 #| message: false
 #| echo: false
 
-library(ggplot2)
 jump_times <- c(0, 2, 5, 8, 14)
 states <- c(0, 2, 3, 0, 1)  # Sleep → Play → Chaos → Sleep → Eat
 
@@ -121,15 +131,11 @@ shown in @fig-catex2.
 
 ::: {#fig-catex2}
 ```{r}
+#| label: catex2-plot
 #| fig-height: 4
 #| fig-width: 4
 #| message: false
 #| echo: false
-
-library(igraph)
-library(ggraph)
-library(tidygraph)
-library(ggplot2)
 
 # Define all 4 states
 state_names <- c("Sleep", "Eat", "Play", "Chaos")
@@ -138,7 +144,7 @@ state_names <- c("Sleep", "Eat", "Play", "Chaos")
 transitions <- expand.grid(from = state_names, to = state_names, stringsAsFactors = FALSE)
 
 # Assign random-ish transition probabilities (you can edit or normalize)
-set.seed(77)
+set.seed(1108)
 transitions$prob <- round(runif(nrow(transitions), min = 0.05, max = 0.95), 2)
 # Create graph
 g <- tbl_graph(nodes = data.frame(name = state_names), edges = transitions, directed = TRUE)
@@ -149,7 +155,7 @@ ggraph(g, layout = "circle") +
                 arrow = arrow(length = unit(3, "mm"), type = "closed"),
                 end_cap = circle(8, "mm"),
                 start_cap = circle(8, "mm"),
-                label_colour = "black",
+                label_color = "black",
                 label_size = 3,
                 alpha = 0.8,
                 strength = 0.15,

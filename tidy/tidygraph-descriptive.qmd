@@ -78,7 +78,7 @@ family: `group_louvain`, `group_infomap`, `group_edge_betweenness`,
 `group_biconnected_component`, and a few more. Each returns an integer
 membership vector the length of the node table, which means the idiomatic usage
 is `mutate(community = as.factor(group_*()))` --- coerce to factor so the result
-becomes a natural input to a `fill` or `colour` aesthetic.
+becomes a natural input to a `fill` or `color` aesthetic.
 
 We illustrate the pattern on a random graph with planted community structure,
 generated with `play_islands()` (the tidygraph equivalent of
@@ -97,7 +97,7 @@ play_islands(4, 12, 0.8, 4) |>
     theme_graph()
 ```
 
-A frequent follow-up is to colour edges by community --- one colour when an edge
+A frequent follow-up is to color edges by community --- one color when an edge
 stays inside a cluster, another when it bridges two clusters. The way to do this
 is to propagate the node-level community attribute into the edge table using
 `.N()[from]` and `.N()[to]`, which look up the community of each edge's
@@ -106,7 +106,7 @@ a bridge. @fig-clustering-bridges shows the resulting picture.
 
 ```{r}
 #| label: fig-clustering-bridges
-#| fig-cap: "Same graph as in @fig-clustering-louvain, with edges additionally coloured to distinguish intra-community ties from bridges between communities."
+#| fig-cap: "Same graph as in @fig-clustering-louvain, with edges additionally colored to distinguish intra-community ties from bridges between communities."
 
 play_islands(4, 12, 0.8, 4) |>
     mutate(community = as.factor(group_louvain())) |>
@@ -117,7 +117,7 @@ play_islands(4, 12, 0.8, 4) |>
         5
     ))) |>
     ggraph(layout = "stress") +
-    geom_edge_link0(aes(edge_colour = community), show.legend = FALSE) +
+    geom_edge_link0(aes(edge_color = community), show.legend = FALSE) +
     geom_node_point(aes(fill = community), shape = 21, size = 6) +
     scale_fill_brewer(palette = "Set3") +
     scale_edge_color_brewer(palette = "Set3") +
@@ -144,7 +144,7 @@ pipeline, and the result is shown in @fig-distance-medici.
 
 ```{r}
 #| label: fig-distance-medici
-#| fig-cap: "Florentine marriage network with node fill encoding the geodesic distance to the Medici family and edge colour flagging ties incident to the Medici."
+#| fig-cap: "Florentine marriage network with node fill encoding the geodesic distance to the Medici family and edge color flagging ties incident to the Medici."
 
 flo_tidy |>
     activate("nodes") |>
