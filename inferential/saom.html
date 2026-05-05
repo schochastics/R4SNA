@@ -616,12 +616,13 @@ Table&nbsp;18.1: Comparison between Exponential Random Graph Models (ERGMs) and 
 <li>Smoking: 1 = No, 2 = Occasional, 3 = Regular</li>
 </ul></li>
 </ul>
-<p>We load the data from the <code>networkdata</code> package and extract a graph object for each time period:</p>
+<p>We load the data from the <code>networkdata</code> package and extract an <code>igraph</code> object for each time period.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract all three wave networks</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>glasgow_g1 <span class="ot">&lt;-</span> glasgow129[[<span class="dv">1</span>]]</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>glasgow_g2 <span class="ot">&lt;-</span> glasgow129[[<span class="dv">2</span>]]</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>glasgow_g3 <span class="ot">&lt;-</span> glasgow129[[<span class="dv">3</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"glasgow129"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract all three wave networks</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>glasgow_g1 <span class="ot">&lt;-</span> glasgow129[[<span class="dv">1</span>]]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>glasgow_g2 <span class="ot">&lt;-</span> glasgow129[[<span class="dv">2</span>]]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>glasgow_g3 <span class="ot">&lt;-</span> glasgow129[[<span class="dv">3</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>These <code>igraph</code> objects are our network snapshots and consider various SAOMs. We begin by converting each network snapshot into a binary adjacency matrix. These matrices represent the presence or absence of directed ties between actors at each time point.</p>
 <div class="cell">
@@ -630,7 +631,7 @@ Table&nbsp;18.1: Comparison between Exponential Random Graph Models (ERGMs) and 
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>net2 <span class="ot">&lt;-</span> <span class="fu">as_adjacency_matrix</span>(glasgow_g2, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>net3 <span class="ot">&lt;-</span> <span class="fu">as_adjacency_matrix</span>(glasgow_g3, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>We then combine them into a 3-dimensional array with dimensions <code>[actor × actor × wave]</code>, which is the required format for longitudinal network data in <code>RSiena</code>:</p>
+<p>We then combine them into a 3-dimensional array with dimensions <code>[actor × actor × wave]</code>, which is the required format for longitudinal network data in <code>RSiena</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine into 3D array [actor x actor x wave]</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>net_array <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">c</span>(net1, net2, net3), <span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">129</span>, <span class="dv">129</span>, <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1072,7 +1073,7 @@ Analyze the estimated parameters to understand the underlying social processes. 
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data_mod1 <span class="ot">&lt;-</span> <span class="fu">sienaDataCreate</span>(siena_net)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In RSiena, model specification is driven by the concept of “effects” which represent the structural features, covariate influences, and behavioral mechanisms that are hypothesized to drive network or behavioral change. By default, <code>getEffects()</code> lists all possible effects available for the data structure (e.g., network dynamics, covariates, behaviors). It doesn’t add any effects to the model yet though, it just initializes the structure that will hold them.</p>
-<p>We begin by calling <code>getEffects()</code> on our <code>data_mod1</code> object to create a default effects object. This object holds all possible effects for the given data structure and is used as a base for customization. You can have a look at these effects directly by calling it:</p>
+<p>We begin by calling <code>getEffects()</code> on our <code>data_mod1</code> object to create a default effects object. This object holds all possible effects for the given data structure and is used as a base for customization. You can have a look at these effects directly by calling it.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the effects: start with default effect object</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>my_effects <span class="ot">&lt;-</span> <span class="fu">getEffects</span>(data_mod1)</span>
@@ -1150,7 +1151,7 @@ Overall maximum convergence ratio:    0.0396
 Total of 2412 iteration steps.</code></pre>
 </div>
 </div>
-<p>A nicer summary of the model is obtained by running the following, which renders the table of results inline (including significance stars for easy interpretation):</p>
+<p>A nicer summary of the model is obtained by running the following, which renders the table of results inline (including significance stars for easy interpretation).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_1, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1339,7 +1340,7 @@ If <span class="math inline">\(y_{ji}(t) = 0\)</span>, the tie is not reciprocat
 <li><strong>Sex effects</strong>: Do patterns of tie formation differ by sex?</li>
 </ul>
 <p>In sum, Model 2 captures not only structural tendencies in friendship formation but also how individual traits shape social dynamics, resulting in a more realistic and theoretically grounded model of network evolution.</p>
-<p>We begin by converting the 3D network array into a <code>sienaDependent</code> object:</p>
+<p>We begin by converting the 3D network array into a <code>sienaDependent</code> object.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert array into RSiena dependent object</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>siena_net <span class="ot">&lt;-</span> <span class="fu">sienaDependent</span>(net_array)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1403,7 +1404,7 @@ If <span class="math inline">\(y_{ji}(t) = 0\)</span>, the tie is not reciprocat
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Finally, as before, we display the model results inline:</p>
+<p>Finally, as before, we display the model results inline.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_2, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1965,7 +1966,7 @@ Table&nbsp;18.3: Smoking-related contributions to the objective function under d
 <span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
 <span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Finally, we display the model results:</p>
+<p>Finally, we display the model results.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">siena_table</span>(saom_coev, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">sig =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>

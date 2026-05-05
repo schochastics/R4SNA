@@ -547,12 +547,12 @@ Figure&nbsp;15.1: Conditional Uniform Graph (CUG) test of a network statistic of
 </section>
 <section id="running-example" class="level2" data-number="15.4">
 <h2 data-number="15.4" class="anchored" data-anchor-id="running-example"><span class="header-section-number">15.4</span> Running Example</h2>
-<p>We will use a running example, namely <code>Coleman</code> <span class="citation" data-cites="coleman1964data">(<a href="#ref-coleman1964data" role="doc-biblioref">Coleman 1964</a>)</span> which is available as graph object in the <code>networkdata</code> package and as an array in <code>statnet</code> (or more specifically <code>sna</code>). We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring). We will only focus on the fall network here, which we load and visualize:</p>
+<p>We will use a running example, namely <code>Coleman</code> <span class="citation" data-cites="coleman1964data">(<a href="#ref-coleman1964data" role="doc-biblioref">Coleman 1964</a>)</span> which is available as graph object in the <code>networkdata</code> package and as an array in <code>statnet</code> (or more specifically <code>sna</code>). We will use these interchangeably depending on the function and package used for our analysis. The data consists of self-reported friendship ties among 73 boys in a small high school in Illinois over the 1957-1958 academic year. Networks of reported ties for all 73 informants are provided for two time points (fall and spring). We will only focus on the fall network here, which we load and visualize.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as graph object from networkdata and extract the fall network</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>coleman_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>coleman[[<span class="dv">1</span>]]</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot using gggraph</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"coleman"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>coleman_g <span class="ot">&lt;-</span> coleman[[<span class="dv">1</span>]]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(coleman_g, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_color =</span> <span class="st">"#666060"</span>,</span>
@@ -588,7 +588,7 @@ Figure&nbsp;15.1: Conditional Uniform Graph (CUG) test of a network statistic of
 </section>
 <section id="uniform-graph-distribution-given-expected-density" class="level2" data-number="15.5">
 <h2 data-number="15.5" class="anchored" data-anchor-id="uniform-graph-distribution-given-expected-density"><span class="header-section-number">15.5</span> Uniform Graph Distribution Given Expected Density</h2>
-<p>Here, we simulate graph distributions while keeping the expected frequency from the observed network fixed. We aim to answer the following question: <em>do we observe significantly more reciprocal ties in our observed network than what is expected by pure chance given random networks of the same expected density?</em> So the statistic of interest here is the number of reciprocal ties, which we obtain from the dyad census:</p>
+<p>Here, we simulate graph distributions while keeping the expected frequency from the observed network fixed. We aim to answer the following question: <em>do we observe significantly more reciprocal ties in our observed network than what is expected by pure chance given random networks of the same expected density?</em> So the statistic of interest here is the number of reciprocal ties, which we obtain from the dyad census.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dyad_census</span>(coleman_g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -601,8 +601,7 @@ $asym
 $null
 [1] 2447</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># alternatively one can also use the below</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">which_mutual</span>(coleman_g)) <span class="sc">/</span> <span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">which_mutual</span>(coleman_g)) <span class="sc">/</span> <span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 62</code></pre>
 </div>
@@ -611,7 +610,7 @@ $null
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>density_obs <span class="ot">&lt;-</span> <span class="fu">edge_density</span>(coleman_g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Further we save number of nodes and edges of the observed network:</p>
+<p>Further we save number of nodes and edges of the observed network.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="ot">&lt;-</span> <span class="fu">vcount</span>(coleman_g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -690,7 +689,7 @@ Figure&nbsp;15.2: Empirical distribution of reciprocal ties obtained from 1,000 
 <p><span class="math inline">\(H_1\)</span>: The observed number of mutual ties is significantly greater than expected by chance, indicating a tendency toward reciprocity beyond what density alone would predict.</p>
 </blockquote>
 <p>Since the observed number of mutual ties falls far in the right tail of the simulated distribution, we see a clear and substantial deviation from the null model. Therefore, we reject the null hypothesis, concluding that the observed network exhibits significantly more reciprocity than would be expected by random chance alone. This indicates a strong tendency for mutual connections in the network that is not explained by density alone.</p>
-<p>In order to compute the <span class="math inline">\(p\)</span>-value, we compare the observed value to the distribution from the simulated null model:</p>
+<p>In order to compute the <span class="math inline">\(p\)</span>-value, we compare the observed value to the distribution from the simulated null model.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Empirical p-value (proportion of simulated mutual counts &gt;= observed)</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">mean</span>(mutual_counts <span class="sc">&gt;=</span> <span class="fu">dyad_census</span>(coleman_g)<span class="sc">$</span>mut)</span>
@@ -713,7 +712,7 @@ Figure&nbsp;15.2: Empirical distribution of reciprocal ties obtained from 1,000 
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The <code>rgraph()</code> function from the <code>sna</code> (or <code>statnet</code>) package can also be used to simulate random networks with a specified expected density. However, note that its output consists of adjacency matrices (as a 3D array or list), rather than <code>igraph</code> graph objects. This requires additional conversion before applying <code>igraph</code>-based analyses.</p>
+<p>The <code>rgraph()</code> function from the <code>sna</code> (or <code>statnet</code>) package can also be used to simulate random networks with a specified expected density. However, note that its output consists of adjacency matrices (as a 3D array or list), rather than <code>igraph</code> objects. This requires additional conversion before applying <code>igraph</code>-based analyses.</p>
 </div>
 </div>
 </section>
@@ -739,7 +738,7 @@ Figure&nbsp;15.2: Empirical distribution of reciprocal ties obtained from 1,000 
 <span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplify =</span> <span class="cn">FALSE</span></span>
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Note that each simulated network has exactly the same number of edges as the observed network, ensuring that any difference in mutual ties arises from the pattern of connections, not their quantity. We then compute the number of mutual ties in each simulated network and visualize the distribution, shown in <a href="#fig-cug-edges" class="quarto-xref">Figure&nbsp;<span>15.3</span></a>:</p>
+<p>Note that each simulated network has exactly the same number of edges as the observed network, ensuring that any difference in mutual ties arises from the pattern of connections, not their quantity. We then compute the number of mutual ties in each simulated network and visualize the distribution, shown in <a href="#fig-cug-edges" class="quarto-xref">Figure&nbsp;<span>15.3</span></a>.</p>
 <div id="fig-cug-edges" class="center quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cug-edges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -977,7 +976,7 @@ Figure&nbsp;15.5: Distribution of average geodesic distance across 1000 random d
 </figure>
 </div>
 <p>This indicates that the observed network is significantly more efficiently connected (in terms of shortest paths) than what would be expected under random edge arrangement, given the same degree distribution. In other words, the network’s structure enables actors to reach one another more quickly than random networks with the same node-level connectivity.</p>
-<p>What’s the <span class="math inline">\(p\)</span>-value? We compare the observed value to the distribution from the simulated null model:</p>
+<p>What’s the <span class="math inline">\(p\)</span>-value? We compare the observed value to the distribution from the simulated null model.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Empirical p-value (proportion of simulated mutual counts &gt;= observed)</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">mean</span>(sim_geodist <span class="sc">&lt;=</span> obs_dist)</span>
@@ -1017,9 +1016,10 @@ Figure&nbsp;15.6: Visualization of two relational networks among lawyers in the 
 </div>
 <section id="test-1-friendship-based-on-gender" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="test-1-friendship-based-on-gender">Test 1: Friendship based on gender</h3>
-<p>First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset. We load the data as a graph object from the package <code>networkdata</code> and vizualize it, with node color representing gender:</p>
+<p>First, we examine gender-based homophily in a friendship network among corporate lawyers from the Lazega dataset. We load the data as an <code>igraph</code> object from the package <code>networkdata</code> and vizualize it, with node color representing gender.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>law_friends_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>law_friends</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"law_friends"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>law_friends_g <span class="ot">&lt;-</span> law_friends</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We are here testing the following</p>
 <blockquote class="blockquote">
@@ -1029,20 +1029,20 @@ Figure&nbsp;15.6: Visualization of two relational networks among lawyers in the 
 <p><span class="math inline">\(H_1\)</span>: The observed network has significantly more (or fewer) same-gender ties than expected by chance.</p>
 </blockquote>
 <p>To answer this, we use a non-parametric test based on randomly generated networks that match the observed network in size and density. This is effectively a CUG test under the null model <strong>𝒰 |L</strong>, where ties are randomly distributed.</p>
-<p>We start by converting the friendship network to an adjacency matrix and extracting the gender attribute from the nodes:</p>
+<p>We start by converting the friendship network to an adjacency matrix and extracting the gender attribute from the nodes.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>law_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">as_adjacency_matrix</span>(law_friends_g, <span class="at">sparse =</span> <span class="cn">FALSE</span>))</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>law_nodes <span class="ot">&lt;-</span> <span class="fu">vcount</span>(law_friends_g)</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>law_edges <span class="ot">&lt;-</span> <span class="fu">sum</span>(law_mat)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>law_gender <span class="ot">&lt;-</span> <span class="fu">V</span>(law_friends_g)<span class="sc">$</span>gender <span class="co"># gender extracted</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>law_gender <span class="ot">&lt;-</span> <span class="fu">V</span>(law_friends_g)<span class="sc">$</span>gender</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Then, we compute the number of observed homophilous ties (same-gender friendships) in the observed network:</p>
+<p>Then, we compute the number of observed homophilous ties (same-gender friendships) in the observed network.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1 = male, 2 = female</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>homoph_obs <span class="ot">&lt;-</span> <span class="fu">sum</span>(law_mat[law_gender <span class="sc">==</span> <span class="dv">1</span>, law_gender <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">+</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(law_mat[law_gender <span class="sc">==</span> <span class="dv">2</span>, law_gender <span class="sc">==</span> <span class="dv">2</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>To generate networks from the null world, we simulate 1000 random directed graphs with the same number of nodes and edges as the observed network and then compute the number of homophilous ties in each simulated network (assuming the same ordering of gender assignments to nodes in each simulated network):</p>
+<p>To generate networks from the null world, we simulate 1000 random directed graphs with the same number of nodes and edges as the observed network and then compute the number of homophilous ties in each simulated network (assuming the same ordering of gender assignments to nodes in each simulated network).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>law_sim_g <span class="ot">&lt;-</span> <span class="fu">replicate</span>(</span>
@@ -1117,9 +1117,10 @@ Figure&nbsp;15.7: Distribution of same-gender friendship ties in 1000 random dir
 <section id="test-2-cowork-among-partners-based-on-law-practice" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="test-2-cowork-among-partners-based-on-law-practice">Test 2: Cowork among partners based on law practice</h3>
 <p>Our second test is whether partners in the law firm are more likely to collaborate (cowork) with others who share the same practice area (litigation or corporate) than we would expect by chance. This is a test of homophily based on professional specialization.</p>
-<p>We begin by loading the <code>law_cowork</code> network from the <code>networkdata</code> package:</p>
-<div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>law_cw_g <span class="ot">&lt;-</span> networkdata<span class="sc">::</span>law_cowork</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>We begin by loading the <code>law_cowork</code> network from the <code>networkdata</code> package.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"law_cowork"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>law_cw_g <span class="ot">&lt;-</span> law_cowork</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We restrict the analysis to the first 36 lawyers, corresponding to the partners of the firm (as indicated by their “status” attribute).</p>
 <p>The following hypotheses can be stated:</p>
@@ -1129,7 +1130,7 @@ Figure&nbsp;15.7: Distribution of same-gender friendship ties in 1000 random dir
 <blockquote class="blockquote">
 <p><span class="math inline">\(H_1\)</span>: The observed number of same-practice ties is significantly greater than expected under random conditions; suggesting homophily based on professional specialization.</p>
 </blockquote>
-<p>Since coworking is a reciprocal relationship, we treat the network as undirected by symmetrizing the adjacency matrix:</p>
+<p>Since coworking is a reciprocal relationship, we treat the network as undirected by symmetrizing the adjacency matrix.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an adjacency matrix</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>law_mat_cwdir <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">as_adjacency_matrix</span>(law_cw_g, <span class="at">sparse =</span> <span class="cn">FALSE</span>))</span>
@@ -1141,11 +1142,11 @@ Figure&nbsp;15.7: Distribution of same-gender friendship ties in 1000 random dir
 <span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>law_nodes_cw <span class="ot">&lt;-</span> <span class="fu">nrow</span>(law_mat_cw)</span>
 <span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>law_ties_cw <span class="ot">&lt;-</span> <span class="fu">sum</span>(law_mat_cw) <span class="sc">/</span> <span class="dv">2</span> <span class="co"># undirected: each tie counted twice</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>We now extract the binary attribute practice for each partner and store it as a vector:</p>
+<p>We now extract the binary attribute practice for each partner and store it as a vector.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>law_attr_pract <span class="ot">&lt;-</span> <span class="fu">V</span>(law_cw_g)<span class="sc">$</span>practice[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>We define homophilous ties as coworking ties between two lawyers of the same practice area. We count both litigation–litigation and corporate–corporate ties:</p>
+<p>We define homophilous ties as coworking ties between two lawyers of the same practice area. We count both litigation–litigation and corporate–corporate ties.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>homoph_obs_cw <span class="ot">&lt;-</span> <span class="fu">sum</span>(</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  law_mat_cw[law_attr_pract <span class="sc">==</span> <span class="dv">1</span>, law_attr_pract <span class="sc">==</span> <span class="dv">1</span>]</span>
@@ -1153,7 +1154,7 @@ Figure&nbsp;15.7: Distribution of same-gender friendship ties in 1000 random dir
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span> <span class="sc">+</span></span>
 <span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(law_mat_cw[law_attr_pract <span class="sc">==</span> <span class="dv">2</span>, law_attr_pract <span class="sc">==</span> <span class="dv">2</span>]) <span class="sc">/</span> <span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>To construct the null model, we generate 1000 random undirected graphs with the same number of nodes and total number of ties:</p>
+<p>To construct the null model, we generate 1000 random undirected graphs with the same number of nodes and total number of ties.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>law_sim_cw <span class="ot">&lt;-</span> <span class="fu">replicate</span>(</span>
@@ -1170,7 +1171,7 @@ Figure&nbsp;15.7: Distribution of same-gender friendship ties in 1000 random dir
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplify =</span> <span class="cn">FALSE</span></span>
 <span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>We calculate the number of same-practice ties in each simulated graph:</p>
+<p>We calculate the number of same-practice ties in each simulated graph.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>homoph_sim_cw <span class="ot">&lt;-</span> <span class="fu">sapply</span>(law_sim_cw, <span class="cf">function</span>(mat) {</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(mat[law_attr_pract <span class="sc">==</span> <span class="dv">1</span>, law_attr_pract <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">/</span></span>
@@ -1219,7 +1220,7 @@ Figure&nbsp;15.8: Distribution of same-practice coworking ties in 1000 random un
 </figcaption>
 </figure>
 </div>
-<p>As seen in <a href="#fig-cug-hom2" class="quarto-xref">Figure&nbsp;<span>15.8</span></a>, we are in the right tail, indicating we are observing more homophilous ties than expected by chance. To formally test the hypothesis above we can compute the <span class="math inline">\(p\)</span>-value:</p>
+<p>As seen in <a href="#fig-cug-hom2" class="quarto-xref">Figure&nbsp;<span>15.8</span></a>, we are in the right tail, indicating we are observing more homophilous ties than expected by chance. To formally test the hypothesis above we can compute the <span class="math inline">\(p\)</span>-value.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(homoph_sim_cw <span class="sc">&gt;=</span> homoph_obs_cw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">

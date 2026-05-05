@@ -709,7 +709,7 @@ Table&nbsp;8.2: Vertex-Based Representation. Observed vertex variables are given
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>adj_cowork <span class="ot">&lt;-</span> lawdata[[<span class="dv">3</span>]] <span class="co"># adjacency matrix: co-working network (undirected)</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_att <span class="ot">&lt;-</span> lawdata[[<span class="dv">4</span>]] <span class="co"># node attributes for the 71 lawyers</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>In the following analyses we also consider three additional networks created from the observed ones above. We create new dyad variables for mutual friendship and mutual advice, and likely friendships which is an undirected network and does not require reciprocal reporting of friendships. The latter is done by creating the directed graph object and then extracting the adjacency matrix from the graph assuming it is undirected instead:</p>
+<p>In the following analyses we also consider three additional networks created from the observed ones above. We create new dyad variables for mutual friendship and mutual advice, and likely friendships which is an undirected network and does not require reciprocal reporting of friendships. The latter is done by creating the directed graph object and then extracting the adjacency matrix from the graph assuming it is undirected instead.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mutual advice</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>adj_mutadv <span class="ot">&lt;-</span> adj_advice <span class="sc">*</span> <span class="fu">t</span>(adj_advice)</span>
@@ -724,7 +724,7 @@ Table&nbsp;8.2: Vertex-Based Representation. Observed vertex variables are given
 <h3 data-number="8.3.1" class="anchored" data-anchor-id="data-editing"><span class="header-section-number">8.3.1</span> Data Editing</h3>
 <section id="vertex-variables" class="level4" data-number="8.3.1.1">
 <h4 data-number="8.3.1.1" class="anchored" data-anchor-id="vertex-variables"><span class="header-section-number">8.3.1.1</span> Vertex Variables</h4>
-<p>Observed node variables are the attributes in the data frame <code>df_att</code>. The first 5 lines of this data frame are:</p>
+<p>Observed node variables are the attributes in the data frame <code>df_att</code>. The first 5 lines of this data frame are</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_att, <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -773,7 +773,7 @@ Figure&nbsp;8.1: Empirical cumulative distribution functions (CDFs) for <code>ye
 </div>
 </div>
 <p>Using these cutpoints, we create a new dataframe <code>att_var</code> that contains the variables used in the analysis. All variables except years and age are already categorical with finite range spaces and are therefore retained in their original form, apart from simple recoding to start at <span class="math inline">\(0\)</span> where needed. The variables years and age are recoded into three ordinal categories.</p>
-<p>By looking at these cdf’s we can find values with which we base the categories on:</p>
+<p>By looking at these cdf’s we can find values with which we base the categories on.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>att_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> df_att<span class="sc">$</span>status <span class="sc">-</span> <span class="dv">1</span>,</span>
@@ -802,7 +802,7 @@ Figure&nbsp;8.2: Frequency distributions of the discretized variables <code>age<
 </div>
 <p>This preprocessing step yields a set of discrete variables with manageable range sizes, making them appropriate for estimating joint and conditional entropies in the subsequent network analysis.</p>
 <p>Next, we transform the observed dyad variables into node-level variables. This is achieved by aggregating edge information into node-based measures. In particular, we use degree-based summaries: in-degree and out-degree for the directed advice and friendship networks, and degree (number of ties) for the undirected co-work network, as well as for the mutual advice, mutual friendship, and likely friendship networks.</p>
-<p>To compute these measures, we first construct graph objects from each adjacency matrix (note that the directed friendship graph <code>g_frn</code> and the undirected likely-friendship graph <code>g_likfrn</code> were already created above):</p>
+<p>To compute these measures, we first construct graph objects from each adjacency matrix (note that the directed friendship graph <code>g_frn</code> and the undirected likely-friendship graph <code>g_likfrn</code> were already created above).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>g_cwk <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(adj_cowork, <span class="at">mode =</span> <span class="st">"undirected"</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>g_adv <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(adj_advice, <span class="at">mode =</span> <span class="st">"directed"</span>)</span>
@@ -820,7 +820,7 @@ Figure&nbsp;8.2: Frequency distributions of the discretized variables <code>age<
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>deg_mutfrn <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_mutfrn)</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>deg_likfrn <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_likfrn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>These variables are then categorized using the same procedure as above for the other vertex variables:</p>
+<p>These variables are then categorized using the same procedure as above for the other vertex variables.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>deg_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">deg_cwk =</span> <span class="fu">ifelse</span>(deg_cwk <span class="sc">&lt;=</span> <span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">1</span>),</span>
@@ -833,7 +833,7 @@ Figure&nbsp;8.2: Frequency distributions of the discretized variables <code>age<
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">deg_likfrn =</span> <span class="fu">ifelse</span>(deg_likfrn <span class="sc">&lt;=</span> <span class="dv">11</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Merging <code>deg_var</code> and <code>att_var</code> yields the final data frame <code>vertex_var</code>, which contains all 15 observed and derived vertex variables used in the subsequent entropy analysis:</p>
+<p>Merging <code>deg_var</code> and <code>att_var</code> yields the final data frame <code>vertex_var</code>, which contains all 15 observed and derived vertex variables used in the subsequent entropy analysis.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>vertex_var <span class="ot">&lt;-</span> <span class="fu">cbind</span>(att_var, deg_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1066,7 +1066,7 @@ Table&nbsp;8.3: First 10 rows of the vertex-level dataset.
 <h4 data-number="8.3.1.2" class="anchored" data-anchor-id="dyad-variables"><span class="header-section-number">8.3.1.2</span> Dyad Variables</h4>
 <p>Dyad variables (or edge variables) are constructed as pairs of incident vertex variables, resulting in <span class="math inline">\(\binom{71}{2} = 2485\)</span> observations (i.e., the number of rows in the dyadic data frames created below).</p>
 <p>The observed node attributes in the data frame <code>att_var</code> are therefore transformed into dyadic attributes by pairing the values of two connected vertices. For example, the binary variable <code>status</code> yields four possible dyadic outcomes: <span class="math inline">\((0,0)\)</span>, <span class="math inline">\((0,1)\)</span>, <span class="math inline">\((1,0)\)</span>, and <span class="math inline">\((1,1)\)</span>. Similarly, the categorical variable <code>office</code> with three levels results in nine possible dyadic outcomes: <span class="math inline">\((0,0)\)</span>, <span class="math inline">\((0,1)\)</span>, <span class="math inline">\((0,2)\)</span>, <span class="math inline">\((1,0)\)</span>, <span class="math inline">\((1,1)\)</span>, <span class="math inline">\((1,2)\)</span>, <span class="math inline">\((2,0)\)</span>, <span class="math inline">\((2,1)\)</span>, and <span class="math inline">\((2,2)\)</span>.</p>
-<p>These transformations can be carried out using the function <code>get_dyad_var()</code>, where the argument <code>type = "att"</code> specifies that the input consists of vertex attributes. This procedure is applied to all vertex variables in the dataset:</p>
+<p>These transformations can be carried out using the function <code>get_dyad_var()</code>, where the argument <code>type = "att"</code> specifies that the input consists of vertex attributes. This procedure is applied to all vertex variables in the dataset.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dyad_status <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>status, <span class="at">type =</span> <span class="st">"att"</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dyad_gender <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(att_var<span class="sc">$</span>gender, <span class="at">type =</span> <span class="st">"att"</span>)</span>
@@ -1105,7 +1105,7 @@ Table&nbsp;8.3: First 10 rows of the vertex-level dataset.
 <pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
 </div>
 </div>
-<p>Next, all dyad variables are merged into a single data frame for subsequent entropy analysis:</p>
+<p>Next, all dyad variables are merged into a single data frame for subsequent entropy analysis.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dyad_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> dyad_status<span class="sc">$</span>var,</span>
@@ -1369,7 +1369,7 @@ Table&nbsp;8.4: First 10 rows of the dyadic dataset.
 <pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
 </div>
 </div>
-<p>All triad variables are then merged into a single data frame for subsequent entropy analysis:</p>
+<p>All triad variables are then merged into a single data frame for subsequent entropy analysis.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>triad_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> triad_status<span class="sc">$</span>var,</span>
@@ -1939,7 +1939,7 @@ Table&nbsp;8.6: Bivariate entropy matrix for vertex variables.
 </div>
 <p>Bivariate entropies can be used to detect redundant variables that do not contribute additional information and may therefore be omitted from further analysis. Redundancy can be identified by comparing diagonal entries (univariate entropies) with the corresponding off-diagonal values in the same rows or columns. If these values are equal, it indicates that one variable does not provide additional information beyond another.</p>
 <p>This can also be assessed using the function <code>redundancy()</code>. The output of <code>redundancy()</code> is a binary matrix indicating whether one variable is redundant with respect to another. A value of <code>1</code> means that the corresponding column variable does not provide additional information beyond the row variable, while <code>0</code> indicates that the variables contain distinct information.</p>
-<p>For the vertex variables in this dataset, no redundancy is detected:</p>
+<p>For the vertex variables in this dataset, no redundancy is detected.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>red_vertex <span class="ot">&lt;-</span> <span class="fu">redundancy</span>(vertex_var, <span class="at">dec =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
@@ -1947,7 +1947,7 @@ Table&nbsp;8.6: Bivariate entropy matrix for vertex variables.
 </div>
 </div>
 <p>Note that the argument <code>dec</code> affects the detection of redundant variables, as it controls the rounding of bivariate entropies. Using fewer decimal places increases the likelihood that two variables will appear to have identical entropy values and thus be flagged as redundant.</p>
-<p>For illustration, we apply the <code>redundancy()</code> function to the original attribute data frame <code>df_att</code>. Recall that the variable <code>senior</code> consists entirely of unique values and is therefore identified as redundant, as shown below:</p>
+<p>For illustration, we apply the <code>redundancy()</code> function to the original attribute data frame <code>df_att</code>. Recall that the variable <code>senior</code> consists entirely of unique values and is therefore identified as redundant.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>red_vertex2 <span class="ot">&lt;-</span> <span class="fu">redundancy</span>(df_att, <span class="at">dec =</span> <span class="dv">2</span>)</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>red_vertex2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1972,7 +1972,7 @@ lawschool      0      0      0      0     0   0        0         0</code></pre>
 </section>
 <section id="dyad-variables-1" class="level4" data-number="8.3.2.2">
 <h4 data-number="8.3.2.2" class="anchored" data-anchor-id="dyad-variables-1"><span class="header-section-number">8.3.2.2</span> Dyad Variables</h4>
-<p>The data frame <code>dyad_var</code> contains 13 observed and transformed dyad-level variables. To compute the univariate and bivariate entropies, we apply the function <code>entropy_bivar()</code>:</p>
+<p>The data frame <code>dyad_var</code> contains 13 observed and transformed dyad-level variables. To compute the univariate and bivariate entropies, we apply the function <code>entropy_bivar()</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>h2_dyad <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -2236,7 +2236,7 @@ Table&nbsp;8.7: Bivariate entropy matrix for dyad variables. Redundancy is obser
 </div>
 </figure>
 </div>
-<p>The redundancy can also be confirmed using the <code>redundancy()</code> function. Based on this analysis, we remove the redundant variables mutadv, mutfrn, and likfrn (columns 10, 12, and 13) from the data frame:</p>
+<p>The redundancy can also be confirmed using the <code>redundancy()</code> function. Based on this analysis, we remove the redundant variables mutadv, mutfrn, and likfrn (columns 10, 12, and 13) from the data frame.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>dyad_var <span class="ot">&lt;-</span> dyad_var[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span><span class="sc">:</span><span class="dv">13</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -2244,7 +2244,7 @@ Table&nbsp;8.7: Bivariate entropy matrix for dyad variables. Redundancy is obser
 </section>
 <section id="triad-variables-1" class="level4" data-number="8.3.2.3">
 <h4 data-number="8.3.2.3" class="anchored" data-anchor-id="triad-variables-1"><span class="header-section-number">8.3.2.3</span> Triad Variables</h4>
-<p>The data frame <code>triad_var</code> contains the observed and transformed triad-level variables. To compute the univariate and bivariate entropies, we apply the function <code>entropy_bivar()</code>:</p>
+<p>The data frame <code>triad_var</code> contains the observed and transformed triad-level variables. To compute the univariate and bivariate entropies, we apply the function <code>entropy_bivar()</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>h2_triad <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(triad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -2535,7 +2535,7 @@ EJ(X,Y \mid Z) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z),
 <p>The function <code>joint_entropy()</code> computes joint entropy values for all pairs of variables in a data frame. The output is returned as a list containing: (i) an upper triangular matrix of joint entropy values, with univariate entropies on the diagonal, and (ii) a data frame summarizing the frequency distribution of unique joint entropy values. An optional argument controls the precision (number of decimal places) used in constructing this frequency distribution; the default is 3.</p>
 <section id="vertex-variables-2" class="level4" data-number="8.3.3.1">
 <h4 data-number="8.3.3.1" class="anchored" data-anchor-id="vertex-variables-2"><span class="header-section-number">8.3.3.1</span> Vertex Variables</h4>
-<p>We apply the function to the data frame containing the observed and transformed vertex variables:</p>
+<p>We apply the function to the data frame containing the observed and transformed vertex variables.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>j_vertex <span class="ot">&lt;-</span> <span class="fu">joint_entropy</span>(vertex_var, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -3018,12 +3018,12 @@ EH(Y \mid X) = H(X,Y) - H(X)
 <p>For easier interpretation, prediction results can be visualized using prediction plots, which display a color-coded matrix with rows representing <span class="math inline">\(X\)</span> and columns representing <span class="math inline">\(Y\)</span>. Darker colors indicate lower prediction uncertainty and thus higher predictive power for <span class="math inline">\(Z\)</span>. In the following, we compute and visualize prediction power for vertex, dyad, and triad variables.</p>
 <section id="vertex-variables-3" class="level4" data-number="8.3.4.1">
 <h4 data-number="8.3.4.1" class="anchored" data-anchor-id="vertex-variables-3"><span class="header-section-number">8.3.4.1</span> Vertex Variables</h4>
-<p>Trivariate entropies for all combinations of vertex variables can be computed using the function <code>entropy_trivar()</code>:</p>
+<p>Trivariate entropies for all combinations of vertex variables can be computed using the function <code>entropy_trivar()</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>h3_vertex <span class="ot">&lt;-</span> <span class="fu">entropy_trivar</span>(vertex_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We next assess prediction power for the different degree-based variables derived from the three relation types: co-work, advice, and friendship. Specifically, we evaluate how well pairs of variables predict each of these target variables.</p>
-<p>The corresponding prediction power matrices are obtained as follows:</p>
+<p>The corresponding prediction power matrices are obtained as follows.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>pred_vertex_cwk <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_cwk"</span>, vertex_var)</span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>pred_vertex_advin <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"indeg_adv"</span>, vertex_var)</span>
@@ -3555,7 +3555,7 @@ Figure&nbsp;8.10: Association graph for dyad variables (threshold <span class="m
 </div>
 </div>
 <p>Intuitively, this model says that any association between friendship and co-working may be explained by the advice relation. In other words, once <code>advice</code> is taken into account, there should be little additional dependence between <code>friend</code> and <code>cowork</code>.</p>
-<p>To test this hypothesis, we use <code>div_gof()</code> and explicitly specify the conditioning variable:</p>
+<p>To test this hypothesis, we use <code>div_gof()</code> and explicitly specify the conditioning variable.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
@@ -3587,7 +3587,7 @@ Figure&nbsp;8.10: Association graph for dyad variables (threshold <span class="m
 1   reject</code></pre>
 </div>
 </div>
-<p>For comparison, we can also test pairwise independence without conditioning. By default, if no conditioning variable is specified, <code>div_gof()</code> tests whether the two variables are independent:</p>
+<p>For comparison, we can also test pairwise independence without conditioning. By default, if no conditioning variable is specified, <code>div_gof()</code> tests whether the two variables are independent.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
@@ -3610,7 +3610,7 @@ Figure&nbsp;8.10: Association graph for dyad variables (threshold <span class="m
 1 uniformity: friend 1.119 3853.341  3          7.899   reject</code></pre>
 </div>
 </div>
-<p>Finally, reduced models can be compared to the saturated empirical model. The saturated model corresponds to the unrestricted empirical distribution and has divergence equal to zero. For example, we can compare the pairwise independence model for <code>friend</code> and <code>cowork</code> to the saturated model:</p>
+<p>Finally, reduced models can be compared to the saturated empirical model. The saturated model corresponds to the unrestricted empirical distribution and has divergence equal to zero. For example, we can compare the pairwise independence model for <code>friend</code> and <code>cowork</code> to the saturated model.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>m_full <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">D =</span> <span class="dv">0</span>, <span class="at">df =</span> <span class="dv">0</span>)</span>
 <span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -3646,11 +3646,11 @@ Note
 <p>By default, the function uses a large-sample approximation to the 5% critical value, <span class="math display">\[
 \text{cv} \approx df + \sqrt{8\,df},
 \]</span> which provides a fast and convenient rule for hypothesis testing.</p>
-<p>Alternatively, exact critical values from the chi-square distribution can be used by setting:</p>
+<p>Alternatively, exact critical values from the chi-square distribution can be used by setting.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>use_approx_cv <span class="ot">=</span> <span class="cn">FALSE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>In this case, the significance level can be controlled explicitly via the argument <code>alpha</code> (default is 0.05), allowing for more precise hypothesis testing:</p>
+<p>In this case, the significance level can be controlled explicitly via the argument <code>alpha</code> (default is 0.05), allowing for more precise hypothesis testing.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(..., <span class="at">use_approx_cv =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.01</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
