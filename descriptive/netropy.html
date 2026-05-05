@@ -2943,13 +2943,18 @@ Table&nbsp;8.10: Frequency distribution of unique joint entropy values for verte
 </div>
 </figure>
 </div>
-<p>These relationships can be conveniently visualized using the function <code>assoc_graph()</code>, which returns a <code>ggraph</code> object where nodes represent variables and edges represent the strength of association (with thicker edges indicating stronger dependence). To focus on the most relevant structure, we set a threshold of <span class="math inline">\(0.25\)</span>, so that only the strongest associations are displayed:</p>
+<p>These relationships can be conveniently visualized using the function <code>assoc_graph()</code>, which returns a <code>ggraph</code> object where nodes represent variables and edges represent the strength of association (with thicker edges indicating stronger dependence). To focus on the most relevant structure, we set a threshold of <span class="math inline">\(0.25\)</span>, so that only the strongest associations are displayed in <a href="#fig-vert-assoc" class="quarto-xref">Figure&nbsp;<span>8.3</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(vertex_var, <span class="fl">0.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="netropy_files/figure-html/vert-assoc-1.png" class="img-fluid figure-img" width="960"></p>
+<div id="fig-vert-assoc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-vert-assoc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="netropy_files/figure-html/fig-vert-assoc-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vert-assoc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.3: Association graph for vertex variables (threshold <span class="math inline">\(J &gt; 0.25\)</span>). Nodes represent variables and edges connect pairs whose joint-entropy-based association exceeds the threshold; thicker edges indicate stronger dependence.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -2957,34 +2962,44 @@ Table&nbsp;8.10: Frequency distribution of unique joint entropy values for verte
 </section>
 <section id="dyad-variables-2" class="level4" data-number="8.3.3.2">
 <h4 data-number="8.3.3.2" class="anchored" data-anchor-id="dyad-variables-2"><span class="header-section-number">8.3.3.2</span> Dyad Variables</h4>
-<p>Joint entropies for the dyad variables are computed in the same way as for the vertex variables. Rather than presenting the full output, we focus on visualizing the dependence structure using an association graph. We set a threshold of 0.10 to display the strongest associations:</p>
+<p>Joint entropies for the dyad variables are computed in the same way as for the vertex variables. Rather than presenting the full output, we focus on visualizing the dependence structure using an association graph. We set a threshold of 0.10 to display the strongest associations in <a href="#fig-dyad-assoc" class="quarto-xref">Figure&nbsp;<span>8.4</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(dyad_var, <span class="fl">0.10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="netropy_files/figure-html/dyad-assoc-1.png" class="img-fluid figure-img" width="960"></p>
+<div id="fig-dyad-assoc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dyad-assoc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="netropy_files/figure-html/fig-dyad-assoc-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dyad-assoc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.4: Association graph for dyad variables (threshold <span class="math inline">\(J &gt; 0.10\)</span>). Edges connect pairs of dyad variables whose pairwise joint entropy exceeds the threshold.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>From the graph, several patterns can be observed. There is a strong dependence among the variables (<code>status</code>, <code>years</code>, <code>age</code>), as well as notable associations among (<code>lawschool</code>, <code>years</code>, <code>age</code>) and (<code>status</code>, <code>years</code>, <code>gender</code>).</p>
+<p>From <a href="#fig-dyad-assoc" class="quarto-xref">Figure&nbsp;<span>8.4</span></a>, several patterns can be observed. There is a strong dependence among the variables (<code>status</code>, <code>years</code>, <code>age</code>), as well as notable associations among (<code>lawschool</code>, <code>years</code>, <code>age</code>) and (<code>status</code>, <code>years</code>, <code>gender</code>).</p>
 <p>In addition, the graph suggests that the relations <code>cowork</code> and <code>friend</code> are conditionally independent given <code>advice</code>. That is, any observed dependence between <code>cowork</code> and <code>friend</code> can be explained through their association with <code>advice</code>.</p>
 </section>
 <section id="triad-variables-2" class="level4" data-number="8.3.3.3">
 <h4 data-number="8.3.3.3" class="anchored" data-anchor-id="triad-variables-2"><span class="header-section-number">8.3.3.3</span> Triad Variables</h4>
-<p>Similarly, joint entropies for the triad variables are computed for the reduced data frame (with redundant variables removed). The dependence structure is again visualized using an association graph. We set a threshold of 0.25 to focus on the strongest associations:</p>
+<p>Similarly, joint entropies for the triad variables are computed for the reduced data frame (with redundant variables removed). The dependence structure is again visualized using an association graph in <a href="#fig-triad-assoc" class="quarto-xref">Figure&nbsp;<span>8.5</span></a>. We set a threshold of 0.25 to focus on the strongest associations.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(triad_var, <span class="fl">0.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="netropy_files/figure-html/triad-assoc-1.png" class="img-fluid figure-img" width="960"></p>
+<div id="fig-triad-assoc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-triad-assoc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="netropy_files/figure-html/fig-triad-assoc-1.png" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-triad-assoc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.5: Association graph for triad variables (threshold <span class="math inline">\(J &gt; 0.25\)</span>). Edges connect pairs of triad variables whose pairwise joint entropy exceeds the threshold.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The triad variables exhibit similar dependence patterns as the dyad variables, but with generally stronger associations. In particular, joint entropy values are higher for all pairs of <code>cowork</code>, <code>friend</code>, and <code>advice</code>, indicating stronger interactions among these variables. This further supports the conditional independence observed earlier, suggesting that the relationship between <code>cowork</code> and <code>friend</code> is increasingly explained by <code>advice</code> at the triadic level.</p>
+<p><a href="#fig-triad-assoc" class="quarto-xref">Figure&nbsp;<span>8.5</span></a> shows that the triad variables exhibit similar dependence patterns as the dyad variables, but with generally stronger associations. In particular, joint entropy values are higher for all pairs of <code>cowork</code>, <code>friend</code>, and <code>advice</code>, indicating stronger interactions among these variables. This further supports the conditional independence observed earlier, suggesting that the relationship between <code>cowork</code> and <code>friend</code> is increasingly explained by <code>advice</code> at the triadic level.</p>
 </section>
 </section>
 <section id="trivariate-entropies-and-prediction-power" class="level3" data-number="8.3.4">
@@ -3347,7 +3362,7 @@ Table&nbsp;8.11: Prediction power matrix for <code>indeg_adv</code>. Entries rep
 </div>
 </figure>
 </div>
-<p>These prediction strengths can be visualized using a heatmap representation. The plot displays a color-coded matrix with rows corresponding to <span class="math inline">\(X\)</span> and columns to <span class="math inline">\(Y\)</span>, where darker colors indicate higher predictive power (i.e., lower prediction uncertainty for <code>indeg_adv</code>). This is shown in <a href="#fig-expred" class="quarto-xref">Figure&nbsp;<span>8.3</span></a>.</p>
+<p>These prediction strengths can be visualized using a heatmap representation. The plot displays a color-coded matrix with rows corresponding to <span class="math inline">\(X\)</span> and columns to <span class="math inline">\(Y\)</span>, where darker colors indicate higher predictive power (i.e., lower prediction uncertainty for <code>indeg_adv</code>). This is shown in <a href="#fig-expred" class="quarto-xref">Figure&nbsp;<span>8.6</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-expred" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3356,7 +3371,7 @@ Table&nbsp;8.11: Prediction power matrix for <code>indeg_adv</code>. Entries rep
 <img src="netropy_files/figure-html/fig-expred-1.png" class="img-fluid figure-img" width="768">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-expred-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.3: Prediction power heatmap for <span class="math inline">\(Z\)</span>=<code>indeg_adv</code>. Each cell shows the expected conditional entropy <span class="math inline">\(EH(Z \mid X,Y)\)</span>, where darker colors indicate stronger predictive power. The strongest predictors involve the variable <code>years</code>, particularly in combination with network-based variables such as <code>deg_mutadv</code> and <code>deg_cwk</code>. While <code>status</code> also contributes to prediction, it is not part of the strongest predictor pairs.
+Figure&nbsp;8.6: Prediction power heatmap for <span class="math inline">\(Z\)</span>=<code>indeg_adv</code>. Each cell shows the expected conditional entropy <span class="math inline">\(EH(Z \mid X,Y)\)</span>, where darker colors indicate stronger predictive power. The strongest predictors involve the variable <code>years</code>, particularly in combination with network-based variables such as <code>deg_mutadv</code> and <code>deg_cwk</code>. While <code>status</code> also contributes to prediction, it is not part of the strongest predictor pairs.
 </figcaption>
 </figure>
 </div>
@@ -3364,7 +3379,7 @@ Figure&nbsp;8.3: Prediction power heatmap for <span class="math inline">\(Z\)</s
 </div>
 <p>The prediction power heatmap shows that the strongest overall predictor of <code>indeg_adv</code> is the network-based variable <code>deg_likfrn</code>, which yields the lowest expected conditional entropy among single predictors. This indicates that likely friendship ties are highly informative for explaining advice in-degree.</p>
 <p>Among other single predictors, <code>years</code> also performs well, followed by <code>status</code>, while variables such as <code>office</code> and <code>practice</code> provide weaker predictive power. Considering pairs of predictors, the strongest combinations typically involve <code>years</code> together with network-based variables such as <code>deg_mutadv</code> and <code>deg_cwk</code>, yielding the lowest prediction uncertainty overall. These results suggest that both network position, particularly likely friendship ties, and experience (<code>years</code>) play a central role in explaining variation in advice in-degree.</p>
-<p>Using <code>make_pred_plot()</code>, we can create similar plots for all vertex variables to compare the results. We illustrate this for all vertex variables in <a href="#fig-predplot-vertex" class="quarto-xref">Figure&nbsp;<span>8.4</span></a>.</p>
+<p>Using <code>make_pred_plot()</code>, we can create similar plots for all vertex variables to compare the results. We illustrate this for all vertex variables in <a href="#fig-predplot-vertex" class="quarto-xref">Figure&nbsp;<span>8.7</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-predplot-vertex" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3373,13 +3388,13 @@ Figure&nbsp;8.3: Prediction power heatmap for <span class="math inline">\(Z\)</s
 <img src="netropy_files/figure-html/fig-predplot-vertex-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-predplot-vertex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.4: Prediction power heatmaps for vertex variables; darker cells indicate stronger predictive power (lower <span class="math inline">\(EH(Z \mid X,Y)\)</span>).
+Figure&nbsp;8.7: Prediction power heatmaps for vertex variables; darker cells indicate stronger predictive power (lower <span class="math inline">\(EH(Z \mid X,Y)\)</span>).
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>From <a href="#fig-predplot-vertex" class="quarto-xref">Figure&nbsp;<span>8.4</span></a>, we note the following. The vertex variables, network-based measures such as <code>deg_likfrn</code>, <code>deg_mutadv</code>, and other degree-related variables are consistently strong predictors, both individually and in combination. In particular, <code>deg_likfrn</code> often emerges as the best single predictor, indicating that embeddedness in likely friendship ties plays a central role in explaining variation in network position.</p>
+<p>From <a href="#fig-predplot-vertex" class="quarto-xref">Figure&nbsp;<span>8.7</span></a>, we note the following. The vertex variables, network-based measures such as <code>deg_likfrn</code>, <code>deg_mutadv</code>, and other degree-related variables are consistently strong predictors, both individually and in combination. In particular, <code>deg_likfrn</code> often emerges as the best single predictor, indicating that embeddedness in likely friendship ties plays a central role in explaining variation in network position.</p>
 <p>Attribute-based variables such as <code>years</code> and <code>age</code> also contribute to prediction, especially when combined with network measures, while variables such as <code>office</code> and <code>practice</code> tend to have weaker predictive power. Overall, the results highlight that structural position in the network is more informative than individual attributes for predicting vertex-level outcomes.</p>
 </section>
 <section id="dyad-variables-3" class="level4" data-number="8.3.4.2">
@@ -3398,7 +3413,7 @@ Figure&nbsp;8.4: Prediction power heatmaps for vertex variables; darker cells in
 <span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>pred_dyad_advice    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"advice"</span>, dyad_var)</span>
 <span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>pred_dyad_friend    <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"friend"</span>, dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>To visualize these matrices, we again use the function <code>make_pred_plot()</code>, shown in <a href="#fig-predplot-dyad" class="quarto-xref">Figure&nbsp;<span>8.5</span></a>.</p>
+<p>To visualize these matrices, we again use the function <code>make_pred_plot()</code>, shown in <a href="#fig-predplot-dyad" class="quarto-xref">Figure&nbsp;<span>8.8</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-predplot-dyad" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3407,18 +3422,18 @@ Figure&nbsp;8.4: Prediction power heatmaps for vertex variables; darker cells in
 <img src="netropy_files/figure-html/fig-predplot-dyad-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-predplot-dyad-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.5: Prediction power heatmaps for dyad variables; darker cells indicate stronger predictive power (lower <span class="math inline">\(EH(Z \mid X,Y)\)</span>).
+Figure&nbsp;8.8: Prediction power heatmaps for dyad variables; darker cells indicate stronger predictive power (lower <span class="math inline">\(EH(Z \mid X,Y)\)</span>).
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p><a href="#fig-predplot-vertex" class="quarto-xref">Figure&nbsp;<span>8.4</span></a> allow us to compare how well different combinations of dyadic attributes and relations predict a given target relation. In particular, they highlight which combinations of structural ties (such as advice or co-working) and attribute-based similarities are most informative for explaining the presence of other ties.</p>
+<p><a href="#fig-predplot-dyad" class="quarto-xref">Figure&nbsp;<span>8.8</span></a> allows us to compare how well different combinations of dyadic attributes and relations predict a given target relation. In particular, they highlight which combinations of structural ties (such as advice or co-working) and attribute-based similarities are most informative for explaining the presence of other ties.</p>
 <p>Overall, the plots show that relational variables such as <code>advice</code>, <code>cowork</code>, and <code>friend</code> are strong predictors of each other, particularly when combined. Attribute-based variables such as <code>years</code> and <code>age</code> contribute to prediction, but are generally less informative on their own, highlighting the importance of network structure in explaining dyadic interactions.</p>
 </section>
 <section id="triad-variables-3" class="level4" data-number="8.3.4.3">
 <h4 data-number="8.3.4.3" class="anchored" data-anchor-id="triad-variables-3"><span class="header-section-number">8.3.4.3</span> Triad Variables</h4>
-<p>We do a similar visualization for all triad variables as shown in <a href="#fig-predplot-triad" class="quarto-xref">Figure&nbsp;<span>8.6</span></a> and note the following.</p>
+<p>We do a similar visualization for all triad variables as shown in <a href="#fig-predplot-triad" class="quarto-xref">Figure&nbsp;<span>8.9</span></a> and note the following.</p>
 <p>Across the triad variables, predictive performance varies substantially by target variable, and the heatmaps do not show a simple pattern of structural variables always dominating. Instead, the strongest predictors depend on which triad attribute is being predicted.</p>
 <p>For the triadic attribute variables, <code>status</code>, <code>years</code>, and <code>age</code> are predicted relatively well, with especially low expected conditional entropy for <code>status</code> and <code>years</code>. In particular, <code>status</code> is most informative for predicting both <code>years</code> and <code>age</code>, while combinations involving <code>office</code> and <code>years</code> are especially useful for predicting <code>status</code>. By contrast, <code>office</code>, <code>practice</code>, and <code>lawschool</code> are much harder to predict, with generally higher expected conditional entropy values across the corresponding heatmaps.</p>
 <p>Some of the clearest gains from using pairs of predictors appear for <code>office</code>, where combinations involving structural variables markedly reduce prediction uncertainty. In particular, the pair (<code>cowork</code>, <code>advice</code>) provides a very strong prediction of triadic <code>office</code>, much stronger than any single predictor alone. For <code>gender</code>, prediction is moderate overall, with <code>status</code> serving as the best single predictor.</p>
@@ -3432,7 +3447,7 @@ Figure&nbsp;8.5: Prediction power heatmaps for dyad variables; darker cells indi
 <img src="netropy_files/figure-html/fig-predplot-triad-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-predplot-triad-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.6: Prediction power heatmaps for triad variables; darker cells indicate stronger predictive power (lower <span class="math inline">\(EH(Z \mid X,Y)\)</span>).
+Figure&nbsp;8.9: Prediction power heatmaps for triad variables; darker cells indicate stronger predictive power (lower <span class="math inline">\(EH(Z \mid X,Y)\)</span>).
 </figcaption>
 </figure>
 </div>
@@ -3526,7 +3541,7 @@ D(p,q) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z) = EJ(X,Y \mid Z),
 <p><span class="math display">\[
 \text{friend} \perp \text{cowork} \mid \text{advice}.
 \]</span></p>
-<p>This structure is highlighted in <a href="#fig-divtest" class="quarto-xref">Figure&nbsp;<span>8.7</span></a>.</p>
+<p>This structure is highlighted in <a href="#fig-divtest" class="quarto-xref">Figure&nbsp;<span>8.10</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-divtest" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3535,7 +3550,7 @@ D(p,q) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z) = EJ(X,Y \mid Z),
 <img src="netropy_files/figure-html/fig-divtest-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-divtest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.7: Association graph for dyad variables (threshold <span class="math inline">\(J &gt; 0.1\)</span>). The variables <code>friend</code>, <code>cowork</code>, and <code>advice</code> are highlighted, motivating the conditional independence model <span class="math inline">\(\text{friend} \perp \text{cowork} \mid \text{advice}\)</span>.
+Figure&nbsp;8.10: Association graph for dyad variables (threshold <span class="math inline">\(J &gt; 0.1\)</span>). The variables <code>friend</code>, <code>cowork</code>, and <code>advice</code> are highlighted, motivating the conditional independence model <span class="math inline">\(\text{friend} \perp \text{cowork} \mid \text{advice}\)</span>.
 </figcaption>
 </figure>
 </div>
