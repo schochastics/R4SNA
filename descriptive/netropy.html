@@ -740,21 +740,21 @@ Table&nbsp;8.2: Vertex-Based Representation. Observed vertex variables are given
 <p>We begin by constructing frequency tables for <code>years</code> and <code>age</code>, and then compute the corresponding relative and cumulative relative frequencies.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Years CDF data</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>frq_years <span class="ot">&lt;-</span> <span class="fu">table</span>(df_att<span class="sc">$</span>years) <span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(frq_years) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"years"</span>, <span class="st">"freq"</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>frq_years<span class="sc">$</span>years <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(frq_years<span class="sc">$</span>years))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>tab_years <span class="ot">&lt;-</span> <span class="fu">table</span>(df_att<span class="sc">$</span>years)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>frq_years <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">years =</span> <span class="fu">as.numeric</span>(<span class="fu">names</span>(tab_years)),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">freq  =</span> <span class="fu">as.integer</span>(tab_years)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>frq_years<span class="sc">$</span>rel.freq <span class="ot">&lt;-</span> frq_years<span class="sc">$</span>freq <span class="sc">/</span> <span class="fu">sum</span>(frq_years<span class="sc">$</span>freq)</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>frq_years<span class="sc">$</span>cum.rel.freq <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(frq_years<span class="sc">$</span>rel.freq)</span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Age CDF data</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>frq_age <span class="ot">&lt;-</span> <span class="fu">table</span>(df_att<span class="sc">$</span>age) <span class="sc">|&gt;</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(frq_age) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"freq"</span>)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>frq_age<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(frq_age<span class="sc">$</span>age))</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>frq_age<span class="sc">$</span>rel.freq <span class="ot">&lt;-</span> frq_age<span class="sc">$</span>freq <span class="sc">/</span> <span class="fu">sum</span>(frq_age<span class="sc">$</span>freq)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>tab_age <span class="ot">&lt;-</span> <span class="fu">table</span>(df_att<span class="sc">$</span>age)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>frq_age <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">age  =</span> <span class="fu">as.numeric</span>(<span class="fu">names</span>(tab_age)),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">freq =</span> <span class="fu">as.integer</span>(tab_age)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>frq_age<span class="sc">$</span>rel.freq     <span class="ot">&lt;-</span> frq_age<span class="sc">$</span>freq <span class="sc">/</span> <span class="fu">sum</span>(frq_age<span class="sc">$</span>freq)</span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>frq_age<span class="sc">$</span>cum.rel.freq <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(frq_age<span class="sc">$</span>rel.freq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The empirical CDFs make it possible to inspect how the observations accumulate across the support of each variable. This is shown in <a href="#fig-cdfs" class="quarto-xref">Figure&nbsp;<span>8.1</span></a>. We use these plots to choose cutpoints that divide the data into three approximately equally sized groups. For years, the selected cutpoints are <span class="math inline">\(3\)</span> and <span class="math inline">\(13\)</span>, while for age, the selected cutpoints are <span class="math inline">\(35\)</span> and <span class="math inline">\(45\)</span>.</p>
