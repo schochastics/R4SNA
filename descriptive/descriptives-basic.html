@@ -99,7 +99,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-87b7f55de2e0c9887283481eb31a794c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -505,15 +505,17 @@ window.Quarto = {
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>flo_marriage</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>IGRAPH bc7fb16 UN-- 16 20 -- 
-+ attr: name (v/c), wealth (v/n), priors (v/n), ties (v/n)
++ attr: name (v/c), wealth (v/n), priors (v/n), ties
+| (v/n)
 + edges from bc7fb16 (vertex names):
- [1] Acciaiuoli--Medici       Albizzi   --Ginori       Albizzi   --Guadagni    
- [4] Albizzi   --Medici       Barbadori --Castellani   Barbadori --Medici      
- [7] Bischeri  --Guadagni     Bischeri  --Peruzzi      Bischeri  --Strozzi     
-[10] Castellani--Peruzzi      Castellani--Strozzi      Guadagni  --Lamberteschi
-[13] Guadagni  --Tornabuoni   Medici    --Ridolfi      Medici    --Salviati    
-[16] Medici    --Tornabuoni   Pazzi     --Salviati     Peruzzi   --Strozzi     
-[19] Ridolfi   --Strozzi      Ridolfi   --Tornabuoni  </code></pre>
+ [1] Acciaiuoli--Medici       Albizzi   --Ginori      
+ [3] Albizzi   --Guadagni     Albizzi   --Medici      
+ [5] Barbadori --Castellani   Barbadori --Medici      
+ [7] Bischeri  --Guadagni     Bischeri  --Peruzzi     
+ [9] Bischeri  --Strozzi      Castellani--Peruzzi     
+[11] Castellani--Strozzi      Guadagni  --Lamberteschi
+[13] Guadagni  --Tornabuoni   Medici    --Ridolfi     
++ ... omitted several edges</code></pre>
 </div>
 </div>
 <p><a href="#fig-flo-overview" class="quarto-xref">Figure&nbsp;<span>2.1</span></a> shows the network. The Medici sit at the structural center, while the Pucci are disconnected from the rest.</p>
@@ -550,7 +552,8 @@ Figure&nbsp;2.1: Marriage ties among 16 leading Florentine families (Padgett). T
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>IGRAPH bc7fb16 UN-- 16 20 -- 
-+ attr: name (v/c), wealth (v/n), priors (v/n), ties (v/n)</code></pre>
++ attr: name (v/c), wealth (v/n), priors (v/n), ties
+| (v/n)</code></pre>
 </div>
 </div>
 </section>
@@ -560,13 +563,20 @@ Figure&nbsp;2.1: Marriage ties among 16 leading Florentine families (Padgett). T
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_adjacency_matrix</span>(flo_marriage, <span class="at">sparse =</span> <span class="cn">FALSE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           Acciaiuoli Albizzi Barbadori Bischeri Castellani Ginori
-Acciaiuoli          0       0         0        0          0      0
-Albizzi             0       0         0        0          0      1
-Barbadori           0       0         0        0          1      0
-Bischeri            0       0         0        0          0      0
-Castellani          0       0         1        0          0      0
-Ginori              0       1         0        0          0      0</code></pre>
+<pre><code>           Acciaiuoli Albizzi Barbadori Bischeri Castellani
+Acciaiuoli          0       0         0        0          0
+Albizzi             0       0         0        0          0
+Barbadori           0       0         0        0          1
+Bischeri            0       0         0        0          0
+Castellani          0       0         1        0          0
+Ginori              0       1         0        0          0
+           Ginori
+Acciaiuoli      0
+Albizzi         1
+Barbadori       0
+Bischeri        0
+Castellani      0
+Ginori          0</code></pre>
 </div>
 </div>
 <p>The <strong>neighbors</strong> of a node are the nodes directly connected to it, i.e., the non-zero entries in its row of the adjacency matrix.</p>
@@ -574,7 +584,8 @@ Ginori              0       1         0        0          0      0</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">neighbors</span>(flo_marriage, <span class="st">"Medici"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+ 6/16 vertices, named, from bc7fb16:
-[1] Acciaiuoli Albizzi    Barbadori  Ridolfi    Salviati   Tornabuoni</code></pre>
+[1] Acciaiuoli Albizzi    Barbadori  Ridolfi    Salviati  
+[6] Tornabuoni</code></pre>
 </div>
 </div>
 </section>
@@ -584,12 +595,14 @@ Ginori              0       1         0        0          0      0</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">degree</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  Acciaiuoli      Albizzi    Barbadori     Bischeri   Castellani       Ginori 
-           1            3            2            3            3            1 
-    Guadagni Lamberteschi       Medici        Pazzi      Peruzzi        Pucci 
-           4            1            6            1            3            0 
-     Ridolfi     Salviati      Strozzi   Tornabuoni 
-           3            2            4            3 </code></pre>
+<pre><code>  Acciaiuoli      Albizzi    Barbadori     Bischeri   Castellani 
+           1            3            2            3            3 
+      Ginori     Guadagni Lamberteschi       Medici        Pazzi 
+           1            4            1            6            1 
+     Peruzzi        Pucci      Ridolfi     Salviati      Strozzi 
+           3            0            3            2            4 
+  Tornabuoni 
+           3 </code></pre>
 </div>
 </div>
 <p>A useful summary is the <strong>average degree</strong> <span class="math inline">\(\bar{d} = \tfrac{1}{n} \sum_{v} d(v) = \tfrac{2m}{n}\)</span>, where <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span> denote the number of nodes and edges.</p>
@@ -675,13 +688,20 @@ Figure&nbsp;2.3: A shortest path of length 4 between the Ginori and the Strozzi 
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">distances</span>(flo_marriage)[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           Acciaiuoli Albizzi Barbadori Bischeri Castellani Ginori
-Acciaiuoli          0       2         2        4          3      3
-Albizzi             2       0         2        2          3      1
-Barbadori           2       2         0        3          1      3
-Bischeri            4       2         3        0          2      3
-Castellani          3       3         1        2          0      4
-Ginori              3       1         3        3          4      0</code></pre>
+<pre><code>           Acciaiuoli Albizzi Barbadori Bischeri Castellani
+Acciaiuoli          0       2         2        4          3
+Albizzi             2       0         2        2          3
+Barbadori           2       2         0        3          1
+Bischeri            4       2         3        0          2
+Castellani          3       3         1        2          0
+Ginori              3       1         3        3          4
+           Ginori
+Acciaiuoli      3
+Albizzi         1
+Barbadori       3
+Bischeri        3
+Castellani      4
+Ginori          0</code></pre>
 </div>
 </div>
 </section>
@@ -696,12 +716,14 @@ Ginori              3       1         3        3          4      0</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">components</span>(flo_marriage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$membership
-  Acciaiuoli      Albizzi    Barbadori     Bischeri   Castellani       Ginori 
-           1            1            1            1            1            1 
-    Guadagni Lamberteschi       Medici        Pazzi      Peruzzi        Pucci 
-           1            1            1            1            1            2 
-     Ridolfi     Salviati      Strozzi   Tornabuoni 
-           1            1            1            1 
+  Acciaiuoli      Albizzi    Barbadori     Bischeri   Castellani 
+           1            1            1            1            1 
+      Ginori     Guadagni Lamberteschi       Medici        Pazzi 
+           1            1            1            1            1 
+     Peruzzi        Pucci      Ridolfi     Salviati      Strozzi 
+           1            2            1            1            1 
+  Tornabuoni 
+           1 
 
 $csize
 [1] 15  1
@@ -714,12 +736,12 @@ $no
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">distances</span>(flo_marriage, <span class="at">v =</span> <span class="st">"Pucci"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      Acciaiuoli Albizzi Barbadori Bischeri Castellani Ginori Guadagni
-Pucci        Inf     Inf       Inf      Inf        Inf    Inf      Inf
-      Lamberteschi Medici Pazzi Peruzzi Pucci Ridolfi Salviati Strozzi
-Pucci          Inf    Inf   Inf     Inf     0     Inf      Inf     Inf
-      Tornabuoni
-Pucci        Inf</code></pre>
+<pre><code>      Acciaiuoli Albizzi Barbadori Bischeri Castellani Ginori
+Pucci        Inf     Inf       Inf      Inf        Inf    Inf
+      Guadagni Lamberteschi Medici Pazzi Peruzzi Pucci Ridolfi
+Pucci      Inf          Inf    Inf   Inf     Inf     0     Inf
+      Salviati Strozzi Tornabuoni
+Pucci      Inf     Inf        Inf</code></pre>
 </div>
 </div>
 </section>
@@ -763,8 +785,10 @@ Figure&nbsp;2.4: A diameter path of length 5 between the Bischeri and the Pazzi 
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">transitivity</span>(flo_marriage, <span class="at">type =</span> <span class="st">"local"</span>, <span class="at">isolates =</span> <span class="st">"zero"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Acciaiuoli    Albizzi  Barbadori   Bischeri Castellani     Ginori 
- 0.0000000  0.0000000  0.0000000  0.3333333  0.3333333  0.0000000 </code></pre>
+<pre><code>Acciaiuoli    Albizzi  Barbadori   Bischeri Castellani 
+ 0.0000000  0.0000000  0.0000000  0.3333333  0.3333333 
+    Ginori 
+ 0.0000000 </code></pre>
 </div>
 </div>
 <p>In social networks we generally expect transitivity to be sizeable: if two families are both allied with the Medici, there is a reasonable chance that they are allied with each other as well (“the friend of my friend is also my friend”). The Florentine marriage network has a global transitivity of about <span class="math inline">\(0.19\)</span>, confirming this tendency, albeit at a modest level.</p>
@@ -872,7 +896,8 @@ Figure&nbsp;2.6: The 16 possible triads in a directed network, labeled using the
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census</span>(rhesus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1]  49  72 115  16  12  11  50  50   2   0  54  13  12   7  58  39</code></pre>
+<pre><code> [1]  49  72 115  16  12  11  50  50   2   0  54  13  12   7  58
+[16]  39</code></pre>
 </div>
 </div>
 <p>Note that for undirected networks, the triad census is simpler, as there are only four possible triad types based on the number of edges present (0, 1, 2, or 3).</p>
@@ -924,22 +949,22 @@ Figure&nbsp;2.6: The 16 possible triads in a directed network, labeled using the
 <span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a>footy_census[idx, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        003 012 102 021D 021U 021C 111D 111U 030T 030C 201 120D 120U 120C 210
-england   2  10   0   58   31   40   34   44  338   29  19  118  129  143 131
-france    1  23   5   30   33   44   48   40  332   41  16  132  108  160 114
-germany   0  21   6   27   19   49   38   46  165   16  23   77   79  117 120
-italy     1   4   2   35   43   30   30   22  419   38   5  164  116  118  99
-spain     0   8   4   27   42   45   32   35  364   43  11  126  105  148 130
-        300
-england  14
-france   13
-germany  13
-italy    14
-spain    20</code></pre>
+<pre><code>        003 012 102 021D 021U 021C 111D 111U 030T 030C 201 120D
+england   2  10   0   58   31   40   34   44  338   29  19  118
+france    1  23   5   30   33   44   48   40  332   41  16  132
+germany   0  21   6   27   19   49   38   46  165   16  23   77
+italy     1   4   2   35   43   30   30   22  419   38   5  164
+spain     0   8   4   27   42   45   32   35  364   43  11  126
+        120U 120C 210 300
+england  129  143 131  14
+france   108  160 114  13
+germany   79  117 120  13
+italy    116  118  99  14
+spain    105  148 130  20</code></pre>
 </div>
 </div>
 <p>Notice how the transitive triad (<code>030T</code>) has the largest count in the top leagues, hinting toward the childhood wisdom: “If A wins against B and B wins against C, then A must win against C”.</p>
-<p>In empirical studies, we are not necessarily only interested in transitive triads, but rather in how the triad census profiles compare across networks. We follow <a href="https://doi.org/10.1111%2Fj.1467-9531.2007.00179.x">Katherine Faust’s</a> suggestion and perform a singular value decomposition (SVD) on the normalized triad census matrix.</p>
+<p>In empirical studies, we are not necessarily only interested in transitive triads, but rather in how the triad census profiles compare across networks. We follow <span class="citation" data-cites="faust2007local">Faust (<a href="#ref-faust2007local" role="doc-biblioref">2007</a>)</span> and perform a singular value decomposition (SVD) on the normalized triad census matrix.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>footy_svd <span class="ot">&lt;-</span> <span class="fu">svd</span>(footy_census_norm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1013,32 +1038,42 @@ Figure&nbsp;2.9: Second singular vector (scaled by its singular value) plotted a
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">triad_census_attr</span>(g, <span class="st">"type"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> T003-111  T003-112  T003-122  T003-222  T012-111  T012-121  T012-112  T012-122 
-       10        46        67        27        44        63        38        34 
- T012-211  T012-221  T012-212  T012-222 T021D-111 T021D-211 T021D-112 T021D-212 
-       57        82        45        41        11        18        15        30 
-T021D-122 T021D-222  T102-111  T102-112  T102-122  T102-211  T102-212  T102-222 
-        4        11         3        17         2         4        17         5 
-T021C-111 T021C-211 T021C-121 T021C-221 T021C-112 T021C-212 T021C-122 T021C-222 
-       14        10        36        20        19        11        22        17 
-T111U-111 T111U-121 T111U-112 T111U-122 T111U-211 T111U-221 T111U-212 T111U-222 
-        5         7         3         8         3         4         5         6 
-T021U-111 T021U-112 T021U-122 T021U-211 T021U-212 T021U-222 T030T-111 T030T-121 
-       11        24        20         5        17         8        13        22 
-T030T-112 T030T-122 T030T-211 T030T-221 T030T-212 T030T-222 T120U-111 T120U-112 
-        5        14         6         7         2         0         2         4 
-T120U-122 T120U-211 T120U-212 T120U-222 T111D-111 T111D-121 T111D-112 T111D-122 
-        2         0         3         1         2         5         8         3 
-T111D-211 T111D-221 T111D-212 T111D-222  T201-111  T201-112  T201-121  T201-122 
-       10         5         7         1         1         1         0         2 
- T201-221  T201-222 T030C-111 T030C-112 T030C-122 T030C-222 T120C-111 T120C-121 
-        1         0         2        13         6         0         1         5 
-T120C-211 T120C-221 T120C-112 T120C-122 T120C-212 T120C-222 T120D-111 T120D-112 
-        2         3         2         1         1         2         1         1 
-T120D-211 T120D-212 T120D-122 T120D-222  T210-111  T210-121  T210-211  T210-221 
-        1         3         0         1         0         0         0         0 
- T210-112  T210-122  T210-212  T210-222  T300-111  T300-112  T300-122  T300-222 
-        0         2         0         0         0         0         0         0 </code></pre>
+<pre><code> T003-111  T003-112  T003-122  T003-222  T012-111  T012-121 
+       10        46        67        27        44        63 
+ T012-112  T012-122  T012-211  T012-221  T012-212  T012-222 
+       38        34        57        82        45        41 
+T021D-111 T021D-211 T021D-112 T021D-212 T021D-122 T021D-222 
+       11        18        15        30         4        11 
+ T102-111  T102-112  T102-122  T102-211  T102-212  T102-222 
+        3        17         2         4        17         5 
+T021C-111 T021C-211 T021C-121 T021C-221 T021C-112 T021C-212 
+       14        10        36        20        19        11 
+T021C-122 T021C-222 T111U-111 T111U-121 T111U-112 T111U-122 
+       22        17         5         7         3         8 
+T111U-211 T111U-221 T111U-212 T111U-222 T021U-111 T021U-112 
+        3         4         5         6        11        24 
+T021U-122 T021U-211 T021U-212 T021U-222 T030T-111 T030T-121 
+       20         5        17         8        13        22 
+T030T-112 T030T-122 T030T-211 T030T-221 T030T-212 T030T-222 
+        5        14         6         7         2         0 
+T120U-111 T120U-112 T120U-122 T120U-211 T120U-212 T120U-222 
+        2         4         2         0         3         1 
+T111D-111 T111D-121 T111D-112 T111D-122 T111D-211 T111D-221 
+        2         5         8         3        10         5 
+T111D-212 T111D-222  T201-111  T201-112  T201-121  T201-122 
+        7         1         1         1         0         2 
+ T201-221  T201-222 T030C-111 T030C-112 T030C-122 T030C-222 
+        1         0         2        13         6         0 
+T120C-111 T120C-121 T120C-211 T120C-221 T120C-112 T120C-122 
+        1         5         2         3         2         1 
+T120C-212 T120C-222 T120D-111 T120D-112 T120D-211 T120D-212 
+        1         2         1         1         1         3 
+T120D-122 T120D-222  T210-111  T210-121  T210-211  T210-221 
+        0         1         0         0         0         0 
+ T210-112  T210-122  T210-212  T210-222  T300-111  T300-112 
+        0         2         0         0         0         0 
+ T300-122  T300-222 
+        0         0 </code></pre>
 </div>
 </div>
 
@@ -1048,6 +1083,9 @@ T120D-211 T120D-212 T120D-122 T120D-222  T210-111  T210-121  T210-211  T210-221
 <section id="bibliography" class="level1 unnumbered">
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-faust2007local" class="csl-entry" role="listitem">
+Faust, Katherine. 2007. <span>“Very Local Structure in Social Networks.”</span> <em>Sociological Methodology</em> 37 (1): 209–56. <a href="https://doi.org/10.1111/j.1467-9531.2007.00179.x">https://doi.org/10.1111/j.1467-9531.2007.00179.x</a>.
+</div>
 <div id="ref-padgett1993robust" class="csl-entry" role="listitem">
 Padgett, John F, and Christopher K Ansell. 1993. <span>“Robust Action and the Rise of the Medici, 1400–1434.”</span> <em>American Journal of Sociology</em> 98 (6): 1259–319.
 </div>

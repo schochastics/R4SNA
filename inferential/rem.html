@@ -99,7 +99,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-87b7f55de2e0c9887283481eb31a794c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -1081,7 +1081,10 @@ e^{2.24} \approx 9.4
 <p>The gender indicator is first constructed as an actor-level covariate aligned with the character IDs.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># female indicator by character ID</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)], <span class="at">ncol =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)],</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">1</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Formally, the event intensity for a potential interaction <span class="math inline">\(i \rightarrow j\)</span> at time <span class="math inline">\(t\)</span> is given by</p>
 <p><span class="math display">\[
@@ -1109,19 +1112,22 @@ e^{2.24} \approx 9.4
 <p>As in the previous model, the coefficients are expressed in log-relative rates, meaning that exponentiating a coefficient yields the multiplicative change in the event rate associated with a one-unit change in the corresponding statistic.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># female indicator by character ID</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)], <span class="at">ncol =</span> <span class="dv">1</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovSnd"</span>, <span class="st">"CovRec"</span>),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovSnd =</span> female,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovRec =</span> female</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>female <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  frozenchars<span class="sc">$</span>charfem[<span class="fu">order</span>(frozenchars<span class="sc">$</span>characterID)],</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">1</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">rem.dyad</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">edgelist =</span> edgelist,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n_actors,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> <span class="fu">c</span>(<span class="st">"RRecSnd"</span>, <span class="st">"RSndSnd"</span>, <span class="st">"CovSnd"</span>, <span class="st">"CovRec"</span>),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">covar =</span> <span class="fu">list</span>(</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovSnd =</span> female,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">CovRec =</span> female</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">ordinal =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Prepping edgelist.
 Checking/prepping covariates.
@@ -1135,7 +1141,7 @@ Obtaining goodness-of-fit statistics</code></pre>
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
 RRecSnd  3.669317 0.149300 24.5768   &lt;2e-16 ***
-RSndSnd  2.171291 0.132459 16.3922   &lt;2e-16 ***
+RSndSnd  2.171290 0.132459 16.3922   &lt;2e-16 ***
 CovSnd.1 0.797348 0.082131  9.7083   &lt;2e-16 ***
 CovRec.1 0.106776 0.085729  1.2455   0.2129    
 ---
@@ -1238,11 +1244,11 @@ Obtaining goodness-of-fit statistics</code></pre>
 <pre><code>Relational Event Model (Ordinal Likelihood)
 
          Estimate  Std.Err Z value Pr(&gt;|z|)    
-RRecSnd   3.66898  0.14930 24.5738   &lt;2e-16 ***
-RSndSnd   2.17218  0.13247 16.3972   &lt;2e-16 ***
-CovSnd.1  0.49632 50.54849  0.0098   0.9922    
-CovRec.1 -0.19450 50.54849 -0.0038   0.9969    
-CovInt.1  0.30066 50.54848  0.0059   0.9953    
+RRecSnd   3.66897  0.14930 24.5739   &lt;2e-16 ***
+RSndSnd   2.17217  0.13247 16.3972   &lt;2e-16 ***
+CovSnd.1  0.49656 50.15305  0.0099   0.9921    
+CovRec.1 -0.19426 50.15305 -0.0039   0.9969    
+CovInt.1  0.30043 50.15304  0.0060   0.9952    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Null deviance: 6879.697 on 661 degrees of freedom

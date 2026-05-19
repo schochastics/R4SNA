@@ -99,7 +99,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-87b7f55de2e0c9887283481eb31a794c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -704,10 +704,10 @@ Table&nbsp;8.2: Vertex-Based Representation. Observed vertex variables are given
 <p>To load the data, we extract the adjacency matrices corresponding to the three network relations (advice, friendship, and co-working) as well as the dataframe containing node-level attributes for each lawyer. The objects are stored in a list and can be assigned as follows:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(lawdata)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>adj_advice <span class="ot">&lt;-</span> lawdata[[<span class="dv">1</span>]] <span class="co"># adjacency matrix: advice network (directed)</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>adj_friend <span class="ot">&lt;-</span> lawdata[[<span class="dv">2</span>]] <span class="co"># adjacency matrix: friendship network (directed)</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>adj_cowork <span class="ot">&lt;-</span> lawdata[[<span class="dv">3</span>]] <span class="co"># adjacency matrix: co-working network (undirected)</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_att <span class="ot">&lt;-</span> lawdata[[<span class="dv">4</span>]] <span class="co"># node attributes for the 71 lawyers</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>adj_advice <span class="ot">&lt;-</span> lawdata[[<span class="dv">1</span>]] <span class="co"># advice network (directed)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>adj_friend <span class="ot">&lt;-</span> lawdata[[<span class="dv">2</span>]] <span class="co"># friendship network (directed)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>adj_cowork <span class="ot">&lt;-</span> lawdata[[<span class="dv">3</span>]] <span class="co"># co-working network (undirected)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_att <span class="ot">&lt;-</span> lawdata[[<span class="dv">4</span>]] <span class="co"># attributes for the 71 lawyers</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In the following analyses we also consider three additional networks created from the observed ones above. We create new dyad variables for mutual friendship and mutual advice, and likely friendships which is an undirected network and does not require reciprocal reporting of friendships. The latter is done by creating the directed graph object and then extracting the adjacency matrix from the graph assuming it is undirected instead.</p>
 <div class="cell">
@@ -779,11 +779,15 @@ Figure&nbsp;8.1: Empirical cumulative distribution functions (CDFs) for <code>ye
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> df_att<span class="sc">$</span>status <span class="sc">-</span> <span class="dv">1</span>,</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> df_att<span class="sc">$</span>gender,</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">office =</span> df_att<span class="sc">$</span>office <span class="sc">-</span> <span class="dv">1</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years =</span> <span class="fu">ifelse</span>(df_att<span class="sc">$</span>years <span class="sc">&lt;=</span> <span class="dv">3</span>, <span class="dv">0</span>, <span class="fu">ifelse</span>(df_att<span class="sc">$</span>years <span class="sc">&lt;=</span> <span class="dv">13</span>, <span class="dv">1</span>, <span class="dv">2</span>)),</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">ifelse</span>(df_att<span class="sc">$</span>age <span class="sc">&lt;=</span> <span class="dv">35</span>, <span class="dv">0</span>, <span class="fu">ifelse</span>(df_att<span class="sc">$</span>age <span class="sc">&lt;=</span> <span class="dv">45</span>, <span class="dv">1</span>, <span class="dv">2</span>)),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">practice =</span> df_att<span class="sc">$</span>practice,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">lawschool =</span> df_att<span class="sc">$</span>lawschool <span class="sc">-</span> <span class="dv">1</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years =</span> <span class="fu">ifelse</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    df_att<span class="sc">$</span>years <span class="sc">&lt;=</span> <span class="dv">3</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ifelse</span>(df_att<span class="sc">$</span>years <span class="sc">&lt;=</span> <span class="dv">13</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">ifelse</span>(df_att<span class="sc">$</span>age <span class="sc">&lt;=</span> <span class="dv">35</span>, <span class="dv">0</span>, <span class="fu">ifelse</span>(df_att<span class="sc">$</span>age <span class="sc">&lt;=</span> <span class="dv">45</span>, <span class="dv">1</span>, <span class="dv">2</span>)),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">practice =</span> df_att<span class="sc">$</span>practice,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">lawschool =</span> df_att<span class="sc">$</span>lawschool <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Finally, we examine the resulting categorized distributions for years and age to confirm that the selected cutpoints produce reasonably balanced groups. This helps ensure that the discretized variables are suitable for subsequent entropy-based analysis. This is shown in <a href="#fig-cats" class="quarto-xref">Figure&nbsp;<span>8.2</span></a>.</p>
 <div class="cell">
@@ -806,8 +810,14 @@ Figure&nbsp;8.2: Frequency distributions of the discretized variables <code>age<
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>g_cwk <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(adj_cowork, <span class="at">mode =</span> <span class="st">"undirected"</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>g_adv <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(adj_advice, <span class="at">mode =</span> <span class="st">"directed"</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>g_mutadv <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(adj_mutadv, <span class="at">mode =</span> <span class="st">"undirected"</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>g_mutfrn <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(adj_mutfrn, <span class="at">mode =</span> <span class="st">"undirected"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>g_mutadv <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  adj_mutadv,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"undirected"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>g_mutfrn <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  adj_mutfrn,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"undirected"</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Degrees are then computed as</p>
 <div class="cell">
@@ -1080,48 +1090,30 @@ Table&nbsp;8.3: First 10 rows of the vertex-level dataset.
 <p>In a similar way, we construct dyad variables based on observed and derived ties. For undirected networks, dyad variables are simple indicator variables obtained directly from the adjacency matrix. For directed networks, each dyad is represented by a pair of indicators corresponding to sending and receiving ties, resulting in four possible outcomes (e.g., for <code>advice</code> and <code>friendship</code>).</p>
 <p>Using the same function as above, we now set the argument <code>type = "tie"</code> and provide the adjacency matrix as input. The function automatically determines whether the network is directed or undirected and creates the appropriate dyadic variable.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dyad_cwk <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_cowork, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dyad_adv <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_advice, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>four outcomes based on pairs of indicators for the directed relation is created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dyad_mutadv <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_mutadv, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dyad_frn <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_friend, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>four outcomes based on pairs of indicators for the directed relation is created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>dyad_mutfrn <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_mutfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dyad_likfrn <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_likfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>two outcomes based on an indicator variable for the undirected relation is created</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dyad_cwk <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_cowork, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dyad_adv <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_advice, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>dyad_mutadv <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_mutadv, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>dyad_frn <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_friend, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>dyad_mutfrn <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_mutfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>dyad_likfrn <span class="ot">&lt;-</span> <span class="fu">get_dyad_var</span>(adj_likfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Next, all dyad variables are merged into a single data frame for subsequent entropy analysis.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dyad_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> dyad_status<span class="sc">$</span>var,</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> dyad_gender<span class="sc">$</span>var,</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">office =</span> dyad_office<span class="sc">$</span>var,</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years =</span> dyad_years<span class="sc">$</span>var,</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> dyad_age<span class="sc">$</span>var,</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">practice =</span> dyad_practice<span class="sc">$</span>var,</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">lawschool =</span> dyad_lawschool<span class="sc">$</span>var,</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cowork =</span> dyad_cwk<span class="sc">$</span>var,</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">advice =</span> dyad_adv<span class="sc">$</span>var,</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutadv =</span> dyad_mutadv<span class="sc">$</span>var,</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">friend =</span> dyad_frn<span class="sc">$</span>var,</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutfrn =</span> dyad_mutfrn<span class="sc">$</span>var,</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">likfrn =</span> dyad_likfrn<span class="sc">$</span>var</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dyad_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> dyad_status<span class="sc">$</span>var,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> dyad_gender<span class="sc">$</span>var,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">office =</span> dyad_office<span class="sc">$</span>var,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years =</span> dyad_years<span class="sc">$</span>var,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> dyad_age<span class="sc">$</span>var,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">practice =</span> dyad_practice<span class="sc">$</span>var,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">lawschool =</span> dyad_lawschool<span class="sc">$</span>var,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cowork =</span> dyad_cwk<span class="sc">$</span>var,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">advice =</span> dyad_adv<span class="sc">$</span>var,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutadv =</span> dyad_mutadv<span class="sc">$</span>var,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">friend =</span> dyad_frn<span class="sc">$</span>var,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutfrn =</span> dyad_mutfrn<span class="sc">$</span>var,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">likfrn =</span> dyad_likfrn<span class="sc">$</span>var</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The resulting dataset <code>dyad_var</code> contains all dyadic variables used in the entropy analysis. The first rows are shown in <a href="#tbl-dyad-var" class="quarto-xref">Table&nbsp;<span>8.4</span></a>.</p>
 <div id="tbl-dyad-var" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1330,13 +1322,13 @@ Table&nbsp;8.4: First 10 rows of the dyadic dataset.
 <p>As for dyad variables, the function requires specifying the type of input: <code>type = "att"</code> for vertex attributes (given as column vectors) and <code>type = "tie"</code> for relational data (given as adjacency matrices).</p>
 <p>For vertex variables, triad variables are constructed as follows:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>triad_status <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>status, <span class="at">type =</span> <span class="st">"att"</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>triad_gender <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>gender, <span class="at">type =</span> <span class="st">"att"</span>)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>triad_office <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>office, <span class="at">type =</span> <span class="st">"att"</span>)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>triad_years <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>years, <span class="at">type =</span> <span class="st">"att"</span>)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>triad_age <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>age, <span class="at">type =</span> <span class="st">"att"</span>)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>triad_practice <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>practice, <span class="at">type =</span> <span class="st">"att"</span>)</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>triad_lawschool <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>lawschool, <span class="at">type =</span> <span class="st">"att"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>triad_status <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>status, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>triad_gender <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>gender, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>triad_office <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>office, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>triad_years <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>years, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>triad_age <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>age, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>triad_practice <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>practice, <span class="at">type =</span> <span class="st">"att"</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>triad_lawschool <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(att_var<span class="sc">$</span>lawschool, <span class="at">type =</span> <span class="st">"att"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Binary vertex attributes result in <span class="math inline">\(2^3 = 8\)</span> possible triadic outcomes: <span class="math display">\[
 (0,0,0), (1,0,0), (0,1,0), (1,1,0), (0,0,1), (1,0,1), (0,1,1), (1,1,1),
@@ -1344,48 +1336,30 @@ Table&nbsp;8.4: First 10 rows of the dyadic dataset.
 <p>For relational variables, undirected ties are transformed from binary outcomes into triad variables with <span class="math inline">\(8\)</span> possible configurations, while directed ties are transformed from <span class="math inline">\(4\)</span> dyadic outcomes into <span class="math inline">\(4^3 = 64\)</span> triadic configurations, capturing all possible combinations of sending and receiving ties among three nodes.</p>
 <p>The triad variables based on ties are constructed as follows:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>triad_cwk <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_cowork, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>triad_adv <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_advice, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>64 outcomes based on a sequence of 6 indicators for the directed relation are created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>triad_mutadv <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_mutadv, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>triad_frn <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_friend, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>64 outcomes based on a sequence of 6 indicators for the directed relation are created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>triad_mutfrn <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_mutfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>triad_likfrn <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_likfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>8 outcomes based on triples of indicators for the undirected relation are created</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>triad_cwk <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_cowork, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>triad_adv <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_advice, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>triad_mutadv <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_mutadv, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>triad_frn <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_friend, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>triad_mutfrn <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_mutfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>triad_likfrn <span class="ot">&lt;-</span> <span class="fu">get_triad_var</span>(adj_likfrn, <span class="at">type =</span> <span class="st">"tie"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>All triad variables are then merged into a single data frame for subsequent entropy analysis.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>triad_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> triad_status<span class="sc">$</span>var,</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> triad_gender<span class="sc">$</span>var,</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">office =</span> triad_office<span class="sc">$</span>var,</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years =</span> triad_years<span class="sc">$</span>var,</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> triad_age<span class="sc">$</span>var,</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">practice =</span> triad_practice<span class="sc">$</span>var,</span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">lawschool =</span> triad_lawschool<span class="sc">$</span>var,</span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cowork =</span> triad_cwk<span class="sc">$</span>var,</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">advice =</span> triad_adv<span class="sc">$</span>var,</span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutadv =</span> triad_mutadv<span class="sc">$</span>var,</span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">friend =</span> triad_frn<span class="sc">$</span>var,</span>
-<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutfrn =</span> triad_mutfrn<span class="sc">$</span>var,</span>
-<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">likfrn =</span> triad_likfrn<span class="sc">$</span>var</span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>triad_var <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> triad_status<span class="sc">$</span>var,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> triad_gender<span class="sc">$</span>var,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">office =</span> triad_office<span class="sc">$</span>var,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years =</span> triad_years<span class="sc">$</span>var,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> triad_age<span class="sc">$</span>var,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">practice =</span> triad_practice<span class="sc">$</span>var,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">lawschool =</span> triad_lawschool<span class="sc">$</span>var,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cowork =</span> triad_cwk<span class="sc">$</span>var,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">advice =</span> triad_adv<span class="sc">$</span>var,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutadv =</span> triad_mutadv<span class="sc">$</span>var,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">friend =</span> triad_frn<span class="sc">$</span>var,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">mutfrn =</span> triad_mutfrn<span class="sc">$</span>var,</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">likfrn =</span> triad_likfrn<span class="sc">$</span>var</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The resulting dataset <code>triad_var</code> contains all triad-level variables used in the entropy analysis. The first rows are shown in <a href="#tbl-triad-var" class="quarto-xref">Table&nbsp;<span>8.5</span></a>.</p>
 <div id="tbl-triad-var" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1609,7 +1583,7 @@ H(X) \leq H(X,Y) \leq H(X) + H(Y).
 <h4 data-number="8.3.2.1" class="anchored" data-anchor-id="vertex-variables-1"><span class="header-section-number">8.3.2.1</span> Vertex Variables</h4>
 <p>We apply the function to the data frame containing all observed and transformed vertex variables.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>h2_vertex <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(vertex_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>h2_vertex <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(vertex_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The output, rounded to 2 decimals, is shown in <a href="#tbl-ent-vertvar" class="quarto-xref">Table&nbsp;<span>8.6</span></a>.</p>
 <div id="tbl-ent-vertvar" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1941,7 +1915,7 @@ Table&nbsp;8.6: Bivariate entropy matrix for vertex variables.
 <p>This can also be assessed using the function <code>redundancy()</code>. The output of <code>redundancy()</code> is a binary matrix indicating whether one variable is redundant with respect to another. A value of <code>1</code> means that the corresponding column variable does not provide additional information beyond the row variable, while <code>0</code> indicates that the variables contain distinct information.</p>
 <p>For the vertex variables in this dataset, no redundancy is detected.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>red_vertex <span class="ot">&lt;-</span> <span class="fu">redundancy</span>(vertex_var, <span class="at">dec =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>red_vertex <span class="ot">&lt;-</span> <span class="fu">redundancy</span>(vertex_var, <span class="at">dec =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>no redundant variables</code></pre>
 </div>
@@ -1949,21 +1923,30 @@ Table&nbsp;8.6: Bivariate entropy matrix for vertex variables.
 <p>Note that the argument <code>dec</code> affects the detection of redundant variables, as it controls the rounding of bivariate entropies. Using fewer decimal places increases the likelihood that two variables will appear to have identical entropy values and thus be flagged as redundant.</p>
 <p>For illustration, we apply the <code>redundancy()</code> function to the original attribute data frame <code>df_att</code>. Recall that the variable <code>senior</code> consists entirely of unique values and is therefore identified as redundant.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>red_vertex2 <span class="ot">&lt;-</span> <span class="fu">redundancy</span>(df_att, <span class="at">dec =</span> <span class="dv">2</span>)</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>red_vertex2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>red_vertex2 <span class="ot">&lt;-</span> <span class="fu">redundancy</span>(df_att, <span class="at">dec =</span> <span class="dv">2</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>red_vertex2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>          senior status gender office years age practice lawschool
-senior         0      1      1      1     1   1        1         1
-status         0      0      0      0     0   0        0         0
-gender         0      0      0      0     0   0        0         0
-office         0      0      0      0     0   0        0         0
-years          0      0      0      0     0   0        0         0
-age            0      0      0      0     0   0        0         0
-practice       0      0      0      0     0   0        0         0
-lawschool      0      0      0      0     0   0        0         0</code></pre>
+<pre><code>          senior status gender office years age practice
+senior         0      1      1      1     1   1        1
+status         0      0      0      0     0   0        0
+gender         0      0      0      0     0   0        0
+office         0      0      0      0     0   0        0
+years          0      0      0      0     0   0        0
+age            0      0      0      0     0   0        0
+practice       0      0      0      0     0   0        0
+lawschool      0      0      0      0     0   0        0
+          lawschool
+senior            1
+status            0
+gender            0
+office            0
+years             0
+age               0
+practice          0
+lawschool         0</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># find columns that are redundant with any other variable</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(red_vertex2)[<span class="fu">rowSums</span>(red_vertex2) <span class="sc">&gt;=</span> <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># find columns that are redundant with any other variable</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(red_vertex2)[<span class="fu">rowSums</span>(red_vertex2) <span class="sc">&gt;=</span> <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "senior"</code></pre>
 </div>
@@ -1974,7 +1957,7 @@ lawschool      0      0      0      0     0   0        0         0</code></pre>
 <h4 data-number="8.3.2.2" class="anchored" data-anchor-id="dyad-variables-1"><span class="header-section-number">8.3.2.2</span> Dyad Variables</h4>
 <p>The data frame <code>dyad_var</code> contains 13 observed and transformed dyad-level variables. To compute the univariate and bivariate entropies, we apply the function <code>entropy_bivar()</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>h2_dyad <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>h2_dyad <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The results shown in <a href="#tbl-ent-dyadvar" class="quarto-xref">Table&nbsp;<span>8.7</span></a> indicate redundancy among the different variants of the advice and friendship relations. This is expected, as these variables are derived from the same underlying ties.</p>
 <div id="tbl-ent-dyadvar" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -2238,7 +2221,7 @@ Table&nbsp;8.7: Bivariate entropy matrix for dyad variables. Redundancy is obser
 </div>
 <p>The redundancy can also be confirmed using the <code>redundancy()</code> function. Based on this analysis, we remove the redundant variables mutadv, mutfrn, and likfrn (columns 10, 12, and 13) from the data frame.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>dyad_var <span class="ot">&lt;-</span> dyad_var[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span><span class="sc">:</span><span class="dv">13</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dyad_var <span class="ot">&lt;-</span> dyad_var[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span><span class="sc">:</span><span class="dv">13</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The resulting data frame contains the non-redundant dyad variables used in the subsequent entropy analysis.</p>
 </section>
@@ -2246,7 +2229,7 @@ Table&nbsp;8.7: Bivariate entropy matrix for dyad variables. Redundancy is obser
 <h4 data-number="8.3.2.3" class="anchored" data-anchor-id="triad-variables-1"><span class="header-section-number">8.3.2.3</span> Triad Variables</h4>
 <p>The data frame <code>triad_var</code> contains the observed and transformed triad-level variables. To compute the univariate and bivariate entropies, we apply the function <code>entropy_bivar()</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>h2_triad <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(triad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>h2_triad <span class="ot">&lt;-</span> <span class="fu">entropy_bivar</span>(triad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The results shown in <a href="#tbl-ent-triadvar" class="quarto-xref">Table&nbsp;<span>8.8</span></a> reveal redundancy among the triad variables derived from the different variants of the advice and friendship relations. As in the dyadic case, this is expected since these variables originate from the same underlying ties.</p>
 <div id="tbl-ent-triadvar" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -2510,7 +2493,7 @@ Table&nbsp;8.8: Bivariate entropy matrix for triad variables. Redundancy is obse
 </div>
 <p>The redundancy can be confirmed using the <code>redundancy()</code> function and after removing the redundant variables (<code>mutadv</code>, <code>mutfrn</code>, and <code>likfrn</code>), the resulting data frame contains 10 triad variables, which are used in the subsequent entropy analysis.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>triad_var <span class="ot">&lt;-</span> triad_var[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span><span class="sc">:</span><span class="dv">13</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>triad_var <span class="ot">&lt;-</span> triad_var[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span><span class="sc">:</span><span class="dv">13</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>
@@ -2537,7 +2520,7 @@ EJ(X,Y \mid Z) = H(X,Z) + H(Y,Z) - H(Z) - H(X,Y,Z),
 <h4 data-number="8.3.3.1" class="anchored" data-anchor-id="vertex-variables-2"><span class="header-section-number">8.3.3.1</span> Vertex Variables</h4>
 <p>We apply the function to the data frame containing the observed and transformed vertex variables.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>j_vertex <span class="ot">&lt;-</span> <span class="fu">joint_entropy</span>(vertex_var, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>j_vertex <span class="ot">&lt;-</span> <span class="fu">joint_entropy</span>(vertex_var, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The output is returned as a list containing two objects: <code>j_vertex$mat</code>, an upper triangular matrix of joint entropy values (with univariate entropies on the diagonal), and <code>j_vertex$freq</code>, a data frame summarizing the frequency distribution of unique joint entropy values.</p>
 <p>The matrix <code>j_vertex$mat</code> shown in <a href="#tbl-joint-vert" class="quarto-xref">Table&nbsp;<span>8.9</span></a> summarizes the pairwise joint entropy values. Entries equal to <span class="math inline">\(0\)</span> indicate independence between variables, while larger values indicate stronger dependence. For example, practice is independent of both status and gender.</p>
@@ -2943,7 +2926,7 @@ Table&nbsp;8.10: Frequency distribution of unique joint entropy values for verte
 </div>
 <p>These relationships can be conveniently visualized using the function <code>assoc_graph()</code>, which returns a <code>ggraph</code> object where nodes represent variables and edges represent the strength of association (with thicker edges indicating stronger dependence). To focus on the most relevant structure, we set a threshold of <span class="math inline">\(0.25\)</span>, so that only the strongest associations are displayed in <a href="#fig-vert-assoc" class="quarto-xref">Figure&nbsp;<span>8.3</span></a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(vertex_var, <span class="fl">0.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(vertex_var, <span class="fl">0.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-vert-assoc" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2962,7 +2945,7 @@ Figure&nbsp;8.3: Association graph for vertex variables (threshold <span class="
 <h4 data-number="8.3.3.2" class="anchored" data-anchor-id="dyad-variables-2"><span class="header-section-number">8.3.3.2</span> Dyad Variables</h4>
 <p>Joint entropies for the dyad variables are computed in the same way as for the vertex variables. Rather than presenting the full output, we focus on visualizing the dependence structure using an association graph. We set a threshold of 0.10 to display the strongest associations in <a href="#fig-dyad-assoc" class="quarto-xref">Figure&nbsp;<span>8.4</span></a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(dyad_var, <span class="fl">0.10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(dyad_var, <span class="fl">0.10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-dyad-assoc" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2983,7 +2966,7 @@ Figure&nbsp;8.4: Association graph for dyad variables (threshold <span class="ma
 <h4 data-number="8.3.3.3" class="anchored" data-anchor-id="triad-variables-2"><span class="header-section-number">8.3.3.3</span> Triad Variables</h4>
 <p>Similarly, joint entropies for the triad variables are computed for the reduced data frame (with redundant variables removed). The dependence structure is again visualized using an association graph in <a href="#fig-triad-assoc" class="quarto-xref">Figure&nbsp;<span>8.5</span></a>. We set a threshold of 0.25 to focus on the strongest associations.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(triad_var, <span class="fl">0.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">assoc_graph</span>(triad_var, <span class="fl">0.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-triad-assoc" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -3020,19 +3003,19 @@ EH(Y \mid X) = H(X,Y) - H(X)
 <h4 data-number="8.3.4.1" class="anchored" data-anchor-id="vertex-variables-3"><span class="header-section-number">8.3.4.1</span> Vertex Variables</h4>
 <p>Trivariate entropies for all combinations of vertex variables can be computed using the function <code>entropy_trivar()</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>h3_vertex <span class="ot">&lt;-</span> <span class="fu">entropy_trivar</span>(vertex_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>h3_vertex <span class="ot">&lt;-</span> <span class="fu">entropy_trivar</span>(vertex_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We next assess prediction power for the different degree-based variables derived from the three relation types: co-work, advice, and friendship. Specifically, we evaluate how well pairs of variables predict each of these target variables.</p>
 <p>The corresponding prediction power matrices are obtained as follows.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>pred_vertex_cwk <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_cwk"</span>, vertex_var)</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>pred_vertex_advin <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"indeg_adv"</span>, vertex_var)</span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>pred_vertex_advout <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"outdeg_adv"</span>, vertex_var)</span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>pred_vertex_advmut <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_mutadv"</span>, vertex_var)</span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>pred_vertex_frnin <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"indeg_frn"</span>, vertex_var)</span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>pred_vertex_frnout <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"outdeg_frn"</span>, vertex_var)</span>
-<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>pred_vertex_frnmut <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_mutfrn"</span>, vertex_var)</span>
-<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>pred_vertex_frnlik <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_likfrn"</span>, vertex_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>pred_vertex_cwk <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_cwk"</span>, vertex_var)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>pred_vertex_advin <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"indeg_adv"</span>, vertex_var)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>pred_vertex_advout <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"outdeg_adv"</span>, vertex_var)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>pred_vertex_advmut <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_mutadv"</span>, vertex_var)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>pred_vertex_frnin <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"indeg_frn"</span>, vertex_var)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>pred_vertex_frnout <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"outdeg_frn"</span>, vertex_var)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>pred_vertex_frnmut <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_mutfrn"</span>, vertex_var)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>pred_vertex_frnlik <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"deg_likfrn"</span>, vertex_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>As an illustration, consider predicting the variable <code>indeg_adv</code>, which represents the in-degree in the advice network (i.e., how often a lawyer is asked for advice). The prediction power was computed and assigned to <code>pred_vertex_advin</code> and shown in <a href="#tbl-expred" class="quarto-xref">Table&nbsp;<span>8.11</span></a>.</p>
 <div id="tbl-expred" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3400,16 +3383,16 @@ Figure&nbsp;8.7: Prediction power heatmaps for vertex variables; darker cells in
 <p>We next assess prediction power for all dyad variables derived from the law firm network, including co-working, advice, and friendship relations, as well as dyadic versions of the attribute variables. For each dyad variable, we compute the expected conditional entropies <span class="math inline">\(EH(Z \mid X,Y)\)</span> using all other dyad variables as predictors, and visualize the results using prediction heatmaps.</p>
 <p>For each target variable in <code>dyad_var</code>, we compute the prediction power matrix based on all other dyad variables, and then visualize the results using heatmaps of expected conditional entropies <span class="math inline">\(EH(Z \mid X,Y)\)</span>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>pred_dyad_status <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"status"</span>, dyad_var)</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>pred_dyad_gender <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"gender"</span>, dyad_var)</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>pred_dyad_office <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"office"</span>, dyad_var)</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>pred_dyad_years <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"years"</span>, dyad_var)</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>pred_dyad_age <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"age"</span>, dyad_var)</span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>pred_dyad_practice <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"practice"</span>, dyad_var)</span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>pred_dyad_lawschool <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"lawschool"</span>, dyad_var)</span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>pred_dyad_cowork <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"cowork"</span>, dyad_var)</span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>pred_dyad_advice <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"advice"</span>, dyad_var)</span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>pred_dyad_friend <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"friend"</span>, dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>pred_dyad_status <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"status"</span>, dyad_var)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>pred_dyad_gender <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"gender"</span>, dyad_var)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>pred_dyad_office <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"office"</span>, dyad_var)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>pred_dyad_years <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"years"</span>, dyad_var)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>pred_dyad_age <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"age"</span>, dyad_var)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>pred_dyad_practice <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"practice"</span>, dyad_var)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>pred_dyad_lawschool <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"lawschool"</span>, dyad_var)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>pred_dyad_cowork <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"cowork"</span>, dyad_var)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>pred_dyad_advice <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"advice"</span>, dyad_var)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>pred_dyad_friend <span class="ot">&lt;-</span> <span class="fu">prediction_power</span>(<span class="st">"friend"</span>, dyad_var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>To visualize these matrices, we again use the function <code>make_pred_plot()</code>, shown in <a href="#fig-predplot-dyad" class="quarto-xref">Figure&nbsp;<span>8.8</span></a>.</p>
 <div class="cell">
@@ -3557,54 +3540,56 @@ Figure&nbsp;8.10: Association graph for dyad variables (threshold <span class="m
 <p>Intuitively, this model says that any association between friendship and co-working may be explained by the advice relation. In other words, once <code>advice</code> is taken into account, there should be little additional dependence between <code>friend</code> and <code>cowork</code>.</p>
 <p>To test this hypothesis, we use <code>div_gof()</code> and explicitly specify the conditioning variable.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span>,</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_cond =</span> <span class="st">"advice"</span></span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_cond =</span> <span class="st">"advice"</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                                       test     D   chi2 df critical_value
-1 friend independent of cowork given advice 0.003 11.959 12         21.798
-       decision
-1 cannot reject</code></pre>
+<pre><code>                                       test     D   chi2 df
+1 friend independent of cowork given advice 0.003 11.959 12
+  critical_value      decision
+1         21.798 cannot reject</code></pre>
 </div>
 </div>
 <p>The same type of conditional independence test can be applied to attribute-based variables. For example, the association structure also suggests the model <span class="math display">\[
 \text{gender} \perp \text{practice} \mid \text{status}.
 \]</span></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"gender"</span>,</span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"practice"</span>,</span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_cond =</span> <span class="st">"status"</span></span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"gender"</span>,</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"practice"</span>,</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_cond =</span> <span class="st">"status"</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                                         test     D   chi2 df critical_value
-1 gender independent of practice given status 0.018 61.758 27         41.697
-  decision
-1   reject</code></pre>
+<pre><code>                                         test     D   chi2 df
+1 gender independent of practice given status 0.018 61.758 27
+  critical_value decision
+1         41.697   reject</code></pre>
 </div>
 </div>
 <p>For comparison, we can also test pairwise independence without conditioning. By default, if no conditioning variable is specified, <code>div_gof()</code> tests whether the two variables are independent.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span></span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                          test     D    chi2 df critical_value decision
-1 friend independent of cowork 0.041 140.035  3          7.899   reject</code></pre>
+<pre><code>                          test     D    chi2 df critical_value
+1 friend independent of cowork 0.041 140.035  3          7.899
+  decision
+1   reject</code></pre>
 </div>
 </div>
 <p>The function can also be used to test whether a single variable is uniformly distributed across its observed categories. For example:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_uniform =</span> <span class="st">"friend"</span></span>
-<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_uniform =</span> <span class="st">"friend"</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                test     D     chi2 df critical_value decision
 1 uniformity: friend 1.119 3853.341  3          7.899   reject</code></pre>
@@ -3612,22 +3597,24 @@ Figure&nbsp;8.10: Association graph for dyad variables (threshold <span class="m
 </div>
 <p>Finally, reduced models can be compared to the saturated empirical model. The saturated model corresponds to the unrestricted empirical distribution and has divergence equal to zero. For example, we can compare the pairwise independence model for <code>friend</code> and <code>cowork</code> to the saturated model.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>m_full <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">D =</span> <span class="dv">0</span>, <span class="at">df =</span> <span class="dv">0</span>)</span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>m_reduced <span class="ot">&lt;-</span> <span class="fu">div_gof</span>(</span>
-<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
-<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
-<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span></span>
-<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
-<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
-<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_full =</span> m_full,</span>
-<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_reduced =</span> <span class="fu">list</span>(<span class="at">D =</span> m_reduced<span class="sc">$</span>D, <span class="at">df =</span> m_reduced<span class="sc">$</span>df)</span>
-<span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>m_full <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">D =</span> <span class="dv">0</span>, <span class="at">df =</span> <span class="dv">0</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>m_reduced <span class="ot">&lt;-</span> <span class="fu">div_gof</span>(</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var1 =</span> <span class="st">"friend"</span>,</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">var2 =</span> <span class="st">"cowork"</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">dat =</span> dyad_var,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_full =</span> m_full,</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_reduced =</span> <span class="fu">list</span>(<span class="at">D =</span> m_reduced<span class="sc">$</span>D, <span class="at">df =</span> m_reduced<span class="sc">$</span>df)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                     test     D    chi2 df critical_value decision
-1 nested model comparison 0.041 141.243  3          7.899   reject</code></pre>
+<pre><code>                     test     D    chi2 df critical_value
+1 nested model comparison 0.041 141.243  3          7.899
+  decision
+1   reject</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -3648,11 +3635,11 @@ Note
 \]</span> which provides a fast and convenient rule for hypothesis testing.</p>
 <p>Alternatively, exact critical values from the chi-square distribution can be used by setting.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>use_approx_cv <span class="ot">=</span> <span class="cn">FALSE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>use_approx_cv <span class="ot">=</span> <span class="cn">FALSE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In this case, the significance level can be controlled explicitly via the argument <code>alpha</code> (default is 0.05), allowing for more precise hypothesis testing.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(..., <span class="at">use_approx_cv =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.01</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">div_gof</span>(..., <span class="at">use_approx_cv =</span> <span class="cn">FALSE</span>, <span class="at">alpha =</span> <span class="fl">0.01</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Lower values of alpha correspond to stricter tests (harder to reject the model), while higher values make rejection more likely. In particular, smaller <code>alpha</code> reduces the probability of incorrectly rejecting a true null hypothesis.</p>
 </div>

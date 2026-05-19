@@ -99,7 +99,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-87b7f55de2e0c9887283481eb31a794c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -714,7 +714,7 @@ P(G) = \frac{1}{\kappa} \exp\left( \theta_1 \cdot L + \theta_2 \cdot m_v(G) \rig
 <p>We only consider cross-sectional network data here so we only focus on the third wave network (we will in later chapters look at modeling longitudinal network data). Let’s prepare the data for the <code>ergm</code> specification. Note that we here instead convert the graph object inot a network one using the package <code>integraph</code> in order to preserve the node attribute of interest</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"s50"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data as igraph object from networkdata and extract the third wave network</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the third wave network</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>s50_g <span class="ot">&lt;-</span> s50[[<span class="dv">3</span>]]</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to network object using intergraph</span></span>
@@ -820,15 +820,15 @@ ergm(formula = coleman_mat ~ edges + mutual)
 Monte Carlo Maximum Likelihood Results:
 
        Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges   -3.7147     0.0920      0  -40.38   &lt;1e-04 ***
-mutual   3.7576     0.2155      0   17.44   &lt;1e-04 ***
+edges  -3.72316    0.09369      0  -39.74   &lt;1e-04 ***
+mutual  3.74527    0.22586      0   16.58   &lt;1e-04 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
      Null Deviance: 7286  on 5256  degrees of freedom
- Residual Deviance: 1719  on 5254  degrees of freedom
+ Residual Deviance: 1713  on 5254  degrees of freedom
  
-AIC: 1723  BIC: 1736  (Smaller is better. MC Std. Err. = 1.43)</code></pre>
+AIC: 1717  BIC: 1730  (Smaller is better. MC Std. Err. = 1.618)</code></pre>
 </div>
 </div>
 <p>The edge term has a strong negative estimate (<span class="math inline">\(\hat{\theta}_{\text{edges}} = -3.72\)</span>, <span class="math inline">\(p &lt; 0.0001\)</span>), indicating that ties are generally infrequent in the network. This negative coefficient reflects the baseline log-odds of a directed tie existing between two nodes in the absence of any reciprocation or other structural tendencies.</p>
@@ -883,19 +883,23 @@ y_{i j_1} \cdot \dots \cdot y_{i j_k}
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>flob_g <span class="ot">&lt;-</span> flo_business</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>flob_p <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(flob_g, <span class="at">layout =</span> <span class="st">"stress"</span>) <span class="sc">+</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(<span class="at">edge_color =</span> <span class="st">"#666060"</span>, <span class="at">edge_width =</span> <span class="fl">0.8</span>, <span class="at">edge_alpha =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"#808080"</span>,</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#808080"</span>,</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">7</span>,</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">21</span>,</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="fl">0.9</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_graph</span>() <span class="sc">+</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Florentine business network"</span>)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>flob_p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link0</span>(</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_color =</span> <span class="st">"#666060"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_width =</span> <span class="fl">0.8</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">edge_alpha =</span> <span class="dv">1</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"#808080"</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#808080"</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">7</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="fl">0.9</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_graph</span>() <span class="sc">+</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Florentine business network"</span>)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>flob_p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -923,11 +927,13 @@ y_{i j_1} \cdot \dots \cdot y_{i j_k}
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with Markov dependence terms</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>model_markov <span class="ot">&lt;-</span> <span class="fu">ergm</span>(flob_net <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">3</span>) <span class="sc">+</span> triangle)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Display summary of the model</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_markov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>model_markov <span class="ot">&lt;-</span> <span class="fu">ergm</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  flob_net <span class="sc">~</span> edges <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">kstar</span>(<span class="dv">3</span>) <span class="sc">+</span> triangle</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Display summary of the model</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_markov)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 ergm(formula = flob_net ~ edges + kstar(2) + kstar(3) + triangle)
@@ -1065,27 +1071,30 @@ p_{ij} = \sum_{\ell \neq i,j} y_{i\ell} \cdot y_{j\ell},
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># symmetrize the matrix to create and undirected graph</span></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>law_mat_cwdir <span class="ot">&lt;-</span> <span class="fu">as_adjacency_matrix</span>(law_cowork, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>law_mat_cwdir <span class="ot">&lt;-</span> law_mat_cwdir[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>] <span class="co"># only partners</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>law_mat_cw <span class="ot">&lt;-</span> (law_mat_cwdir <span class="sc">==</span> <span class="fu">t</span>(law_mat_cwdir) <span class="sc">&amp;</span> law_mat_cwdir <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="dv">0</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># save the binary attribute 'practice' (1 = litigation, 2 = corporate) from the graph object as a vector:</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>law_attr.pract <span class="ot">&lt;-</span> <span class="fu">vertex_attr</span>(law_cowork)<span class="sc">$</span>pract[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>] <span class="sc">-</span> <span class="fl">1.</span> <span class="co"># recode attribute from 2/1 to 1/0</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co"># We create a network object and add the binary node attribute 'practice':</span></span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>law_net <span class="ot">&lt;-</span> <span class="fu">as.network</span>(law_mat_cw, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>law_net <span class="sc">%v%</span> <span class="st">"practice"</span> <span class="ot">&lt;-</span> law_attr.pract</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with attribute and structural terms</span></span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>model_sc <span class="ot">&lt;-</span> <span class="fu">ergm</span>(</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  law_net <span class="sc">~</span></span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    edges <span class="sc">+</span></span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nodecov</span>(<span class="st">"practice"</span>) <span class="sc">+</span></span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nodematch</span>(<span class="st">"practice"</span>) <span class="sc">+</span></span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">gwesp</span>(<span class="fl">0.693</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_sc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>law_mat_cw <span class="ot">&lt;-</span> (law_mat_cwdir <span class="sc">==</span> <span class="fu">t</span>(law_mat_cwdir) <span class="sc">&amp;</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  law_mat_cwdir <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">0</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># save the binary attribute 'practice'</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co"># (1 = litigation, 2 = corporate) from the graph object as a vector</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>law_attr.pract <span class="ot">&lt;-</span> <span class="fu">vertex_attr</span>(law_cowork)<span class="sc">$</span>pract[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>] <span class="sc">-</span> <span class="fl">1.</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="co"># We create a network object and add the binary node attribute 'practice':</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>law_net <span class="ot">&lt;-</span> <span class="fu">as.network</span>(law_mat_cw, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>law_net <span class="sc">%v%</span> <span class="st">"practice"</span> <span class="ot">&lt;-</span> law_attr.pract</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit ERGM with attribute and structural terms</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>model_sc <span class="ot">&lt;-</span> <span class="fu">ergm</span>(</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  law_net <span class="sc">~</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    edges <span class="sc">+</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nodecov</span>(<span class="st">"practice"</span>) <span class="sc">+</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nodematch</span>(<span class="st">"practice"</span>) <span class="sc">+</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gwesp</span>(<span class="fl">0.693</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_sc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 ergm(formula = law_net ~ edges + nodecov("practice") + nodematch("practice") + 
@@ -1093,11 +1102,16 @@ ergm(formula = law_net ~ edges + nodecov("practice") + nodematch("practice") +
 
 Monte Carlo Maximum Likelihood Results:
 
-                   Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-edges              -4.41134    0.32289      0 -13.662  &lt; 1e-04 ***
-nodecov.practice    0.17810    0.07371      0   2.416 0.015678 *  
-nodematch.practice  0.60167    0.16668      0   3.610 0.000306 ***
-gwesp.fixed.0.693   1.15319    0.15878      0   7.263  &lt; 1e-04 ***
+                   Estimate Std. Error MCMC % z value Pr(&gt;|z|)
+edges              -4.41134    0.32289      0 -13.662  &lt; 1e-04
+nodecov.practice    0.17810    0.07371      0   2.416 0.015678
+nodematch.practice  0.60167    0.16668      0   3.610 0.000306
+gwesp.fixed.0.693   1.15319    0.15878      0   7.263  &lt; 1e-04
+                      
+edges              ***
+nodecov.practice   *  
+nodematch.practice ***
+gwesp.fixed.0.693  ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1216,35 +1230,32 @@ Steps 2 and 3 are repeated iteratively. At each round, the model simulates netwo
 <p>We will consider the diagnostics for the <code>model_sc</code> on the lawyer data set above:</p>
 <section id="example-lawyers-network---cowork-among-partners-1" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="example-lawyers-network---cowork-among-partners-1">Example: Lawyers Network - Cowork Among Partners</h5>
-<p>The <code>mcmc.diagnostics()</code> function in the <code>ergm</code> package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consist of two parts. The first part is a plot:</p>
-<div id="fig-mcmc" class="center quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-mcmc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell" data-layout-align="center">
+<p>The <code>mcmc.diagnostics()</code> function in the <code>ergm</code> package produces trace plots and density plots for each model parameter, allowing us to evaluate the stability and mixing of the MCMC chain. The daignostics consist of two parts. The first part is a plot (see <a href="#fig-mcmc" class="quarto-xref">Figure&nbsp;<span>17.4</span></a>).</p>
+<div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc.diagnostics</span>(model_sc, <span class="at">which =</span> <span class="st">"plots"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ergm_files/figure-html/ergm-mcmc-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
-</div>
-</div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Note: MCMC diagnostics shown here are from the last round of
-  simulation, prior to computation of final parameter estimates.
-  Because the final estimates are refinements of those used for this
-  simulation run, these diagnostics may understate model performance.
-  To directly assess the performance of the final model on in-model
-  statistics, please use the GOF command: gof(ergmFitObject,
-  GOF=~model).</code></pre>
+Note: MCMC diagnostics shown here are from the last round
+  of simulation, prior to computation of final parameter
+  estimates. Because the final estimates are refinements
+  of those used for this simulation run, these
+  diagnostics may understate model performance. To
+  directly assess the performance of the final model on
+  in-model statistics, please use the GOF command:
+  gof(ergmFitObject, GOF=~model).</code></pre>
 </div>
-</div>
+<div class="cell-output-display">
+<div id="fig-mcmc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mcmc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ergm_files/figure-html/fig-mcmc-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mcmc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;17.4: MCMC trace and density plots for ERGM parameter estimates. The trace plots (left) show the sampled values of the score function across iterations for each model term. Good mixing is indicated by irregular, stationary fluctuations around zero. The density plots (right) display the distribution of these values; approximately symmetric and centered curves suggest that the MCMC sampler has reached a stable equilibrium and is drawing from the target distribution.
 </figcaption>
 </figure>
+</div>
+</div>
 </div>
 <p>The MCMC diagnostic output includes two main types of plots as seen in <a href="#fig-mcmc" class="quarto-xref">Figure&nbsp;<span>17.4</span></a>: <strong>trace plots</strong> and <strong>density plots</strong>, which together help assess whether the Markov chain has properly converged.</p>
 <p>The <strong>trace plots</strong> (left panels of <a href="#fig-mcmc" class="quarto-xref">Figure&nbsp;<span>17.4</span></a>) display the sampled values of the score function (essentially, the gradient of the log-likelihood) for each model term across the course of the MCMC simulation. In a well-behaved chain, these traces should appear as irregular but stable fluctuations around zero, without discernible trends, drifts, or flat segments. Such patterns indicate good mixing, where the sampler is exploring the parameter space effectively rather than getting stuck.</p>
@@ -1257,60 +1268,67 @@ Figure&nbsp;17.4: MCMC trace and density plots for ERGM parameter estimates. The
 <div class="cell-output cell-output-stdout">
 <pre><code>Sample statistics summary:
 
-Iterations = 82944:1648640
+Iterations = 93184:1841152
 Thinning interval = 1024 
 Number of chains = 1 
-Sample size per chain = 1530 
+Sample size per chain = 1708 
 
 1. Empirical mean and standard deviation for each variable,
    plus standard error of the mean:
 
-                    Mean    SD Naive SE Time-series SE
-edges              4.193 27.69   0.7079          2.030
-nodecov.practice   3.084 27.03   0.6911          1.699
-nodematch.practice 2.555 17.11   0.4374          1.312
-gwesp.fixed.0.693  7.441 54.95   1.4048          3.982
+                     Mean    SD Naive SE Time-series SE
+edges               7.091 27.10   0.6557          1.998
+nodecov.practice    5.302 24.89   0.6023          1.633
+nodematch.practice  4.230 16.56   0.4008          1.163
+gwesp.fixed.0.693  13.519 54.18   1.3109          4.007
 
 2. Quantiles for each variable:
 
-                      2.5%    25%   50%   75%  97.5%
-edges               -58.00 -13.00  7.00 24.00  50.00
-nodecov.practice    -62.00 -11.75  7.00 22.00  44.77
-nodematch.practice  -34.77  -7.75  4.00 15.00  32.00
-gwesp.fixed.0.693  -112.95 -27.27 11.86 46.56 105.24
+                     2.5%    25%   50%   75% 97.5%
+edges              -48.00 -10.00 10.00 26.00  56.0
+nodecov.practice   -50.32  -9.00  8.00 22.25  48.0
+nodematch.practice -30.00  -7.00  5.00 16.00  35.0
+gwesp.fixed.0.693  -96.12 -23.13 16.52 50.73 114.7
 
 
 Are sample statistics significantly different from observed?
-              edges nodecov.practice nodematch.practice gwesp.fixed.0.693
-diff.      4.193464       3.08431373         2.55490196        7.44060041
-test stat. 2.065603       1.81503409         1.94692678        1.86876829
-P-val.     0.038866       0.06951867         0.05154351        0.06165506
-                 (Omni)
-diff.                NA
-test stat. 2.018915e+01
-P-val.     5.549297e-04
+                  edges nodecov.practice nodematch.practice
+diff.      7.0907494145       5.30210773        4.230093677
+test stat. 3.5487184676       3.24757744        3.636136218
+P-val.     0.0003871107       0.00116392        0.000276758
+           gwesp.fixed.0.693       (Omni)
+diff.           1.351858e+01           NA
+test stat.      3.373832e+00 1.903298e+01
+P-val.          7.412971e-04 9.111204e-04
 
 Sample statistics cross-correlations:
                        edges nodecov.practice nodematch.practice
-edges              1.0000000        0.8661702          0.9385818
-nodecov.practice   0.8661702        1.0000000          0.8058032
-nodematch.practice 0.9385818        0.8058032          1.0000000
-gwesp.fixed.0.693  0.9930583        0.8706234          0.9326873
+edges              1.0000000        0.8264120          0.9319707
+nodecov.practice   0.8264120        1.0000000          0.7678457
+nodematch.practice 0.9319707        0.7678457          1.0000000
+gwesp.fixed.0.693  0.9927742        0.8370170          0.9251511
                    gwesp.fixed.0.693
-edges                      0.9930583
-nodecov.practice           0.8706234
-nodematch.practice         0.9326873
+edges                      0.9927742
+nodecov.practice           0.8370170
+nodematch.practice         0.9251511
 gwesp.fixed.0.693          1.0000000
 
 Sample statistics auto-correlation:
 Chain 1 
-             edges nodecov.practice nodematch.practice gwesp.fixed.0.693
-Lag 0    1.0000000        1.0000000          1.0000000         1.0000000
-Lag 1024 0.7830828        0.6976898          0.7312736         0.7512523
-Lag 2048 0.6230787        0.5053844          0.5691328         0.5927850
-Lag 3072 0.5060997        0.3787281          0.4569260         0.4783505
-Lag 4096 0.4117891        0.3017643          0.3746105         0.3901042
-Lag 5120 0.3397918        0.2345665          0.3080189         0.3204952
+             edges nodecov.practice nodematch.practice
+Lag 0    1.0000000        1.0000000          1.0000000
+Lag 1024 0.7812515        0.6669325          0.7428406
+Lag 2048 0.6356838        0.4833907          0.6001471
+Lag 3072 0.5280292        0.3686701          0.4907969
+Lag 4096 0.4260868        0.2842123          0.3962557
+Lag 5120 0.3552503        0.2527400          0.3190893
+         gwesp.fixed.0.693
+Lag 0            1.0000000
+Lag 1024         0.7462760
+Lag 2048         0.6047712
+Lag 3072         0.5022241
+Lag 4096         0.4027607
+Lag 5120         0.3393722
 
 Sample statistics burn-in diagnostic (Geweke):
 Chain 1 
@@ -1318,21 +1336,26 @@ Chain 1
 Fraction in 1st window = 0.1
 Fraction in 2nd window = 0.5 
 
-             edges   nodecov.practice nodematch.practice  gwesp.fixed.0.693 
-          1.183854           1.102967           1.430812           1.202088 
+             edges   nodecov.practice nodematch.practice 
+       -0.13897313         0.98934189         0.04600824 
+ gwesp.fixed.0.693 
+       -0.01253819 
 
 Individual P-values (lower = worse):
-             edges   nodecov.practice nodematch.practice  gwesp.fixed.0.693 
-         0.2364708          0.2700415          0.1524842          0.2293296 
-Joint P-value (lower = worse):  0.646062 
+             edges   nodecov.practice nodematch.practice 
+         0.8894714          0.3224959          0.9633037 
+ gwesp.fixed.0.693 
+         0.9899962 
+Joint P-value (lower = worse):  0.00691819 
 
-Note: MCMC diagnostics shown here are from the last round of
-  simulation, prior to computation of final parameter estimates.
-  Because the final estimates are refinements of those used for this
-  simulation run, these diagnostics may understate model performance.
-  To directly assess the performance of the final model on in-model
-  statistics, please use the GOF command: gof(ergmFitObject,
-  GOF=~model).</code></pre>
+Note: MCMC diagnostics shown here are from the last round
+  of simulation, prior to computation of final parameter
+  estimates. Because the final estimates are refinements
+  of those used for this simulation run, these
+  diagnostics may understate model performance. To
+  directly assess the performance of the final model on
+  in-model statistics, please use the GOF command:
+  gof(ergmFitObject, GOF=~model).</code></pre>
 </div>
 </div>
 <p>One key output compares the mean of the simulated statistics to the corresponding observed values. For most terms, including <code>nodecov.practice</code>, <code>nodematch.practice</code>, and the <code>gwesp</code> statistic, there is no significant difference between simulated and observed statistics, indicating a good model fit. The only exception is the <code>edges</code> term, which shows a small but statistically significant deviation (<span class="math inline">\(p\)</span> = 0.0389). This suggests a slight misfit on overall tie density, though the magnitude of the difference is modest and not cause for concern.</p>
@@ -1493,69 +1516,67 @@ Figure&nbsp;17.5: Goodness-of-fit (GOF) diagnostics for the ERGM fitted to the L
 <pre><code>
 Goodness-of-fit for model statistics 
 
-                        obs min     mean      max MC p-value
-edges              115.0000  23 109.2400 162.0000       0.88
-nodecov.practice   129.0000  22 125.6000 176.0000       0.96
-nodematch.practice  72.0000  19  68.9000 103.0000       0.88
-gwesp.fixed.0.693  181.2969  12 169.7049 283.6477       0.76
+                        obs      min    mean      max MC p-value
+edges              115.0000 19.00000 110.210 175.0000       1.00
+nodecov.practice   129.0000 21.00000 124.380 181.0000       1.00
+nodematch.practice  72.0000 10.00000  68.630 114.0000       0.94
+gwesp.fixed.0.693  181.2969 10.99985 171.812 302.2986       0.98
 
 Goodness-of-fit for minimum geodesic distance 
 
     obs min   mean max MC p-value
-1   115  23 109.24 162       0.88
-2   275  26 256.46 382       0.96
-3   148  20 110.44 182       0.30
-4    21   0  20.15  63       0.80
-5     2   0   3.87  35       0.74
-6     0   0   0.67  20       1.00
-7     0   0   0.14  12       1.00
-8     0   0   0.02   2       1.00
-Inf  69   0 129.01 534       0.80
+1   115  19 110.21 175       1.00
+2   275  13 257.25 393       0.98
+3   148   9 109.28 204       0.26
+4    21   0  19.84  90       0.72
+5     2   0   3.04  46       0.58
+6     0   0   0.62  16       1.00
+7     0   0   0.10   5       1.00
+Inf  69   0 129.66 584       0.82
 
 Goodness-of-fit for degree 
 
    obs min mean max MC p-value
-0    2   0 3.61  14       0.86
-1    3   0 2.68  10       0.96
-2    2   0 2.30   7       1.00
-3    4   0 2.74   6       0.56
-4    2   0 2.62   7       1.00
-5    4   0 2.76   7       0.56
-6    4   0 3.13   8       0.82
-7    1   0 3.13   7       0.28
-8    1   0 2.87   8       0.42
-9    5   0 2.47   7       0.24
-10   1   0 2.21   7       0.72
-11   1   0 1.60   7       1.00
-12   2   0 1.29   5       0.66
-13   3   0 0.94   4       0.20
-14   0   0 0.64   4       1.00
-15   1   0 0.42   3       0.70
-16   0   0 0.28   2       1.00
-17   0   0 0.10   1       1.00
-18   0   0 0.07   1       1.00
-19   0   0 0.11   2       1.00
+0    2   0 3.57  16       0.90
+1    3   0 2.70  10       0.90
+2    2   0 2.49  12       1.00
+3    4   0 2.51   9       0.42
+4    2   0 2.49   7       1.00
+5    4   0 2.99   8       0.72
+6    4   0 2.99   8       0.70
+7    1   0 2.90   8       0.44
+8    1   0 2.81   8       0.50
+9    5   0 2.82   7       0.40
+10   1   0 1.81   6       1.00
+11   1   0 1.83   7       0.96
+12   2   0 1.33   6       0.80
+13   3   0 0.89   4       0.22
+14   0   0 0.85   4       0.98
+15   1   0 0.41   2       0.70
+16   0   0 0.31   3       1.00
+17   0   0 0.13   2       1.00
+18   0   0 0.10   1       1.00
+19   0   0 0.03   1       1.00
 20   0   0 0.01   1       1.00
-21   0   0 0.01   1       1.00
-22   0   0 0.01   1       1.00
+21   0   0 0.02   1       1.00
+23   0   0 0.01   1       1.00
 
 Goodness-of-fit for edgewise shared partner 
 
    obs min  mean max MC p-value
-0    5   1  5.51  13       1.00
-1   16   3 15.47  28       0.92
-2   29   0 25.25  45       0.60
-3   17   0 26.00  52       0.40
-4   23   0 18.50  40       0.58
-5   11   0 10.41  32       0.92
-6   10   0  4.47  17       0.14
-7    4   0  2.21  11       0.44
-8    0   0  0.93   7       1.00
-9    0   0  0.29   4       1.00
-10   0   0  0.10   2       1.00
-11   0   0  0.08   2       1.00
-12   0   0  0.01   1       1.00
-15   0   0  0.01   1       1.00</code></pre>
+0    5   0  5.51  17       1.00
+1   16   5 15.96  32       1.00
+2   29   0 23.97  46       0.46
+3   17   0 25.34  48       0.50
+4   23   0 19.09  43       0.68
+5   11   0 10.92  31       1.00
+6   10   0  5.83  23       0.32
+7    4   0  2.18  12       0.38
+8    0   0  0.88   6       1.00
+9    0   0  0.34   4       1.00
+10   0   0  0.14   3       1.00
+11   0   0  0.04   1       1.00
+12   0   0  0.01   1       1.00</code></pre>
 </div>
 </div>
 <p>The numerical output provides a detailed assessment of how well the fitted ERGM reproduces both the modeled terms and modeled structural features of the observed network.</p>

@@ -99,7 +99,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-36bf55b16c7cb4b1420f41495cb5446a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-87b7f55de2e0c9887283481eb31a794c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -483,10 +483,7 @@ window.Quarto = {
   <li><a href="#predictors-2" id="toc-predictors-2" class="nav-link" data-scroll-target="#predictors-2"><span class="header-section-number">7.5.3.2</span> Predictors</a></li>
   <li><a href="#estimating-the-model-2" id="toc-estimating-the-model-2" class="nav-link" data-scroll-target="#estimating-the-model-2"><span class="header-section-number">7.5.3.3</span> Estimating the Model</a></li>
   <li><a href="#interpretation-of-model-output-2" id="toc-interpretation-of-model-output-2" class="nav-link" data-scroll-target="#interpretation-of-model-output-2"><span class="header-section-number">7.5.3.4</span> Interpretation of Model Output</a></li>
-  </ul></li>
-  <li><a href="#interpretation-of-model-output-3" id="toc-interpretation-of-model-output-3" class="nav-link" data-scroll-target="#interpretation-of-model-output-3"><span class="header-section-number">7.5.4</span> Interpretation of Model Output</a>
-  <ul>
-  <li><a href="#predicted-counts" id="toc-predicted-counts" class="nav-link" data-scroll-target="#predicted-counts"><span class="header-section-number">7.5.4.1</span> Predicted Counts</a></li>
+  <li><a href="#predicted-counts" id="toc-predicted-counts" class="nav-link" data-scroll-target="#predicted-counts"><span class="header-section-number">7.5.3.5</span> Predicted Counts</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
@@ -560,17 +557,18 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ego_net_w1<span class="sc">$</span>ego) <span class="co"># ego level</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 19
-  .egoID gender year_birth   age married  pets home_owner informal_groups health
-  &lt;chr&gt;   &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;           &lt;dbl&gt; &lt;ord&gt; 
-1 30000…      1       1961  53.8       0     0          0               1 fair  
-2 30000…      0       1964  51.3       0     0          0               1 good  
-3 30000…      1       1951  63.7       0     1          0               0 good  
-4 30000…      1       1959  55.9       1     1          1               1 very_…
-5 30000…      1       1952  63.1       1     0          1               0 excel…
-6 30000…      1       1949  66.3       0     0          0               0 fair  
-# ℹ 10 more variables: lose_weight_advice &lt;dbl&gt;, smoker &lt;dbl&gt;,
-#   drinking_days &lt;dbl&gt;, marijuana_use &lt;dbl&gt;, extraversion &lt;dbl&gt;,
-#   education &lt;ord&gt;, race &lt;fct&gt;, birth_continent &lt;fct&gt;, religion &lt;fct&gt;,
+  .egoID        gender year_birth   age married  pets home_owner
+  &lt;chr&gt;          &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+1 3000000000036      1       1961  53.8       0     0          0
+2 3000000000156      0       1964  51.3       0     0          0
+3 3000000000271      1       1951  63.7       0     1          0
+4 3000000000317      1       1959  55.9       1     1          1
+5 3000000000346      1       1952  63.1       1     0          1
+6 3000000000349      1       1949  66.3       0     0          0
+# ℹ 12 more variables: informal_groups &lt;dbl&gt;, health &lt;ord&gt;,
+#   lose_weight_advice &lt;dbl&gt;, smoker &lt;dbl&gt;, drinking_days &lt;dbl&gt;,
+#   marijuana_use &lt;dbl&gt;, extraversion &lt;dbl&gt;, education &lt;ord&gt;,
+#   race &lt;fct&gt;, birth_continent &lt;fct&gt;, religion &lt;fct&gt;,
 #   income &lt;ord&gt;</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ego_net_w1<span class="sc">$</span>alter) <span class="co"># alter level</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -616,24 +614,27 @@ Note
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
-IGRAPH a9f6625 DNW- 6 2 -- 
-+ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
-| (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from a9f6625 (vertex names):
+IGRAPH db3c691 DNW- 6 2 -- 
++ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender
+| (v/n), family (v/n), same_race (v/n), same_age (v/n),
+| .egoID (e/c), weight (e/n)
++ edges from db3c691 (vertex names):
 [1] 2-&gt;5 2-&gt;5
 
 [[2]]
-IGRAPH dea8363 DNW- 15 8 -- 
-+ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
-| (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from dea8363 (vertex names):
+IGRAPH a3e7e5b DNW- 15 8 -- 
++ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender
+| (v/n), family (v/n), same_race (v/n), same_age (v/n),
+| .egoID (e/c), weight (e/n)
++ edges from a3e7e5b (vertex names):
 [1] 2-&gt;3 3-&gt;5 2-&gt;3 2-&gt;5 1-&gt;4 2-&gt;5 3-&gt;5 1-&gt;4
 
 [[3]]
-IGRAPH 38da4f6 DNW- 5 6 -- 
-+ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender (v/n), family
-| (v/n), same_race (v/n), same_age (v/n), .egoID (e/c), weight (e/n)
-+ edges from 38da4f6 (vertex names):
+IGRAPH be336c2 DNW- 5 6 -- 
++ attr: .egoID (g/c), name (v/c), .egoID (v/c), gender
+| (v/n), family (v/n), same_race (v/n), same_age (v/n),
+| .egoID (e/c), weight (e/n)
++ edges from be336c2 (vertex names):
 [1] 1-&gt;2 1-&gt;3 1-&gt;2 2-&gt;3 1-&gt;3 2-&gt;3</code></pre>
 </div>
 </div>
@@ -1013,41 +1014,41 @@ Figure&nbsp;7.3: Distributions of four ego-network composition measures across r
 <span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(analysis_dat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>         .egoID gender year_birth      age married pets home_owner
-1 3000000000036      1       1961 53.83333       0    0          0
-2 3000000000156      0       1964 51.33333       0    0          0
-3 3000000000271      1       1951 63.66667       0    1          0
-4 3000000000317      1       1959 55.91667       1    1          1
-5 3000000000346      1       1952 63.08333       1    0          1
-6 3000000000349      1       1949 66.33333       0    0          0
-  informal_groups    health lose_weight_advice smoker drinking_days
-1               1      fair                  0      1             9
-2               1      good                  0      1             9
-3               0      good                  0      0             6
-4               1 very_good                  0      0             8
-5               0 excellent                  0      0             1
-6               0      fair                  0      0             1
-  marijuana_use extraversion           education             race
-1             0          4.0        some_college            white
-2             1          2.0        some_college pacific_islander
-3             0          4.0        some_college            white
-4             0          2.0              master            white
-5             0          1.0 professional_degree            white
-6             0          3.5 professional_degree            asian
-  birth_continent    religion    income ego_size prop_family prop_same_race
-1   north_america  protestant   35k_45k        6  0.16666667      1.0000000
-2   north_america no_religion under_15k       15  0.06666667      0.1333333
-3   north_america no_religion   25k_35k        5  0.00000000             NA
-4   north_america no_religion under_15k       15  0.46666667      1.0000000
-5   north_america    catholic under_15k       15  0.53333333      1.0000000
-6   north_america    buddhist   60k_75k       14  0.71428571             NA
-  gender_entropy
-1      0.6365142
-2      0.5004024
-3      0.0000000
-4      0.6730117
-5      0.6909233
-6      0.6931472</code></pre>
+<pre><code>         .egoID gender year_birth      age married pets
+1 3000000000036      1       1961 53.83333       0    0
+2 3000000000156      0       1964 51.33333       0    0
+3 3000000000271      1       1951 63.66667       0    1
+4 3000000000317      1       1959 55.91667       1    1
+5 3000000000346      1       1952 63.08333       1    0
+6 3000000000349      1       1949 66.33333       0    0
+  home_owner informal_groups    health lose_weight_advice smoker
+1          0               1      fair                  0      1
+2          0               1      good                  0      1
+3          0               0      good                  0      0
+4          1               1 very_good                  0      0
+5          1               0 excellent                  0      0
+6          0               0      fair                  0      0
+  drinking_days marijuana_use extraversion           education
+1             9             0          4.0        some_college
+2             9             1          2.0        some_college
+3             6             0          4.0        some_college
+4             8             0          2.0              master
+5             1             0          1.0 professional_degree
+6             1             0          3.5 professional_degree
+              race birth_continent    religion    income
+1            white   north_america  protestant   35k_45k
+2 pacific_islander   north_america no_religion under_15k
+3            white   north_america no_religion   25k_35k
+4            white   north_america no_religion under_15k
+5            white   north_america    catholic under_15k
+6            asian   north_america    buddhist   60k_75k
+  ego_size prop_family prop_same_race gender_entropy
+1        6  0.16666667      1.0000000      0.6365142
+2       15  0.06666667      0.1333333      0.5004024
+3        5  0.00000000             NA      0.0000000
+4       15  0.46666667      1.0000000      0.6730117
+5       15  0.53333333      1.0000000      0.6909233
+6       14  0.71428571             NA      0.6931472</code></pre>
 </div>
 </div>
 <p>Before estimating the model, it is useful to reorder the health outcome so that higher categories correspond to better health. This makes the interpretation of coefficients more intuitive.</p>
@@ -1074,13 +1075,18 @@ Figure&nbsp;7.3: Distributions of four ego-network composition measures across r
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>health_model <span class="ot">&lt;-</span> <span class="fu">polr</span>(</span>
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  health_ord <span class="sc">~</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    ego_size <span class="sc">+</span> prop_family <span class="sc">+</span> gender_entropy <span class="sc">+</span> age <span class="sc">+</span> gender <span class="sc">+</span> education,</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> analysis_dat,</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Hess =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.action =</span> na.omit</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(health_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    ego_size <span class="sc">+</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    prop_family <span class="sc">+</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    gender_entropy <span class="sc">+</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    gender <span class="sc">+</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    education,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> analysis_dat,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Hess =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.action =</span> na.omit</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(health_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 polr(formula = health_ord ~ ego_size + prop_family + gender_entropy + 
@@ -1203,14 +1209,17 @@ Note
 <span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"probability"</span></span>
 <span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred_long, <span class="fu">aes</span>(<span class="at">x =</span> ego_size, <span class="at">y =</span> probability, <span class="at">color =</span> health_category)) <span class="sc">+</span></span>
-<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Ego Network Size"</span>,</span>
-<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Predicted Probability"</span>,</span>
-<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Health Category"</span></span>
-<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a>  pred_long,</span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> ego_size, <span class="at">y =</span> probability, <span class="at">color =</span> health_category)</span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Ego Network Size"</span>,</span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Predicted Probability"</span>,</span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Health Category"</span></span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-health-pred-probs" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1272,13 +1281,18 @@ Figure&nbsp;7.4: Predicted probabilities of falling into each self-reported heal
 <p>We estimate a logistic regression model using the <code>glm()</code> function with a binomial link.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>smoke_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  smoker <span class="sc">~</span> ego_size <span class="sc">+</span> prop_family <span class="sc">+</span> gender_entropy <span class="sc">+</span> age <span class="sc">+</span> gender <span class="sc">+</span> education,</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> analysis_dat,</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> binomial,</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.action =</span> na.omit</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(smoke_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  smoker <span class="sc">~</span> ego_size <span class="sc">+</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    prop_family <span class="sc">+</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    gender_entropy <span class="sc">+</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    gender <span class="sc">+</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    education,</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> analysis_dat,</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> binomial,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.action =</span> na.omit</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(smoke_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1338,12 +1352,14 @@ Note
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(smoke_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   (Intercept)       ego_size    prop_family gender_entropy            age 
-     0.4340106      0.9409650      0.3721150      1.1904458      0.9887130 
-        gender    education.L    education.Q    education.C    education^4 
-     0.6030812      0.1142593      0.7210287      4.7628151      1.0352075 
-   education^5    education^6    education^7    education^8 
-     0.7737154      1.0161236      0.5120876      1.6832035 </code></pre>
+<pre><code>   (Intercept)       ego_size    prop_family gender_entropy 
+     0.4340106      0.9409650      0.3721150      1.1904458 
+           age         gender    education.L    education.Q 
+     0.9887130      0.6030812      0.1142593      0.7210287 
+   education.C    education^4    education^5    education^6 
+     4.7628151      1.0352075      0.7737154      1.0161236 
+   education^7    education^8 
+     0.5120876      1.6832035 </code></pre>
 </div>
 </div>
 <p>Odds ratios greater than 1 indicate that the predictor is associated with higher odds of smoking, while values below 1 indicate lower odds of smoking.</p>
@@ -1481,13 +1497,18 @@ Figure&nbsp;7.5: Predicted probability of smoking as a function of ego network s
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>drink_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  drinking_days_rec <span class="sc">~</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    ego_size <span class="sc">+</span> prop_family <span class="sc">+</span> gender_entropy <span class="sc">+</span> age <span class="sc">+</span> gender <span class="sc">+</span> education,</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> analysis_dat,</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> poisson,</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.action =</span> na.omit</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(drink_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    ego_size <span class="sc">+</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    prop_family <span class="sc">+</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    gender_entropy <span class="sc">+</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">+</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    gender <span class="sc">+</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    education,</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> analysis_dat,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> poisson,</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.action =</span> na.omit</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(drink_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1527,10 +1548,6 @@ Number of Fisher Scoring iterations: 6</code></pre>
 </section>
 <section id="interpretation-of-model-output-2" class="level4" data-number="7.5.3.4">
 <h4 data-number="7.5.3.4" class="anchored" data-anchor-id="interpretation-of-model-output-2"><span class="header-section-number">7.5.3.4</span> Interpretation of Model Output</h4>
-</section>
-</section>
-<section id="interpretation-of-model-output-3" class="level3" data-number="7.5.4">
-<h3 data-number="7.5.4" class="anchored" data-anchor-id="interpretation-of-model-output-3"><span class="header-section-number">7.5.4</span> Interpretation of Model Output</h3>
 <p>The Poisson regression results examine whether characteristics of respondents’ ego networks are associated with the number of days per week they report drinking alcohol. In a Poisson regression model, coefficients represent the effect of predictors on the log of the expected count of the outcome. A positive coefficient indicates that higher values of the predictor are associated with more drinking days per week, while a negative coefficient indicates fewer drinking days.</p>
 <p>Statistical significance can be evaluated using the ratio of the coefficient to its standard error (the <span class="math inline">\(z\)</span>-statistic). As in the previous models, absolute values larger than approximately 1.96 correspond to statistical significance at the 5% level under the normal approximation.</p>
 <p>Among the network predictors, ego network size (<code>ego_size</code>) shows a positive and statistically significant association with drinking frequency. The coefficient is approximately 0.013 (<span class="math inline">\(z\)</span> = 2.68, <span class="math inline">\(p\)</span> &lt; 0.01). Because Poisson regression models the log of the expected count, it is useful to exponentiate the coefficient to interpret the effect multiplicatively. The value exp(0.013) ≈ 1.014 suggests that each additional alter in a respondent’s ego network is associated with roughly a 1.4 percent increase in the expected number of drinking days per week. Substantively, this pattern is consistent with the idea that individuals embedded in larger personal networks may have more opportunities for social activities where alcohol consumption occurs.</p>
@@ -1553,19 +1570,22 @@ Note
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(drink_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   (Intercept)       ego_size    prop_family gender_entropy            age 
-     1.6177788      1.0135791      0.7543050      1.0447279      1.0007415 
-        gender    education.L    education.Q    education.C    education^4 
-     0.8937130      1.4530057      0.4984455      1.0520003      0.6222965 
-   education^5    education^6    education^7    education^8 
-     1.0725124      0.8740316      0.9438237      0.9603785 </code></pre>
+<pre><code>   (Intercept)       ego_size    prop_family gender_entropy 
+     1.6177788      1.0135791      0.7543050      1.0447279 
+           age         gender    education.L    education.Q 
+     1.0007415      0.8937130      1.4530057      0.4984455 
+   education.C    education^4    education^5    education^6 
+     1.0520003      0.6222965      1.0725124      0.8740316 
+   education^7    education^8 
+     0.9438237      0.9603785 </code></pre>
 </div>
 </div>
 <p>Values greater than 1 indicate that the predictor is associated with more frequent drinking, while values below 1 indicate less frequent drinking.</p>
 </div>
 </div>
-<section id="predicted-counts" class="level4" data-number="7.5.4.1">
-<h4 data-number="7.5.4.1" class="anchored" data-anchor-id="predicted-counts"><span class="header-section-number">7.5.4.1</span> Predicted Counts</h4>
+</section>
+<section id="predicted-counts" class="level4" data-number="7.5.3.5">
+<h4 data-number="7.5.3.5" class="anchored" data-anchor-id="predicted-counts"><span class="header-section-number">7.5.3.5</span> Predicted Counts</h4>
 <p>As in the previous examples, predicted values provide a more intuitive way to interpret the model than the raw regression coefficients alone. In a Poisson regression, the fitted values correspond to the expected number of events—in this case, the expected number of drinking days per week.</p>
 <p>To visualize the effects of the substantively important predictors, we generate predicted counts while varying one predictor at a time and holding the remaining variables constant at typical values. Here, we focus on the three predictors that showed the clearest associations with drinking frequency in the model: <code>ego_size</code>, <code>prop_family</code>, and <code>gender</code>.</p>
 <div class="cell">
@@ -1588,58 +1608,62 @@ Note
 <span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">levels</span>(analysis_dat<span class="sc">$</span>education)[<span class="dv">1</span>]</span>
 <span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(drink_model, <span class="at">newdata =</span> pred_size, <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"ego_size"</span></span>
-<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_size<span class="sc">$</span>ego_size</span>
-<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a><span class="co"># prediction data for prop_family</span></span>
-<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>pred_family <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_size =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>ego_size, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_family =</span> family_seq,</span>
-<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_entropy =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>gender_entropy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="dv">0</span>,</span>
-<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">levels</span>(analysis_dat<span class="sc">$</span>education)[<span class="dv">1</span>]</span>
-<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
-<span id="cb44-35"><a href="#cb44-35" aria-hidden="true" tabindex="-1"></a>  drink_model,</span>
-<span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">newdata =</span> pred_family,</span>
-<span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"response"</span></span>
-<span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb44-39"><a href="#cb44-39" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"prop_family"</span></span>
-<span id="cb44-40"><a href="#cb44-40" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_family<span class="sc">$</span>prop_family</span>
-<span id="cb44-41"><a href="#cb44-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-42"><a href="#cb44-42" aria-hidden="true" tabindex="-1"></a><span class="co"># prediction data for gender</span></span>
-<span id="cb44-43"><a href="#cb44-43" aria-hidden="true" tabindex="-1"></a>pred_gender <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb44-44"><a href="#cb44-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_size =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>ego_size, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-45"><a href="#cb44-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_family =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>prop_family, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-46"><a href="#cb44-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_entropy =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>gender_entropy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-47"><a href="#cb44-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb44-48"><a href="#cb44-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb44-49"><a href="#cb44-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">levels</span>(analysis_dat<span class="sc">$</span>education)[<span class="dv">1</span>]</span>
-<span id="cb44-50"><a href="#cb44-50" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb44-51"><a href="#cb44-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-52"><a href="#cb44-52" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
-<span id="cb44-53"><a href="#cb44-53" aria-hidden="true" tabindex="-1"></a>  drink_model,</span>
-<span id="cb44-54"><a href="#cb44-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">newdata =</span> pred_gender,</span>
-<span id="cb44-55"><a href="#cb44-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"response"</span></span>
-<span id="cb44-56"><a href="#cb44-56" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb44-57"><a href="#cb44-57" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"gender"</span></span>
-<span id="cb44-58"><a href="#cb44-58" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_gender<span class="sc">$</span>gender</span>
-<span id="cb44-59"><a href="#cb44-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-60"><a href="#cb44-60" aria-hidden="true" tabindex="-1"></a><span class="co"># combine predictions</span></span>
-<span id="cb44-61"><a href="#cb44-61" aria-hidden="true" tabindex="-1"></a>pred_all <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(pred_size, pred_family, pred_gender)</span>
-<span id="cb44-62"><a href="#cb44-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-63"><a href="#cb44-63" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
-<span id="cb44-64"><a href="#cb44-64" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred_all, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
-<span id="cb44-65"><a href="#cb44-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
-<span id="cb44-66"><a href="#cb44-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>variable, <span class="at">scales =</span> <span class="st">"free_x"</span>) <span class="sc">+</span></span>
-<span id="cb44-67"><a href="#cb44-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb44-68"><a href="#cb44-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Predictor value"</span>,</span>
-<span id="cb44-69"><a href="#cb44-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Expected drinking days per week"</span></span>
-<span id="cb44-70"><a href="#cb44-70" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb44-71"><a href="#cb44-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>  drink_model,</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">newdata =</span> pred_size,</span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"response"</span></span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"ego_size"</span></span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a>pred_size<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_size<span class="sc">$</span>ego_size</span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a><span class="co"># prediction data for prop_family</span></span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>pred_family <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_size =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>ego_size, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_family =</span> family_seq,</span>
+<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_entropy =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>gender_entropy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="dv">0</span>,</span>
+<span id="cb44-35"><a href="#cb44-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">levels</span>(analysis_dat<span class="sc">$</span>education)[<span class="dv">1</span>]</span>
+<span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
+<span id="cb44-39"><a href="#cb44-39" aria-hidden="true" tabindex="-1"></a>  drink_model,</span>
+<span id="cb44-40"><a href="#cb44-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">newdata =</span> pred_family,</span>
+<span id="cb44-41"><a href="#cb44-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"response"</span></span>
+<span id="cb44-42"><a href="#cb44-42" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-43"><a href="#cb44-43" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"prop_family"</span></span>
+<span id="cb44-44"><a href="#cb44-44" aria-hidden="true" tabindex="-1"></a>pred_family<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_family<span class="sc">$</span>prop_family</span>
+<span id="cb44-45"><a href="#cb44-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-46"><a href="#cb44-46" aria-hidden="true" tabindex="-1"></a><span class="co"># prediction data for gender</span></span>
+<span id="cb44-47"><a href="#cb44-47" aria-hidden="true" tabindex="-1"></a>pred_gender <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb44-48"><a href="#cb44-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">ego_size =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>ego_size, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-49"><a href="#cb44-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_family =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>prop_family, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-50"><a href="#cb44-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_entropy =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>gender_entropy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-51"><a href="#cb44-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(analysis_dat<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-52"><a href="#cb44-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb44-53"><a href="#cb44-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">levels</span>(analysis_dat<span class="sc">$</span>education)[<span class="dv">1</span>]</span>
+<span id="cb44-54"><a href="#cb44-54" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-55"><a href="#cb44-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-56"><a href="#cb44-56" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
+<span id="cb44-57"><a href="#cb44-57" aria-hidden="true" tabindex="-1"></a>  drink_model,</span>
+<span id="cb44-58"><a href="#cb44-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">newdata =</span> pred_gender,</span>
+<span id="cb44-59"><a href="#cb44-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"response"</span></span>
+<span id="cb44-60"><a href="#cb44-60" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-61"><a href="#cb44-61" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>variable <span class="ot">&lt;-</span> <span class="st">"gender"</span></span>
+<span id="cb44-62"><a href="#cb44-62" aria-hidden="true" tabindex="-1"></a>pred_gender<span class="sc">$</span>x <span class="ot">&lt;-</span> pred_gender<span class="sc">$</span>gender</span>
+<span id="cb44-63"><a href="#cb44-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-64"><a href="#cb44-64" aria-hidden="true" tabindex="-1"></a><span class="co"># combine predictions</span></span>
+<span id="cb44-65"><a href="#cb44-65" aria-hidden="true" tabindex="-1"></a>pred_all <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(pred_size, pred_family, pred_gender)</span>
+<span id="cb44-66"><a href="#cb44-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-67"><a href="#cb44-67" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb44-68"><a href="#cb44-68" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred_all, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb44-69"><a href="#cb44-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb44-70"><a href="#cb44-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>variable, <span class="at">scales =</span> <span class="st">"free_x"</span>) <span class="sc">+</span></span>
+<span id="cb44-71"><a href="#cb44-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb44-72"><a href="#cb44-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Predictor value"</span>,</span>
+<span id="cb44-73"><a href="#cb44-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Expected drinking days per week"</span></span>
+<span id="cb44-74"><a href="#cb44-74" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb44-75"><a href="#cb44-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-drinking-pred" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
