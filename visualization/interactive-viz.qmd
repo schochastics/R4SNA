@@ -20,7 +20,6 @@ interactive network graphics.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(igraph)
 library(networkdata)
 library(visNetwork)
@@ -32,7 +31,6 @@ library(g6R)
 ```{r}
 #| label: is-html
 #| echo: false
-
 is_html <- knitr::is_html_output()
 ```
 The packages `visNetwork`, `networkD3`, and `threejs` only appear briefly in the
@@ -52,7 +50,6 @@ tiers.
 
 ```{r}
 #| label: data
-
 data("flo_marriage")
 
 flo <- subgraph(
@@ -91,13 +88,17 @@ vertex attributes to the column names that `visNetwork` expects.
 #| label: fig-visnetwork
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network rendered with `visNetwork`."
-
 V(flo)$label <- V(flo)$name
 V(flo)$group <- V(flo)$wealth_tier
 V(flo)$value <- V(flo)$degree
 
 vis_data <- toVisNetworkData(flo)
-visNetwork(vis_data$nodes, vis_data$edges, width = "100%", height = "400px") |>
+visNetwork(
+  vis_data$nodes,
+  vis_data$edges,
+  width = "100%",
+  height = "400px"
+) |>
   visOptions(highlightNearest = TRUE)
 ```
 
@@ -118,7 +119,6 @@ The `networkD3` package wraps D3.js and produces force-directed layouts (see
 #| label: fig-networkd3
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network rendered with `networkD3`."
-
 d3_data <- igraph_to_networkD3(flo, group = V(flo)$wealth_tier)
 
 forceNetwork(
@@ -148,10 +148,7 @@ distances and read labels.
 #| label: fig-threejs
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network in 3D with `threejs`."
-
-graphjs(flo,
-  vertex.size = 0.3 + 0.2 * V(flo)$degree
-)
+graphjs(flo, vertex.size = 0.3 + 0.2 * V(flo)$degree)
 ```
 
 ::: {.content-visible when-format="pdf"}
@@ -202,35 +199,43 @@ and `g6_nodes()` / `g6_edges()` to assemble them.
 
 ```{r}
 #| label: build-g6-data
-
-nodes <- do.call(g6_nodes, unname(Map(
-  function(name, tier, deg) {
-    g6_node(
-      id = name,
-      data = list(wealth_tier = tier, degree = deg),
-      style = list(
-        labelText = name,
-        fill = palette3[[tier]],
-        size = 14 + 2 * deg,
-        stroke = "#555555",
-        lineWidth = 1
+nodes <- do.call(
+  g6_nodes,
+  unname(Map(
+    function(name, tier, deg) {
+      g6_node(
+        id = name,
+        data = list(wealth_tier = tier, degree = deg),
+        style = list(
+          labelText = name,
+          fill = palette3[[tier]],
+          size = 14 + 2 * deg,
+          stroke = "#555555",
+          lineWidth = 1
+        )
       )
-    )
-  },
-  V(flo)$name, V(flo)$wealth_tier, V(flo)$degree
-)))
+    },
+    V(flo)$name,
+    V(flo)$wealth_tier,
+    V(flo)$degree
+  ))
+)
 
 edges_df <- igraph::as_data_frame(flo, what = "edges")
-edges <- do.call(g6_edges, unname(Map(
-  function(src, tgt) {
-    g6_edge(
-      source = src,
-      target = tgt,
-      style = list(stroke = "#cccccc", lineWidth = 1)
-    )
-  },
-  edges_df$from, edges_df$to
-)))
+edges <- do.call(
+  g6_edges,
+  unname(Map(
+    function(src, tgt) {
+      g6_edge(
+        source = src,
+        target = tgt,
+        style = list(stroke = "#cccccc", lineWidth = 1)
+      )
+    },
+    edges_df$from,
+    edges_df$to
+  ))
+)
 ```
 
 Node size is scaled from degree, fill comes from the wealth tier, and the family
@@ -250,11 +255,9 @@ are added through behaviors, which are covered in their own section later.
 #| label: fig-g6r-first
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with `g6R` using just a layout and no behaviors."
-
 g6(nodes, edges) |>
-  g6_layout() |> 
+  g6_layout() |>
   g6_options(autoFit = "view", autoResize = TRUE)
-
 ```
 
 ::: {.content-visible when-format="pdf"}
@@ -301,7 +304,6 @@ spread the nodes out a bit more.
 #| label: fig-g6r-d3atlas
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with the `force_atlas2` layout."
-
 g6(nodes, edges) |>
   g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
   g6_options(autoFit = "view", autoResize = TRUE)
@@ -334,23 +336,27 @@ thicker border on every node (see @fig-g6r-per-element).
 #| label: fig-g6r-per-element
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with thicker node borders applied per element."
-
-nodes_bold <- do.call(g6_nodes, unname(Map(
-  function(name, tier, deg) {
-    g6_node(
-      id = name,
-      data = list(wealth_tier = tier, degree = deg),
-      style = list(
-        labelText = name,
-        fill = palette3[[tier]],
-        size = 14 + 2 * deg,
-        stroke = "#222222",
-        lineWidth = 2.5
+nodes_bold <- do.call(
+  g6_nodes,
+  unname(Map(
+    function(name, tier, deg) {
+      g6_node(
+        id = name,
+        data = list(wealth_tier = tier, degree = deg),
+        style = list(
+          labelText = name,
+          fill = palette3[[tier]],
+          size = 14 + 2 * deg,
+          stroke = "#222222",
+          lineWidth = 2.5
+        )
       )
-    )
-  },
-  V(flo)$name, V(flo)$wealth_tier, V(flo)$degree
-)))
+    },
+    V(flo)$name,
+    V(flo)$wealth_tier,
+    V(flo)$degree
+  ))
+)
 
 g6(nodes_bold, edges) |>
   g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
@@ -373,7 +379,6 @@ font, move labels below the node, and thin out the edge strokes globally.
 #| label: fig-g6r-options-style
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with global label and edge defaults applied through `g6_options()`."
-
 g6(nodes, edges) |>
   g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
   g6_options(
@@ -389,7 +394,7 @@ g6(nodes, edges) |>
         lineWidth = 0.8
       )
     ),
-    autoFit = "view", 
+    autoFit = "view",
     autoResize = TRUE
   )
 ```
@@ -413,7 +418,6 @@ zooming. Together they make the graph in @fig-g6r-nav navigable.
 #| label: fig-g6r-nav
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with basic navigation behaviors."
-
 g6(nodes, edges) |>
   g6_layout(force_atlas2_layout(preventOverlap = TRUE, kr = 20)) |>
   g6_behaviors(drag_canvas(), zoom_canvas())
@@ -437,7 +441,6 @@ set.
 #| label: fig-g6r-interact
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with drag, hover, and click-select behaviors."
-
 g6(nodes, edges) |>
   g6_layout() |>
   g6_behaviors(
@@ -466,7 +469,6 @@ down shift while dragging on the canvas.
 #| label: fig-g6r-lasso
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with lasso selection active."
-
 g6(nodes, edges) |>
   g6_layout() |>
   g6_behaviors(
@@ -482,7 +484,6 @@ g6(nodes, edges) |>
 #| label: fig-g6r-brush
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with brush selection active."
-
 g6(nodes, edges) |>
   g6_layout() |>
   g6_behaviors(
@@ -518,7 +519,6 @@ Under this combination the hull reliably redraws.
 #| label: fig-g6r-hull
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with hulls around wealth tiers."
-
 tier_members <- split(V(flo)$name, V(flo)$wealth_tier)
 
 g6(nodes, edges) |>
@@ -529,16 +529,22 @@ g6(nodes, edges) |>
   ) |>
   g6_plugins(
     hull(
-      key = "hull-low", members = tier_members$low,
-      fill = palette3[["low"]], stroke = palette3[["low"]]
+      key = "hull-low",
+      members = tier_members$low,
+      fill = palette3[["low"]],
+      stroke = palette3[["low"]]
     ),
     hull(
-      key = "hull-mid", members = tier_members$mid,
-      fill = palette3[["mid"]], stroke = palette3[["mid"]]
+      key = "hull-mid",
+      members = tier_members$mid,
+      fill = palette3[["mid"]],
+      stroke = palette3[["mid"]]
     ),
     hull(
-      key = "hull-high", members = tier_members$high,
-      fill = palette3[["high"]], stroke = palette3[["high"]]
+      key = "hull-high",
+      members = tier_members$high,
+      fill = palette3[["high"]],
+      stroke = palette3[["high"]]
     )
   )
 ```
@@ -560,7 +566,6 @@ behavior with `animation = FALSE`.
 #| label: fig-g6r-bubble
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with bubble sets around wealth tiers."
-
 g6(nodes, edges) |>
   g6_layout() |>
   g6_behaviors("drag-element") |>
@@ -569,16 +574,22 @@ g6(nodes, edges) |>
   ) |>
   g6_plugins(
     bubble_sets(
-      key = "bs-low", members = tier_members$low,
-      fill = palette3[["low"]], stroke = palette3[["low"]]
+      key = "bs-low",
+      members = tier_members$low,
+      fill = palette3[["low"]],
+      stroke = palette3[["low"]]
     ),
     bubble_sets(
-      key = "bs-mid", members = tier_members$mid,
-      fill = palette3[["mid"]], stroke = palette3[["mid"]]
+      key = "bs-mid",
+      members = tier_members$mid,
+      fill = palette3[["mid"]],
+      stroke = palette3[["mid"]]
     ),
     bubble_sets(
-      key = "bs-high", members = tier_members$high,
-      fill = palette3[["high"]], stroke = palette3[["high"]]
+      key = "bs-high",
+      members = tier_members$high,
+      fill = palette3[["high"]],
+      stroke = palette3[["high"]]
     )
   )
 ```
@@ -600,7 +611,6 @@ hovered items and returns the HTML to render. Hovering over a family in
 #| label: fig-g6r-tooltip
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with hover tooltips."
-
 tooltip_content <- JS(
   "(event, items) => {
     let result = ``;
@@ -615,7 +625,10 @@ tooltip_content <- JS(
 
 g6(nodes, edges) |>
   g6_layout() |>
-  g6_plugins(tooltips(trigger = "click",getContent = tooltip_content))
+  g6_plugins(tooltips(
+    trigger = "click",
+    getContent = tooltip_content
+  ))
 ```
 
 ::: {.content-visible when-format="pdf"}
@@ -632,10 +645,14 @@ matches the color split used by the hulls and bubbles above.
 #| label: fig-g6r-legend
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with a wealth-tier legend."
-
 g6(nodes, edges) |>
   g6_layout() |>
-  g6_plugins(legend(nodeField = "wealth_tier", showTitle = TRUE, titleText = "Wealth Tier", position = "top"))
+  g6_plugins(legend(
+    nodeField = "wealth_tier",
+    showTitle = TRUE,
+    titleText = "Wealth Tier",
+    position = "top"
+  ))
 ```
 
 ::: {.content-visible when-format="pdf"}
@@ -654,7 +671,6 @@ becomes genuinely useful.
 #| label: fig-g6r-fisheye
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with fisheye distortion."
-
 g6(nodes, edges) |>
   g6_layout() |>
   g6_plugins(fish_eye())
@@ -675,7 +691,6 @@ thousands of nodes.
 #| label: fig-g6r-minimap
 #| eval: !expr is_html
 #| fig-cap: "Florentine marriage network with a minimap for navigation."
-
 g6(nodes, edges) |>
   g6_layout() |>
   g6_plugins(minimap())

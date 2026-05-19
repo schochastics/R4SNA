@@ -37,7 +37,6 @@ complex dependence structures in network data.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(netropy)
 library(igraph)
 library(ggplot2)
@@ -46,8 +45,25 @@ library(ggplot2)
 ```{r}
 #| label: libraries-silent
 #| include: false
-
 library(patchwork)
+library(kableExtra)
+
+kbl <- function(x, ...) {
+  if (knitr::is_latex_output()) {
+    knitr::kable(
+      x,
+      format = "latex",
+      longtable = FALSE,
+      booktabs = TRUE,
+      ...
+    ) |>
+      kableExtra::kable_styling(
+        latex_options = c("scale_down", "HOLD_position")
+      )
+  } else {
+    knitr::kable(x, ...)
+  }
+}
 ```
 
 ## Network Data Representation and Transformation
@@ -143,12 +159,11 @@ list and can be assigned as follows:
 
 ```{r}
 #| label: load-data
-
 data(lawdata)
-adj_advice <- lawdata[[1]] # adjacency matrix: advice network (directed)
-adj_friend <- lawdata[[2]] # adjacency matrix: friendship network (directed)
-adj_cowork <- lawdata[[3]] # adjacency matrix: co-working network (undirected)
-df_att <- lawdata[[4]] # node attributes for the 71 lawyers
+adj_advice <- lawdata[[1]] # advice network (directed)
+adj_friend <- lawdata[[2]] # friendship network (directed)
+adj_cowork <- lawdata[[3]] # co-working network (undirected)
+df_att <- lawdata[[4]] # attributes for the 71 lawyers
 ```
 
 In the following analyses we also consider three additional networks created
@@ -160,7 +175,6 @@ the graph assuming it is undirected instead.
 
 ```{r}
 #| label: new-vars
-
 # mutual advice
 adj_mutadv <- adj_advice * t(adj_advice)
 # mutual friendship
@@ -195,7 +209,6 @@ compute the corresponding relative and cumulative relative frequencies.
 
 ```{r}
 #| label: cdf
-
 # Years CDF data
 tab_years <- table(df_att$years)
 frq_years <- data.frame(
@@ -227,7 +240,6 @@ the selected cutpoints are $35$ and $45$.
 #| fig-height: 5
 #| fig-width: 10
 #| fig-cap: "Empirical cumulative distribution functions (CDFs) for `years at firm` and `age`. The dashed horizontal lines indicate the target quantiles (approximately one-third and two-thirds), while the dotted vertical lines show the selected cutpoints used to define three approximately equally sized categories for each variable."
-
 pyears <- ggplot(frq_years, aes(x = years, y = cum.rel.freq)) +
   geom_step(linewidth = 1) +
   geom_point() +
@@ -266,12 +278,15 @@ on.
 
 ```{r}
 #| label: categorized-vars
-
 att_var <- data.frame(
   status = df_att$status - 1,
   gender = df_att$gender,
   office = df_att$office - 1,
-  years = ifelse(df_att$years <= 3, 0, ifelse(df_att$years <= 13, 1, 2)),
+  years = ifelse(
+    df_att$years <= 3,
+    0,
+    ifelse(df_att$years <= 13, 1, 2)
+  ),
   age = ifelse(df_att$age <= 35, 0, ifelse(df_att$age <= 45, 1, 2)),
   practice = df_att$practice,
   lawschool = df_att$lawschool - 1
@@ -289,7 +304,6 @@ entropy-based analysis. This is shown in @fig-cats.
 #| fig-height: 5
 #| fig-width: 10
 #| fig-cap: "Frequency distributions of the discretized variables `age` and `years`, showing approximately balanced categories after CDF-based grouping."
-
 years_cat <- as.data.frame(table(att_var$years))
 names(years_cat) <- c("category", "freq")
 years_cat$variable <- "years"
@@ -327,18 +341,22 @@ likely-friendship graph `g_likfrn` were already created above).
 
 ```{r}
 #| label: g-objects
-
 g_cwk <- graph_from_adjacency_matrix(adj_cowork, mode = "undirected")
 g_adv <- graph_from_adjacency_matrix(adj_advice, mode = "directed")
-g_mutadv <- graph_from_adjacency_matrix(adj_mutadv, mode = "undirected")
-g_mutfrn <- graph_from_adjacency_matrix(adj_mutfrn, mode = "undirected")
+g_mutadv <- graph_from_adjacency_matrix(
+  adj_mutadv,
+  mode = "undirected"
+)
+g_mutfrn <- graph_from_adjacency_matrix(
+  adj_mutfrn,
+  mode = "undirected"
+)
 ```
 
 Degrees are then computed as
 
 ```{r}
 #| label: degs
-
 deg_cwk <- degree(g_cwk)
 indeg_adv <- degree(g_adv, mode = "in")
 outdeg_adv <- degree(g_adv, mode = "out")
@@ -353,7 +371,6 @@ other vertex variables.
 
 ```{r}
 #| label: degs-cats
-
 deg_var <- data.frame(
   deg_cwk = ifelse(deg_cwk <= 9, 0, 1),
   indeg_adv = ifelse(indeg_adv <= 10, 0, 1),
@@ -371,7 +388,6 @@ entropy analysis.
 
 ```{r}
 #| label: vertex-vars
-
 vertex_var <- cbind(att_var, deg_var)
 ```
 The resulting dataset `vertex_var` contains all discretized vertex-level
@@ -381,8 +397,7 @@ variables used in the entropy analysis. The first rows are shown in
 ::: {#tbl-vertex-var}
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   head(vertex_var, 10),
 )
 ```
@@ -409,7 +424,6 @@ attributes. This procedure is applied to all vertex variables in the dataset.
 
 ```{r}
 #| label: dyad-transf
-
 dyad_status <- get_dyad_var(att_var$status, type = "att")
 dyad_gender <- get_dyad_var(att_var$gender, type = "att")
 dyad_office <- get_dyad_var(att_var$office, type = "att")
@@ -438,7 +452,7 @@ variable.
 
 ```{r}
 #| label: dyad-transf2
-
+#| message: false
 dyad_cwk <- get_dyad_var(adj_cowork, type = "tie")
 dyad_adv <- get_dyad_var(adj_advice, type = "tie")
 dyad_mutadv <- get_dyad_var(adj_mutadv, type = "tie")
@@ -452,7 +466,6 @@ entropy analysis.
 
 ```{r}
 #| label: dyad-var
-
 dyad_var <- data.frame(
   status = dyad_status$var,
   gender = dyad_gender$var,
@@ -475,8 +488,7 @@ entropy analysis. The first rows are shown in @tbl-dyad-var.
 ::: {#tbl-dyad-var}
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   head(dyad_var, 10)
 )
 ```
@@ -500,7 +512,6 @@ For vertex variables, triad variables are constructed as follows:
 
 ```{r}
 #| label: triad-var
-
 triad_status <- get_triad_var(att_var$status, type = "att")
 triad_gender <- get_triad_var(att_var$gender, type = "att")
 triad_office <- get_triad_var(att_var$office, type = "att")
@@ -527,7 +538,7 @@ The triad variables based on ties are constructed as follows:
 
 ```{r}
 #| label: triad-var2
-
+#| message: false
 triad_cwk <- get_triad_var(adj_cowork, type = "tie")
 triad_adv <- get_triad_var(adj_advice, type = "tie")
 triad_mutadv <- get_triad_var(adj_mutadv, type = "tie")
@@ -540,7 +551,6 @@ entropy analysis.
 
 ```{r}
 #| label: triad-var-df
-
 triad_var <- data.frame(
   status = triad_status$var,
   gender = triad_gender$var,
@@ -564,8 +574,7 @@ entropy analysis. The first rows are shown in @tbl-triad-var.
 ::: {#tbl-triad-var}
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   head(triad_var, 10)
 )
 ```
@@ -615,7 +624,6 @@ vertex variables.
 
 ```{r}
 #| label: vert-ent
-
 h2_vertex <- entropy_bivar(vertex_var)
 ```
 
@@ -624,8 +632,7 @@ The output, rounded to 2 decimals, is shown in @tbl-ent-vertvar.
 ::: {#tbl-ent-vertvar}
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   round(h2_vertex, 2),
 )
 ```
@@ -649,7 +656,6 @@ For the vertex variables in this dataset, no redundancy is detected.
 
 ```{r}
 #| label: ver-red
-
 red_vertex <- redundancy(vertex_var, dec = 3)
 ```
 Note that the argument `dec` affects the detection of redundant variables, as it
@@ -663,7 +669,6 @@ unique values and is therefore identified as redundant.
 
 ```{r}
 #| label: ver-red2
-
 red_vertex2 <- redundancy(df_att, dec = 2)
 red_vertex2
 # find columns that are redundant with any other variable
@@ -685,7 +690,6 @@ function `entropy_bivar()`.
 
 ```{r}
 #| label: dyad-ent
-
 h2_dyad <- entropy_bivar(dyad_var)
 ```
 The results shown in @tbl-ent-dyadvar indicate redundancy among the different
@@ -695,8 +699,7 @@ variables are derived from the same underlying ties.
 ::: {#tbl-ent-dyadvar}
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   round(h2_dyad, 2),
 )
 ```
@@ -725,7 +728,6 @@ function `entropy_bivar()`.
 
 ```{r}
 #| label: triad-ent
-
 h2_triad <- entropy_bivar(triad_var)
 ```
 The results shown in @tbl-ent-triadvar reveal redundancy among the triad
@@ -737,8 +739,7 @@ originate from the same underlying ties.
 
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   round(h2_triad, 2),
 )
 ```
@@ -814,7 +815,6 @@ vertex variables.
 
 ```{r}
 #| label: vert-joint
-
 j_vertex <- joint_entropy(vertex_var, 3)
 ```
 The output is returned as a list containing two objects: `j_vertex$mat`, an
@@ -830,8 +830,7 @@ independent of both status and gender.
 ::: {#tbl-joint-vert}
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   round(j_vertex$mat, 3),
 )
 ```
@@ -848,8 +847,7 @@ and `status`.
 ::: {#tbl-jointfrq-vert}
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   head(j_vertex$freq, 10)
 )
 ```
@@ -869,7 +867,6 @@ threshold of $0.25$, so that only the strongest associations are displayed in
 #| fig-cap: "Association graph for vertex variables (threshold $J > 0.25$). Nodes represent variables and edges connect pairs whose joint-entropy-based association exceeds the threshold; thicker edges indicate stronger dependence."
 #| fig-height: 8
 #| fig-width: 10
-
 assoc_graph(vertex_var, 0.25)
 ```
 
@@ -885,7 +882,6 @@ threshold of 0.10 to display the strongest associations in @fig-dyad-assoc.
 #| fig-cap: "Association graph for dyad variables (threshold $J > 0.10$). Edges connect pairs of dyad variables whose pairwise joint entropy exceeds the threshold."
 #| fig-height: 8
 #| fig-width: 10
-
 assoc_graph(dyad_var, 0.10)
 ```
 
@@ -911,7 +907,6 @@ visualized using an association graph in @fig-triad-assoc. We set a threshold of
 #| fig-cap: "Association graph for triad variables (threshold $J > 0.25$). Edges connect pairs of triad variables whose pairwise joint entropy exceeds the threshold."
 #| fig-height: 8
 #| fig-width: 10
-
 assoc_graph(triad_var, 0.25)
 ```
 
@@ -981,7 +976,6 @@ using the function `entropy_trivar()`.
 
 ```{r}
 #| label: trivent_vert
-
 h3_vertex <- entropy_trivar(vertex_var)
 ```
 
@@ -993,7 +987,6 @@ The corresponding prediction power matrices are obtained as follows.
 
 ```{r}
 #| label: pred-power-vertex
-
 pred_vertex_cwk <- prediction_power("deg_cwk", vertex_var)
 pred_vertex_advin <- prediction_power("indeg_adv", vertex_var)
 pred_vertex_advout <- prediction_power("outdeg_adv", vertex_var)
@@ -1011,8 +1004,7 @@ asked for advice). The prediction power was computed and assigned to
 ::: {#tbl-expred}
 ```{r}
 #| echo: false
-
-knitr::kable(
+kbl(
   round(pred_vertex_advin, 2),
 )
 ```
@@ -1034,7 +1026,6 @@ prediction uncertainty for `indeg_adv`). This is shown in @fig-expred.
 #| fig-height: 7
 #| fig-width: 8
 #| fig-cap: "Prediction power heatmap for $Z$=`indeg_adv`. Each cell shows the expected conditional entropy $EH(Z \\mid X,Y)$, where darker colors indicate stronger predictive power. The strongest predictors involve the variable `years`, particularly in combination with network-based variables such as `deg_mutadv` and `deg_cwk`. While `status` also contributes to prediction, it is not part of the strongest predictor pairs."
-
 make_pred_plot(pred_vertex_advin, "indeg_adv")
 ```
 
@@ -1062,7 +1053,6 @@ to compare the results. We illustrate this for all vertex variables in
 #| fig-height: 18
 #| fig-width: 10
 #| fig-cap: "Prediction power heatmaps for vertex variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
-
 p1 <- make_pred_plot(pred_vertex_cwk, "deg_cwk")
 p2 <- make_pred_plot(pred_vertex_advin, "indeg_adv")
 p3 <- make_pred_plot(pred_vertex_advout, "outdeg_adv")
@@ -1105,7 +1095,6 @@ of expected conditional entropies $EH(Z \mid X,Y)$.
 
 ```{r}
 #| label: predpow-dyad
-
 pred_dyad_status <- prediction_power("status", dyad_var)
 pred_dyad_gender <- prediction_power("gender", dyad_var)
 pred_dyad_office <- prediction_power("office", dyad_var)
@@ -1126,7 +1115,6 @@ in @fig-predplot-dyad.
 #| fig-height: 18
 #| fig-width: 10
 #| fig-cap: "Prediction power heatmaps for dyad variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
-
 p1 <- make_pred_plot(pred_dyad_status, "status")
 p2 <- make_pred_plot(pred_dyad_gender, "gender")
 p3 <- make_pred_plot(pred_dyad_office, "office")
@@ -1200,7 +1188,6 @@ combinations of structural variables playing a key role in prediction.
 #| fig-height: 18
 #| fig-width: 10
 #| fig-cap: "Prediction power heatmaps for triad variables; darker cells indicate stronger predictive power (lower $EH(Z \\mid X,Y)$)."
-
 # compute prediction power matrices
 pred_triad_status <- prediction_power("status", triad_var)
 pred_triad_gender <- prediction_power("gender", triad_var)
@@ -1363,7 +1350,6 @@ This structure is highlighted in @fig-divtest.
 #| fig-width: 10
 #| fig-height: 8
 #| fig-cap: "Association graph for dyad variables (threshold $J > 0.1$). The variables `friend`, `cowork`, and `advice` are highlighted, motivating the conditional independence model $\\text{friend} \\perp \\text{cowork} \\mid \\text{advice}$."
-
 library(ggraph)
 
 p <- assoc_graph(dyad_var, 0.10)
@@ -1371,7 +1357,11 @@ p <- assoc_graph(dyad_var, 0.10)
 p +
   geom_node_point(
     data = p$data,
-    aes(x = x, y = y, fill = name %in% c("friend", "cowork", "advice")),
+    aes(
+      x = x,
+      y = y,
+      fill = name %in% c("friend", "cowork", "advice")
+    ),
     shape = 21,
     color = "black",
     size = 20
@@ -1397,7 +1387,6 @@ conditioning variable.
 
 ```{r}
 #| label: dyad-gof-cond-friend-cowork
-
 div_gof(
   dat = dyad_var,
   var1 = "friend",
@@ -1414,7 +1403,6 @@ $$
 
 ```{r}
 #| label: dyad-gof-cond-gender-status
-
 div_gof(
   dat = dyad_var,
   var1 = "gender",
@@ -1429,7 +1417,6 @@ two variables are independent.
 
 ```{r}
 #| label: dyad-gof-pairwise
-
 div_gof(
   dat = dyad_var,
   var1 = "friend",
@@ -1441,7 +1428,6 @@ distributed across its observed categories. For example:
 
 ```{r}
 #| label: dyad-gof-uniform
-
 div_gof(
   dat = dyad_var,
   var_uniform = "friend"
@@ -1455,7 +1441,6 @@ model for `friend` and `cowork` to the saturated model.
 
 ```{r}
 #| label: dyad-gof-nested
-
 m_full <- list(D = 0, df = 0)
 
 m_reduced <- div_gof(
@@ -1491,7 +1476,6 @@ used by setting.
 
 ```{r}
 #| eval: false
-
 use_approx_cv = FALSE
 ```
 
@@ -1501,7 +1485,6 @@ testing.
 
 ```{r}
 #| eval: false
-
 div_gof(..., use_approx_cv = FALSE, alpha = 0.01)
 ```
 Lower values of alpha correspond to stricter tests (harder to reject the model),

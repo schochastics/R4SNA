@@ -86,7 +86,6 @@ micro-level mechanisms through which social structure emerges over time.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(relevent)
 ```
 
@@ -530,7 +529,6 @@ look at the first 10 rows of the data.
 #| label: data
 #| message: false
 #| include: false
-
 # Edit this code once frozen is in networkdata
 # Read the two files
 frozenlines <- read.csv("frozenlines.csv")
@@ -583,7 +581,6 @@ n_actors <- nrow(frozenchars)
 ```{r}
 #| label: preview-data
 #| echo: false
-
 knitr::kable(
   head(edgelist, 10),
   caption = "Preview of the relational event data created from the *Frozen* character network as described in @sec-apx-remfrozen"
@@ -605,7 +602,6 @@ interaction frequency.
 #| echo: false
 #| message: false
 #| warning: false
-
 library(tidygraph)
 library(ggraph)
 library(dplyr)
@@ -722,7 +718,6 @@ addressing the same character across consecutive lines of dialogue.
 ```{r}
 #| label: fit-rem1
 #| message: false
-
 model1 <- rem.dyad(
   edgelist = edgelist,
   n = n_actors,
@@ -796,9 +791,11 @@ with the character IDs.
 ```{r}
 #| label: female-covar
 #| message: false
-
 # female indicator by character ID
-female <- matrix(frozenchars$charfem[order(frozenchars$characterID)], ncol = 1)
+female <- matrix(
+  frozenchars$charfem[order(frozenchars$characterID)],
+  ncol = 1
+)
 ```
 
 Formally, the event intensity for a potential interaction $i \rightarrow j$ at
@@ -851,9 +848,11 @@ the event rate associated with a one-unit change in the corresponding statistic.
 ```{r}
 #| label: fit-rem2
 #| message: false
-
 # female indicator by character ID
-female <- matrix(frozenchars$charfem[order(frozenchars$characterID)], ncol = 1)
+female <- matrix(
+  frozenchars$charfem[order(frozenchars$characterID)],
+  ncol = 1
+)
 
 model2 <- rem.dyad(
   edgelist = edgelist,
@@ -1020,7 +1019,6 @@ conversational mechanisms are taken into account.
 ```{r}
 #| label: fit-rem3
 #| message: false
-
 model3 <- rem.dyad(
   edgelist = edgelist,
   n = n_actors,
@@ -1135,7 +1133,6 @@ through the `covar` list. For example.
 
 ```{r}
 #| eval: false
-
 rem.dyad(
   edgelist = edgelist,
   n = n_actors,
@@ -1183,7 +1180,6 @@ matches.
 
 ```{r}
 #| label: gof-tbl
-
 send_col <- model3$predicted.match[, "sender"]
 receive_col <- model3$predicted.match[, "receiver"]
 
@@ -1270,7 +1266,6 @@ in @fig-rem-residuals.
 #| label: fig-rem-residuals
 #| fig-cap: "Distribution of residuals from Model 3 of the relational event model. The red vertical line indicates the threshold (residual = 12) used to identify unusually poorly predicted interaction events."
 #| echo: false
-
 library(ggplot2)
 
 res_df <- data.frame(residual = model3$residuals)

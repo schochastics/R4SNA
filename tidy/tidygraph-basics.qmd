@@ -13,7 +13,6 @@ the `igraph` equivalent you have already seen.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(tidygraph)
 library(networkdata)
 library(dplyr)
@@ -22,7 +21,6 @@ library(dplyr)
 ```{r}
 #| label: libraries-silent
 #| include: false
-
 library(ggraph)
 library(graphlayouts)
 ```
@@ -35,7 +33,6 @@ dataset ships as an `igraph` object and converts to a `tbl_graph` with
 
 ```{r}
 #| label: load-flo
-
 data("flo_marriage")
 flo_tidy <- as_tbl_graph(flo_marriage)
 flo_tidy
@@ -46,7 +43,6 @@ an edge data frame. The header tells you which of the two is currently active.
 
 ```{r}
 #| label: class-flo
-
 class(flo_tidy)
 ```
 
@@ -63,7 +59,6 @@ island models).
 
 ```{r}
 #| label: example-random-graphs
-
 create_ring(5)
 play_gnp(10, 0.3)
 play_barabasi_albert(10, 2)
@@ -81,7 +76,6 @@ the node table on top.
 
 ```{r}
 #| label: activate-edges
-
 flo_tidy |> activate("edges")
 ```
 
@@ -94,10 +88,12 @@ endpoints is the Medici family.
 
 ```{r}
 #| label: tag-medici-edges
-
 flo_medi <- flo_tidy |>
   activate("edges") |>
-  mutate(to_medici = (.N()$name[from] == "Medici" | .N()$name[to] == "Medici"))
+  mutate(
+    to_medici = (.N()$name[from] == "Medici" |
+      .N()$name[to] == "Medici")
+  )
 ```
 
 The new attribute is immediately available for visualization, as shown in
@@ -106,7 +102,6 @@ The new attribute is immediately available for visualization, as shown in
 ```{r}
 #| label: fig-connect-medici
 #| fig-cap: "Florentine marriage network with edges colored by whether they touch the Medici family."
-
 ggraph(flo_medi, "stress") +
   geom_edge_link0(aes(edge_color = to_medici)) +
   geom_node_point(shape = 21, size = 10, fill = "grey66") +
@@ -123,7 +118,6 @@ now-isolated families remain in the plot.
 ```{r}
 #| label: fig-filter-medici
 #| fig-cap: "Result of filtering the edge table to ties incident to the Medici. Nodes untouched by any surviving edge remain in the graph as isolates."
-
 flo_medi |>
   activate("edges") |>
   filter(to_medici) |>
@@ -150,7 +144,6 @@ Padgett relation over the same 16 families, which we load now and turn into a
 
 ```{r}
 #| label: load-flo-business
-
 data("flo_business")
 flo_business_tidy <- as_tbl_graph(flo_business)
 ```
@@ -161,7 +154,6 @@ the combined plot in @fig-graph-join can color edges by their source network.
 ```{r}
 #| label: fig-graph-join
 #| fig-cap: "Marriage and business ties among the Florentine families merged with `graph_join()`. Edges are colored by the relation they originated from."
-
 marriage_rel <- flo_tidy |>
   activate("edges") |>
   mutate(relation = "marriage")
@@ -187,10 +179,11 @@ disjoint union. Stress layout then places each component independently, as
 ```{r}
 #| label: fig-bind-graphs
 #| fig-cap: "Disjoint union of the Florentine marriage and business networks produced by `bind_graphs()`. Each family appears twice and the two components are laid out independently."
-
 bind_graphs(
   flo_tidy |> activate("nodes") |> mutate(source = "marriage"),
-  flo_business_tidy |> activate("nodes") |> mutate(source = "business")
+  flo_business_tidy |>
+    activate("nodes") |>
+    mutate(source = "business")
 ) |>
   ggraph("kk") +
   geom_edge_link0() +
@@ -209,7 +202,6 @@ resistance for attaching an external attribute table keyed on the node name.
 
 ```{r}
 #| label: dplyr-join
-
 family_estate <- data.frame(
   name = c("Medici", "Strozzi", "Peruzzi", "Guadagni"),
   estate = c(15, 14, 2, 2)
@@ -240,7 +232,6 @@ sub-graph per component, so `graph_order()` evaluates separately for each.
 
 ```{r}
 #| label: morph-components
-
 flo_tidy |>
   activate("nodes") |>
   morph(to_components) |>
@@ -258,7 +249,6 @@ only that path as the new graph.
 
 ```{r}
 #| label: convert-shortest-path
-
 medici_id <- which(igraph::V(flo_tidy)$name == "Medici")
 pazzi_id <- which(igraph::V(flo_tidy)$name == "Pazzi")
 

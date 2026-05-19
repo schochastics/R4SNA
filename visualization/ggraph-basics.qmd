@@ -15,7 +15,6 @@ flexibility and consistency that makes `ggplot2` so powerful.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(igraph)
 library(ggraph)
 library(graphlayouts)
@@ -25,7 +24,6 @@ library(networkdata)
 ```{r}
 #| label: libraries-silent
 #| include: false
-
 library(patchwork)
 ```
 
@@ -38,7 +36,6 @@ compute a clustering for node colors and compute degree as node size.
 
 ```{r}
 #| label: data
-
 data("got")
 
 gotS1 <- got[[1]]
@@ -83,11 +80,16 @@ each component effectively.
 #| fig-cap: "Game of Thrones season 1 character network."
 #| fig-width: 9
 #| fig-height: 6
-
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width(range = c(0.2, 3)) +
   scale_size(range = c(1, 6)) +
@@ -148,11 +150,16 @@ ggraph(gotS1, layout = "dh") +
 #| fig-width: 10
 #| fig-height: 10
 #| echo: false
-
 p1 <- ggraph(gotS1, layout = "dh") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width(range = c(0.2, 3)) +
   scale_size(range = c(1, 6)) +
@@ -161,9 +168,15 @@ p1 <- ggraph(gotS1, layout = "dh") +
   labs(title = "layout = 'dh'")
 
 p2 <- ggraph(gotS1, layout = "kk") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width(range = c(0.2, 3)) +
   scale_size(range = c(1, 6)) +
@@ -172,9 +185,15 @@ p2 <- ggraph(gotS1, layout = "kk") +
   labs(title = "layout = 'kk'")
 
 p3 <- ggraph(gotS1, layout = "fr") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width(range = c(0.2, 3)) +
   scale_size(range = c(1, 6)) +
@@ -183,9 +202,15 @@ p3 <- ggraph(gotS1, layout = "fr") +
   labs(title = "layout = 'fr'")
 
 p4 <- ggraph(gotS1, layout = "mds") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width(range = c(0.2, 3)) +
   scale_size(range = c(1, 6)) +
@@ -265,7 +290,6 @@ between two nodes, one can switch to `geom_edge_parallel()` (see @fig-parallel).
 #| fig-cap: "Multi-edge network drawn with `geom_edge_parallel()`."
 #| fig-width: 6
 #| fig-height: 3
-
 g <- make_graph(c(1, 2, 1, 2, 1, 2))
 
 ggraph(g, layout = "stress") +
@@ -283,7 +307,6 @@ shows the difference between the two.
 #| fig-cap: "Multi-edge network drawn with `geom_edge_fan()`."
 #| fig-width: 6
 #| fig-height: 3
-
 ggraph(g, layout = "stress") +
   geom_edge_fan(edge_color = "grey66", edge_linewidth = 0.5) +
   geom_node_point(size = 10) +
@@ -300,9 +323,11 @@ dots on each edge compared to only two dots (the endpoints) in
 #| fig-cap: "Edge gradient showing directionality using `geom_edge_link()`."
 #| fig-width: 9
 #| fig-height: 6
-
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link(aes(alpha = after_stat(index)), edge_color = "black") +
+  geom_edge_link(
+    aes(alpha = after_stat(index)),
+    edge_color = "black"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width_continuous(range = c(0.2, 3)) +
@@ -355,7 +380,6 @@ appearance (see @fig-arrow).
 #| fig-cap: "Directed network with closed arrowheads."
 #| fig-width: 10
 #| fig-height: 6
-
 g <- make_graph(c(1, 2, 2, 3), directed = TRUE)
 
 xy <- matrix(c(0, 0, 1, 0, 2, 0), ncol = 2, byrow = TRUE)
@@ -473,11 +497,16 @@ automatically as shown in @fig-no-scales.
 #| fig-cap: "GoT network without explicit scale adjustments."
 #| fig-width: 9
 #| fig-height: 6
-
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   theme_graph() +
   theme(legend.position = "none")
 ```
@@ -535,7 +564,6 @@ character).
 
 ```{r}
 #| label: order-color
-
 sort(unique(V(gotS1)$clu))
 ```
 To avoid automatic assignment of colors, one can pass the vector of colors as a
@@ -544,7 +572,6 @@ named vector. The difference between unnamed and named palettes is shown in
 
 ```{r}
 #| label: named_palette
-
 got_palette2 <- c(
   "5" = "#1A5878",
   "3" = "#C44237",
@@ -562,11 +589,16 @@ got_palette2 <- c(
 #| fig-width: 13
 #| fig-height: 5
 #| echo: false
-
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_manual(values = got_palette2) +
   scale_edge_width_continuous(range = c(0.2, 3)) +
   scale_size_continuous(range = c(1, 6)) +
@@ -575,9 +607,15 @@ ggraph(gotS1, layout = "stress") +
   theme(legend.position = "none") -> p2
 
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width_continuous(range = c(0.2, 3)) +
   scale_size_continuous(range = c(1, 6)) +
@@ -601,11 +639,16 @@ The function offers all palettes available at
 #| fig-cap: "GoT network colored with a ColorBrewer palette."
 #| fig-width: 10
 #| fig-height: 6
-
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_brewer(palette = "Dark2") +
   scale_edge_width_continuous(range = c(0.2, 3)) +
   scale_size_continuous(range = c(1, 6)) +
@@ -634,11 +677,16 @@ The only option worthwhile in `theme()` is `legend.position`, which we set to
 #| fig-cap: "GoT network with legend displayed at the bottom."
 #| fig-width: 10
 #| fig-height: 6
-
 ggraph(gotS1, layout = "stress") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
-  geom_node_text(aes(filter = size >= 26, label = name), family = "serif") +
+  geom_node_text(
+    aes(filter = size >= 26, label = name),
+    family = "serif"
+  ) +
   scale_fill_manual(values = got_palette) +
   scale_edge_width_continuous(range = c(0.2, 3)) +
   scale_size_continuous(range = c(1, 6)) +
@@ -664,7 +712,6 @@ The dataset is included in the `networkdata` package.
 
 ```{r}
 #| label: data-polblogs
-
 data("polblogs")
 
 # add a vertex attribute for the indegree
@@ -678,7 +725,6 @@ We start with a simple plot without any styling as shown in @fig-polblogs1.
 #| fig-cap: "Initial plot of the political blogs network without styling."
 #| fig-width: 10
 #| fig-height: 8
-
 lay <- create_layout(polblogs, "stress")
 
 ggraph(lay) +
@@ -703,7 +749,6 @@ component (see @fig-polblogs2).
 #| fig-cap: "Political blogs network after removing isolates and a small disconnected component."
 #| fig-width: 10
 #| fig-height: 8
-
 polblogs <- delete_vertices(polblogs, which(degree(polblogs) == 0))
 
 comps <- components(polblogs)
@@ -739,7 +784,6 @@ to make the differences in node size more visible.
 #| fig-cap: "Political blogs network with node color mapped to political orientation."
 #| fig-width: 10
 #| fig-height: 8
-
 ggraph(lay) +
   geom_edge_link0(
     edge_linewidth = 0.2,
@@ -756,7 +800,9 @@ ggraph(lay) +
     aes(fill = pol, size = deg),
     show.legend = FALSE
   ) +
-  scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+  scale_fill_manual(
+    values = c("left" = "#104E8B", "right" = "firebrick3")
+  ) +
   scale_size(range = c(0.5, 7))
 ```
 
@@ -770,7 +816,6 @@ political orientations. This new variable is mapped to the edge color
 #| fig-cap: "Political blogs network with edge color mapped to within/between political orientation."
 #| fig-width: 10
 #| fig-height: 8
-
 pol_from <- V(polblogs)$pol[tail_of(polblogs, E(polblogs))]
 pol_to <- V(polblogs)$pol[head_of(polblogs, E(polblogs))]
 E(polblogs)$col <- ifelse(pol_from == pol_to, pol_from, "mixed")
@@ -793,7 +838,9 @@ ggraph(lay) +
     aes(fill = pol, size = deg),
     show.legend = FALSE
   ) +
-  scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+  scale_fill_manual(
+    values = c("left" = "#104E8B", "right" = "firebrick3")
+  ) +
   scale_edge_color_manual(
     values = c(
       "left" = "#104E8B",
@@ -816,7 +863,6 @@ the intra group edges as seen in @fig-polblogs5.
 #| fig-cap: "Political blogs network with mixed edges drawn below same-orientation edges."
 #| fig-width: 10
 #| fig-height: 8
-
 ggraph(lay) +
   geom_edge_link0(
     edge_linewidth = 0.2,
@@ -845,7 +891,9 @@ ggraph(lay) +
     aes(fill = pol, size = deg),
     show.legend = FALSE
   ) +
-  scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+  scale_fill_manual(
+    values = c("left" = "#104E8B", "right" = "firebrick3")
+  ) +
   scale_edge_color_manual(
     values = c(
       "left" = "#104E8B",
@@ -863,7 +911,6 @@ Finally, we add the `theme_graph()` in @fig-polblogs6 to finalize the plot.
 #| fig-cap: "Final political blogs network visualization with `theme_graph()`."
 #| fig-width: 10
 #| fig-height: 8
-
 ggraph(lay) +
   geom_edge_link0(
     edge_linewidth = 0.2,
@@ -892,7 +939,9 @@ ggraph(lay) +
     aes(fill = pol, size = deg),
     show.legend = FALSE
   ) +
-  scale_fill_manual(values = c("left" = "#104E8B", "right" = "firebrick3")) +
+  scale_fill_manual(
+    values = c("left" = "#104E8B", "right" = "firebrick3")
+  ) +
   scale_edge_color_manual(
     values = c(
       "left" = "#104E8B",

@@ -86,6 +86,8 @@ A
 #| label: fig-incmat
 #| echo: false
 #| message: false
+#| fig-width: 8
+#| fig-height: 8
 #| fig-cap: "Incidence matrix representation of the Southern Women two-mode network. Rows correspond to the 18 women and columns to the 14 social events; black cells indicate attendance at an event, and white cells indicate non-attendance."
 
 # Convert to tidy format
@@ -115,6 +117,7 @@ ggplot(df, aes(x = event, y = woman, fill = factor(attend))) +
 ```{r}
 #| label: fig-southern-women-plot
 #| echo: false
+#| fig-cap: "Two-mode network representation of the Southern Women dataset."
 #| fig-height: 7
 #| fig-width: 9
 
@@ -273,9 +276,9 @@ ggraph(proj, "stress") +
     edge_color = "grey66",
     show.legend = FALSE
   ) +
-  geom_node_point(shape = 21, fill = "tomato", size = 8, show.legend = FALSE) +
+  geom_node_point(shape = 21, fill = "tomato", size = 11, show.legend = FALSE) +
   geom_node_text(aes(label = name)) +
-  scale_edge_width(range = c(1, 4)) +
+  scale_edge_width(range = c(0.5, 2.5)) +
   theme_graph() +
   coord_cartesian(clip = "off")
 ```
@@ -322,7 +325,10 @@ is treated as a simple unweighted (binary) network.
 
 women_proj <- projs$proj1
 threshold <- mean(E(projs$proj1)$weight)
-women_bin <- delete_edges(women_proj, which(E(women_proj)$weight <= threshold))
+women_bin <- delete_edges(
+  women_proj, 
+  which(E(women_proj)$weight <= threshold)
+)
 women_bin <- delete_edge_attr(women_bin, "weight")
 women_bin
 ```
@@ -337,8 +343,8 @@ pair.
 #| label: fig-southern-women-bin-plot
 #| echo: false
 #| fig-cap: "Binary projection of the Southern Women network onto the women using a global threshold based on the mean edge weight."
-#| fig-height: 11
-#| fig-width: 11
+#| fig-height: 9
+#| fig-width: 9
 
 ggraph(women_bin, "stress", bbox = 5) +
   geom_edge_link0(edge_color = "grey66") +

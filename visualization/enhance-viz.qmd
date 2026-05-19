@@ -12,7 +12,6 @@ effective tricks that address common visualization challenges.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(igraph)
 library(ggraph)
 library(graphlayouts)
@@ -24,7 +23,6 @@ As before, we use the Game of Thrones dataset using some preprocessing steps.
 
 ```{r}
 #| label: data
-
 data("got")
 
 gotS1 <- got[[1]]
@@ -54,7 +52,6 @@ can use the `geom_mark_*()` functions to highlight clusters.
 
 ```{r}
 #| label: network-grps
-
 set.seed(1108)
 
 # create network with a group structure
@@ -66,7 +63,6 @@ V(g)$grp <- as.character(rep(1:9, each = 40))
 ```{r}
 #| label: fig-network-grps-sol
 #| fig-cap: "Network with group structure highlighted using `geom_mark_hull()`."
-
 ggraph(g, layout = "backbone", keep = 0.4) +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
@@ -78,7 +74,9 @@ ggraph(g, layout = "backbone", keep = 0.4) +
   ) +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1") +
-  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
+  scale_edge_color_manual(
+    values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))
+  ) +
   theme_graph() +
   theme(legend.position = "none")
 ```
@@ -89,7 +87,6 @@ It is also possible to add labels to the clusters as shown in
 ```{r}
 #| label: fig-network-grps-label-sol
 #| fig-cap: "Network with labeled group hulls."
-
 ggraph(g, layout = "backbone", keep = 0.4) +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.2) +
   geom_node_point(aes(fill = grp), shape = 21, size = 3) +
@@ -101,7 +98,9 @@ ggraph(g, layout = "backbone", keep = 0.4) +
   ) +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1") +
-  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
+  scale_edge_color_manual(
+    values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))
+  ) +
   theme_graph() +
   theme(legend.position = "none")
 ```
@@ -126,7 +125,6 @@ passed to `end_cap`.
 ```{r}
 #| label: fig-arrow-size
 #| fig-cap: "Directed network where arrows overlap with nodes of varying size."
-
 set.seed(1108)
 g <- sample_pa(30, 1)
 V(g)$degree <- degree(g, mode = "in")
@@ -142,7 +140,11 @@ ggraph(g, "stress") +
       type = "closed"
     )
   ) +
-  geom_node_point(aes(size = degree), col = "grey66", show.legend = FALSE) +
+  geom_node_point(
+    aes(size = degree),
+    col = "grey66",
+    show.legend = FALSE
+  ) +
   scale_size(range = c(3, 11)) +
   theme_graph()
 ```
@@ -159,7 +161,6 @@ directed network.
 ```{r}
 #| label: fig-arrows-size-sol
 #| fig-cap: "Directed network with corrected arrow endpoints using `I()` for node sizes."
-
 normalise <- function(x, from = range(x), to = c(0, 1)) {
   x <- (x - from[1]) / (from[2] - from[1])
   if (!identical(to, c(0, 1))) {
@@ -198,7 +199,6 @@ visible through the semi-transparent nodes again, as shown in @fig-alpha-nodes.
 #| fig-cap: "Network with transparent nodes where edges are visible underneath."
 #| fig-width: 8
 #| fig-height: 8
-
 set.seed(1108)
 g <- sample_gnp(20, 0.5)
 V(g)$degree <- degree(g)
@@ -222,7 +222,6 @@ intended transparency effect. @fig-alpha-nodes-sol shows the result.
 ```{r}
 #| label: fig-alpha-nodes-sol
 #| fig-cap: "Network with opaque white background layer to hide edges beneath transparent nodes."
-
 ggraph(g, "stress") +
   geom_edge_link(edge_color = "grey66") +
   geom_node_point(size = 8, col = "white") +
@@ -250,10 +249,11 @@ even bold labels are difficult to parse.
 #| fig-cap: "Dense network with hard-to-read node labels."
 #| fig-width: 8
 #| fig-height: 8
-
 set.seed(1108)
 g <- sample_gnp(50, 0.5)
-V(g)$name <- sapply(1:50, function(x) paste0(sample(LETTERS, 4), collapse = ""))
+V(g)$name <- sapply(1:50, function(x) {
+  paste0(sample(LETTERS, 4), collapse = "")
+})
 E(g)$weight <- runif(ecount(g))
 
 ggraph(g, "stress") +
@@ -279,7 +279,6 @@ nodes, shown in @fig-shadowtext-labels.
 #| fig-cap: "Dense network with improved label readability using `shadowtext`."
 #| fig-width: 8
 #| fig-height: 8
-
 ggraph(g, "stress") +
   geom_edge_link0(
     aes(edge_color = weight, edge_linewidth = weight),

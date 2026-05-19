@@ -536,6 +536,8 @@ each one, returning the best assignment of nodes to blocks.
 
 ```{r}
 #| label: calc-rnd-block
+#| message: false
+#| warning: false
 
 A <- as_adjacency_matrix(g)
 # define expected block structure: complete on diagonal, null off-diagonal
@@ -556,12 +558,13 @@ blk <- matrix(
 blk
 res <- optRandomParC(
   M = A,
-  k = 3, ## number of blocks
-  approaches = "bin", ## binary blockmodel
-  blocks = blk, ## expected block structure
-  rep = 5, ## random starting partitions
-  mingr = 20, ## min block size
-  maxgr = 20 ## max block size
+  k = 3, 
+  approaches = "bin",
+  blocks = blk,
+  rep = 5,
+  printRep = 0,
+  mingr = 20,
+  maxgr = 20
 )
 ```
 
@@ -613,6 +616,8 @@ the matrix, representing the core, while the rest remains sparse
 ```{r}
 #| label: fig-compare-clu-cp
 #| echo: false
+#| fig-width: 10
+#| fig-height: 8
 #| fig-cap: "Comparison of community structure and core-periphery structure by patterns in the adjacency matrix. Left: community structure with dense blocks along the diagonal. Right: core-periphery structure with a dense block in the top-left corner and sparse connections elsewhere."
 
 set.seed(1108)
@@ -776,6 +781,8 @@ methods are sufficient for the US domestic flights network.
 ```{r}
 #| label: fig-us-flights-cp
 #| echo: false
+#| fig-width: 10
+#| fig-height: 8
 #| fig-cap: "Core-periphery structure of the US domestic flights network. Left: network layout with core and periphery airports. Right: adjacency matrix showing the block pattern."
 
 V(us_flights)$type <- c("periphery", "core")[cp_dc$vec + 1]

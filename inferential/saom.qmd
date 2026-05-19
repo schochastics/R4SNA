@@ -67,7 +67,6 @@ process, and how it can be used to explain and simulate network evolution.
 
 ```{r}
 #| message: false
-
 library(igraph)
 library(ggraph)
 library(graphlayouts)
@@ -111,7 +110,6 @@ each time point.
 
 ```{r}
 #| message: false
-
 # Convert to adjacency matrices
 net1 <- as_adjacency_matrix(glasgow_g1, sparse = FALSE)
 net2 <- as_adjacency_matrix(glasgow_g2, sparse = FALSE)
@@ -124,7 +122,6 @@ data in `RSiena`.
 
 ```{r}
 #| message: false
-
 # Combine into 3D array [actor x actor x wave]
 net_array <- array(c(net1, net2, net3), dim = c(129, 129, 3))
 ```
@@ -984,7 +981,6 @@ resulting object is then used as input for model specification and estimation.
 
 ```{r}
 #| message: false
-
 # Convert array into RSiena dependent object
 siena_net <- sienaDependent(net_array)
 ```
@@ -999,7 +995,6 @@ pass `siena_net` as the argument.
 
 ```{r}
 #| message: false
-
 # Create a Siena data object
 data_mod1 <- sienaDataCreate(siena_net)
 ```
@@ -1020,7 +1015,6 @@ effects directly by calling it.
 ```{r}
 #| message: false
 #| output: false
-
 # Define the effects: start with default effect object
 my_effects <- getEffects(data_mod1)
 my_effects
@@ -1047,7 +1041,6 @@ to organize temporary output files and logs related to the estimation.
 ```{r}
 #| message: false
 #| output: false
-
 # Define the estimation algorithm
 my_algorithm <- sienaAlgorithmCreate(projname = "saom_1", seed = 1108)
 ```
@@ -1083,7 +1076,6 @@ takes the following inputs:
 #| message: false
 #| output: false
 #| cache: true
-
 # Estimate the SAOM
 saom_1 <- siena07(
   my_algorithm,
@@ -1097,7 +1089,6 @@ To print a summary of the estimation results:
 
 ```{r}
 #| message: false
-
 # View results
 saom_1
 ```
@@ -1111,7 +1102,6 @@ interpretation).
 #| message: false
 #| eval: !expr knitr::is_html_output()
 #| echo: !expr knitr::is_html_output()
-
 siena_table(saom_1, type = "html", sig = TRUE)
 ```
 
@@ -1120,16 +1110,14 @@ siena_table(saom_1, type = "html", sig = TRUE)
 #| message: false
 #| eval: !expr knitr::is_latex_output()
 #| echo: !expr knitr::is_latex_output()
-
 siena_table(saom_1, type = "tex", sig = TRUE)
 ```
 
 ```{r}
 #| echo: false
 #| results: asis
-
 if (knitr::is_latex_output()) {
-  cat(readLines("saom_1.tex"), sep = "\n")
+  cat(":::{=latex}", readLines("saom_1.tex"), ":::", sep = "\n")
 } else {
   lines <- readLines("saom_1.html")
   lines <- sub("^[[:space:]]+", "", lines)
@@ -1308,7 +1296,6 @@ We begin by converting the 3D network array into a `sienaDependent` object.
 
 ```{r}
 #| message: false
-
 # Convert array into RSiena dependent object
 siena_net <- sienaDependent(net_array)
 ```
@@ -1321,8 +1308,7 @@ time-varying across the three network waves.
 
 ```{r}
 #| message: false
-
-# Extract sex (constant over all waves) and recode to numeric: 1 = Female, 0 = Male
+# Extract sex and recode to numeric: 1 = Female, 0 = Male
 sex_char <- V(glasgow_g2)$sex.F
 sex_num <- ifelse(sex_char == "F", 1, ifelse(sex_char == "M", 0, NA))
 # convert to fixed covariate object
@@ -1342,7 +1328,6 @@ will be used for estimation.
 
 ```{r}
 #| message: false
-
 data_mod2 <- sienaDataCreate(siena_net, sex_cov, smoking_cov)
 ```
 
@@ -1353,7 +1338,6 @@ alter, and similarity effects for both sex and smoking covariates.
 ```{r}
 #| message: false
 #| output: false
-
 # Start with the default effect set
 my_effects <- getEffects(data_mod2)
 
@@ -1385,7 +1369,6 @@ included to support reproducibility of the results.
 ```{r}
 #| message: false
 #| output: false
-
 my_algorithm <- sienaAlgorithmCreate(projname = "saom_2", seed = 1108)
 ```
 
@@ -1396,7 +1379,6 @@ simulation-based estimation procedure.
 #| message: false
 #| output: false
 #| cache: true
-
 saom_2 <- siena07(
   my_algorithm,
   data = data_mod2,
@@ -1412,7 +1394,6 @@ Finally, as before, we display the model results inline.
 #| message: false
 #| eval: !expr knitr::is_html_output()
 #| echo: !expr knitr::is_html_output()
-
 siena_table(saom_2, type = "html", sig = TRUE)
 ```
 
@@ -1421,16 +1402,14 @@ siena_table(saom_2, type = "html", sig = TRUE)
 #| message: false
 #| eval: !expr knitr::is_latex_output()
 #| echo: !expr knitr::is_latex_output()
-
 siena_table(saom_2, type = "tex", sig = TRUE)
 ```
 
 ```{r}
 #| echo: false
 #| results: asis
-
 if (knitr::is_latex_output()) {
-  cat(readLines("saom_2.tex"), sep = "\n")
+  cat(":::{=latex}", readLines("saom_2.tex"), ":::", sep = "\n")
 } else {
   lines <- readLines("saom_2.html")
   lines <- sub("^[[:space:]]+", "", lines)
@@ -1668,7 +1647,6 @@ whether actors adjust their smoking behavior in response to their friends.
 #| message: false
 #| warning: false
 #| output: false
-
 # --- Dependent variables ---
 siena_net <- sienaDependent(net_array)
 smoking_beh <- sienaDependent(smoking_array, type = "behavior")
@@ -1689,7 +1667,13 @@ eff <- getEffects(data_coev)
 # ---------------------------
 # NETWORK DYNAMICS
 # ---------------------------
-eff <- includeEffects(eff, outdegree, recip, transTrip, name = "siena_net")
+eff <- includeEffects(
+  eff,
+  outdegree,
+  recip,
+  transTrip,
+  name = "siena_net"
+)
 
 # sex effects
 eff <- includeEffects(
@@ -1743,7 +1727,6 @@ the co-evolution model.
 #| message: false
 #| cache: true
 #| output: false
-
 alg <- sienaAlgorithmCreate(projname = "saom_coev", seed = 1108)
 
 saom_coev <- siena07(
@@ -1761,7 +1744,6 @@ Finally, we display the model results.
 #| message: false
 #| eval: !expr knitr::is_html_output()
 #| echo: !expr knitr::is_html_output()
-
 siena_table(saom_coev, type = "html", sig = TRUE)
 ```
 
@@ -1770,16 +1752,14 @@ siena_table(saom_coev, type = "html", sig = TRUE)
 #| message: false
 #| eval: !expr knitr::is_latex_output()
 #| echo: !expr knitr::is_latex_output()
-
 siena_table(saom_coev, type = "tex", sig = TRUE)
 ```
 
 ```{r}
 #| echo: false
 #| results: asis
-
 if (knitr::is_latex_output()) {
-  cat(readLines("saom_coev.tex"), sep = "\n")
+  cat(":::{=latex}", readLines("saom_coev.tex"), ":::", sep = "\n")
 } else {
   lines <- readLines("saom_coev.html")
   lines <- sub("^[[:space:]]+", "", lines)

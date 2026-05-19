@@ -31,7 +31,6 @@ ego networks are used to predict important outcomes of interest.
 #| label: libraries
 #| message: false
 #| warning: false
-
 library(igraph)
 library(egor)
 library(networkdata)
@@ -129,7 +128,6 @@ website](https://ucnets.berkeley.edu/).
 #| label: create-egor-ucnet
 #| include: false
 #| echo: false
-
 # =========================
 # 1. LOAD WAVE 1 DATA
 # =========================
@@ -419,7 +417,6 @@ the ego network data are structured before proceeding to the analysis.
 
 ```{r}
 #| label: explor-data
-
 head(ego_net_w1$ego) # ego level
 head(ego_net_w1$alter) # alter level
 head(ego_net_w1$aatie) # alter-alter ties
@@ -477,7 +474,6 @@ package. Below, we create the list and inspect the first three ego networks.
 
 ```{r}
 #| label: egor-2-igraph
-
 # Convert egor object to a list of igraph ego networks
 g <- as_igraph(ego_net_w1)
 
@@ -510,7 +506,6 @@ alter information.
 #| fig-height: 9
 #| fig-width: 9
 #| fig-cap: "The first nine ego networks derived from the egor object based on the example dataset. Each panel represents the alter–alter structure of a single ego's personal network, where nodes correspond to alters and edges represent ties among them. The ego node itself is not shown, as it is by definition connected to all alters. Differences across panels illustrate variation in density, clustering, and overall structural configuration across ego networks."
-
 plots <- lapply(g[1:9], function(g) {
   # rebuild a clean graph using only structure + names
   el <- as_edgelist(g, names = TRUE)
@@ -525,7 +520,11 @@ plots <- lapply(g[1:9], function(g) {
     # add back isolated vertices, if any
     missing_v <- setdiff(vn, V(g_clean)$name)
     if (length(missing_v) > 0) {
-      g_clean <- add_vertices(g_clean, nv = length(missing_v), name = missing_v)
+      g_clean <- add_vertices(
+        g_clean,
+        nv = length(missing_v),
+        name = missing_v
+      )
     }
   }
 
@@ -579,7 +578,6 @@ plotting the distribution in @fig-ego-dens.
 
 ```{r}
 #| label: ego-dens-compute
-
 dens <- ego_density(ego_net_w1)
 head(dens)
 
@@ -591,9 +589,12 @@ sum(is.nan(dens$density)) # number of NaN's
 #| fig-cap: "Distribution of densities across ego networks. Values closer to 1 indicate networks in which most alters are connected to one another, while values closer to 0 indicate networks with many structural holes."
 #| echo: false
 #| warning: false
-
 ggplot(dens, aes(x = density)) +
-  geom_histogram(binwidth = 0.05, fill = "steelblue", color = "white") +
+  geom_histogram(
+    binwidth = 0.05,
+    fill = "steelblue",
+    color = "white"
+  ) +
   labs(
     x = "Ego network density",
     y = "Number of ego networks"
@@ -634,7 +635,6 @@ family members for each ego network.
 
 ```{r}
 #| label: prop-fam
-
 prop_family <- comp_ply(ego_net_w1, "family", mean)
 head(prop_family)
 ```
@@ -656,7 +656,6 @@ network.
 
 ```{r}
 #| label: gender-comp
-
 prop_female <- comp_ply(ego_net_w1, "gender", mean)
 head(prop_female)
 ```
@@ -677,7 +676,6 @@ suggest greater racial diversity.
 
 ```{r}
 #| label: propo-same-race
-
 prop_same_race <- comp_ply(ego_net_w1, "same_race", mean)
 head(prop_same_race)
 ```
@@ -687,7 +685,6 @@ into a single summary table.
 
 ```{r}
 #| label: comp-summary
-
 prop_family <- comp_ply(ego_net_w1, "family", mean)
 prop_female <- comp_ply(ego_net_w1, "gender", mean)
 prop_same_race <- comp_ply(ego_net_w1, "same_race", mean)
@@ -737,7 +734,6 @@ using the function `alts_diversity_entropy()`.
 
 ```{r}
 #| label: gender-entropy-egor
-
 gender_entropy <- alts_diversity_entropy(
   ego_net_w1,
   alt.attr = "gender",
@@ -759,7 +755,6 @@ networks vary across respondents.
 #| label: fig-comp-summary
 #| fig-cap: "Distributions of four ego-network composition measures across respondents: proportion of family members, gender entropy of alters, proportion of female alters, and proportion of alters of the same race as the ego."
 #| warning: false
-
 # add entropy to summary table
 comp_summary$gender_entropy <- gender_entropy$entropy
 
@@ -874,7 +869,6 @@ analysis dataset.
 
 ```{r}
 #| label: prepare-health-model-data
-
 # network size = number of alters per ego
 net_size <- ego_net_w1$alter |>
   count(.egoID, name = "ego_size")
@@ -914,7 +908,6 @@ coefficients more intuitive.
 
 ```{r}
 #| label: reorder-health
-
 analysis_dat$health_ord <- ordered(
   analysis_dat$health,
   levels = c("poor", "fair", "good", "very_good", "excellent")
@@ -930,13 +923,17 @@ from the MASS package.
 
 ```{r}
 #| label: fit-health-model
-
 # treat education as categorical
 analysis_dat$education <- factor(analysis_dat$education)
 
 health_model <- polr(
   health_ord ~
-    ego_size + prop_family + gender_entropy + age + gender + education,
+    ego_size +
+    prop_family +
+    gender_entropy +
+    age +
+    gender +
+    education,
   data = analysis_dat,
   Hess = TRUE,
   na.action = na.omit
@@ -1021,7 +1018,6 @@ variables constant.
 
 ```{r}
 #| label: predicted-probs
-
 # predicted probabilities for each observation
 pred_probs <- predict(health_model, type = "probs")
 
@@ -1038,7 +1034,6 @@ other predictors at typical values, as shown in @fig-health-pred-probs.
 ```{r}
 #| label: fig-health-pred-probs
 #| fig-cap: "Predicted probabilities of falling into each self-reported health category as a function of ego network size, with the remaining predictors held at typical values."
-
 # create a sequence of network sizes
 size_seq <- seq(
   min(analysis_dat$ego_size, na.rm = TRUE),
@@ -1070,7 +1065,10 @@ pred_long <- pred_dat |>
     values_to = "probability"
   )
 
-ggplot(pred_long, aes(x = ego_size, y = probability, color = health_category)) +
+ggplot(
+  pred_long,
+  aes(x = ego_size, y = probability, color = health_category)
+) +
   geom_line(linewidth = 1) +
   labs(
     x = "Ego Network Size",
@@ -1174,9 +1172,13 @@ binomial link.
 
 ```{r}
 #| label: fit-smoking-model
-
 smoke_model <- glm(
-  smoker ~ ego_size + prop_family + gender_entropy + age + gender + education,
+  smoker ~ ego_size +
+    prop_family +
+    gender_entropy +
+    age +
+    gender +
+    education,
   data = analysis_dat,
   family = binomial,
   na.action = na.omit
@@ -1241,7 +1243,6 @@ smoking associated with a one-unit increase in the predictor.
 
 ```{r}
 #| label: smoking-odds-ratios
-
 exp(coef(smoke_model))
 ```
 Odds ratios greater than 1 indicate that the predictor is associated with higher
@@ -1260,7 +1261,6 @@ network size increases, while holding the other predictors constant.
 ```{r}
 #| label: fig-smoking-pred-probs
 #| fig-cap: "Predicted probability of smoking as a function of ego network size, with the remaining predictors held at typical values."
-
 size_seq <- seq(
   min(analysis_dat$ego_size, na.rm = TRUE),
   max(analysis_dat$ego_size, na.rm = TRUE),
@@ -1355,7 +1355,6 @@ drinking days per week.
 
 ```{r}
 #| label: recode-drinking
-
 analysis_dat$drinking_days_rec <- analysis_dat$drinking_days
 
 analysis_dat$drinking_days_rec[
@@ -1396,10 +1395,14 @@ link.
 
 ```{r}
 #| label: fit-drinking-model
-
 drink_model <- glm(
   drinking_days_rec ~
-    ego_size + prop_family + gender_entropy + age + gender + education,
+    ego_size +
+    prop_family +
+    gender_entropy +
+    age +
+    gender +
+    education,
   data = analysis_dat,
   family = poisson,
   na.action = na.omit
@@ -1409,8 +1412,6 @@ summary(drink_model)
 ```
 
 #### Interpretation of Model Output
-
-### Interpretation of Model Output
 
 The Poisson regression results examine whether characteristics of respondents'
 ego networks are associated with the number of days per week they report
@@ -1478,7 +1479,6 @@ predictor.
 
 ```{r}
 #| label: drinking-rate-ratios
-
 exp(coef(drink_model))
 ```
 Values greater than 1 indicate that the predictor is associated with more
@@ -1503,7 +1503,6 @@ that showed the clearest associations with drinking frequency in the model:
 #| fig-cap: "Expected drinking days per week as a function of ego network size (left), respondent gender (middle), and the proportion of family members in the network (right), with the remaining predictors held at typical values."
 #| fig-height: 4
 #| fig-width: 7
-
 # sequences for predictors
 size_seq <- seq(
   min(analysis_dat$ego_size, na.rm = TRUE),
@@ -1523,7 +1522,11 @@ pred_size <- data.frame(
   education = levels(analysis_dat$education)[1]
 )
 
-pred_size$pred <- predict(drink_model, newdata = pred_size, type = "response")
+pred_size$pred <- predict(
+  drink_model,
+  newdata = pred_size,
+  type = "response"
+)
 pred_size$variable <- "ego_size"
 pred_size$x <- pred_size$ego_size
 

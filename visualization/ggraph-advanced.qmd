@@ -11,7 +11,6 @@ of such more advanced layouts and learn how to use them with `ggraph`.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(igraph)
 library(ggraph)
 library(graphlayouts)
@@ -22,7 +21,6 @@ library(ggforce)
 ```{r}
 #| label: libraries-silent
 #| include: false
-
 library(patchwork)
 ```
 
@@ -35,7 +33,6 @@ for visualization.
 
 ```{r}
 #| label: data
-
 data("got")
 
 gotS1 <- got[[1]]
@@ -83,9 +80,11 @@ from `igraph`, are generally not advisable.
 #| fig-cap: "GoT network with a circular layout."
 #| fig-width: 8
 #| fig-height: 8
-
 ggraph(gotS1, layout = "circle") +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(size = size, label = name), family = "serif") +
   scale_edge_width_continuous(range = c(0.2, 1.2)) +
@@ -109,9 +108,11 @@ other nodes in concentric circles (depending on the geodesic distance). In
 #| fig-cap: "GoT network with concentric layout focused on Ned Stark."
 #| fig-width: 8
 #| fig-height: 8
-
 ggraph(gotS1, layout = "focus", focus = 1) +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(
     aes(filter = (name == "Ned"), size = size, label = name),
@@ -137,10 +138,12 @@ explicitly as shown in @fig-concentric-ned1.
 #| fig-cap: "Concentric layout focused on Ned Stark with explicit circles drawn."
 #| fig-width: 8
 #| fig-height: 8
-
 ggraph(gotS1, layout = "focus", focus = 1) +
   draw_circle(col = "#00BFFF", use = "focus", max.circle = 3) +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(
     aes(filter = (name == "Ned"), size = size, label = name),
@@ -166,9 +169,11 @@ the layout is specified with the `cent` parameter. In
 #| fig-cap: "GoT network with concentric layout based on weighted degree centrality."
 #| fig-width: 8
 #| fig-height: 8
-
 ggraph(gotS1, layout = "centrality", cent = graph.strength(gotS1)) +
-  geom_edge_link0(aes(edge_linewidth = weight), edge_color = "grey66") +
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_color = "grey66"
+  ) +
   geom_node_point(aes(fill = clu, size = size), shape = 21) +
   geom_node_text(aes(size = size, label = name), family = "serif") +
   scale_edge_width_continuous(range = c(0.2, 0.9)) +
@@ -197,7 +202,6 @@ structure using `sample_islands()` from `igraph`.
 
 ```{r}
 #| label: island-network
-
 set.seed(1108)
 g <- sample_islands(9, 40, 0.4, 15)
 
@@ -217,7 +221,6 @@ each group is 0.4 and there are 15 edges running between each pair of groups.
 #| fig-cap: "Island network drawn with the stress layout showing a hairball structure."
 #| fig-width: 8
 #| fig-height: 8
-
 ggraph(g, layout = "stress") +
   geom_edge_link0(
     edge_color = "black",
@@ -252,12 +255,13 @@ visible, even though the same number of edges are shown as in the previous plot.
 #| fig-cap: "Island network rendered with the backbone layout."
 #| fig-width: 8
 #| fig-height: 6
-
 ggraph(g, layout = "backbone", keep = 0.4) +
   geom_edge_link0(edge_color = "grey66", edge_linewidth = 0.1) +
   geom_node_point(aes(fill = grp), shape = 21) +
   scale_fill_brewer(palette = "Set1") +
-  scale_edge_color_manual(values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))) +
+  scale_edge_color_manual(
+    values = c(rgb(0, 0, 0, 0.3), rgb(0, 0, 0, 1))
+  ) +
   theme_graph() +
   theme(legend.position = "none")
 ```
@@ -286,7 +290,6 @@ Study* as an example. The data is part of the `networkdata` package.
 
 ```{r}
 #| label: s50-data
-
 data("s50")
 ```
 
@@ -304,7 +307,6 @@ then use the resulting coordinates in `ggraph` with the "manual" layout.
 
 ```{r}
 #| label: layout-s50
-
 xy <- layout_as_dynamic(s50, alpha = 0.2)
 ```
 
@@ -316,7 +318,6 @@ with the three networks side-by-side, shown in @fig-static_plot.
 #| fig-cap: "Longitudinal network of 50 students across three waves."
 #| fig-width: 14
 #| fig-height: 8
-
 pList <- vector("list", length(s50))
 
 for (i in 1:length(s50)) {
@@ -327,8 +328,17 @@ for (i in 1:length(s50)) {
     y = xy[[i]][, 2]
   ) +
     geom_edge_link0(edge_linewidth = 0.6, edge_color = "grey66") +
-    geom_node_point(shape = 21, aes(fill = as.factor(smoke)), size = 6) +
-    geom_node_text(label = 1:50, repel = FALSE, color = "white", size = 4) +
+    geom_node_point(
+      shape = 21,
+      aes(fill = as.factor(smoke)),
+      size = 6
+    ) +
+    geom_node_text(
+      label = 1:50,
+      repel = FALSE,
+      color = "white",
+      size = 4
+    ) +
     scale_fill_manual(
       values = c("forestgreen", "grey25", "firebrick"),
       guide = ifelse(i != 2, "none", "legend"),
@@ -358,7 +368,6 @@ be used to illustrate the algorithm.
 
 ```{r}
 #| label: multilvl-data
-
 data("multilvl_ex")
 ```
 
@@ -387,8 +396,12 @@ overall layout.
 
 ```{r}
 #| label: all-layout
-
-xy <- layout_as_multilevel(multilvl_ex, type = "all", alpha = 25, beta = 45)
+xy <- layout_as_multilevel(
+  multilvl_ex,
+  type = "all",
+  alpha = 25,
+  beta = 45
+)
 ```
 
 To visualize the network with `ggraph`, you may want to draw the edges for each
@@ -400,7 +413,6 @@ flexibility to control aesthetics and can easily be achieved with a filter
 #| label: fig-multi-all-example
 #| fig-cap: "Multilevel network with a complete 3D stress layout."
 #| fig-height: 7
-
 ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
   geom_edge_link0(
     aes(filter = (node1.lvl == 1 & node2.lvl == 1)),
@@ -423,7 +435,11 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
     edge_linewidth = 0.3,
     alpha = 0.5
   ) +
-  geom_node_point(aes(shape = as.factor(lvl)), fill = "grey25", size = 3) +
+  geom_node_point(
+    aes(shape = as.factor(lvl)),
+    fill = "grey25",
+    size = 3
+  ) +
   scale_shape_manual(values = c(21, 22)) +
   theme_graph() +
   coord_cartesian(clip = "off", expand = TRUE) +
@@ -446,7 +462,6 @@ the intra-level structures.
 
 ```{r}
 #| label: separate-layout
-
 xy <- layout_as_multilevel(
   multilvl_ex,
   type = "separate",
@@ -463,7 +478,6 @@ Again, try to include an edge geom for each level (@fig-multi-separate-example).
 #| label: fig-multi-separate-example
 #| fig-cap: "Multilevel network with separate layouts for each level."
 #| fig-height: 7
-
 cols2 <- c(
   "#3A5FCD",
   "#CD00CD",
@@ -525,7 +539,6 @@ level 2 (@fig-multi-fix2-example).
 #| label: fig-multi-fix2-example
 #| fig-cap: "Multilevel network with level 2 fixed and level 1 optimized for inter-level edges."
 #| fig-height: 7
-
 xy <- layout_as_multilevel(
   multilvl_ex,
   type = "fix2",
@@ -589,7 +602,6 @@ force-directed approach and @fig-path-bundle shows the path-based approach.
 ```{r}
 #| label: fig-force-bundle
 #| fig-cap: "US flights network with force-directed edge bundling."
-
 data("us_flights")
 states <- ggplot2::map_data("state")
 
@@ -609,7 +621,6 @@ ggraph(us_flights, x = longitude, y = latitude) +
 ```{r}
 #| label: fig-path-bundle
 #| fig-cap: "US flights network with path-based edge bundling."
-
 ggraph(us_flights, x = longitude, y = latitude) +
   geom_polygon(
     aes(long, lat, group = group),

@@ -21,7 +21,6 @@ balance, blockmodeling, and centrality.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(igraph)
 library(signnet)
 library(networkdata)
@@ -30,7 +29,6 @@ library(networkdata)
 ```{r}
 #| label: libraries-silent
 #| include: false
-
 library(ggraph)
 library(patchwork)
 ```
@@ -50,7 +48,6 @@ Tribes are connected by friendship ties ("rova") and enmity ties ("hina").
 
 ```{r}
 #| label: load-tribes
-
 data("tribes")
 ```
 
@@ -61,7 +58,6 @@ where blue edges represent positive ties and red edges represent negative ties.\
 ```{r}
 #| label: fig-tribes
 #| fig-cap: "The `tribes` network visualized with `ggsigned()`."
-
 ggsigned(tribes)
 ```
 
@@ -74,7 +70,6 @@ positive ties as shown in @fig-tribes-weighted.
 ```{r}
 #| label: fig-tribes-weighted
 #| fig-cap: "The `tribes` network visualized with `ggsigned()` using weights to separate negative ties."
-
 ggsigned(tribes, weights = TRUE)
 ```
 
@@ -83,7 +78,6 @@ A signed network is represented by a signed adjacency matrix, where entries are
 
 ```{r}
 #| label: signed-adj
-
 as_adj_signed(tribes)
 ```
 
@@ -107,8 +101,9 @@ possible configurations are shown in @fig-balance-triples.
 ```{r}
 #| label: fig-balance-triples
 #| fig-cap: "The four possible signed triangles and their balancedness."
+#| fig-width: 8
+#| fig-height: 4
 #| echo: false
-
 make_signed_triangle <- function(signs) {
   g <- make_graph(c(1, 2, 2, 3, 1, 3), directed = FALSE)
   E(g)$sign <- signs
@@ -118,7 +113,12 @@ make_signed_triangle <- function(signs) {
 plot_triangle <- function(g, title) {
   E(g)$col <- ifelse(E(g)$sign == 1, "#104E8B", "firebrick3")
   edge_labels <- ifelse(E(g)$sign == 1, "+", "\u2013")
-  ggraph(g, layout = "manual", x = c(-1, 1, 0), y = c(0, 0, sqrt(3))) +
+  ggraph(
+    g,
+    layout = "manual",
+    x = c(-1, 1, 0),
+    y = c(0, 0, sqrt(3))
+  ) +
     geom_edge_link(
       aes(label = edge_labels, edge_color = I(col)),
       edge_width = 1.2,
@@ -164,7 +164,6 @@ with the added twist of making inter group edges negative. Setting
 
 ```{r}
 #| label: balanced-example
-
 g_bal <- sample_islands_signed(
   islands.n = 2,
   islands.size = 10,
@@ -178,7 +177,6 @@ The network is shown in @fig-balanced.
 ```{r}
 #| label: fig-balanced
 #| fig-cap: "A synthetic perfectly balanced network with two groups."
-
 ggsigned(g_bal)
 ```
 
@@ -188,7 +186,6 @@ triangles.
 
 ```{r}
 #| label: count-triangles
-
 count_signed_triangles(g_bal)
 ```
 
@@ -206,7 +203,6 @@ For our perfectly balanced synthetic network, all three methods agree.
 
 ```{r}
 #| label: balance-perfect
-
 balance_score(g_bal, method = "triangles")
 balance_score(g_bal, method = "walk")
 balance_score(g_bal, method = "frustration")
@@ -230,7 +226,6 @@ balanced, the three methods give the following results.
 
 ```{r}
 #| label: balance-tribes
-
 balance_score(tribes, method = "triangles")
 balance_score(tribes, method = "walk")
 balance_score(tribes, method = "frustration")
@@ -261,7 +256,6 @@ the known structure of the Gahuku-Gama alliance system.
 
 ```{r}
 #| label: blockmodel-tribes
-
 set.seed(1108)
 clu <- signed_blockmodel(tribes, k = 3, alpha = 0.5, annealing = TRUE)
 clu$membership
@@ -281,7 +275,6 @@ The obtained block structure can be visualized with `ggblock()` as shown in
 ```{r}
 #| label: fig-blockmodel-tribes
 #| fig-cap: "Block structure of the `tribes` network."
-
 ggblock(tribes, clu$membership, show_blocks = TRUE)
 ```
 
@@ -305,7 +298,6 @@ specified in the general blockmodel.
 
 ```{r}
 #| label: general-setup
-
 # construct a network with a non-standard block structure
 g1 <- g2 <- g3 <- make_full_graph(5)
 V(g1)$name <- as.character(1:5)
@@ -323,7 +315,6 @@ g <- add_edges(g, c(rbind(11:15, 6:10)), attr = list(sign = 1))
 ```{r}
 #| label: fig-general-setup
 #| fig-cap: "A synthetic network with a non-standard block structure."
-
 ggsigned(g, weights = TRUE)
 ```
 
@@ -333,7 +324,6 @@ reflects this.
 
 ```{r}
 #| label: general-blockmat
-
 set.seed(1108)
 blockmat <- matrix(
   c(1, -1, -1, -1, 1, 1, -1, 1, -1),
@@ -353,7 +343,6 @@ The obtained block structure is shown in @fig-general-blockmodel.
 ```{r}
 #| label: fig-general-blockmodel
 #| fig-cap: "Block structure of the synthetic network with a non-standard block structure."
-
 ggblock(g, general$membership, show_blocks = TRUE)
 ```
 
@@ -362,8 +351,12 @@ benefit of specifying the correct block structure.
 
 ```{r}
 #| label: compare-blockmodels
-
-traditional <- signed_blockmodel(g, k = 3, alpha = 0.5, annealing = TRUE)
+traditional <- signed_blockmodel(
+  g,
+  k = 3,
+  alpha = 0.5,
+  annealing = TRUE
+)
 c(general = general$criterion, traditional = traditional$criterion)
 ```
 
@@ -391,7 +384,6 @@ versions.
 
 ```{r}
 #| label: degree-tribes
-
 data.frame(
   tribe = V(tribes)$name,
   pos = degree_signed(tribes, type = "pos"),
@@ -412,7 +404,6 @@ networks [@bonacich2004calculating].
 
 ```{r}
 #| label: centrality-comparison
-
 cent_df <- data.frame(
   tribe = V(tribes)$name,
   degree_net = degree_signed(tribes, type = "net"),
@@ -427,8 +418,11 @@ much these two measures agree.
 
 ```{r}
 #| label: centrality-cor
-
-cor(eigen_centrality_signed(tribes), pn_index(tribes), method = "kendall")
+cor(
+  eigen_centrality_signed(tribes),
+  pn_index(tribes),
+  method = "kendall"
+)
 ```
 
 Note that the adjacency matrix of a signed network may not have a dominant
@@ -457,7 +451,6 @@ negative tie if they were at war or involved in other conflicts.
 
 ```{r}
 #| label: load-cow
-
 data("cowList")
 names(cowList)[c(1, 20, 51)]
 ```
@@ -468,19 +461,16 @@ post-Cold War period.
 
 ```{r}
 #| echo: false
-
 cowList <- lapply(cowList, igraph::upgrade_graph)
 ```
 ```{r}
 #| label: cow-years
-
 cow_cold <- cowList[["65-68"]]
 cow_post <- cowList[["93-96"]]
 ```
 
 ```{r}
 #| label: cow-sizes
-
 c(
   nodes_cold = vcount(cow_cold),
   edges_cold = ecount(cow_cold),
@@ -493,7 +483,6 @@ We can assess how balanced the international system was in each period.
 
 ```{r}
 #| label: cow-balance
-
 data.frame(
   method = c("triangles", "walk", "frustration"),
   cold_war = c(
@@ -514,14 +503,17 @@ would expect to find blocs corresponding to the Western and Eastern alliances.
 
 ```{r}
 #| label: cow-blockmodel
-
 set.seed(1108)
-clu_cold <- signed_blockmodel(cow_cold, k = 2, alpha = 0.5, annealing = TRUE)
+clu_cold <- signed_blockmodel(
+  cow_cold,
+  k = 2,
+  alpha = 0.5,
+  annealing = TRUE
+)
 ```
 
 ```{r}
 #| label: plot-cow-blockmodel
-
 ggblock(cow_cold, clu_cold$membership, show_blocks = TRUE)
 ```
 
@@ -530,6 +522,5 @@ states cluster together.
 
 ```{r}
 #| label: cow-membership
-
 split(V(cow_cold)$name, clu_cold$membership)
 ```
