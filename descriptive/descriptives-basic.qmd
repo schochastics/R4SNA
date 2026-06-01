@@ -18,7 +18,6 @@ deferred to @sec-centrality.
 ```{r}
 #| label: libraries
 #| message: false
-
 library(igraph)
 library(networkdata)
 ```
@@ -26,7 +25,6 @@ library(networkdata)
 ```{r}
 #| label: libraries-silent
 #| include: false
-
 library(ggraph)
 ```
 
@@ -43,7 +41,6 @@ family) that will be useful when we discuss connected components.
 
 ```{r}
 #| label: load-flo
-
 data("flo_marriage")
 flo_marriage
 ```
@@ -57,7 +54,6 @@ while the Pucci are disconnected from the rest.
 #| fig-width: 9
 #| fig-height: 6
 #| fig-cap: "Marriage ties among 16 leading Florentine families (Padgett). The Pucci family has no marriage ties to the others and is therefore an isolated node."
-
 ggraph(flo_marriage, "stress") +
   geom_edge_link0(edge_color = "grey66") +
   geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
@@ -74,7 +70,6 @@ nodes, and its **size**, the number of edges. In `igraph` they are obtained with
 
 ```{r}
 #| label: size
-
 vcount(flo_marriage)
 ecount(flo_marriage)
 ```
@@ -85,7 +80,6 @@ and edge attributes.
 
 ```{r}
 #| label: summary
-
 summary(flo_marriage)
 ```
 
@@ -96,7 +90,6 @@ The adjacency matrix of the network can be obtained with the
 
 ```{r}
 #| label: adjacency
-
 as_adjacency_matrix(flo_marriage, sparse = FALSE)[1:6, 1:6]
 ```
 
@@ -105,7 +98,6 @@ non-zero entries in its row of the adjacency matrix.
 
 ```{r}
 #| label: neighbors
-
 neighbors(flo_marriage, "Medici")
 ```
 
@@ -117,7 +109,6 @@ elementary measure of a node's involvement in a network and will reappear in
 
 ```{r}
 #| label: degree
-
 degree(flo_marriage)
 ```
 
@@ -127,7 +118,6 @@ the number of nodes and edges.
 
 ```{r}
 #| label: mean-degree
-
 mean(degree(flo_marriage))
 ```
 
@@ -138,7 +128,6 @@ distributions, with most nodes of low degree and a few hubs of very high degree.
 
 ```{r}
 #| label: degree-table
-
 table(degree(flo_marriage))
 ```
 
@@ -152,7 +141,6 @@ stand out with six.
 #| fig-width: 7
 #| fig-height: 4
 #| fig-cap: "Degree distribution of the Florentine marriage network. Most families have few marriage ties; the Medici are the only family with six."
-
 deg_tab <- as.data.frame(table(degree = degree(flo_marriage)))
 deg_tab$degree <- as.integer(as.character(deg_tab$degree))
 ggplot(deg_tab, aes(x = degree, y = Freq)) +
@@ -171,7 +159,6 @@ graph) and $1$ (complete graph).
 
 ```{r}
 #| label: density
-
 c(
   empty = edge_density(make_empty_graph(10)),
   florentine = edge_density(flo_marriage),
@@ -192,7 +179,6 @@ paths of the same length between a given pair of nodes.
 
 ```{r}
 #| label: shortest-path
-
 shortest_paths(
   flo_marriage,
   from = "Ginori",
@@ -210,7 +196,6 @@ One such shortest path between the Ginori and the Strozzi is highlighted in
 #| fig-width: 9
 #| fig-height: 6
 #| fig-cap: "A shortest path of length 4 between the Ginori and the Strozzi families, highlighted in red."
-
 g <- flo_marriage
 E(g)$on_path <- FALSE
 epath <- as.integer(shortest_paths(
@@ -222,7 +207,10 @@ epath <- as.integer(shortest_paths(
 E(g)$on_path[epath] <- TRUE
 
 ggraph(g, "stress") +
-  geom_edge_link0(aes(color = on_path, width = on_path), show.legend = FALSE) +
+  geom_edge_link0(
+    aes(color = on_path, width = on_path),
+    show.legend = FALSE
+  ) +
   geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
   geom_node_text(aes(label = name), repel = TRUE) +
   scale_edge_color_manual(values = c("grey66", "firebrick3")) +
@@ -236,7 +224,6 @@ pairwise distance matrix.
 
 ```{r}
 #| label: distances
-
 distances(flo_marriage)[1:6, 1:6]
 ```
 
@@ -249,7 +236,6 @@ degree zero, form components of size one.
 
 ```{r}
 #| label: components
-
 is_connected(flo_marriage)
 components(flo_marriage)
 ```
@@ -261,7 +247,6 @@ corresponding entries in the distance matrix are not numbers but `Inf`.
 
 ```{r}
 #| label: distance-pucci
-
 distances(flo_marriage, v = "Pucci")
 ```
 
@@ -276,7 +261,6 @@ unreachable pairs when computing both statistics.
 
 ```{r}
 #| label: diameter-mean
-
 diameter(flo_marriage)
 mean_distance(flo_marriage)
 ```
@@ -290,7 +274,6 @@ Bischeri requires traversing five marriage ties.
 #| fig-width: 9
 #| fig-height: 6
 #| fig-cap: "A diameter path of length 5 between the Bischeri and the Pazzi families, highlighted in red."
-
 g <- flo_marriage
 E(g)$on_path <- FALSE
 epath <- as.integer(shortest_paths(
@@ -302,7 +285,10 @@ epath <- as.integer(shortest_paths(
 E(g)$on_path[epath] <- TRUE
 
 ggraph(g, "stress") +
-  geom_edge_link0(aes(color = on_path, width = on_path), show.legend = FALSE) +
+  geom_edge_link0(
+    aes(color = on_path, width = on_path),
+    show.legend = FALSE
+  ) +
   geom_node_point(shape = 21, size = 8, fill = "#E8813A") +
   geom_node_text(aes(label = name), repel = TRUE) +
   scale_edge_color_manual(values = c("grey66", "firebrick3")) +
@@ -333,7 +319,6 @@ are themselves connected.
 
 ```{r}
 #| label: transitivity
-
 transitivity(flo_marriage, type = "global")
 head(transitivity(flo_marriage, type = "local", isolates = "zero"))
 ```
@@ -359,7 +344,6 @@ similar degrees tend to be connected.
 
 ```{r}
 #| label: assortativity-num
-
 assortativity(flo_marriage, degree(flo_marriage))
 ```
 
@@ -379,7 +363,6 @@ the attribute wealth which we dichotomize based on the median into two groups:
 
 ```{r}
 #| label: assortativity-cat
-
 # get wealth attribute
 wealth <- V(flo_marriage)$wealth
 # compute median
@@ -412,7 +395,6 @@ group of rhesus monkeys.
 
 ```{r}
 #| label: reciprocity-example
-
 data("rhesus")
 reciprocity(rhesus)
 ```
@@ -425,7 +407,6 @@ the asymmetric edges in grey.
 #| label: fig-rhesus-reciprocity
 #| echo: false
 #| fig-cap: "Grooming relations among a group of rhesus monkeys. Reciprocated edges are drawn in black, asymmetric edges in grey. Node color encodes the gender of the monkey."
-
 E(rhesus)$mutual <- which_mutual(rhesus)
 ggraph(rhesus, "stress") +
   geom_edge_parallel(
@@ -480,7 +461,6 @@ prevalence of reciprocity and one-sided relations in the network.
 
 ```{r}
 #| label: dyad-census
-
 dyad_census(rhesus)
 ```
 Note that for undirected networks, there are only two types of dyads: either a
@@ -497,14 +477,18 @@ distinguishes triads that share the same `xyz` counts but differ in structure.
 ```{r}
 #| label: fig-triad-types
 #| echo: false
+#| out-width: "80%"
+#| fig-align: center
 #| fig-cap: "The 16 possible triads in a directed network, labeled using the MAN (mutual/asymmetric/null) notation."
-
-knitr::include_graphics("img/triad_census.jpg")
+if (knitr::is_latex_output()) {
+  knitr::include_graphics("img/triad-census.pdf")
+} else {
+  knitr::include_graphics("img/triad-census.png")
+}
 ```
 
 ```{r}
 #| label: triad-census
-
 triad_census(rhesus)
 ```
 
@@ -529,7 +513,6 @@ football?" and assess structural differences among a set of football leagues.
 
 ```{r}
 #| label: football-triad
-
 data("football_triad")
 ```
 
@@ -547,7 +530,6 @@ names of the matrix.
 
 ```{r}
 #| label: football-census
-
 footy_census <- lapply(football_triad, triad_census)
 footy_census <- matrix(unlist(footy_census), ncol = 16, byrow = TRUE)
 rownames(footy_census) <- sapply(football_triad, function(x) x$name)
@@ -598,7 +580,6 @@ normalized triad census matrix.
 
 ```{r}
 #| label: svd-footy
-
 footy_svd <- svd(footy_census_norm)
 ```
 
@@ -613,7 +594,6 @@ the leagues visually in @fig-footy-svd.
 #| fig-width: 12
 #| fig-height: 6
 #| fig-cap: "First two singular vectors of the normalized triad-census profiles for 112 football leagues, scaled by the corresponding singular values. Leagues close to each other have similar triad profiles."
-
 data.frame(
   u1 = footy_svd$d[1] * footy_svd$u[, 1],
   u2 = footy_svd$d[2] * footy_svd$u[, 2],
@@ -644,7 +624,6 @@ collections of networks.
 #| fig-width: 12
 #| fig-height: 6
 #| fig-cap: "First singular vector (scaled by its singular value) plotted against network density for each football league."
-
 data.frame(
   y = footy_svd$d[1] * footy_svd$u[, 1],
   x = sapply(football_triad, edge_density)
@@ -653,7 +632,10 @@ data.frame(
   geom_point() +
   theme_minimal() +
   theme(axis.title = element_text(size = 16)) +
-  labs(x = "density", y = "First singular vector, multiplied by singular value")
+  labs(
+    x = "density",
+    y = "First singular vector, multiplied by singular value"
+  )
 ```
 
 @fig-footy-svd-030t shows a much clearer relationship between the second
@@ -667,7 +649,6 @@ among the leagues.
 #| fig-width: 12
 #| fig-height: 6
 #| fig-cap: "Second singular vector (scaled by its singular value) plotted against the proportion of transitive 030T triads for each football league."
-
 data.frame(
   y = footy_svd$d[2] * footy_svd$u[, 2],
   x = footy_census_norm[, 9]
@@ -689,7 +670,6 @@ can account for node attributes.
 
 ```{r}
 #| label: load-netUtils
-
 library(netUtils)
 ```
 
@@ -704,7 +684,6 @@ attributes of the three nodes involved.
 
 ```{r}
 #| label: rand-attr
-
 set.seed(1108)
 g <- sample_gnp(20, p = 0.3, directed = TRUE)
 # add a vertex attribute
