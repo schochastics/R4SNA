@@ -441,7 +441,24 @@ the attribute "size". The shape of the node is globally set to 21.
 
 @fig-points-symbols shows all possible shapes that can be used for the nodes.
 
-![Available point shapes in R. Shapes 0-20 only have a border (set via `color`), while shapes 21-25 have both a border (`color`) and a fill (`fill`).](img/points-symbols.png){#fig-points-symbols}
+```{r}
+#| label: fig-points-symbols
+#| fig-cap: "Available point shapes in R. Shapes 0-20 only have a border (set via `color`), while shapes 21-25 have both a border (`color`) and a fill (`fill`)."
+#| fig-width: 6
+#| fig-height: 3
+shapes <- data.frame(
+  shape = 0:25,
+  x = rep(0:6, length.out = 26),
+  y = -rep(0:3, each = 7, length.out = 26)
+)
+
+ggplot(shapes, aes(x, y)) +
+  geom_point(aes(shape = shape), size = 5, fill = "grey70") +
+  geom_text(aes(label = shape), nudge_y = 0.3) +
+  scale_shape_identity() +
+  expand_limits(y = 0.6) +
+  theme_void()
+```
 
 For networks, "21" is a solid choice since it draws a border around the nodes.
 If other shapes are used, say "19", several things need to be considered. To
