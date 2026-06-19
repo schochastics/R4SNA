@@ -37,11 +37,9 @@ the **Temporal Exponential Random Graph Model (TERGM)**. While TERGMs extend
 ERGMs to panel data by conditioning on past networks, SAOMs take a process-based
 view that explicitly models *how* ties change over time due to actor decisions.
 
-@tbl-ergmsaom shows the core differences between ERGMs. While ERGMs model the
+@tbl-ergmsaom shows the core differences between ERGMs and SAOMs. While ERGMs model the
 global structure of a network at a single point in time, SAOMs treat network
-evolution as a dynamic process driven by actors making sequential decisions. In
-other words, SAOMs extend the logic of ERGMs into the temporal domain, capturing
-the mechanisms of change rather than just the final structure.
+evolution as a dynamic process driven by actors making sequential decisions. In other words, SAOMs provide a complementary dynamic framework for modeling the mechanisms of network change rather than only the final observed structure.
 
 ::: {#tbl-ergmsaom}
   |                       | ERGMs                                       | SAOMs                                                 |
@@ -80,9 +78,7 @@ library(RSiena)
 We use a running example with data from the "Teenage Friends and Lifestyle
 Study" [@west1996s50], which was also used in the previous chapter on ERGMs. In
 contrast to the earlier example that focused on a single time point and only the
-subset of 50 pupils, we here model the dynamics of friendship ties across all
-three observed waves and with the 129 pupils over all three time points, and
-including relevant actor-level covariates such as gender and smoking behavior.
+subset of 50 pupils, we model friendship dynamics across all three observed waves, using all 129 pupils and including relevant actor-level covariates such as gender and smoking behavior.
 The dataset is called `glasgow129` in the `networkdata` package, which includes
 the following:
 
@@ -103,7 +99,7 @@ glasgow_g1 <- glasgow129[[1]]
 glasgow_g2 <- glasgow129[[2]]
 glasgow_g3 <- glasgow129[[3]]
 ```
-These `igraph` objects are our network snapshots and consider various SAOMs. We
+These `igraph` objects are the network snapshots used in the SAOM examples below. We
 begin by converting each network snapshot into a binary adjacency matrix. These
 matrices represent the presence or absence of directed ties between actors at
 each time point.
@@ -461,9 +457,7 @@ question becomes: *what* change (if any) will this actor make to the network?
 This is governed by the **jump chain**, which determines the next network state.
 
 At each micro-step, actor $i$ evaluates a set of feasible alternatives
-$\{Y^{(a)}\}_{a=1}^{A}$, each differing from the current network $Y(t)$ by at
-most a change in one outgoing tie $y_{ij}(t)$ (i.e., forming, dissolving, or
-maintaining a tie).
+$\{Y^{(a)}\}_{a=1}^{A}$, each differing from the current network $Y(t)$ by at most one outgoing tie $y_{ij}(t)$. The actor may form a new tie, dissolve an existing tie, or choose to make no change.
 
 Each alternative $Y^{(a)}$ is assigned a utility:
 $$
@@ -576,8 +570,7 @@ connections, e.g., *"I send a tie to those who also send one to me."*
 
 Closely related to the `triangles` or `GWESP` terms in ERGMs, this effect models
 triadic closure. The transitive effect reflects a tendency toward forming closed
-triads. If actor $i$ sends a tie to $h$, and $h$ sends a tie to $j$, then $i$ is
-more likely to send a tie to $j$.
+triads. If actor $i$ sends a tie to $j$, and $j$ sends a tie to $h$, then actor $i$ is more likely to send a tie to $h$.
 
 $$
 s_i^{\text{trans}}(Y^{(a)}) = \sum_{j,h} y^{(a)}_{ij} \, y^{(a)}_{jh} \, y^{(a)}_{ih}
@@ -929,8 +922,7 @@ If only the network is included as a dependent variable (i.e., a
 framework captures how actors form, maintain, or dissolve ties over time. It can
 include covariates (such as gender or smoking status) to explain **social
 selection**, meaning that actor attributes influence the likelihood of tie
-formation or dissolution. In this case, individual attributes are treated as
-exogenous and remain fixed over time.
+formation or dissolution. In this case, actor attributes are treated as covariates rather than outcomes; they may be fixed or changing over time, but their evolution is not modeled.
 
 Alternatively, RSiena allows for **co-evolution models** by including both a
 network and a behavioral variable as dependent variables. This setup enables the
@@ -1768,7 +1760,9 @@ if (knitr::is_latex_output()) {
 }
 ```
 
-The co-evolution model shows the following key patterns:
+Before interpreting the estimates, we first check convergence. In this model, the overall maximum convergence ratio exceeds the recommended threshold, indicating that the model has not fully converged. Therefore, the estimates below should be treated as illustrative rather than definitive.
+
+With that caution in mind, the co-evolution model suggests the following patterns:
 
 - **Network structure**
   - Strong negative outdegree $\Rightarrow$ sparse network
@@ -1784,8 +1778,7 @@ The co-evolution model shows the following key patterns:
   - Ego and alter effects not significant $\Rightarrow$ smoking does not affect
     sending/receiving ties overall
 - **Behavioral dynamics (smoking)**
-  - Negative linear + positive quadratic shape $\Rightarrow$ tendency toward
-    moderate smoking levels
+  - Negative linear and positive quadratic shape effects describe the baseline tendency in smoking behavior, but this pattern should be interpreted cautiously because the model has not fully converged.
   - Average alter effect positive and significant $\Rightarrow$ evidence of
     social influence (actors adjust smoking toward friends)
   - Indegree and outdegree effects not significant $\Rightarrow$ network
@@ -1798,10 +1791,6 @@ behavior: actors tend to form ties with others who have similar smoking
 behavior, and they also adjust their behavior over time to become more similar
 to their friends.
 
-Given that the overall maximum convergence ratio exceeds the recommended
-threshold, the model has not fully converged. Therefore, the parameter estimates
-should be interpreted with caution, as they may not reliably reflect the
-underlying data-generating process.
 
 To improve convergence, one can adjust the estimation settings (e.g., increase
 the number of simulation iterations via `n3`, modify phase lengths, or tune
