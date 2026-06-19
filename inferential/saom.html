@@ -484,7 +484,7 @@ window.Quarto = {
 <li>Can we simulate or predict how the network may evolve in future time points?</li>
 </ul>
 <p>SAOMs are one of two main frameworks for dynamic network modeling. The other is the <strong>Temporal Exponential Random Graph Model (TERGM)</strong>. While TERGMs extend ERGMs to panel data by conditioning on past networks, SAOMs take a process-based view that explicitly models <em>how</em> ties change over time due to actor decisions.</p>
-<p><a href="#tbl-ergmsaom" class="quarto-xref">Table&nbsp;<span>19.1</span></a> shows the core differences between ERGMs. While ERGMs model the global structure of a network at a single point in time, SAOMs treat network evolution as a dynamic process driven by actors making sequential decisions. In other words, SAOMs extend the logic of ERGMs into the temporal domain, capturing the mechanisms of change rather than just the final structure.</p>
+<p><a href="#tbl-ergmsaom" class="quarto-xref">Table&nbsp;<span>19.1</span></a> shows the core differences between ERGMs and SAOMs. While ERGMs model the global structure of a network at a single point in time, SAOMs treat network evolution as a dynamic process driven by actors making sequential decisions. In other words, SAOMs provide a complementary dynamic framework for modeling the mechanisms of network change rather than only the final observed structure.</p>
 <div id="tbl-ergmsaom" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ergmsaom-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -564,7 +564,7 @@ Table&nbsp;19.1: Comparison between Exponential Random Graph Models (ERGMs) and 
 </section>
 <section id="running-example-teenage-friends-and-lifestyle-study" class="level2" data-number="19.2">
 <h2 data-number="19.2" class="anchored" data-anchor-id="running-example-teenage-friends-and-lifestyle-study"><span class="header-section-number">19.2</span> Running Example: Teenage Friends and Lifestyle Study</h2>
-<p>We use a running example with data from the “Teenage Friends and Lifestyle Study” <span class="citation" data-cites="west1996s50">(<a href="#ref-west1996s50" role="doc-biblioref">West and Sweeting 1996</a>)</span>, which was also used in the previous chapter on ERGMs. In contrast to the earlier example that focused on a single time point and only the subset of 50 pupils, we here model the dynamics of friendship ties across all three observed waves and with the 129 pupils over all three time points, and including relevant actor-level covariates such as gender and smoking behavior. The dataset is called <code>glasgow129</code> in the <code>networkdata</code> package, which includes the following:</p>
+<p>We use a running example with data from the “Teenage Friends and Lifestyle Study” <span class="citation" data-cites="west1996s50">(<a href="#ref-west1996s50" role="doc-biblioref">West and Sweeting 1996</a>)</span>, which was also used in the previous chapter on ERGMs. In contrast to the earlier example that focused on a single time point and only the subset of 50 pupils, we model friendship dynamics across all three observed waves, using all 129 pupils and including relevant actor-level covariates such as gender and smoking behavior. The dataset is called <code>glasgow129</code> in the <code>networkdata</code> package, which includes the following:</p>
 <ul>
 <li>Networks: Binary, directed friendship ties measured at three time points.</li>
 <li>Actors: 129 pupils measured at three time points.</li>
@@ -582,7 +582,7 @@ Table&nbsp;19.1: Comparison between Exponential Random Graph Models (ERGMs) and 
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>glasgow_g2 <span class="ot">&lt;-</span> glasgow129[[<span class="dv">2</span>]]</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>glasgow_g3 <span class="ot">&lt;-</span> glasgow129[[<span class="dv">3</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>These <code>igraph</code> objects are our network snapshots and consider various SAOMs. We begin by converting each network snapshot into a binary adjacency matrix. These matrices represent the presence or absence of directed ties between actors at each time point.</p>
+<p>These <code>igraph</code> objects are the network snapshots used in the SAOM examples below. We begin by converting each network snapshot into a binary adjacency matrix. These matrices represent the presence or absence of directed ties between actors at each time point.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to adjacency matrices</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>net1 <span class="ot">&lt;-</span> <span class="fu">as_adjacency_matrix</span>(glasgow_g1, <span class="at">sparse =</span> <span class="cn">FALSE</span>)</span>
@@ -758,7 +758,7 @@ P(i \text{ is selected}) =
 P(T_i &gt; s + t \mid T_i &gt; t) = P(T_i &gt; s)
 \]</span> That is, the probability that actor <span class="math inline">\(i\)</span> will be selected in the next instant is unaffected by how long they have already been waiting. This property aligns naturally with the continuous-time Markov assumption and greatly simplifies simulation. In summary, the holding time determines <em>when</em> micro-steps occur.</p>
 <p>Once an actor has been selected and the holding time has elapsed, the next question becomes: <em>what</em> change (if any) will this actor make to the network? This is governed by the <strong>jump chain</strong>, which determines the next network state.</p>
-<p>At each micro-step, actor <span class="math inline">\(i\)</span> evaluates a set of feasible alternatives <span class="math inline">\(\{Y^{(a)}\}_{a=1}^{A}\)</span>, each differing from the current network <span class="math inline">\(Y(t)\)</span> by at most a change in one outgoing tie <span class="math inline">\(y_{ij}(t)\)</span> (i.e., forming, dissolving, or maintaining a tie).</p>
+<p>At each micro-step, actor <span class="math inline">\(i\)</span> evaluates a set of feasible alternatives <span class="math inline">\(\{Y^{(a)}\}_{a=1}^{A}\)</span>, each differing from the current network <span class="math inline">\(Y(t)\)</span> by at most one outgoing tie <span class="math inline">\(y_{ij}(t)\)</span>. The actor may form a new tie, dissolve an existing tie, or choose to make no change.</p>
 <p>Each alternative <span class="math inline">\(Y^{(a)}\)</span> is assigned a utility: <span class="math display">\[
 U_{ia} = F_{ia} + \varepsilon_{ia}
 \]</span></p>
@@ -813,7 +813,7 @@ s_i^{\text{rec}}(Y^{(a)}) = \sum_{j} y^{(a)}_{ij} \, y^{(a)}_{ji}
 </section>
 <section id="transitive-triplets-effect" class="level5 unnumbered">
 <h5 class="unnumbered anchored" data-anchor-id="transitive-triplets-effect">3. Transitive Triplets Effect</h5>
-<p>Closely related to the <code>triangles</code> or <code>GWESP</code> terms in ERGMs, this effect models triadic closure. The transitive effect reflects a tendency toward forming closed triads. If actor <span class="math inline">\(i\)</span> sends a tie to <span class="math inline">\(h\)</span>, and <span class="math inline">\(h\)</span> sends a tie to <span class="math inline">\(j\)</span>, then <span class="math inline">\(i\)</span> is more likely to send a tie to <span class="math inline">\(j\)</span>.</p>
+<p>Closely related to the <code>triangles</code> or <code>GWESP</code> terms in ERGMs, this effect models triadic closure. The transitive effect reflects a tendency toward forming closed triads. If actor <span class="math inline">\(i\)</span> sends a tie to <span class="math inline">\(j\)</span>, and <span class="math inline">\(j\)</span> sends a tie to <span class="math inline">\(h\)</span>, then actor <span class="math inline">\(i\)</span> is more likely to send a tie to <span class="math inline">\(h\)</span>.</p>
 <p><span class="math display">\[
 s_i^{\text{trans}}(Y^{(a)}) = \sum_{j,h} y^{(a)}_{ij} \, y^{(a)}_{jh} \, y^{(a)}_{ih}
 \]</span></p>
@@ -1003,7 +1003,7 @@ s^\text{beh}_{i,\text{covariate}}(v) = v_i
 <h2 data-number="19.5" class="anchored" data-anchor-id="estimating-saoms-in-rsiena"><span class="header-section-number">19.5</span> Estimating SAOMs in RSiena</h2>
 <p>RSiena is an R package for estimating and simulating Stochastic Actor-Oriented Models (SAOMs) for network and behavioral dynamics. It is specifically designed to analyze longitudinal network data, where social ties and actor attributes evolve over time.</p>
 <p>In RSiena, the distinction between modeling <strong>network evolution</strong> and the <strong>co-evolution of networks and behavior</strong> begins with how the dependent variables are specified.</p>
-<p>If only the network is included as a dependent variable (i.e., a <code>sienaDependent</code> network object), the model focuses on network evolution. This framework captures how actors form, maintain, or dissolve ties over time. It can include covariates (such as gender or smoking status) to explain <strong>social selection</strong>, meaning that actor attributes influence the likelihood of tie formation or dissolution. In this case, individual attributes are treated as exogenous and remain fixed over time.</p>
+<p>If only the network is included as a dependent variable (i.e., a <code>sienaDependent</code> network object), the model focuses on network evolution. This framework captures how actors form, maintain, or dissolve ties over time. It can include covariates (such as gender or smoking status) to explain <strong>social selection</strong>, meaning that actor attributes influence the likelihood of tie formation or dissolution. In this case, actor attributes are treated as covariates rather than outcomes; they may be fixed or changing over time, but their evolution is not modeled.</p>
 <p>Alternatively, RSiena allows for <strong>co-evolution models</strong> by including both a network and a behavioral variable as dependent variables. This setup enables the simultaneous modeling of two processes: how networks evolve and how actors’ behaviors change over time. This makes it possible to study <strong>social influence</strong>, where individuals may adopt behaviors similar to those of their network peers. The model thus captures both the selection of network ties based on covariates and the influence of peers on individual behavior.</p>
 <p>Below, we outline the typical steps involved in estimating SAOMs using RSiena:</p>
 <ol type="1">
@@ -2242,7 +2242,8 @@ Overall maximum convergence ratio 1.53.
 </tr>
 </tbody></table>
 </div>
-<p>The co-evolution model shows the following key patterns:</p>
+<p>Before interpreting the estimates, we first check convergence. In this model, the overall maximum convergence ratio exceeds the recommended threshold, indicating that the model has not fully converged. Therefore, the estimates below should be treated as illustrative rather than definitive.</p>
+<p>With that caution in mind, the co-evolution model suggests the following patterns:</p>
 <ul>
 <li><strong>Network structure</strong>
 <ul>
@@ -2262,13 +2263,12 @@ Overall maximum convergence ratio 1.53.
 </ul></li>
 <li><strong>Behavioral dynamics (smoking)</strong>
 <ul>
-<li>Negative linear + positive quadratic shape <span class="math inline">\(\Rightarrow\)</span> tendency toward moderate smoking levels</li>
+<li>Negative linear and positive quadratic shape effects describe the baseline tendency in smoking behavior, but this pattern should be interpreted cautiously because the model has not fully converged.</li>
 <li>Average alter effect positive and significant <span class="math inline">\(\Rightarrow\)</span> evidence of social influence (actors adjust smoking toward friends)</li>
 <li>Indegree and outdegree effects not significant <span class="math inline">\(\Rightarrow\)</span> network position not strongly related to smoking</li>
 </ul></li>
 </ul>
 <p>Overall, the results suggest that network evolution is primarily driven by reciprocity, triadic closure, and homophily. In addition, there is evidence for both selection and influence processes in the co-evolution of networks and behavior: actors tend to form ties with others who have similar smoking behavior, and they also adjust their behavior over time to become more similar to their friends.</p>
-<p>Given that the overall maximum convergence ratio exceeds the recommended threshold, the model has not fully converged. Therefore, the parameter estimates should be interpreted with caution, as they may not reliably reflect the underlying data-generating process.</p>
 <p>To improve convergence, one can adjust the estimation settings (e.g., increase the number of simulation iterations via <code>n3</code>, modify phase lengths, or tune other algorithm parameters). Details on these options can be found in the RSiena Manual <span class="citation" data-cites="ripley2011manual">(<a href="#ref-ripley2011manual" role="doc-biblioref">Ripley et al. 2011</a>)</span>, particularly in the sections on:</p>
 <ul>
 <li><code>sienaAlgorithmCreate()</code> (algorithm settings and iteration control)</li>
