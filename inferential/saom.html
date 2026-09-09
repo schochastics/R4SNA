@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -13,10 +13,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -96,10 +99,10 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-3f70bac5631458d474a321d4182f9338.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-ed7344add5f1663e434276306a2aa159.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -129,7 +132,7 @@ div.csl-indent {
 }</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -447,6 +450,7 @@ window.Quarto = {
   <li><a href="#saom-framework" id="toc-saom-framework" class="nav-link" data-scroll-target="#saom-framework"><span class="header-section-number">19.3</span> SAOM Framework</a></li>
   <li><a href="#extending-saoms-the-co-evolution-of-networks-and-behavior" id="toc-extending-saoms-the-co-evolution-of-networks-and-behavior" class="nav-link" data-scroll-target="#extending-saoms-the-co-evolution-of-networks-and-behavior"><span class="header-section-number">19.4</span> Extending SAOMs: The Co-Evolution of Networks and Behavior</a></li>
   <li><a href="#estimating-saoms-in-rsiena" id="toc-estimating-saoms-in-rsiena" class="nav-link" data-scroll-target="#estimating-saoms-in-rsiena"><span class="header-section-number">19.5</span> Estimating SAOMs in RSiena</a></li>
+  <li><a href="#goodness-of-fit" id="toc-goodness-of-fit" class="nav-link" data-scroll-target="#goodness-of-fit"><span class="header-section-number">19.6</span> Goodness of Fit</a></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/schochastics/R4SNA/edit/main/inferential/saom.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/schochastics/R4SNA/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -1927,8 +1931,9 @@ Table&nbsp;19.3: Smoking-related contributions to the objective function under d
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  alg,</span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_coev,</span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effects =</span> eff,</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">returnDeps =</span> <span class="cn">TRUE</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Finally, we display the model results.</p>
 <div class="cell">
@@ -2275,6 +2280,97 @@ Overall maximum convergence ratio 1.53.
 <li>Convergence diagnostics and troubleshooting guidelines</li>
 </ul>
 <p>See also the RSiena help pages in R: <code>?sienaAlgorithmCreate</code> and <code>?siena07</code>.</p>
+</section>
+</section>
+<section id="goodness-of-fit" class="level2" data-number="19.6">
+<h2 data-number="19.6" class="anchored" data-anchor-id="goodness-of-fit"><span class="header-section-number">19.6</span> Goodness of Fit</h2>
+<p>Estimating a SAOM is only the first step. As with Exponential Random Graph Models (ERGMs), it is good practice to assess how well the fitted model reproduces the observed data.</p>
+<p>The basic idea is to:</p>
+<ol type="1">
+<li>Simulate many networks from the fitted model.</li>
+<li>Compare characteristics of the simulated networks with those of the observed network.</li>
+<li>Evaluate whether the observed network looks typical under the fitted model.</li>
+</ol>
+<p>If the observed network falls well within the distribution of simulated networks, this provides evidence that the model adequately captures that aspect of the data.</p>
+<p>Formally, the goodness-of-fit assessment evaluates the null hypothesis that the fitted SAOM is capable of generating data with structural or behavioral properties similar to those observed. The plots compare observed statistics with the distributions of the same statistics across simulations from the fitted model. <code>sienaGOF()</code> also reports an overall Mahalanobis-distance-based <span class="math inline">\(p\)</span>-value. A relatively large <span class="math inline">\(p\)</span>-value (commonly greater than 0.05) indicates no evidence of substantial discrepancy between the observed and simulated statistics, whereas a small <span class="math inline">\(p\)</span>-value suggests that the model does not adequately reproduce the assessed feature.</p>
+<section id="goodness-of-fit-indegree-distribution" class="level3" data-number="19.6.1">
+<h3 data-number="19.6.1" class="anchored" data-anchor-id="goodness-of-fit-indegree-distribution"><span class="header-section-number">19.6.1</span> Goodness of fit: Indegree distribution</h3>
+<p>First, we assess whether the fitted model reproduces the <strong>indegree distribution</strong> (i.e., how many friendship nominations each student receives).</p>
+<p>The function <code>sienaGOF()</code> requires:</p>
+<ul>
+<li><code>sienaFitObject</code>: the fitted SAOM.</li>
+<li><code>auxiliaryFunction</code>: the network statistic to assess.</li>
+<li><code>varName</code>: the dependent network or behavior.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>gof_indegree <span class="ot">&lt;-</span> <span class="fu">sienaGOF</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  saom_coev,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  IndegreeDistribution,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">varName =</span> <span class="st">"siena_net"</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gof_indegree)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-gof-indegree" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gof-indegree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="saom_files/figure-html/fig-gof-indegree-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gof-indegree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.2: Goodness of fit for the indegree distribution in Model 3 (network and behavioral co-evolution).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-gof-indegree" class="quarto-xref">Figure&nbsp;<span>19.2</span></a> compares the observed indegree distribution with the distribution obtained from the simulated networks. The overall goodness-of-fit test gives <span class="math inline">\(p = 0.428\)</span>. Because this value is well above 0.05, there is no evidence of substantial lack of fit with respect to the indegree distribution. Thus, the model appears to reproduce this aspect of the friendship network reasonably well.</p>
+</section>
+<section id="goodness-of-fit-smoking-behavior" class="level3" data-number="19.6.2">
+<h3 data-number="19.6.2" class="anchored" data-anchor-id="goodness-of-fit-smoking-behavior"><span class="header-section-number">19.6.2</span> Goodness of fit: Smoking behavior</h3>
+<p>Next, we assess whether the model reproduces the observed distribution of smoking behavior.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>gof_behavior <span class="ot">&lt;-</span> <span class="fu">sienaGOF</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  saom_coev,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  BehaviorDistribution,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">varName =</span> <span class="st">"smoking_beh"</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gof_behavior)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Note: some statistics are not plotted because their variance is 0.
+This holds for the statistic: 3.</code></pre>
+</div>
+<div class="cell-output-display">
+<div id="fig-gof-smoking" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gof-smoking-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="saom_files/figure-html/fig-gof-smoking-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gof-smoking-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.3: Goodness of fit for the smoking behavior distribution in Model 3 (network and behavioral co-evolution).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-gof-smoking" class="quarto-xref">Figure&nbsp;<span>19.3</span></a> compares the observed distribution of smoking behavior with the distributions obtained from the simulations. One statistic is not plotted because its variance is zero, meaning that this statistic does not vary across the simulations and therefore cannot be meaningfully displayed in the goodness-of-fit plot. This does not by itself indicate poor model fit.</p>
+<p>For the statistics that can be assessed, the overall goodness-of-fit test gives <span class="math inline">\(p = 0.439\)</span>. Because this is above 0.05, there is no evidence of substantial lack of fit for the smoking behavior distribution based on this test. The simulated behavioral distributions therefore appear broadly consistent with the observed distribution.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why assess goodness of fit for smoking behaviour?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Although smoking behaviour is modelled directly in Model 3, it is still useful to assess its goodness of fit. The estimated parameters are chosen to explain <em>how smoking changes over time</em>, not to perfectly reproduce every feature of the observed data.</p>
+<p>A behavioural goodness-of-fit check asks whether simulations from the fitted model generate a distribution of smoking behaviour similar to the one observed in the data. If the simulated and observed distributions are similar, this provides evidence that the model adequately captures the overall behavioural dynamics. If they differ substantially, the model may be missing important behavioural processes, even if individual parameter estimates appear reasonable.</p>
+<p>The parameters in a SAOM define an actor-oriented objective function governing the micro-steps of network and behavioural change. The estimation procedure is not matching the final distribution of smoking behaviour in the same way an ERGM matches sufficient statistics. In other words, the ERGM is matching network statistics directly, whereas the SAOM is estimating a dynamic process whose consequences can still be checked using GOF diagnostics.</p>
+</div>
+</div>
+<p>Because Model 3 has not fully converged, however, these goodness-of-fit results should be interpreted cautiously and regarded as provisional until satisfactory model convergence is achieved.</p>
 
 
 </section>
