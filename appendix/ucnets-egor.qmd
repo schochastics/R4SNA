@@ -297,7 +297,8 @@ aaties <- altw1 |>
     .tgtID = as.integer(sub("^N([1-5])_N([1-5])$", "\\2", pair))
   ) |>
   filter(weight == 1) |>
-  select(.egoID, .srcID, .tgtID, weight)
+  distinct() |>
+  dplyr::select(.egoID, .srcID, .tgtID, weight)
 
 # Keep only alter-alter ties for alters that exist in the alter table
 valid_alters <- alters |>

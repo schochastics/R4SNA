@@ -111,16 +111,15 @@ vertical arrows show transitions (jumps) between states.
 
 :::
 
-Below is a hypothetical transition matrix $P$ for the cat's behavioral states.
+Below is a hypothetical transition matrix $P$ for the cat's behavioral states (row-normalized).
 Each row corresponds to the current state, and each column to the next state:
 
   |           | Sleep | Eat  | Play | Chaos |
   | --------- | :---: | :--: | :--: | :---: |
-  | **Sleep** | 0.00  | 0.70 | 0.83 | 0.56  |
-  | **Eat**   | 0.71  | 0.00 | 0.81 | 0.20  |
-  | **Play**  | 0.05  | 0.82 | 0.00 | 0.45  |
-  | **Chaos** | 0.91  | 0.46 | 0.61 | 0.00  |
-
+  | **Sleep** | 0.00  | 0.33 | 0.40 | 0.27  |
+  | **Eat**   | 0.41  | 0.00 | 0.47 | 0.12  |
+  | **Play**  | 0.04  | 0.62 | 0.00 | 0.34  |
+  | **Chaos** | 0.46  | 0.23 | 0.31 | 0.00  |
 > *Note: Diagonal entries (e.g., Sleep → Sleep) are set to zero for
 > interpretability. They can be included to model the probability of no state
 > change.*
@@ -135,17 +134,27 @@ shown in @fig-catex2.
 #| fig-height: 4
 #| fig-width: 4
 #| message: false
+#| warning: false
 #| echo: false
 
 # Define all 4 states
 state_names <- c("Sleep", "Eat", "Play", "Chaos")
 
-# Create all combinations of from → to (including self-loops)
-transitions <- expand.grid(from = state_names, to = state_names, stringsAsFactors = FALSE)
+# Corrected row-stochastic transition matrix P (rows sum to 1)
+P <- matrix(
+  c(0.00, 0.33, 0.40, 0.27,
+    0.41, 0.00, 0.47, 0.12,
+    0.04, 0.62, 0.00, 0.34,
+    0.46, 0.23, 0.31, 0.00),
+  nrow = 4, byrow = TRUE,
+  dimnames = list(state_names, state_names)
+)
 
-# Assign random-ish transition probabilities (you can edit or normalize)
-set.seed(1108)
-transitions$prob <- round(runif(nrow(transitions), min = 0.05, max = 0.95), 2)
+# Build edge list from the matrix (drop zero-probability self-loops)
+transitions <- expand.grid(from = state_names, to = state_names, stringsAsFactors = FALSE)
+transitions$prob <- apply(transitions, 1, function(row) P[row["from"], row["to"]])
+transitions <- transitions[transitions$prob > 0, ]
+
 # Create graph
 g <- tbl_graph(nodes = data.frame(name = state_names), edges = transitions, directed = TRUE)
 
@@ -162,11 +171,9 @@ ggraph(g, layout = "circle") +
                 angle_calc = "along",
                 label_dodge = unit(2.5, "mm"),
                 show.legend = FALSE) +
-  geom_node_circle(aes(r = 0.1), fill = "lightgrey", color = "black") +
+  geom_node_circle(aes(r = 0.15), fill = "lightgrey", color = "black") +
   geom_node_text(aes(label = name), size = 3, fontface = "bold") +
-  theme_void() 
-
-
+  theme_void()
 ```
 Directed graph representation of the CTMC jump chain. Each node is a state
 (e.g., Sleep, Eat), and arrows represent possible transitions with associated

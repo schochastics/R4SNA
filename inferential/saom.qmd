@@ -1712,8 +1712,7 @@ eff <- includeEffects(
 )
 ```
 
-We define the estimation settings using `sienaAlgorithmCreate()` and estimate
-the co-evolution model.
+We define the estimation settings using `sienaAlgorithmCreate()` and estimate the co-evolution model.
 
 ```{r}
 #| message: false
@@ -1725,7 +1724,8 @@ saom_coev <- siena07(
   alg,
   data = data_coev,
   effects = eff,
-  batch = TRUE
+  batch = TRUE,
+  returnDeps = TRUE
 )
 ```
 
@@ -1801,3 +1801,108 @@ Manual [@ripley2011manual], particularly in the sections on:
 - Convergence diagnostics and troubleshooting guidelines
 
 See also the RSiena help pages in R: `?sienaAlgorithmCreate` and `?siena07`.
+
+
+
+## Goodness of Fit
+
+Estimating a SAOM is only the first step. As with Exponential Random Graph Models (ERGMs), it is good practice to assess how well the fitted model reproduces the observed data.
+
+The basic idea is to:
+
+1. Simulate many networks from the fitted model.
+2. Compare characteristics of the simulated networks with those of the observed network.
+3. Evaluate whether the observed network looks typical under the fitted model.
+
+If the observed network falls well within the distribution of simulated networks, this provides evidence that the model adequately captures that aspect of the data.
+
+Formally, the goodness-of-fit assessment evaluates the null hypothesis that
+the fitted SAOM is capable of generating data with structural or behavioral
+properties similar to those observed. The plots compare observed statistics
+with the distributions of the same statistics across simulations from the
+fitted model. `sienaGOF()` also reports an overall Mahalanobis-distance-based
+$p$-value. A relatively large $p$-value (commonly greater than 0.05) indicates
+no evidence of substantial discrepancy between the observed and simulated
+statistics, whereas a small $p$-value suggests that the model does not
+adequately reproduce the assessed feature.
+
+
+
+### Goodness of fit: Indegree distribution
+
+First, we assess whether the fitted model reproduces the **indegree distribution** (i.e., how many friendship nominations each student receives).
+
+The function `sienaGOF()` requires:
+
+- `sienaFitObject`: the fitted SAOM.
+- `auxiliaryFunction`: the network statistic to assess.
+- `varName`: the dependent network or behavior.
+
+```{r}
+#| label: fig-gof-indegree
+#| fig-cap: "Goodness of fit for the indegree distribution in Model 3 (network and behavioral co-evolution)."
+#| message: false
+#| warning: false
+
+gof_indegree <- sienaGOF(
+  saom_coev,
+  IndegreeDistribution,
+  varName = "siena_net"
+)
+
+plot(gof_indegree)
+```
+
+@fig-gof-indegree compares the observed indegree distribution with the
+distribution obtained from the simulated networks. The overall goodness-of-fit
+test gives $p = 0.428$. Because this value is well above 0.05, there is no
+evidence of substantial lack of fit with respect to the indegree distribution.
+Thus, the model appears to reproduce this aspect of the friendship network
+reasonably well.
+
+
+### Goodness of fit: Smoking behavior
+
+Next, we assess whether the model reproduces the observed distribution of smoking behavior.
+
+```{r}
+#| label: fig-gof-smoking
+#| fig-cap: "Goodness of fit for the smoking behavior distribution in Model 3 (network and behavioral co-evolution)."
+#| message: false
+#| warning: false
+
+gof_behavior <- sienaGOF(
+  saom_coev,
+  BehaviorDistribution,
+  varName = "smoking_beh"
+)
+
+plot(gof_behavior)
+```
+
+
+@fig-gof-smoking compares the observed distribution of smoking behavior with
+the distributions obtained from the simulations. One statistic is not plotted
+because its variance is zero, meaning that this statistic does not vary across
+the simulations and therefore cannot be meaningfully displayed in the
+goodness-of-fit plot. This does not by itself indicate poor model fit.
+
+For the statistics that can be assessed, the overall goodness-of-fit test gives
+$p = 0.439$. Because this is above 0.05, there is no evidence of substantial
+lack of fit for the smoking behavior distribution based on this test. The
+simulated behavioral distributions therefore appear broadly consistent with the
+observed distribution.
+
+::: {.callout-note}
+## Why assess goodness of fit for smoking behaviour?
+
+Although smoking behaviour is modelled directly in Model 3, it is still useful to assess its goodness of fit. The estimated parameters are chosen to explain *how smoking changes over time*, not to perfectly reproduce every feature of the observed data.
+
+A behavioural goodness-of-fit check asks whether simulations from the fitted model generate a distribution of smoking behaviour similar to the one observed in the data. If the simulated and observed distributions are similar, this provides evidence that the model adequately captures the overall behavioural dynamics. If they differ substantially, the model may be missing important behavioural processes, even if individual parameter estimates appear reasonable.
+
+The parameters in a SAOM define an actor-oriented objective function governing the micro-steps of network and behavioural change. The estimation procedure is not matching the final distribution of smoking behaviour in the same way an ERGM matches sufficient statistics. In other words, the ERGM is matching network statistics directly, whereas the SAOM is estimating a dynamic process whose consequences can still be checked using GOF diagnostics.
+:::
+
+Because Model 3 has not fully converged, however, these goodness-of-fit results
+should be interpreted cautiously and regarded as provisional until satisfactory
+model convergence is achieved.

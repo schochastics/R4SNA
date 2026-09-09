@@ -384,6 +384,7 @@ aaties <- altw1 |>
     .tgtID = as.integer(sub("^N([1-5])_N([1-5])$", "\\2", pair))
   ) |>
   filter(weight == 1) |>
+  distinct() |>
   dplyr::select(.egoID, .srcID, .tgtID, weight)
 
 # Keep only alter-alter ties for alters that exist in the alter table
@@ -946,8 +947,7 @@ summary(health_model)
 Because the education variable was originally stored as an ordered factor, R
 expanded it into polynomial contrasts when estimating the model. These contrasts
 can sometimes introduce linear dependencies in the design matrix, especially in
-the presence of missing data. To simplify interpretation and avoid this issue,
-we treat education as a categorical factor in the regression model.
+the presence of missing data.
 :::
 
 #### Interpretation of Model Output
@@ -1092,12 +1092,7 @@ poor health decrease as networks become larger. This pattern indicates that
 larger ego networks are associated with a greater likelihood of reporting better
 health outcomes.
 
-The probability of reporting good health declines slightly as network size
-increases. This occurs because good is a middle category on the health scale. In
-ordinal models, probability does not move directly from one category to a single
-adjacent category. Instead, probability mass is redistributed across all
-categories when a predictor changes. The probability of reporting good health
-declines slightly as network size increases. This occurs because "good" is a
+The probability of reporting good health declines slightly as network size increases. This occurs because "good" is a
 middle category on the health scale. As network size increases, the predicted
 probabilities of lower categories such as fair and poor decline, while the
 probabilities of higher categories such as very good and excellent increase. The
@@ -1430,7 +1425,7 @@ Among the network predictors, ego network size (`ego_size`) shows a positive and
 statistically significant association with drinking frequency. The coefficient
 is approximately 0.013 ($z$ = 2.68, $p$ < 0.01). Because Poisson regression
 models the log of the expected count, it is useful to exponentiate the
-coefficient to interpret the effect multiplicatively. The value exp(0.013) ≈
+coefficient to interpret the effect multiplicatively. The value $\exp$(0.013)$\approx$
 1.014 suggests that each additional alter in a respondent's ego network is
 associated with roughly a 1.4 percent increase in the expected number of
 drinking days per week. Substantively, this pattern is consistent with the idea
