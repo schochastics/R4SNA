@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -99,10 +99,10 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-ed7344add5f1663e434276306a2aa159.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-fd0503e23dce65854c81c5baaade3bdf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -534,7 +534,7 @@ Figure&nbsp;17.1: Visualization of the <em>Les Misérables</em> co-appearance ne
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>density_obs <span class="ot">&lt;-</span> <span class="fu">edge_density</span>(g_obs)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>deg_obs <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_obs)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>clustering_obs <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_obs, <span class="at">type =</span> <span class="st">"global"</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dist_obs <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dist_obs <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_obs, <span class="at">weights =</span> <span class="cn">NA</span>, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a G(n, p) graph with the same density</span></span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
@@ -573,7 +573,7 @@ Table&nbsp;17.1: Comparison of structural features: Observed vs G(n, p)
 <tr class="odd">
 <td style="text-align: center;">Observed</td>
 <td style="text-align: center;">0.499</td>
-<td style="text-align: center;">4.861</td>
+<td style="text-align: center;">2.641</td>
 <td style="text-align: center;">36</td>
 </tr>
 <tr class="even">
@@ -666,35 +666,31 @@ Figure&nbsp;17.2: Comparison of node degree distributions in the observed <em>Le
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get observed degree sequence</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>deg_seq <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_obs)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute observed properties</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>clustering_obs <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_obs, <span class="at">type =</span> <span class="st">"global"</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>dist_obs <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate configuration model with the same degree sequence</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>g_conf <span class="ot">&lt;-</span> <span class="fu">sample_degseq</span>(deg_seq, <span class="at">method =</span> <span class="st">"fast.heur.simple"</span>)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate configuration model with the same degree sequence</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1108</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>g_conf <span class="ot">&lt;-</span> <span class="fu">sample_degseq</span>(deg_seq, <span class="at">method =</span> <span class="st">"fast.heur.simple"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute simulated properties</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>clustering_conf <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_conf, <span class="at">type =</span> <span class="st">"global"</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>dist_conf <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_conf, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute simulated properties</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>clustering_conf <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_conf, <span class="at">type =</span> <span class="st">"global"</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>dist_conf <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_conf, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Degree distribution comparison</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>deg_conf <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_conf)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>deg_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">Degree =</span> <span class="fu">c</span>(deg_seq, deg_conf),</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">Type =</span> <span class="fu">rep</span>(</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Configuration Model"</span>),</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">times =</span> <span class="fu">c</span>(<span class="fu">length</span>(deg_seq), <span class="fu">length</span>(deg_conf))</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary table</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>conf_comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Configuration Model"</span>),</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">Clustering =</span> <span class="fu">c</span>(clustering_obs, clustering_conf),</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">AvgPathLength =</span> <span class="fu">c</span>(dist_obs, dist_conf),</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">MaxDegree =</span> <span class="fu">c</span>(<span class="fu">max</span>(deg_seq), <span class="fu">max</span>(deg_conf))</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Degree distribution comparison</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>deg_conf <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_conf)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>deg_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Degree =</span> <span class="fu">c</span>(deg_seq, deg_conf),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Type =</span> <span class="fu">rep</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Configuration Model"</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">times =</span> <span class="fu">c</span>(<span class="fu">length</span>(deg_seq), <span class="fu">length</span>(deg_conf))</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary table</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>conf_comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Configuration Model"</span>),</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">Clustering =</span> <span class="fu">c</span>(clustering_obs, clustering_conf),</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">AvgPathLength =</span> <span class="fu">c</span>(dist_obs, dist_conf),</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">MaxDegree =</span> <span class="fu">c</span>(<span class="fu">max</span>(deg_seq), <span class="fu">max</span>(deg_conf))</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="tbl-confmod" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -717,7 +713,7 @@ Table&nbsp;17.2: Comparison of structural features: Observed vs Configuration Mo
 <tr class="odd">
 <td style="text-align: center;">Observed</td>
 <td style="text-align: center;">0.499</td>
-<td style="text-align: center;">4.861</td>
+<td style="text-align: center;">2.641</td>
 <td style="text-align: center;">36</td>
 </tr>
 <tr class="even">
@@ -803,21 +799,17 @@ Figure&nbsp;17.3: Comparison of degree distributions for the observed <em>Les Mi
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>g_sw <span class="ot">&lt;-</span> <span class="fu">sample_smallworld</span>(<span class="at">dim =</span> <span class="dv">1</span>, <span class="at">size =</span> n, <span class="at">nei =</span> k, <span class="at">p =</span> <span class="fl">0.05</span>)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute properties</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>clustering_obs <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_obs, <span class="at">type =</span> <span class="st">"global"</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>clustering_sw <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_sw, <span class="at">type =</span> <span class="st">"global"</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>dist_obs <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_obs, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>dist_sw <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_sw, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>deg_sw <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_sw)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparison table</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>sw_comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Small-World"</span>),</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">Clustering =</span> <span class="fu">c</span>(clustering_obs, clustering_sw),</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">AvgPathLength =</span> <span class="fu">c</span>(dist_obs, dist_sw),</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">MaxDegree =</span> <span class="fu">c</span>(<span class="fu">max</span>(deg_obs), <span class="fu">max</span>(deg_sw))</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>clustering_sw <span class="ot">&lt;-</span> <span class="fu">transitivity</span>(g_sw, <span class="at">type =</span> <span class="st">"global"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>dist_sw <span class="ot">&lt;-</span> <span class="fu">mean_distance</span>(g_sw, <span class="at">directed =</span> <span class="cn">FALSE</span>, <span class="at">unconnected =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>deg_sw <span class="ot">&lt;-</span> <span class="fu">degree</span>(g_sw)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparison table</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>sw_comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Small-World"</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Clustering =</span> <span class="fu">c</span>(clustering_obs, clustering_sw),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">AvgPathLength =</span> <span class="fu">c</span>(dist_obs, dist_sw),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">MaxDegree =</span> <span class="fu">c</span>(<span class="fu">max</span>(deg_obs), <span class="fu">max</span>(deg_sw))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="tbl-sw" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -840,7 +832,7 @@ Table&nbsp;17.3: Comparison of structural features: Observed vs Small-World Mode
 <tr class="odd">
 <td style="text-align: center;">Observed</td>
 <td style="text-align: center;">0.499</td>
-<td style="text-align: center;">4.861</td>
+<td style="text-align: center;">2.641</td>
 <td style="text-align: center;">36</td>
 </tr>
 <tr class="even">
