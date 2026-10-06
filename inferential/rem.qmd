@@ -1166,7 +1166,7 @@ output is the object `predicted.match`, which records whether the model
 correctly predicts the sender and receiver for each observed event.
 
 ```{r}
-head(model3$predicted.match)
+head(model2$predicted.match)
 ```
 Each row corresponds to an observed interaction in the dialogue sequence. The
 first column indicates whether the model correctly predicted the sender of the
@@ -1180,8 +1180,8 @@ matches.
 
 ```{r}
 #| label: gof-tbl
-send_col <- model3$predicted.match[, "sender"]
-receive_col <- model3$predicted.match[, "receiver"]
+send_col <- model2$predicted.match[, "sender"]
+receive_col <- model2$predicted.match[, "receiver"]
 
 table(send_col, receive_col)
 ```
@@ -1230,7 +1230,7 @@ model.
 A useful first step is to examine a summary of the residual distribution.
 
 ```{r}
-summary(model3$residuals)
+summary(model2$residuals)
 ```
 
 The summary provides an overview of the range and distribution of residuals
@@ -1252,7 +1252,7 @@ residuals. For illustration, we define outlying cases as those with residuals
 greater than 12 ($\approx  Q_3 + 1.5 \times IQR)$.
 
 ```{r}
-high_resids <- which(model3$residuals > 12)
+high_resids <- which(model2$residuals > 12)
 ```
 
 These indices correspond to the positions of events in the event sequence where
@@ -1268,7 +1268,7 @@ in @fig-rem-residuals.
 #| echo: false
 library(ggplot2)
 
-res_df <- data.frame(residual = model3$residuals)
+res_df <- data.frame(residual = model2$residuals)
 
 ggplot(res_df, aes(x = residual)) +
   geom_histogram(bins = 30, fill = "steelblue", color = "white") +
@@ -1280,9 +1280,6 @@ ggplot(res_df, aes(x = residual)) +
   theme_minimal()
 ```
 
-```{r}
-edgelist[high_resids, ]
-```
 
 Examining such cases can help identify systematic patterns that are not
 adequately captured by the model specification. For example, certain characters
@@ -1300,7 +1297,7 @@ or other contextual factors that are not currently included in the model.
 
 #### Comparing Model Specifications {.unnumbered}
 
-To compare the three model specifications, we examine their Bayesian Information
+To compare the two model specifications, we examine their Bayesian Information
 Criterion (BIC) values. The BIC provides a measure of model fit that penalizes
 model complexity, meaning that lower values indicate a better balance between
 explanatory power and the number of estimated parameters.
@@ -1308,8 +1305,7 @@ explanatory power and the number of estimated parameters.
 ```{r}
 c(
   Model1_BIC = model1$BIC,
-  Model2_BIC = model2$BIC,
-  Model3_BIC = model3$BIC
+  Model2_BIC = model2$BIC
 )
 ```
 
@@ -1318,9 +1314,6 @@ to Model 2. The BIC decreases from 4008.73 to 3928.61, indicating that including
 gender as an actor-level covariate significantly improves the model's ability to
 explain the dialogue interactions.
 
-By contrast, Model 3, which additionally includes the interaction between sender
-and receiver gender, produces a slightly higher BIC (3935.10) than Model 2.
-Because the BIC penalizes additional parameters,
 
 Taken together, prediction accuracy, residual diagnostics, and information
 criteria provide a comprehensive picture of model performance. These tools help

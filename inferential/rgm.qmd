@@ -184,7 +184,7 @@ m <- ecount(g_obs)
 density_obs <- edge_density(g_obs)
 deg_obs <- degree(g_obs)
 clustering_obs <- transitivity(g_obs, type = "global")
-dist_obs <- mean_distance(g_obs, directed = FALSE, unconnected = TRUE)
+dist_obs <- mean_distance(g_obs, weights = NA, directed = FALSE, unconnected = TRUE)
 
 # Generate a G(n, p) graph with the same density
 set.seed(1108)
@@ -345,10 +345,6 @@ visualize the degree distribution as before in @tbl-confmod and @fig-confmod.
 ```{r}
 # Get observed degree sequence
 deg_seq <- degree(g_obs)
-
-# Compute observed properties
-clustering_obs <- transitivity(g_obs, type = "global")
-dist_obs <- mean_distance(g_obs, directed = FALSE, unconnected = TRUE)
 
 # Simulate configuration model with the same degree sequence
 set.seed(1108)
@@ -517,12 +513,8 @@ set.seed(1108)
 g_sw <- sample_smallworld(dim = 1, size = n, nei = k, p = 0.05)
 
 # Compute properties
-clustering_obs <- transitivity(g_obs, type = "global")
 clustering_sw <- transitivity(g_sw, type = "global")
-
-dist_obs <- mean_distance(g_obs, directed = FALSE, unconnected = TRUE)
 dist_sw <- mean_distance(g_sw, directed = FALSE, unconnected = TRUE)
-
 deg_sw <- degree(g_sw)
 
 # Comparison table
@@ -650,7 +642,7 @@ sw_long <- sw_stats |>
 data("miserables", package = "networkdata")
 g_obs <- miserables
 clustering_obs <- transitivity(g_obs, type = "global")
-dist_obs <- mean_distance(g_obs, directed = FALSE, unconnected = TRUE)
+dist_obs <- mean_distance(g_obs, weights = NA, directed = FALSE, unconnected = TRUE)
 
 # Add observed values as a reference line to the existing plot
 ggplot(sw_long, aes(x = p, y = Value, color = Metric)) +
