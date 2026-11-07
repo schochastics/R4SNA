@@ -67,13 +67,13 @@ Beyond \~20k nodes, however, it is advisable to switch to dedicated layout
 algorithms which are optimized to work with large graphs such as
 `layout_with_pmds()` or `layout_with_sparse_stress()`.
 
-These are capable to deal with networks of around 100,000 nodes. At this size,
+These are capable of dealing with networks of around 100,000 nodes. At this size,
 though, most visualizations will not be very informative anymore.
 
 ## Concentric Layouts
 
 Circular layouts as shown in @fig-circular-layout using `layout_in_circle()`
-from `igraph`, are generally not advisable.
+from `igraph` are generally not advisable.
 
 ```{r}
 #| label: fig-circular-layout
@@ -128,7 +128,7 @@ ggraph(gotS1, layout = "focus", focus = 1) +
 
 The parameter `focus` is used to choose the node id of the focal node. The
 function `coord_fixed()` is used to always keep the aspect ratio at one so that
-the circles always appear as a circle and not an ellipse.
+the circles always appear as circles and not ellipses.
 
 The function `draw_circle()` can be used to add the concentric circles
 explicitly as shown in @fig-concentric-ned1.
@@ -160,7 +160,7 @@ ggraph(gotS1, layout = "focus", focus = 1) +
 `layout_with_centrality()` works in a similar way. One can specify any
 centrality index (or any numeric vector for that matter), and create a
 concentric layout where the most central nodes are located in the center and the
-most peripheral nodes in the outer most circle. The numeric attribute used for
+most peripheral nodes in the outermost circle. The numeric attribute used for
 the layout is specified with the `cent` parameter. In
 @fig-concentric-weighted-deg, we use the weighted degree of the characters.
 
@@ -213,7 +213,7 @@ V(g)$grp <- as.character(rep(1:9, each = 40))
 ```
 
 The network consists of nine groups with 40 vertices each. The density within
-each group is 0.4 and there are 15 edges running between each pair of groups.
+each group is 0.4, and there are 15 edges running between each pair of groups.
 @fig-island-stress shows the network using techniques we have learned so far.
 
 ```{r}
@@ -241,11 +241,11 @@ layout".
 
 The idea of the algorithm is as follows. For each edge, an embeddedness score is
 calculated which serves as an edge weight attribute. These weights are then
-ordered and only the edges with the highest score are kept. The number of edges
+ordered, and only the edges with the highest score are kept. The number of edges
 to keep is controlled with the `keep` parameter. In our example below, we keep
 the top 40%. The parameter usually requires some experimenting to find out what
-works best. The resulting network is the "backbone" of the original network and
-the stress layout algorithm is applied to this network. Once the layout is
+works best. The resulting network is the "backbone" of the original network,
+and the stress layout algorithm is applied to this network. Once the layout is
 calculated, all edges are added back to the network. @fig-backbone-plot shows
 the network with the backbone layout. The group structure is now clearly
 visible, even though the same number of edges are shown as in the previous plot.
@@ -266,15 +266,15 @@ ggraph(g, layout = "backbone", keep = 0.4) +
   theme(legend.position = "none")
 ```
 
-Of course the network used in the example is specifically tailored to illustrate
-the power of the algorithm. Using the backbone layout in real world networks may
+Of course, the network used in the example is specifically tailored to illustrate
+the power of the algorithm. Using the backbone layout in real-world networks may
 not always result in such a clear division of groups. It should thus not be seen
 as a universal remedy for drawing hairball networks. One should keep in mind: It
 can *only* emphasize a hidden group structure *if it exists*.
 
 @fig-facebook-backbone shows an empirical example where the algorithm was able
-to uncover a hidden group structure. The network shows facebook friendships of a
-university in the US. Node color corresponds to dormitory of students.
+to uncover a hidden group structure. The network shows Facebook friendships of a
+university in the US. Node color corresponds to the dormitory of students.
 
 ![Facebook friendship network colored by dormitory. Stress layout (left) vs. backbone layout (right).](img/facebook.png){#fig-facebook-backbone}
 
@@ -297,9 +297,9 @@ The dataset consists of three networks with 50 students together with their
 smoking behavior as a node attribute. The function `layout_as_dynamic()` from
 `graphlayouts` can be used to visualize the three networks. The implemented
 algorithm calculates a reference layout which is a layout of the union of all
-networks and individual layouts based on stress minimization and combines those
+networks, and individual layouts based on stress minimization and combines those
 in a linear combination which is controlled by the `alpha` parameter. For
-`alpha = 1`, only the reference layout is used and all graphs have the same
+`alpha = 1`, only the reference layout is used, and all graphs have the same
 layout. For `alpha=0`, the stress layout of each individual graph is used.
 Values in-between interpolate between the two layouts. The algorithm is not
 directly usable with `ggraph`, so we need to calculate the layout separately and
@@ -353,14 +353,14 @@ for (i in 1:length(s50)) {
 wrap_plots(pList)
 ```
 
-## Multilevel networks
+## Multilevel Networks
 
 In this section, we look at `layout_as_multilevel()`, a layout algorithm in the
 `graphlayouts` package which can be used to visualize multilevel networks.
 
 A multilevel network consists of two (or more) levels with different node sets
 and intra-level ties. For instance, one level could be scientists and their
-collaborative ties, the second level are labs and ties among them, and
+collaborative ties, the second level is labs and ties among them, and
 inter-level edges are the affiliations of scientists and labs.
 
 The `graphlayouts` package contains an artificial multilevel network which will
@@ -383,7 +383,7 @@ layout, where each level is positioned on a different y-plane. The 3D layout is
 then mapped to 2D with an isometric projection. The parameters `alpha` and
 `beta` control the perspective of the projection. The default values seem to
 work for many instances, but may not always be optimal. As a rough guideline:
-`beta` rotates the plot around the y axis (in 3D) and `alpha` moves the point of
+`beta` rotates the plot around the y axis (in 3D), and `alpha` moves the point of
 view up or down.
 
 ### Complete layout
@@ -405,7 +405,7 @@ xy <- layout_as_multilevel(
 ```
 
 To visualize the network with `ggraph`, you may want to draw the edges for each
-level (and inter level edges) with a different edge geom. This gives you more
+level (and inter-level edges) with a different edge geom. This gives you more
 flexibility to control aesthetics and can easily be achieved with a filter
 (@fig-multi-all-example).
 
@@ -532,7 +532,7 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
 This layout can be used to emphasize one intra-level structure. The layout of
 the second level is calculated in a way that optimizes inter-level edge
 placement. Set `type = "fix1"` and specify `FUN1` and possibly `params1` to fix
-level 1 or set `type = "fix2"` and specify `FUN2` and possibly `params2` to fix
+level 1, or set `type = "fix2"` and specify `FUN2` and possibly `params2` to fix
 level 2 (@fig-multi-fix2-example).
 
 ```{r}
@@ -585,7 +585,7 @@ ggraph(multilvl_ex, "manual", x = xy[, 1], y = xy[, 2]) +
   theme(legend.position = "none")
 ```
 
-## Edge bundling
+## Edge Bundling
 
 Edge bundling is a technique to reduce visual clutter in dense networks. The
 idea is to group edges together into bundles, which can help to reveal
@@ -637,7 +637,7 @@ ggraph(us_flights, x = longitude, y = latitude) +
 ## snahelper
 
 Even with a lot of experience, it may still be an arduous process to produce
-nice looking figures by writing `ggraph` code. This is where the RStudio Addin
+nice-looking figures by writing `ggraph` code. This is where the RStudio Addin
 `snahelper` can help you.
 
 ```r
@@ -647,6 +647,6 @@ install.packages("snahelper")
 The package provides a GUI to visualize networks using `ggraph`. Instead of
 writing code, drop-down menus allow you to assign attributes to aesthetics or
 change appearances globally. One feature of the addin is that it is possible
-adjust the position of nodes individually. At the end, one can either directly
+to adjust the position of nodes individually. At the end, one can either directly
 export the figure to png or automatically insert the code to produce the figure
 into a script. That way, it is possible to make the figure reproducible.

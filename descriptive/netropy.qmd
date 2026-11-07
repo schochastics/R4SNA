@@ -139,10 +139,10 @@ approach to understanding association, dependence, and information flow in
 network data. In the following sections, we illustrate this framework through an
 application.
 
-## Network Study of Corporate Law firm
+## Network Study of a Corporate Law Firm
 
 The first application considers network data from a corporate law firm in the
-Northeastern U.S.[@lazega2001collegial] which is available in the `netropy`
+Northeastern U.S. [@lazega2001collegial] which is available in the `netropy`
 package.
 
 The network consists of 71 lawyers connected through three types of informal
@@ -166,12 +166,12 @@ adj_cowork <- lawdata[[3]] # co-working network (undirected)
 df_att <- lawdata[[4]] # attributes for the 71 lawyers
 ```
 
-In the following analyses we also consider three additional networks created
+In the following analyses, we also consider three additional networks created
 from the observed ones above. We create new dyad variables for mutual friendship
 and mutual advice, and likely friendships which is an undirected network and
 does not require reciprocal reporting of friendships. The latter is done by
 creating the directed graph object and then extracting the adjacency matrix from
-the graph assuming it is undirected instead.
+the graph, assuming it is undirected instead.
 
 ```{r}
 #| label: new-vars
@@ -676,11 +676,10 @@ colnames(red_vertex2)[rowSums(red_vertex2) >= 1]
 ```
 
 Here, the variable `senior` is flagged as redundant with respect to all other
-variables, as indicated by the row of ones. This occurs because `senior`
-consists entirely of unique values, meaning it does not share any repeated
-structure with other variables and therefore does not contribute meaningful
-information for entropy-based analysis. In contrast, all other variables show
-zeros, indicating no redundancy among them.
+variables, as indicated by the row of ones. Senior takes a unique value for every
+actor and therefore carries maximal entropy; every other variable is a function
+of it. It is dropped not because it is uninformative but because it is a case
+identifier that trivially determines everything else.
 
 #### Dyad Variables
 
@@ -791,7 +790,7 @@ Joint entropy values $J(X,Y)$ for all pairs of variables can be used to explore
 the dependence structure through association graphs. In such graphs, nodes
 represent variables and edges connect pairs of variables whose joint entropy
 exceeds a chosen threshold. By gradually lowering the threshold, additional
-edges appear and the graph becomes more connected.
+edges appear, and the graph becomes more connected.
 
 Connected components that form cliques indicate groups of mutually dependent
 variables, while separate components correspond to independent subsets.
@@ -823,9 +822,8 @@ the diagonal), and `j_vertex$freq`, a data frame summarizing the frequency
 distribution of unique joint entropy values.
 
 The matrix `j_vertex$mat` shown in @tbl-joint-vert summarizes the pairwise joint
-entropy values. Entries equal to $0$ indicate independence between variables,
-while larger values indicate stronger dependence. For example, practice is
-independent of both status and gender.
+entropy values. Entries close to $0$ indicate approximate independence between
+variables. For example, practice is approximately independent of both status and gender.
 
 ::: {#tbl-joint-vert}
 ```{r}
@@ -840,7 +838,7 @@ univariate entropies on the diagonal.
 
 The strongest associations can be identified by combining the matrix with the
 frequency table `j_vertex$freq`, which summarizes the distribution of joint
-entropy values. This is shown in @tbl-jointfrq-vert where we see that the
+entropy values. This is shown in @tbl-jointfrq-vert, where we see that the
 largest joint entropy value is $0.58$, occurring between the variables `years`
 and `status`.
 
@@ -1034,8 +1032,8 @@ The prediction power heatmap shows that the strongest overall predictor of
 expected conditional entropy among single predictors. This indicates that likely
 friendship ties are highly informative for explaining advice in-degree.
 
-Among other single predictors, `years` also performs well, followed by `status`,
-while variables such as `office` and `practice` provide weaker predictive power.
+Among other single predictors, `status` and `gender` also perform well, while
+variables such as `years`, `age` and `lawschool` provide weaker predictive power.
 Considering pairs of predictors, the strongest combinations typically involve
 `years` together with network-based variables such as `deg_mutadv` and
 `deg_cwk`, yielding the lowest prediction uncertainty overall. These results
@@ -1070,7 +1068,7 @@ p8 <- make_pred_plot(pred_vertex_frnlik, "deg_likfrn")
 
 From @fig-predplot-vertex, we note the following. The vertex variables,
 network-based measures such as `deg_likfrn`, `deg_mutadv`, and other
-degree-related variables are consistently strong predictors, both individually
+degree-related variables, are consistently strong predictors, both individually
 and in combination. In particular, `deg_likfrn` often emerges as the best single
 predictor, indicating that embeddedness in likely friendship ties plays a
 central role in explaining variation in network position.

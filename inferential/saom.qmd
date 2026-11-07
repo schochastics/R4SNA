@@ -1,11 +1,11 @@
-# Stochastic Actor Oriented Models (SAOMs) {#sec-saom}
+# Stochastic Actor-Oriented Models (SAOMs) {#sec-saom}
 
 Up to this point, we have focused on modeling social networks as
 **cross-sectional data**, that is, as static snapshots of tie patterns observed
-at a single point in time. Models such as Erdős--Rényi, preferential attachment,
-and Exponential Random Graph Models (ERGMs) allow us to account for structural
-dependencies, attribute effects, and network complexity within such static
-networks.
+at a single point in time. Models such as Erdős--Rényi random graphs and
+Exponential Random Graph Models (ERGMs) describe networks observed at a single
+point in time; ERGMs additionally account for structural dependencies, attribute
+effects, and network complexity.
 
 However, social networks are inherently dynamic. Ties are not fixed; they
 emerge, dissolve, and evolve through time as a result of decisions made by
@@ -137,7 +137,7 @@ explanation.
 Longitudinal network data consist of a set of actors $N = \{1, 2, \dots, n\}$
 and a series of observed adjacency matrices:
 $$
-Y(t_0),\ Y(t_1),\ \dots,\ Y(t_M)
+Y(t_1),\ Y(t_2),\ \dots,\ Y(t_M)
 $$
 where each matrix captures the presence or absence of ties between actors at a
 particular time point, that is $y_{ij}(t) = 1$ if actor $i$ has a tie to actor
@@ -230,8 +230,8 @@ The CTMC evolves through a sequence of randomly timed transitions. Each state is
 held for a random duration, and transitions to the next state are governed by
 probability. More formally, a CTMC is characterized by:
 
-- When a change occurs: governed by the holding time, typically modeled with an
-  exponential distribution.
+- When a change occurs: governed by the holding time, which in a
+  continuous-time Markov chain follows an exponential distribution.
 - What the next state is: determined by the jump matrix, which specifies the
   transition probabilities between states.
 
@@ -564,7 +564,7 @@ s_i^{\text{rec}}(Y^{(a)}) = \sum_{j} y^{(a)}_{ij} \, y^{(a)}_{ji}
 $$
 
 A positive coefficient for this effect reflects a preference for mutual
-connections, e.g., *"I send a tie to those who also send one to me."*
+connections, e.g., *"I send a tie to those who also send one to me"*.
 
 ##### 3. Transitive Triplets Effect {.unnumbered}
 
@@ -653,7 +653,7 @@ objective function in two ways:
    parameter indicates that actors are more likely to send ties to alters with
    higher covariate values (and vice versa).
 
-##### 2. Dyadic Covariate Effects {.unnumbered}
+##### 2. Covariate-Similarity Effect {.unnumbered}
 
 SAOMs also allow modeling based on **dyadic similarity**, capturing whether
 actors prefer to connect with others who are similar in some attribute.
@@ -675,6 +675,10 @@ $$
 s_i^{\text{sim}}(Y^{(a)}, v) = \sum_j y^{(a)}_{ij} \cdot \mathbf{1}(v_i = v_j)
 $$
 
+Note that, like the ego and alter effects above, this statistic is built from a
+single actor-level covariate rather than from dyadic data; `RSiena` also centers
+it by default (subtracting its average value across actor pairs), so the
+expressions above are given in their simplified, uncentered form for clarity.
 This effect captures **homophily**, the tendency of actors to form ties with
 others who share the same attribute (e.g., same gender or group membership).
 
@@ -761,6 +765,10 @@ different from zero at approximately the 5% significance level.
 
 ## Extending SAOMs: The Co-Evolution of Networks and Behavior
 
+Let $z_i(t)$ denote the behavior of actor $i$ at time $t$. Behavioral effects
+enter a behavior objective function that actor $i$ evaluates when considering a
+one-step change in $z_i$, analogously to the network objective function.
+
 ### 1. Basic Shape Effects {.unnumbered}
 
 These effects govern the overall shape or distribution of the behavior.
@@ -785,8 +793,9 @@ These effects govern the overall shape or distribution of the behavior.
   $$
 
   A negative estimate for this effect leads to stabilization around the middle
-  values of the behavioral scale, i.e., it favors moderate behavior (e.g.,
-  smoking occasionally rather than regularly).
+  values of the behavioral scale, i.e., when the quadratic parameter is
+  negative, it favors moderate behavior (e.g., smoking occasionally rather than
+  regularly); a positive parameter instead favors extreme values.
 
 Note that the basic shape effects are typically included in the behavioral model
 specification.
@@ -1138,13 +1147,13 @@ two main criteria:
    should be close to zero. Values below 0.10 are ideal, and below 0.20 is
    generally acceptable.
 
-All convergence t-ratios in our Model 1 ouput are below 0.03, which suggests
+All convergence t-ratios in our Model 1 output are below 0.03, which suggests
 that the simulated statistics align closely with the observed network statistics
 for each parameter. This implies that the estimated model reproduces the key
 structural features of the observed data with high precision. Additionally, the
-overall maximum convergence ratio is 0.04, which is well below the commonly used
-threshold of 0.10, and even under the more conservative cutoff of 0.05. This
-means that none of the parameters are associated with poor convergence behavior.
+overall maximum convergence ratio is 0.03, which is well below the commonly used
+criteria: an overall maximum convergence ratio below 0.25 and individual
+t-ratios below 0.10 in absolute value. This means that none of the parameters are associated with poor convergence behavior.
 Taken together, these diagnostics confirm that the SAOM estimation process has
 stabilized, and the parameter estimates can be interpreted with confidence.
 
@@ -1156,11 +1165,11 @@ are modeled as intensities in a continuous-time Markov framework.
 
 The estimates can be interpreted as follows:
 
-- **Rate 1**: Estimate = 8.580 (SE = 0.698)\
+- **Rate 1**: Estimate = 8.591 (SE = 0.703)\
   On average, each actor had about 9 opportunities to change a tie between waves
   1 and 2.
 
-- **Rate 2**: Estimate = 7.238 (SE = 0.605)\
+- **Rate 2**: Estimate = 7.262 (SE = 0.571)\
   On average, each actor had about 7 opportunities to change a tie between waves
   2 and 3.
 
@@ -1177,22 +1186,23 @@ included in the model represents a social mechanism influencing this decision.
 
 The main effects in this model are:
 
-- **Outdegree (density)**: Estimate = --2.411 (SE = 0.041)\
+- **Outdegree (density)**: Estimate = --2.413 (SE = 0.037)\
   Strong negative effect: actors are generally reluctant to form many ties.
 
-- **Reciprocity**: Estimate = 2.705 (SE = 0.086)\
+- **Reciprocity**: Estimate = 2.708 (SE = 0.085)\
   Strong positive effect: actors strongly prefer to reciprocate existing ties.
 
-Both estimates are statistically significant, as their t-ratios exceed 2.
+Both estimates are statistically significant, as the ratio of estimate to standard error
+exceeds 2.
 
 > *So, how do we interpret the parameter estimates?*
 
-**Outdegree (density):** $\theta_{\text{out}} = -2.411$\
+**Outdegree (density):** $\theta_{\text{out}} = -2.413$\
 A strong negative value indicates that actors prefer *sparser networks*. Forming
 new ties carries a cost, so additional ties are less likely unless offset by
 other favorable effects.
 
-**Reciprocity:** $\theta_{\text{rec}} = 2.705$\
+**Reciprocity:** $\theta_{\text{rec}} = 2.708$\
 A strong positive value reflects a preference for reciprocating existing ties.
 If another actor sends a tie to ego, ego is much more likely to return it.
 
@@ -1213,16 +1223,18 @@ To understand this, consider two scenarios:
    $i$ considers forming $y_{ij} = 1$. The change in utility is:
 
    $$
-   -2.411 + 2.705 = 0.294
+   -2.413 + 2.708 = 0.295
    $$
 
-   This yields a **positive utility change**, making the move likely.
+   This yields a **positive utility change**, making this tie change more
+   attractive than no change: all else equal, its selection weight relative to
+   the no-change option is $\exp(0.295) \approx 1.34$.
 
 2. **Adding a non-reciprocated tie**\
    If $y_{ji}(t) = 0$, the tie is not reciprocated. The utility change is:
 
    $$
-   -2.411
+   -2.413
    $$
 
    This is **negative**, making the change unlikely.
@@ -1246,8 +1258,8 @@ Having established a baseline SAOM using only endogenous structural effects
 actor-level covariates. By including exogenous attributes such as sex and
 smoking behavior, we can investigate how individual characteristics shape tie
 formation in addition to structural patterns. This richer specification allows
-us to test more nuanced hypotheses about social selection and influence
-mechanisms within the network.
+us to test more nuanced hypotheses about social selection mechanisms within the
+network.
 
 As discussed in @sec-exeffects, incorporating covariates into the objective
 function requires distinguishing between different types of effects:
@@ -1295,7 +1307,7 @@ siena_net <- sienaDependent(net_array)
 Like before, this object represents the longitudinal network that serves as the
 dependent variable in the SAOM. Different from before, we extract covariate
 values from the network's node attributes. Sex (`sex.F`) is treated as a
-time-invariant covariate, while smoking behavior (`familysmoking`) is treated as
+time-invariant covariate, while smoking behavior (`tobacco`) is treated as
 time-varying across the three network waves.
 
 ```{r}
@@ -1412,8 +1424,8 @@ if (knitr::is_latex_output()) {
 
 ##### Convergence Assessment {.unnumbered}
 
-In Model 2, all convergence t-ratios are below 0.07, and the overall maximum
-convergence ratio is 0.11. This indicates good convergence, and the parameter
+In Model 2, all convergence t-ratios are below 0.09, and the overall maximum
+convergence ratio is 0.14. This indicates good convergence, and the parameter
 estimates can be interpreted with confidence.
 
 ##### Rate Parameters {.unnumbered}
@@ -1421,8 +1433,8 @@ estimates can be interpreted with confidence.
 Rate parameters determine how frequently actors are given the opportunity to
 change their outgoing ties between observation moments. The estimated rates are:
 
-- **Period 1**: 10.761 (SE = 1.054)
-- **Period 2**: 8.981 (SE = 0.850)
+- **Period 1**: 10.710 (SE = 1.029)
+- **Period 2**: 8.999 (SE = 0.821)
 
 These values suggest that, on average, each actor had approximately 11
 opportunities to change a tie between waves 1 and 2, and about 9 opportunities
@@ -1431,15 +1443,15 @@ opportunities* for change, not the number of actual tie changes.
 
 ##### Network Dynamics {.unnumbered}
 
-- **Outdegree (density)**: $-2.859$ (SE = 0.053)\
+- **Outdegree (density)**: $-2.864$ (SE = 0.057)\
   This strong negative effect indicates that actors are generally reluctant to
   form many ties, leading to relatively sparse networks.
 
-- **Reciprocity**: $1.991$ (SE = 0.089)\
+- **Reciprocity**: $1.988$ (SE = 0.087)\
   This positive effect reflects a strong tendency for actors to reciprocate
   incoming ties.
 
-- **Transitive triplets**: $0.448$ (SE = 0.026)\
+- **Transitive triplets**: $0.450$ (SE = 0.026)\
   This positive effect indicates a preference for triadic closure: if actor $i$
   is tied to $j$, and $j$ is tied to $k$, then $i$ is more likely to form a tie
   to $k$.
@@ -1449,15 +1461,15 @@ sparsity, reciprocity, and local clustering.
 
 We now turn to covariate-related effects, starting with sex:
 
-- **Sex alter**: $-0.154$ (SE = 0.097, not significant)\
+- **Sex alter**: $-0.150$ (SE = 0.102, not significant)\
   There is no evidence that actors systematically prefer or avoid alters based
   on their sex.
 
-- **Sex ego**: $0.159$ (SE = 0.103, not significant)\
+- **Sex ego**: $0.152$ (SE = 0.113, not significant)\
   This suggests no significant difference in tie-sending activity between male
   and female actors.
 
-- **Sex similarity**: $0.912$ (SE = 0.093)\
+- **Sex similarity**: $0.919$ (SE = 0.096)\
   This strong and statistically significant effect indicates a clear tendency
   toward same-sex friendships, i.e., sex-based homophily.
 
@@ -1510,30 +1522,30 @@ where:
 ::: {#tbl-sexeff}
   | Ego    | Alter  | Ego Term                         | Alter Term                        | Similarity Term | Total Contribution |
   | ------ | ------ | -------------------------------- | --------------------------------- | --------------- | ------------------ |
-  | Male   | Male   | $0.159 \times (-0.434) = -0.069$ | $-0.154 \times (-0.434) = +0.067$ | $+0.912$        | $0.910$            |
-  | Male   | Female | $-0.069$                         | $-0.154 \times 0.566 = -0.087$    | $0$             | $-0.156$           |
-  | Female | Male   | $0.159 \times 0.566 = +0.090$    | $+0.067$                          | $0$             | $0.157$            |
-  | Female | Female | $+0.090$                         | $-0.087$                          | $+0.912$        | $0.915$            |
+  | Male   | Male   | $0.152 \times (-0.434) = -0.066$ | $-0.150 \times (-0.434) = +0.065$ | $+0.919$        | $0.918$            |
+  | Male   | Female | $-0.066$                         | $-0.150 \times 0.566 = -0.085$    | $0$             | $-0.151$           |
+  | Female | Male   | $0.152 \times 0.566 = +0.086$    | $+0.065$                          | $0$             | $0.151$            |
+  | Female | Female | $+0.086$                         | $-0.085$                          | $+0.919$        | $0.920$            |
 
 Sex-based contributions to the objective function under different ego-alter
 combinations. {.striped}
 :::
 
-These values show that same-sex ties, especially between girls, are more likely
-due to the strong similarity effect. Cross-sex ties are less likely, receiving
+These values show that same-sex ties are more likely due to the strong
+similarity effect. Cross-sex ties are less likely, receiving
 lower utility in the objective function.
 
-Next, we look at the behavioral covariate smoking. From the above output we note
+Next, we look at the behavioral covariate smoking. From the above output, we note
 the following:
 
-- **Smoking Alter**: $0.109$ (SE = 0.061, not significant)\
-  Suggests no evidence that smoking status affects how attractive an actor is as
-  a tie recipient.
+- **Smoking Alter**: $0.112$ (SE = 0.058, $p < 0.1$)\
+  Weak evidence, at best, that smoking status affects how attractive an actor is
+  as a tie recipient.
 
-- **Smoking Ego**: $0.077$ (SE = 0.063, not significant)\
+- **Smoking Ego**: $0.073$ (SE = 0.064, not significant)\
   No effect of smoking behavior on how active an actor is in sending ties.
 
-- **Smoking Similarity**: $0.380$ (SE = 0.117)\
+- **Smoking Similarity**: $0.381$ (SE = 0.115)\
   This positive and significant parameter indicates a clear tendency toward
   homophily with respect to smoking behavior: actors are more likely to form or
   maintain friendships with others who share a similar smoking status.
@@ -1551,9 +1563,9 @@ attr(data_mod2$vCovars$smoking_cov, "simMean")
 ```
 
 We now interpret the covariate effects related to smoking behavior. In this
-model, smoking is treated as a three-level categorical covariate: 1 =
-Non-smoker, 2 = Occasional, 3 = Regular. The mean of the covariate, computed via
-`mean(smoke_cov)`, is approximately $\bar{v} = 1.377$.
+model, smoking is treated as ordinal (coded 1--3 and treated as numeric by
+`RSiena`): 1 = Non-smoker, 2 = Occasional, 3 = Regular. The mean of the
+covariate, computed via `mean(smoking_cov)`, is approximately $\bar{v} = 1.377$.
 
 After mean-centering (as done by default in RSiena), the transformed values are:
 
@@ -1579,8 +1591,8 @@ where $R_v$ denotes the range of the covariate $v$ (here, $R_v = 3 - 1 = 2$).
 Substituting the estimated parameter values from the model:
 
 $$
-0.077(v_i - 1.377) + 0.109(v_j - 1.377) 
-+ 0.380 \left(1 - \frac{|v_i - v_j|}{2} \right)
+0.073(v_i - 1.377) + 0.112(v_j - 1.377) 
++ 0.381 \left(1 - \frac{|v_i - v_j|}{2} \right)
 $$
 
 This expression combines:
@@ -1601,23 +1613,25 @@ levels.
 
   | Ego        | Alter      | Ego Term                        | Alter Term                      | Similarity Term                 | Total Contribution |
   | ---------- | ---------- | ------------------------------- | ------------------------------- | ------------------------------- | ------------------ |
-  | Non-smoker | Non-smoker | $0.077 \cdot (-0.377) = -0.029$ | $0.109 \cdot (-0.377) = -0.041$ | $0.380 \cdot 1 = 0.380$         | $0.310$            |
-  | Non-smoker | Occasional | $-0.029$                        | $0.109 \cdot 0.623 = 0.068$     | $0.380 \cdot (1 - 0.5) = 0.190$ | $0.229$            |
-  | Non-smoker | Regular    | $-0.029$                        | $0.109 \cdot 1.623 = 0.177$     | $0.380 \cdot (1 - 1) = 0$       | $0.148$            |
-  | Occasional | Non-smoker | $0.077 \cdot 0.623 = 0.048$     | $-0.041$                        | $0.190$                         | $0.197$            |
-  | Occasional | Occasional | $0.048$                         | $0.068$                         | $0.380$                         | $0.496$            |
-  | Occasional | Regular    | $0.048$                         | $0.177$                         | $0.190$                         | $0.415$            |
-  | Regular    | Non-smoker | $0.077 \cdot 1.623 = 0.125$     | $-0.041$                        | $0$                             | $0.084$            |
-  | Regular    | Occasional | $0.125$                         | $0.068$                         | $0.190$                         | $0.383$            |
-  | Regular    | Regular    | $0.125$                         | $0.177$                         | $0.380$                         | $0.682$            |
+  | Non-smoker | Non-smoker | $0.073 \cdot (-0.377) = -0.028$ | $0.112 \cdot (-0.377) = -0.042$ | $0.381 \cdot 1 = 0.381$         | $0.311$            |
+  | Non-smoker | Occasional | $-0.028$                        | $0.112 \cdot 0.623 = 0.070$     | $0.381 \cdot (1 - 0.5) = 0.191$ | $0.233$            |
+  | Non-smoker | Regular    | $-0.028$                        | $0.112 \cdot 1.623 = 0.182$     | $0.381 \cdot (1 - 1) = 0$       | $0.154$            |
+  | Occasional | Non-smoker | $0.073 \cdot 0.623 = 0.045$     | $-0.042$                        | $0.191$                         | $0.194$            |
+  | Occasional | Occasional | $0.045$                         | $0.070$                         | $0.381$                         | $0.496$            |
+  | Occasional | Regular    | $0.045$                         | $0.182$                         | $0.191$                         | $0.418$            |
+  | Regular    | Non-smoker | $0.073 \cdot 1.623 = 0.118$     | $-0.042$                        | $0$                             | $0.076$            |
+  | Regular    | Occasional | $0.118$                         | $0.070$                         | $0.191$                         | $0.379$            |
+  | Regular    | Regular    | $0.118$                         | $0.182$                         | $0.381$                         | $0.681$            |
 
 Smoking-related contributions to the objective function under different
 ego-alter combinations. {.striped}
 :::
 
 We see from @tbl-smokeeff that actors with similar smoking behavior are more
-likely to form ties, especially regular-to-regular smokers, indicating a strong
-homophily pattern. The ego and alter terms slightly amplify or reduce this
+likely to form ties; the computed contributions are highest for
+regular-to-regular pairs, but this ordering follows from the coding of the
+covariate and the small, non-significant ego and alter effects. The estimate
+supports similarity-based selection in general. The ego and alter terms slightly amplify or reduce this
 tendency depending on individual smoking levels.
 
 ### Model 3: Network and Behavioral Co-Evolution
@@ -1632,6 +1646,9 @@ used in the network objective function to test **selection** effects: whether
 actors form or maintain ties based on smoking behavior. Second, smoking is
 modeled as a behavioral dependent variable to test **influence** effects:
 whether actors adjust their smoking behavior in response to their friends.
+Note that this example uses the closely related average-alter effect (`avAlt`),
+which relates an actor's behavior to the mean behavior of their alters rather
+than to a similarity score.
 
 > *Key point: `smoking_beh` is no longer only a covariate. It is a behavioral
 > dependent variable, while also being used to explain network selection.*
@@ -1753,9 +1770,9 @@ siena_table(saom_coev, type = "tex", sig = TRUE)
 #| echo: false
 #| results: asis
 if (knitr::is_latex_output()) {
-  cat(":::{=latex}", readLines("saom_coev.tex"), ":::", sep = "\n")
+  cat(":::{=latex}", gsub("Behaviour", "Behavior", readLines("saom_coev.tex")), ":::", sep = "\n")
 } else {
-  lines <- readLines("saom_coev.html")
+  lines <- gsub("Behaviour", "Behavior", readLines("saom_coev.html"))
   lines <- sub("^[[:space:]]+", "", lines)
   lines <- gsub("&#134;?", "&dagger;", lines)
   cat(":::{=html}", lines, ":::", sep = "\n")
@@ -1772,15 +1789,15 @@ With that caution in mind, the co-evolution model suggests the following pattern
   - Positive transitivity $\Rightarrow$ evidence of triadic closure
 - **Sex effects**
   - Strong positive similarity $\Rightarrow$ clear same-sex homophily
-  - Ego and alter effects not significant $\Rightarrow$ no strong differences in
-    tie activity by sex
+  - Only the ego effect is marginally significant $\Rightarrow$ no strong
+    differences in tie activity by sex
 - **Smoking and network selection**
   - Positive similarity effect $\Rightarrow$ friendships are formed between
     actors with similar smoking behavior (selection)
-  - Ego and alter effects not significant $\Rightarrow$ smoking does not affect
-    sending/receiving ties overall
+  - Only the alter effect is marginally significant $\Rightarrow$ smoking does
+    not affect sending/receiving ties overall
 - **Behavioral dynamics (smoking)**
-  - Negative linear and positive quadratic shape effects describe the baseline tendency in smoking behavior, but this pattern should be interpreted cautiously because the model has not fully converged.
+  - Negative linear and positive quadratic shape effects describe the baseline tendency in smoking behavior, but this pattern should be interpreted cautiously because the model has not fully converged
   - Average alter effect positive and significant $\Rightarrow$ evidence of
     social influence (actors adjust smoking toward friends)
   - Indegree and outdegree effects not significant $\Rightarrow$ network
@@ -1794,7 +1811,10 @@ behavior, and they also adjust their behavior over time to become more similar
 to their friends.
 
 
-To improve convergence, one can adjust the estimation settings (e.g., increase
+However, because the estimation algorithm has not converged (overall maximum
+convergence ratio 1.53), these results are provisional and would need to be
+confirmed by re-estimating the model until convergence is reached. To improve
+convergence, one can adjust the estimation settings (e.g., increase
 the number of simulation iterations via `n3`, modify phase lengths, or tune
 other algorithm parameters). Details on these options can be found in the RSiena
 Manual [@ripley2011manual], particularly in the sections on:
@@ -1843,6 +1863,9 @@ The function `sienaGOF()` requires:
 ```{r}
 #| label: fig-gof-indegree
 #| fig-cap: "Goodness of fit for the indegree distribution in Model 3 (network and behavioral co-evolution)."
+#| fig-width: 7
+#| fig-height: 4.5
+#| out-width: "80%"
 #| message: false
 #| warning: false
 
@@ -1870,6 +1893,9 @@ Next, we assess whether the model reproduces the observed distribution of smokin
 ```{r}
 #| label: fig-gof-smoking
 #| fig-cap: "Goodness of fit for the smoking behavior distribution in Model 3 (network and behavioral co-evolution)."
+#| fig-width: 7
+#| fig-height: 4.5
+#| out-width: "80%"
 #| message: false
 #| warning: false
 
@@ -1884,10 +1910,10 @@ plot(gof_behavior)
 
 
 @fig-gof-smoking compares the observed distribution of smoking behavior with
-the distributions obtained from the simulations. One statistic is not plotted
-because its variance is zero, meaning that this statistic does not vary across
-the simulations and therefore cannot be meaningfully displayed in the
-goodness-of-fit plot. This does not by itself indicate poor model fit.
+the distributions obtained from the simulations. The unplotted statistic is the
+cumulative count of actors with smoking level $\leq 3$, which equals the number
+of actors in every simulated network and therefore has zero variance. This is
+not a sign of poor fit.
 
 For the statistics that can be assessed, the overall goodness-of-fit test gives
 $p = 0.439$. Because this is above 0.05, there is no evidence of substantial
@@ -1896,13 +1922,13 @@ simulated behavioral distributions therefore appear broadly consistent with the
 observed distribution.
 
 ::: {.callout-note}
-## Why assess goodness of fit for smoking behaviour?
+## Why assess goodness of fit for smoking behavior?
 
-Although smoking behaviour is modelled directly in Model 3, it is still useful to assess its goodness of fit. The estimated parameters are chosen to explain *how smoking changes over time*, not to perfectly reproduce every feature of the observed data.
+Although smoking behavior is modeled directly in Model 3, it is still useful to assess its goodness of fit. The estimated parameters are chosen to explain *how smoking changes over time*, not to perfectly reproduce every feature of the observed data.
 
-A behavioural goodness-of-fit check asks whether simulations from the fitted model generate a distribution of smoking behaviour similar to the one observed in the data. If the simulated and observed distributions are similar, this provides evidence that the model adequately captures the overall behavioural dynamics. If they differ substantially, the model may be missing important behavioural processes, even if individual parameter estimates appear reasonable.
+A behavioral goodness-of-fit check asks whether simulations from the fitted model generate a distribution of smoking behavior similar to the one observed in the data. If the simulated and observed distributions are similar, this provides evidence that the model adequately captures the overall behavioral dynamics. If they differ substantially, the model may be missing important behavioral processes, even if individual parameter estimates appear reasonable.
 
-The parameters in a SAOM define an actor-oriented objective function governing the micro-steps of network and behavioural change. The estimation procedure is not matching the final distribution of smoking behaviour in the same way an ERGM matches sufficient statistics. In other words, the ERGM is matching network statistics directly, whereas the SAOM is estimating a dynamic process whose consequences can still be checked using GOF diagnostics.
+The parameters in a SAOM define an actor-oriented objective function governing the micro-steps of network and behavioral change. The estimation procedure is not matching the final distribution of smoking behavior in the same way an ERGM matches sufficient statistics. In other words, the ERGM is matching network statistics directly, whereas the SAOM is estimating a dynamic process whose consequences can still be checked using GOF diagnostics.
 :::
 
 Because Model 3 has not fully converged, however, these goodness-of-fit results

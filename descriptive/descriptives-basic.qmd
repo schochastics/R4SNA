@@ -1,7 +1,7 @@
 # Basic Network Statistics {#sec-basic-network-statistics}
 
 Before tackling more advanced questions about a network, like who is most
-central, which groups hold it together, how it compares to a random baseline, it
+central, which groups hold it together, and how it compares to a random baseline, it
 pays to know a handful of simple numbers that summarize its overall shape. How
 many nodes and edges does the network contain? Are all nodes reachable from one
 another? How far apart are they on average? Do neighbors of a node tend to be
@@ -30,7 +30,7 @@ library(ggraph)
 
 ## An Example Network
 
-To illustrate the descriptors in this chapter we use the marriage network of
+To illustrate the descriptors in this chapter, we use the marriage network of
 Florentine families compiled by @padgett1993robust, available as `flo_marriage`
 in the `networkdata` package. Nodes are the 16 leading families of 15th-century
 Florence, and an undirected edge connects two families if they were joined by at
@@ -65,7 +65,7 @@ ggraph(flo_marriage, "stress") +
 ## Network Size
 
 The two most basic descriptors of a network are its **order**, the number of
-nodes, and its **size**, the number of edges. In `igraph` they are obtained with
+nodes, and its **size**, the number of edges. In `igraph`, they are obtained with
 `vcount()` and `ecount()`.
 
 ```{r}
@@ -114,7 +114,7 @@ degree(flo_marriage)
 
 A useful summary is the **average degree**
 $\bar{d} = \tfrac{1}{n} \sum_{v} d(v) = \tfrac{2m}{n}$, where $n$ and $m$ denote
-the number of nodes and edges.
+the number of nodes and edges, respectively.
 
 ```{r}
 #| label: mean-degree
@@ -166,8 +166,8 @@ c(
 )
 ```
 
-Empirical networks almost always fall towards the lower end of this range, and
-as the number of nodes grows most real-world networks become increasingly
+Empirical networks almost always fall toward the lower end of this range, and
+as the number of nodes grows, most real-world networks become increasingly
 sparse.
 
 ## Shortest Paths and Distances
@@ -241,7 +241,7 @@ components(flo_marriage)
 ```
 
 The Florentine marriage network has two components: one containing the 15
-families that are joined by marriage ties, and the singleton component
+families that are joined by marriage ties and the singleton component
 consisting of the Pucci. Because no path connects Pucci to any other family, the
 corresponding entries in the distance matrix are not numbers but `Inf`.
 
@@ -300,15 +300,15 @@ ggraph(g, "stress") +
 ## Transitivity
 
 **Transitivity** in networks captures the idea that if node *A* is connected to
-*B*, and *B* is connected to *C*, then *A* is also likely to be connected to
-*C*, often summarized as "a friend of a friend is also a friend." This concept
+*B* and *B* is connected to *C*, then *A* is also likely to be connected to
+*C*, often summarized as "a friend of a friend is also a friend". This concept
 is closely related to the **clustering coefficient**, which measures the
 tendency of a node's neighbors to be connected to each other. A high clustering
 coefficient indicates that many such triadic closures occur, meaning that
 neighbors of a node are also connected to each other. Thus, transitivity
 provides an intuitive interpretation of clustering: it reflects the tendency of
 networks to form cohesive, locally dense structures where indirect relationships
-become direct ties. Later, we will return to this idea below using the **triad
+become direct ties. We will return to this idea below using the **triad
 census**, which provides a more detailed account of how different three-node
 configurations capture patterns such as transitivity.
 
@@ -323,7 +323,7 @@ transitivity(flo_marriage, type = "global")
 head(transitivity(flo_marriage, type = "local", isolates = "zero"))
 ```
 
-In social networks we generally expect transitivity to be sizeable: if two
+In social networks, we generally expect transitivity to be sizeable: if two
 families are both allied with the Medici, there is a reasonable chance that they
 are allied with each other as well ("the friend of my friend is also my
 friend"). The Florentine marriage network has a global transitivity of about
@@ -358,8 +358,8 @@ For example, in the Florentine marriage network, one might examine whether
 families tend to form ties with others sharing the same attribute. Here, we use
 the attribute wealth which we dichotomize based on the median into two groups:
 
-- Low = below or equal to the median (lower wealth)
-- High = above the median (higher wealth)
+- Low = below or equal to the median (lower wealth).
+- High = above the median (higher wealth).
 
 ```{r}
 #| label: assortativity-cat
@@ -464,7 +464,7 @@ prevalence of reciprocity and one-sided relations in the network.
 dyad_census(rhesus)
 ```
 Note that for undirected networks, there are only two types of dyads: either a
-tie is present or it is absent.
+tie is present, or it is absent.
 
 More informative than the dyad census is the **triad census**, which counts the
 occurrence of each of the $16$ possible configurations of edges among three
@@ -509,7 +509,7 @@ network. We return to this in the inferential part of this book.
 
 One of the many applications of the triad census is to compare a set of
 networks. In this example, we are tackling the question of "how transitive is
-football?" and assess structural differences among a set of football leagues.
+football?" and assessing structural differences among a set of football leagues.
 
 ```{r}
 #| label: football-triad
@@ -517,7 +517,7 @@ data("football_triad")
 ```
 
 `football_triad` is a list which contains networks of 112 football leagues as
-igraph objects. A directed link between team A and B indicates that A won a
+igraph objects. A directed link between teams A and B indicates that A won a
 match against B. Note that there can also be an edge from B to A, since most
 leagues play a double round robin. For the sake of simplicity, all draws were
 deleted so that there could also be null ties between two teams if both games
@@ -525,7 +525,7 @@ ended in a draw.
 
 Below, we calculate the triad census for all networks at once using `lapply()`.
 The function returns the triad census for each network as a list, which we turn
-into a matrix in the second step. Afterwards, we manually add the row and column
+into a matrix in the second step. Afterward, we manually add the row and column
 names of the matrix.
 
 ```{r}

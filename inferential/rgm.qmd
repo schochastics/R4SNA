@@ -15,7 +15,7 @@ random graph model, in which each pair of nodes is connected independently with
 a fixed probability. While analytically tractable and conceptually simple,
 $G(n,p)$ falls short in capturing the structural complexity of real-world
 networks; it fails to account for common features such as clustering, skewed
-degree distributions, or short average path lengths.
+degree distributions, or community structure.
 
 To address these shortcomings, we explore several alternative models that
 incorporate more realistic structural constraints. The small-world model
@@ -29,7 +29,7 @@ While these basic random graph models can serve as a simple yet informative
 baseline for understanding connectivity patterns, they only allow us to control
 a single feature (e.g., edge probability and degree sequence) at a time,
 limiting its usefulness for modeling richer network patterns. This leads the way
-to out next chapter where we introduce exponential random graph models (ERGMs),
+to our next chapter, where we introduce exponential random graph models (ERGMs),
 which is a powerful and flexible framework that allows for the specification of
 multiple dependencies between ties simultaneously; such as reciprocity, triadic
 closure, and attribute-based mixing.
@@ -65,10 +65,10 @@ probability distribution over the entire space of possible graphs with $n$
 nodes. Each graph in this space is assigned a probability based on how many
 edges it contains and the value of $p$. The expected number of edges in a graph
 generated from $G(n, p)$ is $\binom{n}{2} \cdot p$, and the degree of each node
-follows a binomial distribution with parameters $(n - 1, p)$. For sufficiently
-large $n$, this degree distribution approaches a normal distribution due to the
-central limit theorem. The expected degree of a node is approximately
-$(n - 1) \cdot p$, and the overall density of the graph is close to $p$.
+follows a binomial distribution with parameters $(n - 1, p)$. For large $n$ and
+fixed $p$ the binomial degree distribution is approximately normal; for sparse
+graphs, in which the expected degree $(n - 1)p$ stays fixed as $n$ grows, it is
+approximately Poisson.
 
 If we observe an empirical (undirected) network and wish to fit a $G(n, p)$
 model to it, the most natural estimate for $p$ is the observed edge density.
@@ -107,8 +107,8 @@ account for structural heterogeneity.
 
 The example below uses the `igraph` package in R and a real network dataset of
 moderate-to-large size to illustrate these differences. We load a real-world
-network; a network of co-appearances of characters in Victor Hugo's novel *"Les
-Miserables"* which can be loaded from the `networkdata` package. The network is
+network; a network of co-appearances of characters in Victor Hugo's novel *Les
+Misérables* which can be loaded from the `networkdata` package. The network is
 visualized in @fig-gnp-plot.
 
 ::: {#fig-gnp-plot .center}
@@ -149,20 +149,20 @@ few highly connected hubs and many low-degree nodes, a feature not captured by
 simple random graph models like $G(n, p)$.
 :::
 
-We compute this its key structural properties, then generate a random graph with
+We compute its key structural properties, then generate a random graph with
 the same number of nodes and expected density using `sample_gnp()`. We then
 compare the two in terms of degree distribution, transitivity (clustering), and
 average geodesic distance.
 
-The code below yields @tbl-gnp which summarizes key structural properties of the
+The code below yields @tbl-gnp, which summarizes key structural properties of the
 observed *Les Misérables* network and the corresponding $G(n, p)$ random graph.
 These include the global clustering coefficient (measuring the tendency of nodes
 to form closed triads), the average geodesic distance (a measure of path
 efficiency), and the maximum degree (the highest number of connections any
 single node has).
 
-The observed network shows substantially higher clustering, a slightly shorter
-average path length, and a much larger maximum degree. These results highlight
+The observed network shows substantially higher clustering and a much larger
+maximum degree. These results highlight
 that the empirical network is both more locally cohesive and more hierarchically
 structured than its random counterpart. The presence of hubs and local clusters
 (common in real-world networks) is not reproduced by the $G(n, p)$ model which
@@ -218,9 +218,8 @@ right-skewed degree distribution, with several highly connected nodes, while the
 random graph shows a tight distribution around the mean. The clustering
 coefficient in the observed network is substantially higher, indicating a
 tendency for character triads to form, an effect not captured by
-dyad-independent models. Although both networks have relatively short path
-lengths, this is largely coincidental and does not reflect the underlying
-efficiency created by hubs or clustered substructures.
+dyad-independent models. The random graph's average path length (2.66) is
+similar to that of the observed one (2.641).
 
 To further illustrate the limitations of the $G(n, p)$ model, we also examine
 the degree distributions of the observed network and the simulated random graph.
@@ -228,8 +227,9 @@ Real-world networks often exhibit right-skewed degree distributions, with many
 nodes having few connections and a small number of hubs with very high degree.
 In contrast, the $G(n, p)$ model produces a binomial (and approximately normal)
 degree distribution, where most nodes have degrees clustered around the mean. By
-comparing these two distributions side by side, we can observe how poorly the
-random model captures the heterogeneity present in the empirical network.
+comparing these two distributions side by side (@fig-gnp-deg), we can observe
+how poorly the random model captures the heterogeneity present in the empirical
+network.
 
 ::: {#fig-gnp-deg .center}
 ```{r}
@@ -299,7 +299,7 @@ However, there are key differences in interpretation and usage:
   significantly from what would be expected by chance.
 
 In practice, simulating random graphs under the $G(n, p)$ model is functionally
-identical to conducting a CUG test with fixed density. The distinction lies in
+identical to conducting a CUG test given density. The distinction lies in
 whether the model is used for generative modeling or for evaluating the
 statistical significance of observed network features.
 :::
@@ -338,9 +338,11 @@ of the observed network when it exactly preserves the degree sequence but
 randomizes the specific tie configuration.
 
 We use the `igraph` package to compute network properties and simulate the
-configuration model using `sample_degseq()`. The configuration model guarantees
-that each node retains its observed degree. We create a comparison table and
-visualize the degree distribution as before in @tbl-confmod and @fig-confmod.
+configuration model using `sample_degseq()`. The `fast.heur.simple` method of
+`sample_degseq()` does not sample uniformly from the set of graphs with the
+given degree sequence, so the resulting $p$-value is approximate. The
+configuration model guarantees that each node retains its observed degree. We
+create a comparison table and visualize the degree distribution as before in @tbl-confmod and @fig-confmod.
 
 ```{r}
 # Get observed degree sequence
@@ -413,8 +415,7 @@ the original exactly. However, when we examine higher-order properties, such as
 the global clustering coefficient and average path length, we find notable
 differences. The observed network has significantly more clustering, suggesting
 the presence of structured triadic closure that is not reproduced by the
-configuration model's randomized pairing process. The average path length may
-also differ, although it often remains in the same general range.
+configuration model's randomized pairing process.
 
 These results highlight an important distinction: while the configuration model
 controls for degree-based features, it does not account for clustering,
@@ -446,8 +447,8 @@ contrast to the $G(n, p)$ model, which smooths the degree distribution into a
 binomial (or normal) form. However, because tie formation is otherwise random,
 the configuration model still fails to replicate higher-order structures such as
 clustering. The comparison table shows that while the configuration model
-matches degree statistics perfectly, its clustering coefficient and average path
-length still differ from those of the observed network.
+matches degree statistics perfectly, its clustering coefficient still differs
+from that of the observed network.
 
 This highlights both the strength and the limits of the configuration model. It
 improves on $G(n, p)$ by controlling for degree heterogeneity but remains
@@ -461,7 +462,7 @@ Many real-world networks exhibit the so-called small-world phenomenon: they have
 relatively short average path lengths, yet remain highly clustered. This means
 that although nodes tend to form local groups or neighborhoods, information or
 influence can still spread efficiently through the network. The **small-world
-model** [@watts1998collective], was designed to capture this combination of
+model** [@watts1998collective] was designed to capture this combination of
 local clustering and global reachability.
 
 The model begins with a ring lattice, where each node is connected to a fixed
@@ -469,8 +470,9 @@ number of its nearest neighbors on either side. This initial structure is highly
 regular and highly clustered, but has long average path lengths. To introduce
 randomness and reduce path length, the model rewires each edge with a fixed
 probability $p$. When $p = 0$, the network remains completely regular. When
-$p = 1$, all ties are rewired randomly, resulting in a Bernoulli random graph.
-For intermediate values of $p$ (e.g., $0 < p < 0.5$), the resulting networks
+$p = 1$, all ties are rewired randomly, resulting in a graph that closely
+resembles a Bernoulli ($G(n, p)$) random graph. For small to intermediate values
+of $p$ (e.g., $0.01 \leq p \leq 0.2$), the resulting networks
 retain much of their local clustering while dramatically lowering the average
 path length; a hallmark of small-world structure.
 
@@ -479,8 +481,8 @@ clustering (like regular lattices) and short path lengths (like random graphs),
 capturing the structural characteristics observed in many social, biological,
 and technological networks.
 
-However, the model also comes with some limitations. In its basic form, all
-nodes have the same degree, which may be unrealistic for empirical networks that
+However, the model also comes with some limitations. In its basic form (or when $p = 0$),
+all nodes have the same degree, which may be unrealistic for empirical networks that
 exhibit degree heterogeneity. Additionally, for $p$ close to 1, the model
 becomes essentially equivalent to a Bernoulli random graph, losing the
 small-world structure.
@@ -574,9 +576,8 @@ the average degree.
 
 The simulation summarized in @tbl-sw demonstrates how the small-world model
 approximates certain properties of the observed network. As shown in the table,
-the simulated network achieves a relatively short average path length, similar
-to that of the *Les Misérables* network, due to the introduction of random
-long-range ties. The clustering coefficient remains substantial, reflecting the
+the simulated network achieves a slightly higher average path length. The
+clustering coefficient remains substantial, reflecting the
 model's ability to preserve local neighborhood structure.
 
 However, the degree distribution in the small-world model shown in @fig-sw

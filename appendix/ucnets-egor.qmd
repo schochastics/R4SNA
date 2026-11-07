@@ -6,13 +6,13 @@ Because the UCNets data are restricted-access, readers must register and obtain 
 
 The full code used to construct the dataset is provided in this appendix. This code processes the raw survey files and combines them into an `egor` object, the data structure used by the `egor` package for ego-centered network analysis. An `egor` object contains three linked levels of data:
 
-- ego-level attributes (characteristics of the respondents)  
-- alter-level attributes (characteristics of the individuals named in each respondent’s personal network)  
-- alter–alter ties (relationships among those alters within each ego network)
+- ego-level attributes (characteristics of the respondents).  
+- alter-level attributes (characteristics of the individuals named in each respondent’s personal network).  
+- alter–alter ties (relationships among those alters within each ego network).
 
 To construct the ego-centered network dataset used in @sec-ego, we combine information from two wave-1 files: one containing respondent-level information and one containing alter- and alter–alter-level information. These are then organized into the three components required by the `egor` package: an **ego table**, an **alter table**, and an **alter–alter tie table**.
 
-## Ego-level variables
+## Ego-Level Variables
 
 The ego table contains one row per respondent and includes the following variables:
 
@@ -36,18 +36,18 @@ The ego table contains one row per respondent and includes the following variabl
 -   **`religion`** – categorical religious affiliation from `K15`.
 -   **`income`** – ordered factor representing personal income brackets, from `K22A`.
 
-## Alter-level variables
+## Alter-Level Variables
 
 The alter table contains one row per alter named by a respondent and includes the following variables:
 
 -   **`.egoID`** – identifier linking each alter to the respondent who named them (`PRIM_KEY`).
 -   **`.altID`** – alter identifier within each ego network (`NAME_NMBR2`).
 -   **`gender`** – alter gender recoded to match the ego coding (`0 = male`, `1 = female`), from `N_GENDER`.
--   **`family`** – binary indicator of whether the alter is a family member (`1 = family`, `0 = non-family`). This is constructed from the relationship indicators for spouse/partner, parent, child, sibling, or other relative (`C1A_1–C1A_6`).
+-   **`family`** – binary indicator of whether the alter is a family member (`1 = family`, `0 = non-family`). This is constructed from the relationship indicators for spouse/partner, parent, child, sibling, or other relative (`C1A_1`, `C1A_3`–`C1A_6`).
 -   **`same_race`** – indicator of racial homophily between ego and alter (`1 = same race`, `0 = different race`), derived from `C2G_NSAMERACE`.
 -   **`same_age`** – indicator of age homophily between ego and alter (1 = alter is approximately the same age as ego, within ±6 years, 0 = otherwise), derived from `C1C_NSAMEAGE`. Special codes and missing values are treated as missing.
 
-## Alter–alter ties
+## Alter–Alter Ties
 
 The alter–alter tie table represents relationships among alters within each ego network. The original data store these relationships in a wide format through the ten pairwise variables `N1_N2`, `N1_N3`, `N1_N4`, `N1_N5`, `N2_N3`, `N2_N4`, `N2_N5`, `N3_N4`, `N3_N5`, and `N4_N5`. Each variable records how well one pair of alters knows each other.
 
@@ -55,17 +55,17 @@ These variables are reshaped into long format so that each row represents one po
 
 Finally, alter–alter ties are filtered so that both endpoints correspond to valid alters in the alter table. This ensures that the three components remain internally consistent.
 
-## Constructing the `egor` object
+## Constructing the `egor` Object
 
 After these recodings, the data are organized into the three linked tables required by `egor`:
 
--   `egos`: one row per respondent, with ego-level attributes
--   `alters`: one row per alter, with alter-level attributes
--   `aaties`: one row per alter–alter tie within each ego network
+-   `egos`: one row per respondent, with ego-level attributes.
+-   `alters`: one row per alter, with alter-level attributes.
+-   `aaties`: one row per alter–alter tie within each ego network.
 
 These are then combined into a single `egor` object using `.egoID` as the ego identifier, `.altID` as the alter identifier, and `.srcID` and `.tgtID` as the identifiers for alter–alter ties. This structure allows us to analyze ego network composition, homophily, and local network structure within a unified framework.
 
-## R code
+## R Code
 
 ```{r}
 #| label: egor-levels-w1

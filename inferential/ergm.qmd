@@ -42,6 +42,7 @@ processes that shape real-world networks.
 ```{r}
 #| label: libraries
 #| message: false
+#| output: false
 library(statnet)
 library(intergraph)
 library(igraph)
@@ -87,10 +88,13 @@ more reciprocated ties than expected by chance.
 In general, we interpret the parameters as follows:
 
 - A positive $\theta_k$ means that the corresponding configuration (e.g.,
-  triangles) is overrepresented in the observed network relative to what is
-  expected by chance.
-- A negative $\theta_k$ indicates that the configuration is underrepresented
-  relative to what is expected by chance.
+  triangles) is more prevalent than expected given the other terms in the
+  model: holding the other statistics fixed, adding a configuration of type $k$
+  increases the log-odds of the network.
+- A negative $\theta_k$ indicates that the configuration is less prevalent than
+  expected given the other terms in the model: holding the other statistics
+  fixed, adding a configuration of type $k$ decreases the log-odds of the
+  network.
 - A value of $\theta_k = 0$ implies that the configuration occurs at chance
   levels.
 
@@ -117,9 +121,6 @@ configurations) that are included in the model.
 An ERGM is specified using a formula that defines the network structure and any
 covariates to be included. The `ergm()` function takes a `network` object on the
 left-hand side and a set of model terms on the right-hand side.
-
-Here is an example model including edge density, a node-level covariate,
-homophily on an attribute, and a structural dependency term (`gwesp`).
 
 ```{r}
 #| eval: false
@@ -240,8 +241,8 @@ In ERGMs, a parameter estimate is considered statistically significant (by
 convention) if the absolute value of the estimate is greater than approximately
 twice its standard error (i.e., $|\hat{\theta}| > 2 \cdot \text{SE}$). This rule
 of thumb suggests that the corresponding network feature (such as homophily or
-reciprocity) is unlikely to have arisen by chance, and is therefore meaningfully
-associated with the observed pattern of tie formation.
+reciprocity) is unlikely to have arisen by chance, and is therefore
+statistically distinguishable from zero.
 
 ##### Example: Coleman Friendship {.unnumbered}
 
@@ -346,14 +347,14 @@ dataset is a subset of 50 pupils over a three-year panel study of adolescent
 friendship networks and health behaviors conducted in a school in the West of
 Scotland [@west1996s50]. This excerpt was created for illustrative purposes and
 includes dynamic friendship data over three waves, capturing changes in social
-ties alongside attributes like gender, sport participation, and substance use.
-We will focus on the homophily based on smoking behavior.
+ties alongside attributes like sport participation and substance use. We will
+focus on homophily based on smoking behavior.
 
-We only consider cross-sectional network data here so we only focus on the third
-wave network (we will in later chapters look at modeling longitudinal network
-data). Let's prepare the data for the `ergm` specification. Note that we here
-instead convert the graph object into a network one using the package
-`integraph` in order to preserve the node attribute of interest
+We only consider cross-sectional network data here, so we only focus on the
+third-wave network (we will in later chapters, look at modeling longitudinal
+network data). Let's prepare the data for the `ergm` specification. Note that we
+here instead convert the graph object into a network one using the package
+`intergraph` in order to preserve the node attribute of interest.
 
 ```{r}
 #| message: false
@@ -393,7 +394,9 @@ dyads, and the homophily term preserves dyadic independence, as it depends only
 on the attributes of the two individuals involved in each potential tie.
 
 We interpret the output as follows. The `edges` term gives the baseline log-odds
-of a tie between two students, regardless of smoking behavior. The
+of a tie between two students who do not share the same smoking status
+($-3.0196$); for students with the same smoking status, the `nodematch`
+coefficient is added ($-3.0196 + 0.5736 = -2.4460$). Thus, the
 `nodematch("smoke")` term estimates the additional log-odds of a tie when two
 students share the same smoking status.
 
@@ -452,7 +455,7 @@ a negative value suggests an avoidance of mutual ties.
 ##### Example: Coleman Friendship {.unnumbered}
 
 We use the `coleman` data from earlier to specify an ERGM including reciprocity
-as statistic. The fitted ERGM includes two terms: a baseline `edges` term and a
+as a statistic. The fitted ERGM includes two terms: a baseline `edges` term and a
 `mutual` term that captures reciprocity (i.e., the tendency for ties to be
 reciprocated).
 
@@ -477,8 +480,11 @@ $i$ is much greater than would be expected by chance, controlling for overall
 network sparsity.
 
 This combination of results suggests that while directed ties are rare in
-general, when ties do form, they are very likely to be mutual; a common feature
-in social networks. Overall, this ERGM confirms that dyadic dependence in the
+general, reciprocation is far more likely than an unreciprocated tie: from the
+estimates (`edges` $= -3.7228$, `mutual` $= 3.7540$), the conditional probability
+of a tie $i \to j$ is about 0.51 when $j \to i$ is present
+($-3.7228 + 3.7540 = 0.0312$ on the log-odds scale) and about 0.02 when it is not
+($-3.7228$ on the log-odds scale). Overall, this ERGM confirms that dyadic dependence in the
 form of reciprocity is a defining feature of the Coleman data network.
 
 #### Markov Dependence: Triangles and Stars
@@ -514,7 +520,7 @@ the triangle term reflects triadic closure.
 
 A **triangle** occurs when three nodes are all pairwise connected. In undirected
 networks, this represents a basic unit of **triadic closure**; the idea that "a
-friend of a friend is likely to become a friend." In ERGM terms, a triangle
+friend of a friend is likely to become a friend". In ERGM terms, a triangle
 statistic is defined as:
 
 $$
@@ -566,7 +572,7 @@ dependence structures such as edges, stars, and triangles.
 The goal of this example is to assess how these network structures contribute to
 the overall topology of the network using an ERGM based on Markov dependence.
 
-First we visualize the using by loading the data from the `networkdata` package
+First, we visualize using by loading the data from the `networkdata` package
 to obtain it as `igraph` object and to be able to use `ggraph`.
 
 ```{r}
@@ -631,21 +637,22 @@ summary(model_markov)
 
 The model output provides coefficients for each configuration:
 
-- `edges`: Significantly negative indicating that ties are relatively sparse
+- `edges`: Significantly negative, indicating that ties are relatively sparse
   overall.
-- `kstar(2)`: Not statistically significant suggesting no strong tendency toward
+- `kstar(2)`: Not statistically significant, suggesting no strong tendency toward
   moderate centralization (i.e., nodes connected to two others).
-- `kstar(3)`: Also not statistically significant meaning the network does not
+- `kstar(3)`: Also not statistically significant, meaning the network does not
   exhibit a clear preference for or against nodes forming many connections
   (larger stars).
-- `triangle`: Significantly positive indicating a strong tendency for triadic
-  closure; that is, if two families are both connected to a third, they are more
+- `triangle`: Positive and significant at the 5% level, indicating a tendency for
+  triadic closure; that is, if two families are both connected to a third, they are more
   likely to also be connected to each other.
 
 This suggests the Florentine business network is locally clustered (triadic),
 but does not support highly centralized hub-like nodes. The network's structure
 reflects a preference for mutual interdependence rather than hierarchical
-dominance.
+dominance. However, with so few ties, these patterns should be interpreted
+cautiously.
 
 The good news is that by including triangle and star terms in an ERGM, we can
 move beyond modeling just dyadic interactions and begin to account for local
@@ -689,15 +696,15 @@ degeneracy.
 In response to the degeneracy issues inherent in classic Markov ERGMs,
 researchers have proposed alternative specifications that build more stable
 dependence structures into the model. One promising approach is based on
-**social circuit dependence** [@pattison2002neighborhood, @snijders2006new].
+**social circuit dependence** [@pattison2002neighborhood; @snijders2006new].
 
 Social circuit dependence modifies the way tie dependencies are specified in the
 model. Instead of assuming that two ties are conditionally dependent simply
 because they share a node (as in Markov dependence), social circuit dependence
-restricts dependence to occur only when two ties would complete a **4-cycle** in
-the network. Under social circuit dependence, network ties are assumed to
+adds dependence between ties that would complete a **4-cycle**, in addition to
+the dependence between ties that share a node. Under social circuit dependence, network ties are assumed to
 self-organize through 4-cycles, i.e., closed paths involving four distinct
-nodes. Two potential ties are considered conditionally dependent only if they
+nodes. Two potential ties are considered conditionally dependent also if they
 would complete a 4-cycle in the network. In other words, the existence of a tie
 between $(i, j)$ is only dependent on a tie between $(\ell, m)$ if adding both
 would close such a circuit.
@@ -709,16 +716,15 @@ Examples of configurations based on this dependence assumption are shown in
 ![](img/sc.png){width="50%"}
 
 Common configurations in social circuit--based ERGM specifications. The top row
-illustrates $k$-paths, which capture extended local connectivity through shared
-paths of increasing length. The bottom row depicts $k$-triangles, representing
+illustrates $k$-paths, which capture extended local connectivity through an
+increasing number of shared two-paths. The bottom row depicts $k$-triangles, representing
 increasing levels of triadic closure.
 :::
 
-This more constrained form of local dependence avoids the pitfalls of degeneracy
-by reducing the likelihood that the model overemphasizes clustering or
-centralization. It reflects more realistic assumptions about how social ties
-form: not purely through dyadic exchange or triadic closure, but through broader
-patterns of interconnection.
+Social circuit dependence is a richer, not a more constrained, form of
+dependence. Degeneracy is mitigated not by restricting dependence but by using
+geometrically weighted (curved) statistics, such as GWESP, that down-weight
+additional shared partners.
 
 The **Geometrically Weighted Edgewise Shared Partner (GWESP)** statistic is a
 commonly used term in ERGMs to capture triadic closure, the tendency for
@@ -788,23 +794,25 @@ To formalize this, we let:
   $$
   p_{ij} = \sum_{\ell \neq i,j} y_{i\ell} \cdot y_{j\ell},
   $$
-- $\alpha$ be a decay parameter (usually a small positive number, e.g., 0.25).
+- $\alpha$ be a decay parameter (commonly 0.25 or, as used below,
+  $\log(2) \approx 0.693$).
 
-Then the GWESP statistic is defined as:
+Then the GWESP statistic is defined as follows:
 
 $$
-\text{GWESP}(G; \alpha) = \sum_{i < j} y_{ij} \cdot \left(1 - (1 - e^{-\alpha})^{p_{ij}} \right)
+\operatorname{GWESP}(G; \alpha) = e^{\alpha} \sum_{i < j} y_{ij} \left[1 - \left(1 - e^{-\alpha}\right)^{p_{ij}} \right]
 $$
 
-- This formula sums over all existing ties in the graph.
-- For each tie $(i, j)$, it calculates a weighted function of the number of
-  their shared partners.
-- The decay parameter $\alpha$ controls how quickly the contribution of
-  additional shared partners diminishes.
+This formula sums over all existing ties in the graph. For each tie $(i, j)$, it
+calculates a weighted function of the number of their shared partners. The decay
+parameter $\alpha$ controls how quickly the contribution of additional shared
+partners diminishes.
 
 When $\alpha$ is close to zero, the statistic approaches a simple count of edges
-with at least one shared partner. When $\alpha$ is larger, the contribution of
-each additional shared partner is increasingly discounted.
+with at least one shared partner. When $\alpha$ is larger, additional shared
+partners are discounted less, and the statistic moves towards a count of
+triangles (up to a constant factor); when $\alpha$ is smaller, the discounting
+is stronger.
 
 GWESP provides a smooth and more stable way to model triadic closure in
 networks. It is often used in place of triangle counts to reduce the risk of
@@ -833,14 +841,14 @@ issues or overfitting. In practice, using `gwesp(0.693, fixed = TRUE)` is often
 a safe and interpretable starting point.
 :::
 
-Next we demonstrate how to fit an ERGM using GWESP and interpret the results.
+Next, we demonstrate how to fit an ERGM using GWESP and interpret the results.
 
 ##### Example: Lawyers Network - Cowork Among Partners {.unnumbered}
 
 To demonstrate how ERGMs capture social circuit dependence, we will use the same
 subset of this network as earlier: we want to check whether or not the partners
 of the firm more frequently work together with other partners having the same
-practice, whilst also including a statistic related to triadic clustering. We
+practice, while also including a statistic related to triadic clustering. We
 import the data as an `igraph` object from the `networkdata` package.
 
 ```{r}
@@ -880,7 +888,7 @@ not just formed dyadically or through attributes, but also through embedded
 collaboration patterns within the firm's structure.
 
 The code below creates the co-work network object for the 36 partners, adds the
-practice attribute as a binary variable and fits the ERGM with the above defined
+practice attribute as a binary variable, and fits the ERGM with the above defined
 statistics.
 
 ```{r}
@@ -928,12 +936,12 @@ the others. What do these estimates tell us?
   network is sparse.
 - `nodecov("practice")` ($\hat\theta = 0.18$, *p* < 0.05): Lawyers from a given
   practice area (e.g., corporate) are slightly more likely to form ties overall.
-- `nodematch("practice")` ($\hat\theta = 0.61$, *p* < 0.001): Strong evidence of
+- `nodematch("practice")` ($\hat\theta = 0.60$, *p* < 0.001): Strong evidence of
   homophily, lawyers are significantly more likely to collaborate within their
   own practice area.
 - `gwesp(0.693)` ($\hat\theta = 1.15$, *p* < 0.001): High and significant
   triadic closure effect, indicating a strong tendency for collaboration among
-  those with shared partners consistent with social circuit dependence.
+  those with shared partners, consistent with social circuit dependence.
 
 Taken together, the results indicate that processes of attribute-related
 activity, assortative mixing by attribute (homophily), and structural closure
@@ -965,7 +973,7 @@ $$
 \exp\left(\boldsymbol{\theta}^{\top}\mathbf{s}(G')\right)
 $$
 
-is a normalizing constant computed over all possible networks with the same set of nodes. Because the number of possible networks grows exponentially with the number of nodes, evaluating this sum exactly is computationally infeasible except for very small networks.
+is a normalizing constant computed over all possible networks with the same set of nodes. Because the number of possible networks grows exponentially with the number of dyads, and hence faster than exponentially in the number of nodes, evaluating this sum exactly is computationally infeasible except for very small networks.
 
 
 For **dyad-independent** ERGMs (e.g., models containing only nodal covariates such as homophily), estimation is relatively straightforward and does not require full MCMC-based maximum likelihood estimation. In fact, a dyad-independent ERGM is mathematically equivalent to a logistic regression model fit to all possible dyads in the network. Accordingly, the `ergm` package estimates these models using **maximum pseudo-likelihood estimation (MPLE)**, which is essentially logistic regression under the hood.
@@ -1049,7 +1057,7 @@ part is a plot (see @fig-mcmc).
 #| cache: true
 #| fig-height: 12
 #| fig-width: 7
-#| fig-cap: "MCMC trace (left) and density (right) plots for the fitted ERGM. The differences between simulated and observed network statistics fluctuate around zero, indicating good convergence and mixing of the Markov chain."
+#| fig-cap: "MCMC trace (left) and density (right) plots for the fitted ERGM. The trace plots show no obvious trend, but the differences are not centered on zero and the chains mix slowly (see the numerical diagnostics below)."
 mcmc.diagnostics(model_sc, which = "plots")
 ```
 
@@ -1065,10 +1073,7 @@ In the Lazega model, all four trace plots (for `edges`, `nodecov.practice`,
 `nodematch.practice`, and `gwesp.fixed.0.693`) exhibit the expected noisy,
 stable behavior. There are no signs of poor mixing or convergence issues.
 
-The **density plots** (right panels of @fig-mcmc) complement the trace plots by summarizing the distribution of the differences between the simulated and observed network statistics for each model term. Approximately symmetric, unimodal density curves centered near zero indicate that the simulated network statistics closely match those of the observed network and that the Markov chain has reached its stationary distribution. In @fig-mcmc, all four model terms exhibit smooth, bell-shaped densities with means close to zero, providing further evidence of good convergence, adequate mixing, and reliable MCMC-based parameter estimation.
-
-Together, these visual diagnostics indicate that the model has converged
-appropriately and that the MCMC estimation procedure has produced a stable and interpretable result.
+The **density plots** (right panels of @fig-mcmc) complement the trace plots by summarizing the distribution of the differences between the simulated and observed network statistics for each model term. Approximately symmetric, unimodal density curves centered near zero indicate that the simulated network statistics closely match those of the observed network and that the Markov chain has reached its stationary distribution. In @fig-mcmc, all four model terms exhibit smooth, bell-shaped densities but with means offset from zero (7.09, 5.30, 4.23, and 13.52 respectively) rather than centered on it. The offsets are statistically distinguishable from zero (see the test below), so the sampled networks differ systematically from the observed network on these statistics. The diagnostics are computed from the last simulation round, before the final estimates were obtained, and may therefore understate the performance of the final model; the goodness-of-fit assessment that follows is the more direct check. Nevertheless, the offsets should be treated as a limitation, and in applied work one would increase the MCMC sample size and interval and refit the model.
 
 In addition to the trace and density plots, the `mcmc.diagnostics()` function
 provides a set of detailed numerical diagnostics that assess both the stability
@@ -1084,22 +1089,24 @@ output in the following.
 mcmc.diagnostics(model_sc, which = "texts")
 ```
 
-One key output compares the mean of the simulated statistics to the
-corresponding observed values. For most terms, including `nodecov.practice`,
-`nodematch.practice`, and the `gwesp` statistic, there is no significant
-difference between simulated and observed statistics, indicating a good model
-fit. The only exception is the `edges` term, which shows a small but
-statistically significant deviation ($p$ = 0.0389). This suggests a slight
-misfit on overall tie density, though the magnitude of the difference is modest
-and not cause for concern.
+The joint $p$-value (0.00691819) is significant, in contrast to the
+non-significant individual parameter $p$-values (`edges`: 0.89,
+`nodecov.practice`: 0.32, `nodematch.practice`: 0.96, `gwesp.fixed.0.693`:
+0.99). Trace plots for all four parameters show stable, well-mixed chains
+centered around zero with no visible trend, consistent with the non-significant
+individual diagnostics. The significant joint test indicates that the combined
+statistics show evidence of drift between the early and late parts of the chain,
+which the individual tests do not detect because the statistics are strongly
+correlated. It should be treated as a warning about the chain, not as a
+negligible discrepancy.
 
-The **cross-correlations** summarize the relationships among the differences between the simulated and observed network statistics for the model terms across the MCMC samples. Moderate correlations are expected because several statistics capture related structural features of the network. For example, ties that contribute to homophily (`nodematch.practice`) also contribute to the overall edge count, resulting in a positive correlation between these terms. Similarly, structural effects such as triangles and shared partners are inherently related. The observed correlations are moderate and well below levels that would suggest excessive collinearity or poor mixing. Consequently, they do not indicate problems with model identifiability, instability, or degeneracy.
+The **cross-correlations** summarize the relationships among the differences between the simulated and observed network statistics for the model terms across the MCMC samples. Positive correlations are expected because several statistics capture related structural features of the network. For example, ties that contribute to homophily (`nodematch.practice`) also contribute to the overall edge count, resulting in a positive correlation between these terms. Similarly, structural effects such as triangles and shared partners are inherently related. The cross-correlation matrix shows several parameter pairs with high correlation, most notably `edges` and `gwesp.fixed.0.693` (0.9928), and `edges` and `nodematch.practice` (0.9320), indicating substantial collinearity between these terms. As mentioned, this high correlation is expected because `edges` and `gwesp` are structurally linked (you need edges before you can have shared-partner triangles), so it makes individual coefficient interpretation less reliable without invalidating the model's overall fit.
 
-Looking at the **autocorrelation diagnostics**, we see that the autocorrelation for each model term decreases steadily as the lag increases. Autocorrelation measures how similar a sampled network statistic is to its value several iterations earlier in the Markov chain. A **lag** refers to the number of MCMC iterations separating two samples; for example, a lag of 10 compares a sampled statistic with the value obtained 10 iterations later. High autocorrelation means that successive samples are very similar and therefore provide little new information. In contrast, autocorrelation that declines rapidly toward zero as the lag increases indicates that the chain is moving efficiently through the space of possible networks and that samples become increasingly independent of one another. The observed pattern therefore suggests that the MCMC sampler is mixing well, producing an efficient sample of networks from the target ERGM distribution.
+Looking at the **autocorrelation diagnostics**, we see that the autocorrelation for each model term decreases steadily as the lag increases. Autocorrelation measures how similar a sampled network statistic is to its value several iterations earlier in the Markov chain. A **lag** refers to the number of MCMC iterations separating two samples; for example, a lag of 10 compares a sampled statistic with the value obtained 10 iterations later. High autocorrelation means that successive samples are very similar and therefore provide little new information. In contrast, autocorrelation that declines rapidly toward zero as the lag increases indicates that the chain is moving efficiently through the space of possible networks and that samples become increasingly independent of one another. Here the autocorrelation declines only slowly: it is still between about 0.25 and 0.36 at lag 5120. Consistently, the time-series standard errors are roughly three times the naive standard errors, so the effective sample size is much smaller than the nominal 1708 samples. The sampler is therefore mixing slowly rather than efficiently.
 
-Finally, the **Geweke convergence diagnostic** compares the mean of the sampled statistics from the early portion of the post-burn-in chain with the mean from a later portion of the chain. The null hypothesis is that these two portions of the chain have the same mean, implying that the Markov chain has converged to its stationary distribution. If this null hypothesis is not rejected, there is no evidence that the chain is still drifting over time. Consequently, large $p$-values indicate that the early and late portions of the chain are statistically indistinguishable and are consistent with convergence. In this example, all model terms yield comfortably non-significant $p$-values (ranging from 0.15 to 0.27), suggesting that the chain has converged and reached stationarity. The joint $p$-value of 0.64 provides additional evidence that the MCMC sampler has stabilized and is producing reliable samples from the target ERGM distribution.
+Finally, the **Geweke convergence diagnostic** compares the mean of the sampled statistics from the early portion of the post-burn-in chain with the mean from a later portion of the chain. The null hypothesis is that these two portions of the chain have the same mean, implying that the Markov chain has converged to its stationary distribution. If this null hypothesis is not rejected, there is no evidence that the chain is still drifting over time. Consequently, large $p$-values indicate that the early and late portions of the chain are statistically indistinguishable and are consistent with convergence. In this example, all model terms yield comfortably non-significant $p$-values (ranging from 0.32 to 0.99), suggesting no drift in any single statistic. However, the joint $p$-value of 0.0069 is significant, indicating possible non-stationarity of the combined statistics. Together with the slow decay of the autocorrelation, this suggests running the chain longer; the diagnostics here do not demonstrate convergence.
 
-In this example, the diagnostics indicate that the estimation has been successful. In practice, however, MCMC diagnostics do not always look this favorable. Poor convergence or poor mixing may instead reflect model instability, often referred to as **ERGM degeneracy**.
+In this example, the diagnostics are mixed. In more problematic cases, they can look considerably worse. Poor convergence or poor mixing may instead reflect model instability, often referred to as **ERGM degeneracy**.
 
 
 #### Model Instability and Degeneracy
@@ -1274,10 +1281,10 @@ gof_sc
 
 The printed GOF summary provides the same comparison numerically, including Monte Carlo $p$-values for each network statistic. For each statistic, the null hypothesis is that the observed value could reasonably have been generated by the fitted ERGM. In other words, there is no evidence that the observed network differs from the networks simulated under the model with respect to that structural feature. Consequently, large $p$-values indicate good agreement between the observed and simulated networks, whereas small $p$-values suggest that the model does not adequately reproduce that aspect of the network.
 
-The numerical output supports the visual interpretation. The degree distribution is well captured across nearly all values, with observed counts generally falling within the range of those generated by the simulations. Most Monte Carlo $p$-values are comfortably non-significant, indicating no evidence that the observed degree frequencies differ from those expected under the fitted model. Minimum geodesic distances also show good agreement between observed and simulated networks, although the fit is somewhat weaker for geodesic distance 3 ($p = 0.08$). Finally, the modeled terms (`edges`, `nodecov.practice`, `nodematch.practice`, and `gwesp`) are all closely reproduced by the simulated networks, confirming that the maximum likelihood estimation successfully matched the sufficient statistics specified in the model.
+The numerical output supports the visual interpretation. The degree distribution is well captured across nearly all values, with observed counts generally falling within the range of those generated by the simulations. Most Monte Carlo $p$-values are comfortably non-significant, indicating no evidence that the observed degree frequencies differ from those expected under the fitted model. Minimum geodesic distances also show good agreement between observed and simulated networks, although the fit is somewhat weaker for geodesic distance 3 ($p = 0.26$). Finally, the modeled terms (`edges`, `nodecov.practice`, `nodematch.practice`, and `gwesp`) are all closely reproduced by the simulated networks, confirming that the maximum likelihood estimation successfully matched the sufficient statistics specified in the model.
 
 
-Together, these diagnostics indicate that the model performs well for this network. It reproduces the modeled terms accurately and also captures broader structural features such as degree variation and path lengths. Since the model has also passed the MCMC convergence diagnostics, we have evidence that the ERGM is both computationally well estimated and substantively adequate for the structural features examined here.
+Together, these diagnostics indicate that the model performs well for this network. It reproduces the modeled terms accurately and also captures broader structural features such as degree variation and path lengths. Although the MCMC diagnostics show some warning signs (see above), so that the estimates should be regarded as provisional until the model is refit with a longer chain, the goodness-of-fit results indicate that the model reproduces the modeled statistics and several higher-order features reasonably well. Note that a large goodness-of-fit $p$-value is absence of evidence of misfit, not proof of fit.
 
 ## Variants and Extensions of ERGMs
 

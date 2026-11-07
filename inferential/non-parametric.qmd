@@ -21,6 +21,7 @@ models are either undeveloped or poorly understood.
 
 ```{r}
 #| message: false
+#| output: false
 library(statnet)
 library(igraph)
 library(ggraph)
@@ -66,14 +67,14 @@ Several types of CUGs can be defined:
   graph.
 - **$\mathcal{U} \mid L$**: All graphs with the same number of edges as the
   observed graph.
-- **$\mathcal{U} \mid d$**: All graphs with the same degree distribution
+- **$\mathcal{U} \mid d$**: All graphs with the same degree sequence
   $d = (d_1, d_2, \dots, d_n)$.
 - **$\mathcal{U} \mid MAN$**: All directed graphs with the same dyad census
   (i.e., counts of mutual, asymmetric, and null dyads).
 
 For example, in a CUG with fixed density (number of edges), each graph that
 meets the constraint is equally probable. Graphs that do not satisfy the
-constraint (e.g., different number of ties) are assigned a probability of zero.
+constraint (e.g., a different number of ties) are assigned a probability of zero.
 This results in a **null model** that is tightly defined and suitable for
 hypothesis testing.
 
@@ -86,9 +87,9 @@ The process follows classical null hypothesis testing logic:
 - **Alternative Hypothesis ($H_{1}$):** The observed network structure is not
   typical under this model and thus suggests a non-random social mechanism.
 
-To test $H_0$ we follow the below steps:
+To test $H_0$ we follow the steps below:
 
-1. Define a summary statistic (e.g., degree centralization, reciprocity or
+1. Define a summary statistic (e.g., degree centralization, reciprocity, or
    transitivity).
 2. Generate a large number of networks from the CUG distribution.
 3. Compute the statistic for each simulated network.
@@ -97,15 +98,16 @@ To test $H_0$ we follow the below steps:
 
 If the observed value lies in the extreme tails (e.g., below the 2.5th
 percentile or above the 97.5th), we reject $H_{0}$ at the corresponding 5%
-significance level, concluding that the observed structure likely reflects a
-genuine social mechanism rather than random chance. Since the tests are actually
+significance level, indicating that the observed structure is unlikely to have
+arisen under the null model (random allocation conditional on the fixed
+features). Since the tests are actually
 **non-parametric (Monte Carlo)** tests, we can estimate the $p$-value as the
 proportion of simulated test statistics that are as extreme or more extreme than
 the observed value. This provides a data-driven way to assess whether the
 observed statistic is likely under the null model, allowing for hypothesis
 testing without strong distributional assumptions.
 
-The process is visualized in @fig-cugex where the left panel shows the observed
+The process is visualized in @fig-cugex, where the left panel shows the observed
 network, while the right panel displays the null distribution of the statistic
 based on 500 randomly generated graphs that preserve the same number of nodes
 and edges. The dashed red line indicates the observed value. If this value lies
@@ -182,7 +184,7 @@ Conditional Uniform Graph (CUG) test of a network statistic of interest.
 ## Running Example
 
 We will use a running example, namely `Coleman` [@coleman1964data] which is
-available as graph object in the `networkdata` package and as an array in
+available as a graph object in the `networkdata` package and as an array in
 `statnet` (or more specifically `sna`). We will use these interchangeably
 depending on the function and package used for our analysis. The data consists
 of self-reported friendship ties among 73 boys in a small high school in
@@ -244,14 +246,14 @@ order to compute this density, we can use the `igraph` function
 ```{r}
 density_obs <- edge_density(coleman_g)
 ```
-Further we save number of nodes and edges of the observed network.
+Further, we save the number of nodes of the observed network.
 
 ```{r}
 n_nodes <- vcount(coleman_g)
 ```
 
-To simulate the null distribution we use the function `igraph` from the
-`sample_gnp` package. We simulate 1000 random networks with the parameters
+To simulate the null distribution, we use the function `sample_gnp` from the
+`igraph` package. We simulate 1000 random networks with the parameters
 specified above.
 
 ```{r}
@@ -361,8 +363,9 @@ distribution ranging over the observed count. However, $p$-values from Monte
 Carlo tests are never exactly 0, but rather "less than 1 / number of
 simulations", so a more correct statement would be that
 
-> $p$ < 0.001 (based on 1000 simulations) providing very strong evidence against
-> the null hypothesis.
+> $p \leq 0.001$ (with 1000 simulations and no exceedances, the smallest
+> attainable Monte Carlo $p$-value, using the $(r + 1)/(N + 1)$ correction, is
+> about 0.001).
 
 ::: {.callout-note}
 # Note
@@ -377,7 +380,7 @@ than `igraph` objects. This requires additional conversion before applying
 ## Uniform Graph Distribution Given Number of Edges
 
 In this section, we perform the same test but condition the random networks
-generated on the **exact** number of edges. So out null world is now stated as
+generated on the **exact** number of edges. So our null world is now stated as
 
 > $H_0$: The number of mutual ties in the observed network is consistent with
 > what would be expected under random edge assignment, given a fixed number of
@@ -462,7 +465,7 @@ edges with no structural bias toward reciprocity.
 # Note
 
 The `rgnm()` function from the `sna` (or `statnet`) package can also be used to
-simulate random networks with a specified expected density. However, note again
+simulate random networks with a specified number of edges. However, note again
 that its output consists of adjacency matrices (as a 3D array or list).
 :::
 
@@ -491,14 +494,16 @@ baseline dyadic tendencies.
 
 Our null hypothesis is now defined as:
 
-> $H_0$: The number of complete triangles (transitive triads) observed in the
+> $H_0$: The number of closed triads (transitive 030T and fully mutual 300)
+> observed in the
 > network does not differ from what would be expected under random tie
 > allocation, conditional on the observed dyadic processes (i.e., mutual,
 > asymmetric, and null dyad frequencies).
 
-Can we then say that there are more complete triangles than we expect by chance?
-Just how likely or unlikely is it to observe this many triangles? In order to
-answer this we again need to produce the world of hypothetical networks by
+Can we then say that there are more closed triads (transitive 030T and fully
+mutual 300) than we expect by chance?
+Just how likely or unlikely is it to observe this many triads? In order to
+answer this, we again need to produce the world of hypothetical networks by
 simulation.
 
 ::: {.callout-note}
@@ -510,8 +515,8 @@ then convert them to graph objects, and use `igraph::triad_census()` to compute
 the triad-level statistics.
 :::
 
-In directed networks, there are two triad types corresponding to closed triads,
-030T and 300.
+Among the closed triad types (030T, 030C, 120D, 120U, 120C, 210 and 300), we
+focus on two: the transitive triad 030T and the fully mutual triad 300.
 
 ```{r}
 set.seed(1108)
@@ -556,7 +561,13 @@ obs_df <- data.frame(
 )
 ```
 Now we have everything set to plot out the results as before to test out
-hypothesis. The results are shown in @fig-cug-man.
+hypothesis. The results are shown in @fig-cug-man. The observed counts
+(`r obs_030T` transitive triads of type 030T and `r obs_300` fully mutual triads
+of type 300) lie far to the right of the simulated distributions in
+@fig-cug-man. None or almost none of the 1000 simulated networks reaches the
+observed value, so the empirical $p$-value is at most about 0.001 for both triad
+types. Given the observed dyad census, there are therefore more closed triads
+than expected under random tie allocation.
 
 ::: {#fig-cug-man .center}
 ```{r}
@@ -586,8 +597,8 @@ ggplot(triad_df, aes(x = Count)) +
   labs(title = " ", x = "Triad Counts", y = "Frequency") +
   theme_minimal()
 ```
-Distributions of two types of closed triads, 030T (one mutual and two asymmetric
-ties) and 300 (three mutual ties), across 1000 randomly generated directed
+Distributions of two types of closed triads, 030T (three asymmetric ties,
+forming a transitive triple) and 300 (three mutual ties), across 1000 randomly generated directed
 networks with a fixed dyad census. The red dashed lines indicate the counts of
 each triad type observed in the actual network. These plots assess whether the
 observed levels of triadic closure (`r obs_030T` and `r obs_300`) deviate
@@ -597,18 +608,20 @@ mutual, asymmetric, and null dyads.
 
 ## Uniform Graph Distribution Given Fixed Degree
 
-Is the average geodesic distance in the observed network significantly shorter
-(or longer) than would be expected in random networks with the same in- and
-out-degree sequence? To answer this we turn to uniform graph distribution given
+Is the average geodesic distance in the observed network shorter (or
+longer) than would be expected in random networks with the same in- and
+out-degree sequence? To answer this, we turn to uniform graph distribution given
 fixed degree. The null world corresponds now to the following:
 
 > $H_0$: The average geodesic distance observed in the network is consistent
 > with what would be expected under random graphs that preserve the in- and
 > out-degree sequence.
 
-This CUG test here evaluates whether the observed network is more (or less)
-efficiently connected than expected under degree-preserving randomization. The
-results are run and visualized below in @fig-cug-deg.
+This CUG test here evaluates whether the observed network has shorter (or
+longer) average geodesic distances among reachable pairs than expected under
+degree-preserving randomization. Note that the reported $p$-value is one-sided:
+the proportion of simulations with an average distance less than or equal to the
+observed value. The results are run and visualized below in @fig-cug-deg.
 
 ```{r}
 #| label: fig-cug-deg
@@ -674,11 +687,12 @@ ggplot(geodist_df, aes(x = avg_geodist)) +
   theme_minimal()
 ```
 
-This indicates that the observed network is significantly more efficiently
-connected (in terms of shortest paths) than what would be expected under random
-edge arrangement, given the same degree distribution. In other words, the
-network's structure enables actors to reach one another more quickly than random
-networks with the same node-level connectivity.
+This indicates that the average geodesic distance among reachable pairs in the
+observed network is shorter than would be expected in random directed graphs
+with the same in- and out-degree sequences. Because unreachable pairs are
+ignored and their number may differ across graphs, this is a statement about
+distances among reachable pairs and not about the overall efficiency of the
+network.
 
 What's the $p$-value? We compare the observed value to the distribution from the
 simulated null model.
@@ -692,7 +706,7 @@ Thus, we would reject the null. This example also highlights that you need to
 pay attention to which tail the observed value is located when computing the
 $p$-value (here left).
 
-## Analysing Homophily Using Non-Parametric Null Distribution
+## Analyzing Homophily Using Non-Parametric Null Distribution
 
 To illustrate how we can test for homophily using a non-parametric approach, we
 turn to another data set with available node attributes, namely the one by
@@ -703,12 +717,12 @@ measurements of networks among the 71 attorneys (partners and associates) of
 this firm, i.e., their coworker network, advice network, friendship network, and
 indirect control networks. Various members' attributes are also part of the
 dataset, including seniority, formal status, office in which they work, gender,
-lawschool attended.
+and law school attended.
 
 Two tests will be performed:
 
-- Test 1: Friendship based on gender
-- Test 2: Cowork among partners based on law practice
+- Test 1: Friendship based on gender.
+- Test 2: Coworker among partners based on law practice.
 
 These two networks that are used in the following are visualized in
 @fig-lawnets.
@@ -803,7 +817,7 @@ by practice area.
 
 First, we examine gender-based homophily in a friendship network among corporate
 lawyers from the Lazega dataset. We load the data as an `igraph` object from the
-package `networkdata` and vizualize it, with node color representing gender.
+package `networkdata` and visualize it, with node color representing gender.
 
 ```{r}
 data("law_friends")
@@ -815,8 +829,8 @@ We are here testing the following
 > $H_0$: The number of same-gender ties in the network is consistent with a
 > random distribution of ties (given network size and density).
 
-> $H_1$: The observed network has significantly more (or fewer) same-gender ties
-> than expected by chance.
+> $H_1$: The observed network has more (or fewer) same-gender ties than
+> expected by chance.
 
 To answer this, we use a non-parametric test based on randomly generated
 networks that match the observed network in size and density. This is
@@ -915,8 +929,10 @@ The empirical $p$-value is computed as
 ```{r}
 mean(homoph_sim >= homoph_obs)
 ```
-which implies that we reject the null hypothesis, concluding that gender-based
-homophily exists in the friendship network.
+which implies that we reject the null hypothesis, concluding that the friendship
+network contains more same-gender ties than expected under uniform random
+allocation of the same number of ties, which is consistent with gender
+homophily.
 
 ### Test 2: Cowork among partners based on law practice {.unnumbered}
 
@@ -941,10 +957,10 @@ of the firm (as indicated by their "status" attribute).
 The following hypotheses can be stated:
 
 > $H_0$: The number of same-practice coworking ties is consistent with a random
-> distribution of ties, given number of ties and edges of the network.
+> distribution of ties, given number of nodes and edges of the network.
 
-> $H_1$: The observed number of same-practice ties is significantly greater than
-> expected under random conditions; suggesting homophily based on professional
+> $H_1$: The observed number of same-practice ties is greater than expected
+> under random conditions; suggesting homophily based on professional
 > specialization.
 
 Since coworking is a reciprocal relationship, we treat the network as undirected
@@ -1011,7 +1027,7 @@ homoph_sim_cw <- sapply(law_sim_cw, function(mat) {
 })
 ```
 
-and finally, plot the null distribution and compare with observed value:
+and finally, plot the null distribution and compare with the observed value:
 
 ```{r}
 #| label: fig-cug-hom2
@@ -1019,7 +1035,7 @@ and finally, plot the null distribution and compare with observed value:
 #| fig-height: 4
 #| message: false
 #| warning: false
-#| fig-cap: "Distribution of same-practice coworking ties in 1000 random undirected graphs preserving the number of nodes and ties. The red dashed line indicates the observed number of homophilous ties among law firm partners. This test evaluates whether the level of professional homophily (litigation or corporate) is different than what is expected under random tie allocation."
+#| fig-cap: "Distribution of same-practice coworking ties in 1000 random undirected graphs preserving the number of nodes and ties. The red dashed line indicates the observed number of homophilous ties among law firm partners. This test evaluates whether the level of professional homophily (litigation or corporate) is greater than what is expected under random tie allocation."
 homoph_sim_df <- data.frame(homophilous_ties = homoph_sim_cw)
 
 ggplot(homoph_sim_df, aes(x = homophilous_ties)) +
@@ -1050,7 +1066,7 @@ ggplot(homoph_sim_df, aes(x = homophilous_ties)) +
 
 As seen in @fig-cug-hom2, we are in the right tail, indicating we are observing
 more homophilous ties than expected by chance. To formally test the hypothesis
-above we can compute the $p$-value.
+above, we can compute the $p$-value.
 
 ```{r}
 mean(homoph_sim_cw >= homoph_obs_cw)

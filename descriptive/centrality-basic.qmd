@@ -34,9 +34,9 @@ At its core, a centrality index assigns a numeric value to each node in a
 network. Higher values indicate greater centrality, but what "central" means
 depends on the index. Different indices capture fundamentally different notions
 of importance, each tied to a different structural property of the network. The
-four most widely used families of centrality, formalized in the conceptual
-clarification of @freeman1979centrality, can be mapped to distinct social
-intuitions:
+four most widely used families of centrality, the first three formalized in the
+conceptual clarification of @freeman1979centrality and the fourth introduced by
+@bonacich1987power, can be mapped to distinct social intuitions:
 
 - **Degree** measures **activity**: How many direct connections does a node
   have? A node with many ties is active, popular, or well-connected.
@@ -113,7 +113,7 @@ degree(dbces11)
 For weighted networks, **strength** (also called weighted degree) sums the edge
 weights instead of counting ties. This is useful when ties carry different
 intensities, such as frequency of communication or volume of trade. As an
-illustration we use the `miserables` network, which records co-occurrences of
+illustration, we use the `miserables` network, which records co-occurrences of
 characters in Victor Hugo's *Les Misérables*, with edge weights counting how
 often two characters appear in the same chapter.
 
@@ -168,6 +168,9 @@ $$
 C_B(v) = \sum_{s \neq v \neq t} \frac{\sigma_{st}(v)}{\sigma_{st}}.
 $$
 
+For undirected networks the sum runs over unordered pairs $s < t$, which is the
+convention `igraph::betweenness()` uses.
+
 ```{r}
 #| label: betweenness-dbces11
 
@@ -205,9 +208,9 @@ first.
 
 ### Subgraph Centrality
 
-**Subgraph centrality** [@estrada2005subgraph] quantifies the participation of
-each node in all subgraphs of the network, weighted by the inverse factorial of
-their size. It captures how embedded a node is in the local structure of the
+**Subgraph centrality** [@estrada2005subgraph] sums the closed walks through
+each node, weighting a walk of length $k$ by $1/k!$, so that shorter walks count
+for more. It captures how embedded a node is in the local structure of the
 network, counting closed walks of all lengths.
 
 ```{r}
@@ -220,7 +223,7 @@ subgraph_centrality(dbces11)
 
 @fig-dbces11-centrality shows the most central node according to each of the
 indices computed above. Each index picks a different node as most central,
-highlighting how the choice of index determines what we consider "important."
+highlighting how the choice of index determines what we consider "important".
 
 ```{r}
 #| label: fig-dbces11-centrality
@@ -300,8 +303,10 @@ pairs(
 The correlation matrix and the pairwise scatter plots in @fig-centrality-pairs
 reveal which indices capture similar information and where they diverge. High
 correlations (e.g., between degree and eigenvector centrality) suggest that the
-structural features they measure overlap in this network, while low correlations
-indicate genuinely different dimensions of centrality.
+structural features they measure overlap in this network, while lower
+correlations would indicate genuinely different dimensions of centrality. In this
+network all four indices agree closely; on other networks the indices diverge
+much more.
 
 ## Directed Networks
 
@@ -414,7 +419,7 @@ round(head(sort(atp_pr, decreasing = TRUE), 10), 4)
 round(head(sort(wta_pr, decreasing = TRUE), 10), 4)
 ```
 
-@fig-atp-all-time and @fig-wta-all-time visualize the subnetworks induced by the
+Figures [-@fig-atp-all-time] and [-@fig-wta-all-time] visualize the subnetworks induced by the
 50 highest-ranked players on each tour, with node size proportional to PageRank
 and labels for the top twelve. The dense pattern of edges among these nodes
 reflects how often elite players meet one another, and this concentration is
@@ -424,7 +429,7 @@ entirely by results within this small clique.
 ```{r}
 #| label: fig-atp-all-time
 #| echo: false
-#| fig-cap: "Subnetwork induced by the 50 highest-ranked ATP players by PageRank across all seasons (1968-2021). Node size is proportional to PageRank; the top twelve players are labelled."
+#| fig-cap: "Subnetwork induced by the 50 highest-ranked ATP players by PageRank across all seasons (1968-2021). Node size is proportional to PageRank; the top twelve players are labeled."
 #| fig-width: 8
 #| fig-height: 8
 #| message: false
@@ -452,7 +457,7 @@ ggraph(atp_top, "stress") +
 ```{r}
 #| label: fig-wta-all-time
 #| echo: false
-#| fig-cap: "Subnetwork induced by the 50 highest-ranked WTA players by PageRank across all seasons (1968-2021). Node size is proportional to PageRank; the top twelve players are labelled."
+#| fig-cap: "Subnetwork induced by the 50 highest-ranked WTA players by PageRank across all seasons (1968-2021). Node size is proportional to PageRank; the top twelve players are labeled."
 #| fig-width: 8
 #| fig-height: 8
 #| message: false
@@ -647,12 +652,12 @@ whichever supports the desired narrative. In the best case, you have a
 substantive argument for why a specific structural property matters, apply the
 corresponding index, and let the result speak to your hypothesis.
 
-When multiple indices seem equally defensible and you are uncertain which to
+When multiple indices seem equally defensible, and you are uncertain which to
 choose, the approach introduced in @sec-advanced-centrality-concepts offers a
 principled alternative: rather than committing to a single index, you can
 analyze the partial ordering that most indices agree on.
 
-## Use Case: Florentine Families
+## Use Case: Florentine Families {#sec-florentine-centrality}
 
 We return to the *Florentine Families* marriage network introduced in
 @sec-basic-network-statistics, popularized in network analysis by
@@ -665,7 +670,7 @@ families in Florence. This network is included in the `networkdata` package.
 data("flo_marriage")
 ```
 
-The dataset contains one isolated family (the Pucci), who form no marriage ties
+The dataset contains one isolated family (the Pucci), which forms no marriage ties
 to the other families. Because closeness is not well-defined for disconnected
 networks (see the earlier callout), we restrict the analysis to the connected
 subgraph of the remaining 15 families.
@@ -734,11 +739,10 @@ through fewer intermediaries than anyone else. And their *eigenvector
 centrality* shows that they were not just well-connected, but connected to other
 well-connected families.
 
-The Strozzi, despite their wealth, were structurally peripheral. Their marriage
-ties connected them to less central families, limiting their ability to broker
-relationships or influence the network as a whole. This case illustrates a key
-insight of network analysis: structural position can matter more than individual
-attributes like wealth.
+The Strozzi were wealthy and, by degree and eigenvector centrality, very well
+connected, but they lacked the Medici's brokerage position: they rank only 7th of
+15 on betweenness, against the Medici's 1st. Being central among one's own bloc
+is not the same as sitting between blocs.
 
 We can also examine centralization to characterize the network as a whole.
 
@@ -775,8 +779,9 @@ The structural property at the heart of `netrankr` is **neighborhood
 inclusion**, illustrated in @fig-neighborhood-inclusion. If every neighbor of a
 node $u$ is also a neighbor of another node $v$ (plus possibly $v$ itself), then
 $u$ sits in a structurally weaker position than $v$: whatever $u$ can reach, $v$
-can reach too, and more. Every commonly used centrality index respects this: if
-$u$ is neighborhood-dominated by $v$, no index will rank $u$ above $v$.
+can reach too, and more. Almost every commonly used centrality index respects
+this: if $u$ is neighborhood-dominated by $v$, the index will not rank $u$ above
+$v$. Betweenness is the exception, as noted below.
 
 ![Neighborhood inclusion: the neighbors of the left node are contained in the closed neighborhood of the right node.](img/neighborhood_inclusion.png){#fig-neighborhood-inclusion width=60%}
 
@@ -794,7 +799,7 @@ comparable_pairs(P)
 Only about 16% of pairs are comparable in `dbces11`. The other 84% are
 structurally ambiguous, and that ambiguity is exactly the room in which
 different indices can disagree. In a network where every pair is comparable, all
-indices would produce the same ranking.
+order-preserving indices would produce the same ranking.
 
 ### Rank Intervals
 
@@ -831,14 +836,15 @@ cent_scores <- data.frame(
 plot(rk_int, cent_scores = cent_scores)
 ```
 
-In @fig-rank-intervals-dbces the four indices land at different rank positions
+In @fig-rank-intervals-dbces, the four indices land at different rank positions
 within each node's interval, which is the partial-ordering view of the
 disagreement we saw earlier in @fig-dbces11-centrality.
 
 ::: {.callout-note}
 Occasionally a betweenness point falls outside a node's interval. Betweenness is
-the one common index that does not strictly preserve neighborhood inclusion. Two
-nodes can satisfy $N(u) \subseteq N[v]$ yet receive equal betweenness scores.
+the one common index that does not strictly preserve neighborhood inclusion:
+betweenness can rank $u$ strictly above $v$ even when $N(u)$ is a subset of
+$N[v]$.
 All other standard indices are strictly order-preserving.
 :::
 
@@ -866,6 +872,8 @@ round(res$rank.prob[, ncol(res$rank.prob)], 2)
 Nodes E and K share the highest probability (0.16) of occupying the top rank
 across all valid rankings, closely followed by D and H. The expected rank, the
 weighted average of a node's rank over all extensions, gives a single summary.
+Note that `netrankr` orders ranks from least to most central, the reverse of the
+convention used in @sec-florentine-centrality.
 
 ```{r}
 #| label: expected-rank

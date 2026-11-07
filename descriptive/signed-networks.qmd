@@ -84,14 +84,14 @@ as_adj_signed(tribes)
 ## Structural Balance
 
 Structural balance theory originates in the social psychology of Fritz Heider
-[-@heider1946attitudes] and was formalised for graphs by
+[-@heider1946attitudes] and was formalized for graphs by
 @cartwright1956structural. The core idea is intuitive: consider three people. If
 Alice and Bob are friends, and Bob and Carol are friends, we expect Alice and
-Carol to also be friends: "the friend of my friend is my friend." Similarly, if
+Carol to also be friends: "the friend of my friend is my friend". Similarly, if
 Alice and Bob are enemies and Bob and Carol are enemies, we expect Alice and
-Carol to be friends: "the enemy of my enemy is my friend." These configurations
+Carol to be friends: "the enemy of my enemy is my friend". These configurations
 are **balanced**. A triangle where all three pairs are enemies, or where two
-pairs are friends but one pair are enemies, feels unstable and is considered
+pairs are friends but one pair is enemies, feels unstable and is considered
 **unbalanced**.
 
 More formally, a triangle is balanced if it has an even number of negative ties
@@ -159,11 +159,12 @@ ties within groups are positive and all ties between groups are negative.
 We can generate such a simple balanced network with `sample_islands_signed()`,
 which creates groups with positive intra-group ties and negative inter-group
 ties. It follows the logic of the function `sample_islands()` from `igraph`,
-with the added twist of making inter group edges negative. Setting
+with the added twist of making inter-group edges negative. Setting
 `islands.n = 2` creates a perfectly balanced network with two groups.
 
 ```{r}
 #| label: balanced-example
+set.seed(1108)
 g_bal <- sample_islands_signed(
   islands.n = 2,
   islands.size = 10,
@@ -181,7 +182,7 @@ ggsigned(g_bal)
 ```
 
 We can verify that this network is perfectly balanced by counting its triangles.
-Balanced networks contain only "+++" and "+--" triangles, with no "++-" or "---"
+Balanced networks contain only "+++" and "+\-\-" triangles, with no "++-" or "\-\-\-"
 triangles.
 
 ```{r}
@@ -199,10 +200,15 @@ how balanced a given network is. The `signnet` package offers three methods for
 measuring the degree of balancedness via `balance_score()`. All return a value
 between zero (perfectly unbalanced) and one (perfectly balanced).
 
-For our perfectly balanced synthetic network, all three methods agree.
+For our perfectly balanced synthetic network, the triangle and walk methods both
+return 1, while the frustration heuristic returns 0.83. As explained below, the
+heuristic only provides a lower bound on the balance score (it bounds the number
+of frustrated edges from above); `frustration_exact()` recovers the correct value
+of 1.
 
 ```{r}
 #| label: balance-perfect
+set.seed(1108)
 balance_score(g_bal, method = "triangles")
 balance_score(g_bal, method = "walk")
 balance_score(g_bal, method = "frustration")
@@ -219,8 +225,9 @@ The **frustration** method finds a partition of the network into two groups and
 counts how many edges violate the balance pattern (negative ties within groups
 and positive ties between groups). The fewer violations, the more balanced the
 network [@aref2018measuring]. Since finding the optimal partition is
-computationally hard, the function uses simulated annealing and returns an upper
-bound. For exact results, `frustration_exact()` solves the problem via integer
+computationally hard, the function uses simulated annealing, which bounds the
+number of frustrated edges from above and therefore the balance score from below.
+For exact results, `frustration_exact()` solves the problem via integer
 programming for small networks. For the `tribes` network, which is not perfectly
 balanced, the three methods give the following results.
 
@@ -245,10 +252,10 @@ The function `signed_blockmodel()` partitions a network into `k` predefined
 blocks, optimizing for positive ties within blocks and negative ties between
 blocks. The objective function to be optimized is
 $P(C) = \alpha N + (1-\alpha)P$, where $N$ is the total number of negative ties
-within blocks and $P$ is the total number of positive ties between blocks. The
+within blocks, and $P$ is the total number of positive ties between blocks. The
 parameter `alpha` controls the trade-off between these two values. The closer
-`alpha` is to 1, the more the algorithm prioritises negative ties within blocks.
-The closer to 0, the more it prioritises positive ties between blocks. Setting
+`alpha` is to 1, the more the algorithm penalizes negative ties within blocks.
+The closer to 0, the more it penalizes positive ties between blocks. Setting
 `alpha = 0.5` gives equal weight to both types of errors.
 
 For the `tribes` network, we try to find a partition into three blocks, which is
@@ -292,7 +299,7 @@ The function `signed_blockmodel_general()` allows us to specify arbitrary block
 structures via the `blockmat` parameter. Each entry in the matrix indicates
 whether we expect the corresponding block to be positive (1) or negative (-1).
 
-In the following we construct a synthetic network with three groups, with a
+In the following, we construct a synthetic network with three groups, with a
 structure which cannot be captured by the traditional blockmodel but can be
 specified in the general blockmodel.
 
@@ -320,7 +327,7 @@ ggsigned(g, weights = TRUE)
 
 Here, groups two and three have positive ties between them, while both have
 negative ties with group one. The block structure matrix specified below
-reflects this.
+reflects this (@fig-general-setup).
 
 ```{r}
 #| label: general-blockmat

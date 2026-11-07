@@ -2,7 +2,7 @@
 
 Ego networks refer to the personal network surrounding a single focal
 individual, known as the **ego**. An ego network includes the ego, the people
-directly connected to them, so called **alters**, and the relationships among
+directly connected to them, so-called **alters**, and the relationships among
 those alters.
 
 Rather than examining an entire community or organization, ego network analysis
@@ -673,7 +673,8 @@ that the alter is of the same race as themselves (`1 = same race`,
 `0 = different race`). By averaging this binary variable across alters within
 each ego network, we obtain the proportion of alters who share the ego's race.
 Higher values indicate more racially homogeneous networks, while lower values
-suggest greater racial diversity.
+suggest greater racial diversity. The resulting measures are summarized in
+@tbl-comp-summary.
 
 ```{r}
 #| label: propo-same-race
@@ -685,7 +686,8 @@ To obtain a compact overview of these compositional measures, we combine them
 into a single summary table.
 
 ```{r}
-#| label: comp-summary
+#| label: tbl-comp-summary
+#| tbl-cap: "Summary of compositional measures for ego networks."
 prop_family <- comp_ply(ego_net_w1, "family", mean)
 prop_female <- comp_ply(ego_net_w1, "gender", mean)
 prop_same_race <- comp_ply(ego_net_w1, "same_race", mean)
@@ -701,8 +703,7 @@ row.names(comp_summary) <- NULL
 
 kable(
   head(comp_summary, 10),
-  digits = 2,
-  caption = "Summary of compositional measures for ego networks."
+  digits = 2
 )
 ```
 Several entries may appear as `NA`. These occur when the compositional measure
@@ -800,7 +801,7 @@ and diversity in the social contexts from which alters are drawn.
 
 ## Predicting Individual Outcomes Using Ego Network Measures
 
-In the previous sections we examined the structure and composition of ego
+In the previous sections, we examined the structure and composition of ego
 networks, focusing on characteristics such as family ties, gender composition,
 and racial homophily. These measures describe how individuals' personal networks
 are organized. However, ego network properties can also be used as explanatory
@@ -1097,7 +1098,7 @@ middle category on the health scale. As network size increases, the predicted
 probabilities of lower categories such as fair and poor decline, while the
 probabilities of higher categories such as very good and excellent increase. The
 reduction in the middle category therefore reflects a redistribution of
-probability toward the higher end of the health scale..
+probability toward the higher end of the health scale.
 
 Taken together, the pattern of increasing probabilities for higher health
 categories and decreasing probabilities for lower categories suggests that
